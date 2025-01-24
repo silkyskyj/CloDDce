@@ -42,16 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="core">
-      <HintPath>..\..\..\..\core\core.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\core.dll</HintPath>
     </Reference>
     <Reference Include="gamePlay">
-      <HintPath>..\..\..\..\core\gamePlay.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePlay.dll</HintPath>
     </Reference>
     <Reference Include="gameWorld">
-      <HintPath>..\..\..\..\core\gameWorld.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gameWorld.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
