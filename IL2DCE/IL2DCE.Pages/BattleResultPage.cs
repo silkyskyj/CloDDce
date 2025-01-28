@@ -37,7 +37,7 @@ namespace IL2DCE.Pages
 
         protected string ToStringTimeSpan(Dictionary<string, float> ds)
         {
-            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", x.Key, new TimeSpan((long)(x.Value * 10000000)))));
+            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", x.Key, new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
         }
 
         protected virtual string GetResultSummary(IGameSingle game)
