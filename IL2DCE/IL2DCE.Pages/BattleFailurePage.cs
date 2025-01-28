@@ -14,19 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using maddox.game;
-using maddox.game.play;
 using maddox.game.page;
 
 namespace IL2DCE
 {
     namespace Pages
     {
-        public class BattleFailurePage : PageDefImpl
+        public class BattleFailurePage : BattleResultPage
         {
             public BattleFailurePage()
                 : base("Battle Failure", new CampaignBattleFailure())
@@ -62,17 +56,20 @@ namespace IL2DCE
 
                 _game = play as IGame;
 
+                string result = string.Empty;
+
+
                 if (Game is IGameSingle)
                 {
-                    FrameworkElement.textBoxDescription.Text = (Game as IGameSingle).BattleSuccess.ToString();
+                    result = (Game as IGameSingle).BattleSuccess.ToString() + "\n";
                 }
-            }
 
-            public override void _leave(maddox.game.IGame play, object arg)
-            {
-                base._leave(play, arg);
+                if (play.gameInterface != null)
+                {
+                    result += GetPlayerStat(play.gameInterface.Player());
+                }
 
-                _game = null;
+                FrameworkElement.textBoxDescription.Text = result;
             }
 
             private CampaignBattleFailure FrameworkElement
@@ -82,15 +79,6 @@ namespace IL2DCE
                     return FE as CampaignBattleFailure;
                 }
             }
-
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
         }
     }
 }

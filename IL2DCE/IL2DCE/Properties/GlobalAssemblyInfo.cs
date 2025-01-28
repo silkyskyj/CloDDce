@@ -24,10 +24,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 [assembly: AssemblyCompany("https://github.com/il2dce/il2dce")]
-[assembly: AssemblyProduct("IL2DCE")]
+[assembly: AssemblyProduct("IL2DCE [Forked by silkyskyj]")]
 [assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2016")]
 [assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.3.0.0")]
-[assembly: AssemblyFileVersion("0.3.0.0")]
+[assembly: AssemblyVersion("0.3.1.0")]
+[assembly: AssemblyFileVersion("0.3.1.0")]

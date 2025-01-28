@@ -18,7 +18,7 @@
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <OutputPath>..\..\..\</OutputPath>
+    <OutputPath>..\Debug\parts\IL2DCE\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>x64</PlatformTarget>
@@ -43,15 +43,19 @@
   <ItemGroup>
     <Reference Include="core">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gamePages">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePages.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gamePlay">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePlay.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gameWorld">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gameWorld.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -59,14 +63,17 @@
     <ProjectReference Include="..\IL2DCE.Mission\IL2DCE.Mission.csproj">
       <Project>{75e92407-3d44-4802-a09a-5ed7e6febc12}</Project>
       <Name>IL2DCE.Mission</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\IL2DCE.Pages\IL2DCE.Pages.csproj">
       <Project>{ECBA2DA0-44D1-4449-9240-E57F07460A14}</Project>
       <Name>IL2DCE.Pages</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\IL2DCE\IL2DCE.csproj">
       <Project>{22442D49-0A77-4CBE-A1F3-9806958C10AE}</Project>
       <Name>IL2DCE</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -14,19 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using maddox.game;
-using maddox.game.play;
 using maddox.game.page;
 
 namespace IL2DCE
 {
     namespace Pages
     {
-        public class BattleSuccessPage : PageDefImpl
+        public class BattleSuccessPage : BattleResultPage
         {
             public BattleSuccessPage()
                 : base("Battle Success", new CampaignBattleSuccess())
@@ -59,39 +53,19 @@ namespace IL2DCE
 
                 _game = play as IGame;
 
+                string result = string.Empty;
+
                 if (Game is IGameSingle)
                 {
-                    FrameworkElement.textBoxDescription.Text = (Game as IGameSingle).BattleSuccess.ToString();
-                    FrameworkElement.textBoxDescription.Text += "\n";
-
-                    if ((Game as IGameSingle).BattleSuccess == EBattleResult.DRAW)
-                    {
-                        FrameworkElement.textBoxDescription.Text += "Exp: " + Game.Core.CurrentCareer.Experience + " + 100/" + ((Game.Core.CurrentCareer.RankIndex + 1) * 1000);
-                        FrameworkElement.textBoxDescription.Text += "\n";
-
-                        if (Game.Core.CurrentCareer.Experience + 100 >= (Game.Core.CurrentCareer.RankIndex + 1) * 1000)
-                        {
-                            FrameworkElement.textBoxDescription.Text += "Promition!";
-                        }
-                    }
-                    else
-                    {
-                        FrameworkElement.textBoxDescription.Text += "Exp: " + Game.Core.CurrentCareer.Experience + " + 200/" + ((Game.Core.CurrentCareer.RankIndex + 1) * 1000);
-                        FrameworkElement.textBoxDescription.Text += "\n";
-
-                        if (Game.Core.CurrentCareer.Experience + 200 >= (Game.Core.CurrentCareer.RankIndex + 1) * 1000)
-                        {
-                            FrameworkElement.textBoxDescription.Text += "Promition!";
-                        }
-                    }
+                    result += GetResultSummary(Game as IGameSingle);
                 }
-            }
 
-            public override void _leave(maddox.game.IGame play, object arg)
-            {
-                base._leave(play, arg);
+                if (play.gameInterface != null)
+                {
+                    result += GetPlayerStat(play.gameInterface.Player());
+                }
 
-                _game = null;
+                FrameworkElement.textBoxDescription.Text = result;
             }
 
             private CampaignBattleSuccess FrameworkElement
@@ -101,15 +75,6 @@ namespace IL2DCE
                     return FE as CampaignBattleSuccess;
                 }
             }
-
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
         }
     }
 }
