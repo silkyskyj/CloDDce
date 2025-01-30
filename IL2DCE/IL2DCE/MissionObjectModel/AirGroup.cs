@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 
 using maddox.game;
@@ -378,6 +379,14 @@ namespace IL2DCE
         //        _targetArea = value;
         //    }
         //}
+
+        public string DisplayName
+        {
+            get
+            {
+                return CreateDisplayName(AirGroupKey) + "." + SquadronIndex;
+            }
+        }
 
         #endregion
 
@@ -932,9 +941,18 @@ namespace IL2DCE
 
             createEndWaypoints(landingAirport);
         }
-        
-        #endregion        
-        
+
+        public static string CreateDisplayName(string airGroupKey)
+        {
+            // tobruk:Tobruk_RA_30St_87_Gruppo_192Sq -> Tobruk_RA_30St_87_Gruppo_192Sq
+            const string del = ":";
+            string s = airGroupKey;
+            int idx = s.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
+            return idx == -1 ? s : s.Substring(idx + del.Length);
+        }
+
+        #endregion
+
         #region Fields
 
         private double? _altitude = null;

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using maddox.game;
 using maddox.game.play;
 using maddox.game.page;
+using System.Diagnostics;
 
 namespace IL2DCE
 {

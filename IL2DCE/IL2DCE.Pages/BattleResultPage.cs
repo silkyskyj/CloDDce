@@ -16,6 +16,7 @@
 
 using maddox.game;
 using maddox.game.play;
+using maddox.game.world;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +36,14 @@ namespace IL2DCE.Pages
             return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", x.Key, x.Value)));
         }
 
+        protected string ToStringkillsTypes(Dictionary<string, double> ds)
+        {
+            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), x.Value)));
+        }
+
         protected string ToStringTimeSpan(Dictionary<string, float> ds)
         {
-            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", x.Key, new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
+            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
         }
 
         protected virtual string GetResultSummary(IGameSingle game)
@@ -57,7 +63,7 @@ namespace IL2DCE.Pages
         {
             IPlayerStat st = player.GetBattleStat();
 #if false
-            return String.Format("PlayerStat[{0}]\n Flying Time: {1}\n Takeoffs: {2}\n Landings: {3}\n Deaths: {4}\n Bails: {5}\n Ditches: {6}\n PlanesWrittenOff: {7}\n" +
+            return String.Format("PlayerStat [{0}]\n Flying Time: {1}\n Takeoffs: {2}\n Landings: {3}\n Deaths: {4}\n Bails: {5}\n Ditches: {6}\n PlanesWrittenOff: {7}\n" +
                                     " Kills: {8}\n Friendly Kills: {9}\n KillsTypes: {10}\n" + 
                                     " Bullets Fire: {11}\n         Hit: {12}\n         HitAir: {13}\n Rockets Fire: {14}\n         Hit: {15}\n" +
                                     " Bombs Fire: {16}\n        Weight: {16}\n        Hit: {18}\n Torpedos Fire: {19}\n          Hit: {20}\n",
@@ -83,9 +89,10 @@ namespace IL2DCE.Pages
                                     st.torpedosFire,
                                     st.torpedosHit);
 #else
-            return String.Format("PlayerStat[{0}]\n Flying Time: {1}\n Takeoffs: {2}\n Landings: {3}\n Deaths: {4}\n Bails: {5}\n Ditches: {6}\n PlanesWrittenOff: {7}\n" +
-                                    " Kills: {8}\n Friendly Kills: {9}\n KillsTypes: {10}\n",
+            return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs: {3}\n Landings: {4}\n Deaths: {5}\n Bails: {6}\n Ditches: {7}\n PlanesWrittenOff: {8}\n" +
+                                    " Kills: {9}\n Friendly Kills: {10}\n KillsTypes: {11}\n",
                                     player?.Name() ?? string.Empty,
+                                    Game.Core.CurrentCareer.ToString(),
                                     ToStringTimeSpan(st.tTotalTypes),
                                     st.takeoffs,
                                     st.landings,
@@ -95,7 +102,7 @@ namespace IL2DCE.Pages
                                     st.planesWrittenOff,
                                     st.kills,
                                     st.fkills,
-                                    ToString(st.killsTypes));
+                                    ToStringkillsTypes(st.killsTypes));
 #endif
         }
 

@@ -125,7 +125,7 @@ namespace IL2DCE
                         if (airGroup.AirGroupInfo.ArmyIndex == Game.Core.CurrentCareer.ArmyIndex
                             && airGroup.AirGroupInfo.AirForceIndex == Game.Core.CurrentCareer.AirForceIndex && campaignInfo.GetAircraftInfo(airGroup.Class).IsFlyable)
                         {
-                            description += airGroup.ToString() + "\n";
+                            description += airGroup.DisplayName + "\n";
                             availableAirGroups++;
                         }
                     }

@@ -66,7 +66,7 @@ namespace IL2DCE
                     {
                         System.Windows.Controls.ComboBoxItem itemAirGroup = new System.Windows.Controls.ComboBoxItem();
 
-                        itemAirGroup.Content = airGroup.ToString() + " (" + Game.Core.CurrentCareer.CampaignInfo.GetAircraftInfo(airGroup.Class).Aircraft.Remove(0, 9) + ")";
+                        itemAirGroup.Content = airGroup.DisplayName + " (" + Game.Core.CurrentCareer.CampaignInfo.GetAircraftInfo(airGroup.Class).DisplayName + ")";
                         if (airGroup.Airstart == true)
                         {
                             itemAirGroup.Content += " [AIRSTART]";

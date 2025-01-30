@@ -8,7 +8,7 @@
         <Label Content="Campaign Intro" Height="138" HorizontalAlignment="Left" Margin="12,12,0,0" Name="labelCampaignIntro" VerticalAlignment="Top" Width="640" FontSize="64" FontWeight="Bold" Foreground="#FF791313" />
         <my1:ButtonAsMenuItem Content="Start" Height="77" HorizontalAlignment="Left" Margin="68,218,0,0" Name="Start" VerticalAlignment="Top" Width="206" />
         <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="68,301,0,0" Name="Back" VerticalAlignment="Top" Width="206" />
-        <ComboBox Height="63" HorizontalAlignment="Left" Margin="331,288,0,0" Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A">
+        <ComboBox Height="63" HorizontalAlignment="Left" Margin="331,288,0,0" Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A">
             <ComboBox.Background>
                 <SolidColorBrush />
             </ComboBox.Background>
