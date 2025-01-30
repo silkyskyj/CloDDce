@@ -17,7 +17,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Reflection;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -116,6 +116,24 @@ namespace IL2DCE
         {
             get;
             set;
+        }
+
+        public string DisplayName
+        {
+            get
+            {
+                return CreateDisplayName(Aircraft);
+            }
+        }
+
+        public static string CreateDisplayName(string aircraftInfo)
+        {
+            // Aircraft.Bf-110C-7 -> Bf-110C-7
+            // tobruk:Aircraft.Macchi-C202-SeriesVII -> Macchi-C202-SeriesVII
+            const string del = "Aircraft.";
+            string s = aircraftInfo;
+            int idx = s.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
+            return idx == -1 ? s : s.Substring(idx + del.Length);
         }
 
         public IList<AircraftParametersInfo> GetAircraftParametersInfo(EMissionType missionType)

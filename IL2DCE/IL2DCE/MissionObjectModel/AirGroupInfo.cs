@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using maddox.game.world;
 using System;
 using System.Collections.Generic;
 
@@ -124,6 +125,8 @@ namespace IL2DCE
         new RafBomberCommandAirGroupInfo(),
         new RafFlyingTrainingSchoolEarlyAirGroupInfo(),
         new RafFlyingTrainingSchoolLateAirGroupInfo(),
+        new AAFighterCommandLateAirGroupInfo(),
+        new USAAFFighterCommandLateAirGroupInfo(),
     };
 
         static public AirGroupInfo[] BlueAirGroupInfos = new AirGroupInfo[]
@@ -158,6 +161,44 @@ namespace IL2DCE
             "Aircraft.SpitfireMkI_Heartbreaker",
             "Aircraft.SpitfireMkIa",
             "Aircraft.SpitfireMkIIa",
+            "tobruk:Aircraft.BeaufighterMkIC",
+            "tobruk:Aircraft.BeaufighterMkIC_trop",
+            "tobruk:Aircraft.BeaufighterMkIF_Late",
+            "tobruk:Aircraft.BeaufighterMkIF_Late_trop",
+            "tobruk:Aircraft.BeaufighterMkINF_Late",
+            "tobruk:Aircraft.BeaufighterMkINF_Late_trop",
+            "tobruk:Aircraft.GladiatorMkII_trop",
+            "tobruk:Aircraft.HurricaneMkIIa",
+            "tobruk:Aircraft.HurricaneMkIIaTrop",
+            "tobruk:Aircraft.HurricaneMkIIb",
+            "tobruk:Aircraft.HurricaneMkIIb-Late",
+            "tobruk:Aircraft.HurricaneMkIIbTrop",
+            "tobruk:Aircraft.HurricaneMkIIbTrop-Late",
+            "tobruk:Aircraft.HurricaneMkIIc",
+            "tobruk:Aircraft.HurricaneMkIIc-Late",
+            "tobruk:Aircraft.HurricaneMkIIc-Trop",
+            "tobruk:Aircraft.HurricaneMkIIc-Trop-Late",
+            "tobruk:Aircraft.HurricaneMkIId",
+            "tobruk:Aircraft.HurricaneMkIId-Trop",
+            "tobruk:Aircraft.HurricaneMkI_FB-Trop",
+            "tobruk:Aircraft.KittyhawkMkIA",
+            "tobruk:Aircraft.KittyhawkMkIA-trop",
+            "tobruk:Aircraft.MartletMkIII",
+            "tobruk:Aircraft.MartletMkIII_Trop",
+            "tobruk:Aircraft.SpitfireMkIIb",
+            "tobruk:Aircraft.SpitfireMkVa",
+            "tobruk:Aircraft.SpitfireMkVb",
+            "tobruk:Aircraft.SpitfireMkVb-HF",
+            "tobruk:Aircraft.SpitfireMkVb-HF-Late",
+            "tobruk:Aircraft.SpitfireMkVb-HF-Trop",
+            "tobruk:Aircraft.SpitfireMkVbLate",
+            "tobruk:Aircraft.SpitfireMkVbTrop",
+            "tobruk:Aircraft.TomahawkMkII",
+            "tobruk:Aircraft.TomahawkMkII-Late",
+            "tobruk:Aircraft.TomahawkMkII-Late-trop",
+            "tobruk:Aircraft.TomahawkMkII-trop",
+            "tobruk:Aircraft.D520_Serie1",
+            "tobruk:Aircraft.D520_Serie1_trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -230,6 +271,15 @@ namespace IL2DCE
             "BoB_RAF_F_87Sqn_Early",
             "BoB_RAF_F_92Sqn_Early",
             "BoB_RAF_F_FatCat_Early", /* Fiction Early */
+            "tobruk:Tobruk_RAF_F_73Sqn",
+            "tobruk:Tobruk_RAF_F_80Sqn",
+            "tobruk:Tobruk_RAF_F_94Sqn",
+            "tobruk:Tobruk_RAF_F_112Sqn",
+            "tobruk:Tobruk_RAF_F_145Sqn",
+            "tobruk:Tobruk_RAF_F_238Sqn",
+            "tobruk:Tobruk_RAF_F_208Sqn",
+            "tobruk:Tobruk_RAF_F_250Sqn",
+            "tobruk:Tobruk_RAF_F_274Sqn",
         };
 
         #endregion
@@ -295,6 +345,44 @@ namespace IL2DCE
             "Aircraft.SpitfireMkI_Heartbreaker",
             "Aircraft.SpitfireMkIa",
             "Aircraft.SpitfireMkIIa",
+            "tobruk:Aircraft.BeaufighterMkIC",
+            "tobruk:Aircraft.BeaufighterMkIC_trop",
+            "tobruk:Aircraft.BeaufighterMkIF_Late",
+            "tobruk:Aircraft.BeaufighterMkIF_Late_trop",
+            "tobruk:Aircraft.BeaufighterMkINF_Late",
+            "tobruk:Aircraft.BeaufighterMkINF_Late_trop",
+            "tobruk:Aircraft.GladiatorMkII_trop",
+            "tobruk:Aircraft.HurricaneMkIIa",
+            "tobruk:Aircraft.HurricaneMkIIaTrop",
+            "tobruk:Aircraft.HurricaneMkIIb",
+            "tobruk:Aircraft.HurricaneMkIIb-Late",
+            "tobruk:Aircraft.HurricaneMkIIbTrop",
+            "tobruk:Aircraft.HurricaneMkIIbTrop-Late",
+            "tobruk:Aircraft.HurricaneMkIIc",
+            "tobruk:Aircraft.HurricaneMkIIc-Late",
+            "tobruk:Aircraft.HurricaneMkIIc-Trop",
+            "tobruk:Aircraft.HurricaneMkIIc-Trop-Late",
+            "tobruk:Aircraft.HurricaneMkIId",
+            "tobruk:Aircraft.HurricaneMkIId-Trop",
+            "tobruk:Aircraft.HurricaneMkI_FB-Trop",
+            "tobruk:Aircraft.KittyhawkMkIA",
+            "tobruk:Aircraft.KittyhawkMkIA-trop",
+            "tobruk:Aircraft.MartletMkIII",
+            "tobruk:Aircraft.MartletMkIII_Trop",
+            "tobruk:Aircraft.SpitfireMkIIb",
+            "tobruk:Aircraft.SpitfireMkVa",
+            "tobruk:Aircraft.SpitfireMkVb",
+            "tobruk:Aircraft.SpitfireMkVb-HF",
+            "tobruk:Aircraft.SpitfireMkVb-HF-Late",
+            "tobruk:Aircraft.SpitfireMkVb-HF-Trop",
+            "tobruk:Aircraft.SpitfireMkVbLate",
+            "tobruk:Aircraft.SpitfireMkVbTrop",
+            "tobruk:Aircraft.TomahawkMkII",
+            "tobruk:Aircraft.TomahawkMkII-Late",
+            "tobruk:Aircraft.TomahawkMkII-Late-trop",
+            "tobruk:Aircraft.TomahawkMkII-trop",
+            "tobruk:Aircraft.D520_Serie1",
+            "tobruk:Aircraft.D520_Serie1_trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -367,6 +455,15 @@ namespace IL2DCE
             "BoB_RAF_F_87Sqn_Late",
             "BoB_RAF_F_92Sqn_Late",
             "BoB_RAF_F_FatCat_Late", /* Fiction Early */
+            "tobruk:Tobruk_RAF_F_73Sqn",
+            "tobruk:Tobruk_RAF_F_80Sqn",
+            "tobruk:Tobruk_RAF_F_94Sqn",
+            "tobruk:Tobruk_RAF_F_112Sqn",
+            "tobruk:Tobruk_RAF_F_145Sqn",
+            "tobruk:Tobruk_RAF_F_238Sqn",
+            "tobruk:Tobruk_RAF_F_208Sqn",
+            "tobruk:Tobruk_RAF_F_250Sqn",
+            "tobruk:Tobruk_RAF_F_274Sqn",
         };
 
         #endregion
@@ -429,6 +526,21 @@ namespace IL2DCE
             "Aircraft.SunderlandMkI",
             "Aircraft.WalrusMkI",
             "Aircraft.WellingtonMkIc",
+            "Aircraft.BlenheimMkIV_Late",
+            "tobruk:Aircraft.SunderlandMkI_trop",
+            "tobruk:Aircraft.BlenheimMkIVF_Late_Trop",
+            "tobruk:Aircraft.BlenheimMkIVNF_Late_Trop",
+            "tobruk:Aircraft.BlenheimMkIV_Late_Trop",
+            "tobruk:Aircraft.BlenheimMkIV_Trop",
+            "tobruk:Aircraft.BlenheimMkI_Trop",
+            "tobruk:Aircraft.WalrusMkI_trop",
+            "tobruk:Aircraft.WellingtonMkIa_trop",
+            "tobruk:Aircraft.WellingtonMkIc_Late",
+            "tobruk:Aircraft.WellingtonMkIc_Late_trop",
+            "tobruk:Aircraft.WellingtonMkIC_t",
+            "tobruk:Aircraft.WellingtonMkIc_Torpedo",
+            "tobruk:Aircraft.WellingtonMkIc_Torpedo_trop",
+            "tobruk:Aircraft.WellingtonMkIc_trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -484,6 +596,14 @@ namespace IL2DCE
             "BoB_RAF_B_97Sqn",
             "BoB_RAF_B_98Sqn",
             "BoB_RAF_B_99Sqn",
+            "tobruk:Tobruk_RAF_B_37Sqn",
+            "tobruk:Tobruk_RAF_B_38Sqn",
+            "tobruk:Tobruk_RAF_B_45Sqn",
+            "tobruk:Tobruk_RAF_B_55Sqn",
+            "tobruk:Tobruk_RAF_B_70Sqn",
+            "tobruk:Tobruk_RAF_B_113Sqn",
+            "tobruk:Tobruk_RAF_B_14Sqn",
+            "tobruk:Tobruk_RAF_B_211Sqn",
         };
 
         #endregion
@@ -542,6 +662,7 @@ namespace IL2DCE
         {
             "Aircraft.AnsonMkI",
             "Aircraft.DH82A",
+            "tobruk:Aircraft.DH82A_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -605,6 +726,7 @@ namespace IL2DCE
         {
             "Aircraft.AnsonMkI",
             "Aircraft.DH82A",
+            "tobruk:Aircraft.DH82A_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -660,6 +782,144 @@ namespace IL2DCE
         #endregion
     }
 
+    public class AAFighterCommandLateAirGroupInfo : AirGroupInfo
+    {
+        #region Private members
+
+        private List<string> aircrafts = new List<string>
+        {
+            "tobruk:Aircraft.D520_Serie1",
+            "tobruk:Aircraft.D520_Serie1_trop",
+        };
+
+        private List<string> airGroupKeys = new List<string>
+        {
+            "tobruk:Channel_AA_GCI3_SPA69",
+            "tobruk:Channel_AA_GCI3_SPA88",
+        };
+
+        #endregion
+
+        #region Public properties
+
+        public override List<string> Aircrafts
+        {
+            get
+            {
+                return aircrafts;
+            }
+        }
+
+        public override List<string> AirGroupKeys
+        {
+            get
+            {
+                return airGroupKeys;
+            }
+        }
+
+        public override int SquadronCount
+        {
+            get { return 1; }
+        }
+
+        public override int FlightCount
+        {
+            get { return 3; }
+        }
+
+        public override int FlightSize
+        {
+            get { return 4; }
+        }
+
+        public override int ArmyIndex
+        {
+            get { return 1; }
+        }
+
+        public override int AirForceIndex
+        {
+            get { return 2; }
+        }
+
+        #endregion
+    }
+
+    public class USAAFFighterCommandLateAirGroupInfo : AirGroupInfo
+    {
+        #region Private members
+
+        private List<string> aircrafts = new List<string>
+        {
+            "tobruk:Aircraft.KittyhawkMkIA",
+            "tobruk:Aircraft.KittyhawkMkIA-trop",
+            "tobruk:Aircraft.TomahawkMkII",
+            "tobruk:Aircraft.TomahawkMkII-Late",
+            "tobruk:Aircraft.TomahawkMkII-Late-trop",
+            "tobruk:Aircraft.TomahawkMkII-trop",
+            "tobruk:Aircraft.MartletMkIII",
+            "tobruk:Aircraft.MartletMkIII_Trop",
+        };
+
+        private List<string> airGroupKeys = new List<string>
+        {
+            "tobruk:Tobruk_USAAF_F_64Sqn",
+            "tobruk:Tobruk_USAAF_F_65Sqn",
+            "tobruk:Tobruk_USAAF_F_66Sqn",
+            "tobruk:Channel_USAAF_F_307Sqn",
+            "tobruk:Channel_USAAF_F_308Sqn",
+            "tobruk:Channel_USAAF_F_309Sqn",
+        };
+
+        #endregion
+
+        #region Public properties
+
+        public override List<string> Aircrafts
+        {
+            get
+            {
+                return aircrafts;
+            }
+        }
+
+        public override List<string> AirGroupKeys
+        {
+            get
+            {
+                return airGroupKeys;
+            }
+        }
+
+        public override int SquadronCount
+        {
+            get { return 1; }
+        }
+
+        public override int FlightCount
+        {
+            get { return 3; }
+        }
+
+        public override int FlightSize
+        {
+            get { return 4; }
+        }
+
+        public override int ArmyIndex
+        {
+            get { return 1; }
+        }
+
+        public override int AirForceIndex
+        {
+            get { return 3; }
+        }
+
+        #endregion
+    }
+
     public class LwFighterStabAirGroupInfo : AirGroupInfo
     {
         #region Private members
@@ -669,6 +929,22 @@ namespace IL2DCE
             "Aircraft.Bf-109E-1",
             "Aircraft.Bf-109E-3",
             "Aircraft.Bf-109E-3B",
+            "tobruk:Aircraft.Bf-109F-4",
+            "tobruk:Aircraft.Bf-109E-7",
+            "tobruk:Aircraft.Bf-109E-7N",
+            "tobruk:Aircraft.Bf-109E-7N_Trop",
+            "tobruk:Aircraft.Bf-109E-7Z",
+            "tobruk:Aircraft.Bf-109E-7_Trop",
+            "tobruk:Aircraft.Bf-109F-1",
+            "tobruk:Aircraft.Bf-109F-2",
+            "tobruk:Aircraft.Bf-109F-2_Late",
+            "tobruk:Aircraft.Bf-109F-2_Trop",
+            "tobruk:Aircraft.Bf-109F-4",
+            "tobruk:Aircraft.Bf-109F-4Z",
+            "tobruk:Aircraft.Bf-109F-4Z_Trop",
+            "tobruk:Aircraft.Bf-109F-4_Derated",
+            "tobruk:Aircraft.Bf-109F-4_Trop",
+            "tobruk:Aircraft.Bf-109F-4_Trop_Derated",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -680,6 +956,7 @@ namespace IL2DCE
             "BoB_LW_JG52_Stab",
             "BoB_LW_JG53_Stab",
             "BoB_LW_JG54_Stab",
+            "tobruk:Tobruk_LW_JG53_10",
         };
 
         #endregion
@@ -739,6 +1016,22 @@ namespace IL2DCE
             "Aircraft.Bf-109E-1",
             "Aircraft.Bf-109E-3",
             "Aircraft.Bf-109E-3B",
+            "tobruk:Aircraft.Bf-109F-4",
+            "tobruk:Aircraft.Bf-109E-7",
+            "tobruk:Aircraft.Bf-109E-7N",
+            "tobruk:Aircraft.Bf-109E-7N_Trop",
+            "tobruk:Aircraft.Bf-109E-7Z",
+            "tobruk:Aircraft.Bf-109E-7_Trop",
+            "tobruk:Aircraft.Bf-109F-1",
+            "tobruk:Aircraft.Bf-109F-2",
+            "tobruk:Aircraft.Bf-109F-2_Late",
+            "tobruk:Aircraft.Bf-109F-2_Trop",
+            "tobruk:Aircraft.Bf-109F-4",
+            "tobruk:Aircraft.Bf-109F-4Z",
+            "tobruk:Aircraft.Bf-109F-4Z_Trop",
+            "tobruk:Aircraft.Bf-109F-4_Derated",
+            "tobruk:Aircraft.Bf-109F-4_Trop",
+            "tobruk:Aircraft.Bf-109F-4_Trop_Derated",
         };
 
         private List<string> fighterAirGroupKeys = new List<string>
@@ -772,7 +1065,12 @@ namespace IL2DCE
             "BoB_LW_JG52_III",
             "BoB_LW_JG53_III",
             "BoB_LW_JG54_III",
-            "BoB_LW_LG1_V"
+            "BoB_LW_LG1_V",
+            "tobruk:Tobruk_LW_JG27_I",
+            "tobruk:Tobruk_LW_JG27_II",
+            "tobruk:Tobruk_LW_JG3_II",
+            "tobruk:Tobruk_LW_JG53_10",
+            "tobruk:Tobruk_LW_ZG1_III",
         };
 
         #endregion
@@ -831,6 +1129,10 @@ namespace IL2DCE
         {
             "Aircraft.Bf-110C-4",
             "Aircraft.Bf-110C-7",
+            "tobruk:Aircraft.Bf-110C-4B_Trop",
+            "tobruk:Aircraft.Bf-110C-4N-NJG_Trop",
+            "tobruk:Aircraft.Bf-110C-6_Trop",
+            "tobruk:Aircraft.Bf-110C-7_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -895,6 +1197,10 @@ namespace IL2DCE
         {
             "Aircraft.Bf-110C-4",
             "Aircraft.Bf-110C-7",
+            "tobruk:Aircraft.Bf-110C-4B_Trop",
+            "tobruk:Aircraft.Bf-110C-4N-NJG_Trop",
+            "tobruk:Aircraft.Bf-110C-6_Trop",
+            "tobruk:Aircraft.Bf-110C-7_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -907,6 +1213,7 @@ namespace IL2DCE
             "BoB_LW_ZG76_II",
             "BoB_LW_ZG26_III",
             "BoB_LW_ZG76_III",
+            "tobruk:Tobruk_LW_ZG76_III",
         };
 
         #endregion
@@ -964,6 +1271,7 @@ namespace IL2DCE
         private List<string> aircrafts = new List<string>
         {
             "Aircraft.Ju-87B-2",
+            "tobruk:Aircraft.Ju-87B-2_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -972,6 +1280,8 @@ namespace IL2DCE
             "BoB_LW_StG2_Stab",
             "BoB_LW_StG3_Stab",
             "BoB_LW_StG77_Stab",
+            "tobruk:Tobruk_LW_StG3_I",
+            "tobruk:Tobruk_LW_StG3_III",
         };
 
         #endregion
@@ -1029,6 +1339,7 @@ namespace IL2DCE
         private List<string> aircrafts = new List<string>
         {
             "Aircraft.Ju-87B-2",
+            "tobruk:Aircraft.Ju-87B-2_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -1046,6 +1357,8 @@ namespace IL2DCE
             "BoB_LW_StG3_III",
             "BoB_LW_StG77_III",
             "BoB_LW_LG1_IV",
+            "tobruk:Tobruk_LW_StG3_I",
+            "tobruk:Tobruk_LW_StG3_III",
         };
 
         #endregion
@@ -1108,7 +1421,21 @@ namespace IL2DCE
             "Aircraft.FW-200C-1",
             "Aircraft.He-111H-2",
             "Aircraft.He-111P-2",
-            "Aircraft.Ju-88A-1"
+            "Aircraft.Ju-88A-1",
+            "tobruk:Aircraft.He-111H-2_Trop",
+            "tobruk:Aircraft.He-111H-6",
+            "tobruk:Aircraft.He-111H-6_Trop",
+            "tobruk:Aircraft.Ju-88A-5",
+            "tobruk:Aircraft.Ju-88A-5Late",
+            "tobruk:Aircraft.Ju-88A-5Late_Trop",
+            "tobruk:Aircraft.Ju-88A-5_Trop",
+            "tobruk:Aircraft.Ju-88C-2",
+            "tobruk:Aircraft.Ju-88C-2Late",
+            "tobruk:Aircraft.Ju-88C-2_Trop",
+            "tobruk:Aircraft.Ju-88C-4",
+            "tobruk:Aircraft.Ju-88C-4Late",
+            "tobruk:Aircraft.Ju-88C-4Late_Trop",
+            "tobruk:Aircraft.Ju-88C-4_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -1192,7 +1519,21 @@ namespace IL2DCE
             "Aircraft.FW-200C-1",
             "Aircraft.He-111H-2",
             "Aircraft.He-111P-2",
-            "Aircraft.Ju-88A-1"
+            "Aircraft.Ju-88A-1",
+            "tobruk:Aircraft.He-111H-2_Trop",
+            "tobruk:Aircraft.He-111H-6",
+            "tobruk:Aircraft.He-111H-6_Trop",
+            "tobruk:Aircraft.Ju-88A-5",
+            "tobruk:Aircraft.Ju-88A-5Late",
+            "tobruk:Aircraft.Ju-88A-5Late_Trop",
+            "tobruk:Aircraft.Ju-88A-5_Trop",
+            "tobruk:Aircraft.Ju-88C-2",
+            "tobruk:Aircraft.Ju-88C-2Late",
+            "tobruk:Aircraft.Ju-88C-2_Trop",
+            "tobruk:Aircraft.Ju-88C-4",
+            "tobruk:Aircraft.Ju-88C-4Late",
+            "tobruk:Aircraft.Ju-88C-4Late_Trop",
+            "tobruk:Aircraft.Ju-88C-4_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -1244,6 +1585,8 @@ namespace IL2DCE
             "BoB_LW_KG27_IV",
             "BoB_LW_KG2_IV",
             "BoB_LW_KG3_IV",
+            "tobruk:Tobruk_LW_KG77_III",
+            "tobruk:Tobruk_LW_ZG76_III",
         };
 
         #endregion
@@ -1372,6 +1715,20 @@ namespace IL2DCE
             "Aircraft.He-111H-2",
             "Aircraft.He-111P-2",
             "Aircraft.Ju-88A-1",
+            "tobruk:Aircraft.He-111H-2_Trop",
+            "tobruk:Aircraft.He-111H-6",
+            "tobruk:Aircraft.He-111H-6_Trop",
+            "tobruk:Aircraft.Ju-88A-5",
+            "tobruk:Aircraft.Ju-88A-5Late",
+            "tobruk:Aircraft.Ju-88A-5Late_Trop",
+            "tobruk:Aircraft.Ju-88A-5_Trop",
+            "tobruk:Aircraft.Ju-88C-2",
+            "tobruk:Aircraft.Ju-88C-2Late",
+            "tobruk:Aircraft.Ju-88C-2_Trop",
+            "tobruk:Aircraft.Ju-88C-4",
+            "tobruk:Aircraft.Ju-88C-4Late",
+            "tobruk:Aircraft.Ju-88C-4Late_Trop",
+            "tobruk:Aircraft.Ju-88C-4_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -1446,6 +1803,12 @@ namespace IL2DCE
         {
             "Aircraft.CR42",
             "Aircraft.G50",
+            "tobruk:Aircraft.CR42_Trop",
+            "tobruk:Aircraft.G50_Trop",
+            "tobruk:Aircraft.Macchi-C202-SeriesIII",
+            "tobruk:Aircraft.Macchi-C202-SeriesIII-AltoQuota",
+            "tobruk:Aircraft.Macchi-C202-SeriesVII",
+            "tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -1457,6 +1820,12 @@ namespace IL2DCE
             "BoB_RA_56St_20Gruppo_351Sq",
             "BoB_RA_56St_20Gruppo_352Sq",
             "BoB_RA_56St_20Gruppo_353Sq",
+            "tobruk:Tobruk_RA_4St_9Gruppo_96Sq",
+            "tobruk:Tobruk_RA_1St_17Gruppo_71Sq",
+            "tobruk:Tobruk_RA_1St_17Gruppo_72Sq",
+            "tobruk:Tobruk_RA_1St_6Gruppo_81Sq",
+            "tobruk:Tobruk_RA_150Gruppo_363Sq",
+            "tobruk:Tobruk_RA_150Gruppo_364Sq",
         };
 
         #endregion
@@ -1514,6 +1883,7 @@ namespace IL2DCE
         private List<string> aircrafts = new List<string>
         {
             "Aircraft.BR-20M",
+            "tobruk:Aircraft.BR-20M_Trop"
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -1527,6 +1897,7 @@ namespace IL2DCE
             "BoB_RA_43St_98Gruppo_241Sq",
             "BoB_RA_43St_99Gruppo_242Sq",
             "BoB_RA_43St_99Gruppo_243Sq",
+            "tobruk:Tobruk_RA_30St_87_Gruppo_192Sq",
         };
 
         #endregion

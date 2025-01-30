@@ -50,6 +50,24 @@ namespace IL2DCE
             "Colonnello",
         };
 
+        public static List<string> FrRanks = new List<string> {
+            "Aspirant",
+            "Lieutenant",
+            "Capitaine",
+            "Commandant",
+            "Lieutenant-Colonel",
+            "Colonel",
+        };
+
+        public static List<string> UsaRanks = new List<string> {
+            "Flight Officer",
+            "Lieutenant",
+            "Captain",
+            "Major",
+            "Lt. Colonel",
+            "Colonel",
+        };
+
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
         {
             _pilotName = pilotName;
@@ -112,6 +130,14 @@ namespace IL2DCE
             if(ArmyIndex == 1 && AirForceIndex == 1)
             {
                 return RafRanks[RankIndex] + " " + PilotName;
+            }
+            else if (ArmyIndex == 1 && AirForceIndex == 2)
+            {
+                return FrRanks[RankIndex] + " " + PilotName;
+            }
+            else if (ArmyIndex == 1 && AirForceIndex == 3)
+            {
+                return UsaRanks[RankIndex] + " " + PilotName;
             }
             else if (ArmyIndex == 2 && AirForceIndex == 1)
             {

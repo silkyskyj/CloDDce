@@ -37,8 +37,8 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
                 FrameworkElement.textBoxPilotName.TextChanged += new System.Windows.Controls.TextChangedEventHandler(textBoxPilotName_TextChanged);
             }
-           
-            public override void  _enter(maddox.game.IGame play, object arg)
+
+            public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
 
@@ -54,7 +54,7 @@ namespace IL2DCE
                 itemArmyBlue.Content = "Blue";
                 itemArmyBlue.Tag = 2;
                 FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyBlue);
-                FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;                
+                FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
             }
 
             public override void _leave(maddox.game.IGame play, object arg)
@@ -104,7 +104,7 @@ namespace IL2DCE
 
             void comboBoxSelectArmy_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
             {
-                if(e.AddedItems.Count == 1)
+                if (e.AddedItems.Count == 1)
                 {
                     System.Windows.Controls.ComboBoxItem armySelected = e.AddedItems[0] as System.Windows.Controls.ComboBoxItem;
                     int armyIndex = (int)armySelected.Tag;
@@ -117,6 +117,16 @@ namespace IL2DCE
                         itemRaf.Tag = 1;
                         itemRaf.Content = "Royal Air Force";
                         FrameworkElement.comboBoxSelectAirForce.Items.Add(itemRaf);
+
+                        System.Windows.Controls.ComboBoxItem itemFr = new System.Windows.Controls.ComboBoxItem();
+                        itemFr.Tag = 2;
+                        itemFr.Content = "Armee de l'air";
+                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemFr);
+
+                        System.Windows.Controls.ComboBoxItem itemUsa = new System.Windows.Controls.ComboBoxItem();
+                        itemUsa.Tag = 3;
+                        itemUsa.Content = "United States Army Air Forces";
+                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemUsa);
 
                         FrameworkElement.comboBoxSelectAirForce.SelectedIndex = 0;
                     }
@@ -147,11 +157,17 @@ namespace IL2DCE
                     System.Windows.Controls.ComboBoxItem airForceSelected = e.AddedItems[0] as System.Windows.Controls.ComboBoxItem;
                     int airForceIndex = (int)airForceSelected.Tag;
 
-
-
                     if (armyIndex == 1 && airForceIndex == 1)
                     {
                         FrameworkElement.textBoxPilotName.Text = "Joe Bloggs";
+                    }
+                    else if (armyIndex == 1 && airForceIndex == 2)
+                    {
+                        FrameworkElement.textBoxPilotName.Text = "Jean Dupont";
+                    }
+                    else if (armyIndex == 1 && airForceIndex == 3)
+                    {
+                        FrameworkElement.textBoxPilotName.Text = "John Smith";
                     }
                     else if (armyIndex == 2 && airForceIndex == 1)
                     {
@@ -162,7 +178,6 @@ namespace IL2DCE
                         FrameworkElement.textBoxPilotName.Text = "Mario Rossi";
                     }
 
-
                     FrameworkElement.comboBoxSelectRank.Items.Clear();
                     for (int i = 0; i < 6; i++)
                     {
@@ -170,6 +185,14 @@ namespace IL2DCE
                         if (armyIndex == 1 && airForceIndex == 1)
                         {
                             itemRank.Content = Career.RafRanks[i];
+                        }
+                        else if (armyIndex == 1 && airForceIndex == 2)
+                        {
+                            itemRank.Content = Career.FrRanks[i];
+                        }
+                        else if (armyIndex == 1 && airForceIndex == 3)
+                        {
+                            itemRank.Content = Career.UsaRanks[i];
                         }
                         else if (armyIndex == 2 && airForceIndex == 1)
                         {
@@ -199,7 +222,7 @@ namespace IL2DCE
             private void Start_Click(object sender, System.Windows.RoutedEventArgs e)
             {
                 string pilotName = FrameworkElement.textBoxPilotName.Text;
-                
+
                 System.Windows.Controls.ComboBoxItem armySelected = FrameworkElement.comboBoxSelectArmy.SelectedItem as System.Windows.Controls.ComboBoxItem;
                 int armyIndex = (int)armySelected.Tag;
 
