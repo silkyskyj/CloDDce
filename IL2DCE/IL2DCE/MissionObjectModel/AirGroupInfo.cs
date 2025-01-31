@@ -161,44 +161,6 @@ namespace IL2DCE
             "Aircraft.SpitfireMkI_Heartbreaker",
             "Aircraft.SpitfireMkIa",
             "Aircraft.SpitfireMkIIa",
-            "tobruk:Aircraft.BeaufighterMkIC",
-            "tobruk:Aircraft.BeaufighterMkIC_trop",
-            "tobruk:Aircraft.BeaufighterMkIF_Late",
-            "tobruk:Aircraft.BeaufighterMkIF_Late_trop",
-            "tobruk:Aircraft.BeaufighterMkINF_Late",
-            "tobruk:Aircraft.BeaufighterMkINF_Late_trop",
-            "tobruk:Aircraft.GladiatorMkII_trop",
-            "tobruk:Aircraft.HurricaneMkIIa",
-            "tobruk:Aircraft.HurricaneMkIIaTrop",
-            "tobruk:Aircraft.HurricaneMkIIb",
-            "tobruk:Aircraft.HurricaneMkIIb-Late",
-            "tobruk:Aircraft.HurricaneMkIIbTrop",
-            "tobruk:Aircraft.HurricaneMkIIbTrop-Late",
-            "tobruk:Aircraft.HurricaneMkIIc",
-            "tobruk:Aircraft.HurricaneMkIIc-Late",
-            "tobruk:Aircraft.HurricaneMkIIc-Trop",
-            "tobruk:Aircraft.HurricaneMkIIc-Trop-Late",
-            "tobruk:Aircraft.HurricaneMkIId",
-            "tobruk:Aircraft.HurricaneMkIId-Trop",
-            "tobruk:Aircraft.HurricaneMkI_FB-Trop",
-            "tobruk:Aircraft.KittyhawkMkIA",
-            "tobruk:Aircraft.KittyhawkMkIA-trop",
-            "tobruk:Aircraft.MartletMkIII",
-            "tobruk:Aircraft.MartletMkIII_Trop",
-            "tobruk:Aircraft.SpitfireMkIIb",
-            "tobruk:Aircraft.SpitfireMkVa",
-            "tobruk:Aircraft.SpitfireMkVb",
-            "tobruk:Aircraft.SpitfireMkVb-HF",
-            "tobruk:Aircraft.SpitfireMkVb-HF-Late",
-            "tobruk:Aircraft.SpitfireMkVb-HF-Trop",
-            "tobruk:Aircraft.SpitfireMkVbLate",
-            "tobruk:Aircraft.SpitfireMkVbTrop",
-            "tobruk:Aircraft.TomahawkMkII",
-            "tobruk:Aircraft.TomahawkMkII-Late",
-            "tobruk:Aircraft.TomahawkMkII-Late-trop",
-            "tobruk:Aircraft.TomahawkMkII-trop",
-            "tobruk:Aircraft.D520_Serie1",
-            "tobruk:Aircraft.D520_Serie1_trop",
         };
 
         private List<string> airGroupKeys = new List<string>
@@ -271,15 +233,6 @@ namespace IL2DCE
             "BoB_RAF_F_87Sqn_Early",
             "BoB_RAF_F_92Sqn_Early",
             "BoB_RAF_F_FatCat_Early", /* Fiction Early */
-            "tobruk:Tobruk_RAF_F_73Sqn",
-            "tobruk:Tobruk_RAF_F_80Sqn",
-            "tobruk:Tobruk_RAF_F_94Sqn",
-            "tobruk:Tobruk_RAF_F_112Sqn",
-            "tobruk:Tobruk_RAF_F_145Sqn",
-            "tobruk:Tobruk_RAF_F_238Sqn",
-            "tobruk:Tobruk_RAF_F_208Sqn",
-            "tobruk:Tobruk_RAF_F_250Sqn",
-            "tobruk:Tobruk_RAF_F_274Sqn",
         };
 
         #endregion
@@ -662,7 +615,6 @@ namespace IL2DCE
         {
             "Aircraft.AnsonMkI",
             "Aircraft.DH82A",
-            "tobruk:Aircraft.DH82A_Trop",
         };
 
         private List<string> airGroupKeys = new List<string>
