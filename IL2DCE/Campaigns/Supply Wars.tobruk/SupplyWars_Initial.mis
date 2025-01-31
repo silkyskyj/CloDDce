@@ -28,7 +28,7 @@
   BoB_LW_ZG26_I.21
   BoB_RAF_B_88Sqn.01
   BoB_RAF_F_501Sqn_Late.01
-  BoB_RAF_F_601Sqn_Late.01
+  tobruk:Tobruk_RAF_F_94Sqn.01
   BoB_RAF_B_35Sqn.01
   BoB_RAF_B_15Sqn.01
   BoB_RAF_B_10Sqn.01
@@ -39,6 +39,7 @@
   tobruk:Tobruk_LW_JG53_10.01
   tobruk:Tobruk_LW_JG27_II.21
   tobruk:Tobruk_LW_ZG1_III.02
+  tobruk:Tobruk_RAF_F_80Sqn.01
 [tobruk:Tobruk_LW_KG77_III.11]
   Flight0  1
   Class tobruk:Aircraft.He-111H-6
@@ -142,16 +143,16 @@
   TAKEOFF 234443.68 248432.17 0 0
   NORMFLY 234840.31 248178.42 500.00 300.00
   NORMFLY 234840.31 248178.42 500.00 300.00
-[BoB_RAF_F_601Sqn_Late.01]
+[tobruk:Tobruk_RAF_F_94Sqn.01]
   Flight0  1
-  Class Aircraft.HurricaneMkI
+  Class tobruk:Aircraft.HurricaneMkIIc
   Formation FINGERFOUR
   CallSign 7
-  Fuel 100
-  Weapons 1
-  Belt _Gun00 Gun.Browning303MkII MainBelt 0
+  Fuel 75
+  Weapons 1 0
+  Belt  MainBelt 0
   Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
-[BoB_RAF_F_601Sqn_Late.01_Way]
+[tobruk:Tobruk_RAF_F_94Sqn.01_Way]
   TAKEOFF 251005.45 261067.85 0 0
   NORMFLY 251661.69 260044.81 500.00 300.00
 [BoB_RAF_B_35Sqn.01]
@@ -268,6 +269,18 @@
 [tobruk:Tobruk_LW_ZG1_III.02_Way]
   TAKEOFF 278152.49 182086.15 0 0
   NORMFLY 277878.69 182177.42 500.00 300.00
+[tobruk:Tobruk_RAF_F_80Sqn.01]
+  Flight0  1
+  Class tobruk:Aircraft.SpitfireMkVbLate
+  Formation FINGERFOUR
+  CallSign 26
+  Fuel 100
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Tobruk_RAF_F_80Sqn.01_Way]
+  TAKEOFF 181044.90 249249.83 0 0
+  NORMFLY 181310.13 249073.94 500.00 300.00
 [CustomChiefs]
 [Stationary]
 [Buildings]

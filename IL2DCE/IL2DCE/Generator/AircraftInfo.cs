@@ -131,9 +131,8 @@ namespace IL2DCE
             // Aircraft.Bf-110C-7 -> Bf-110C-7
             // tobruk:Aircraft.Macchi-C202-SeriesVII -> Macchi-C202-SeriesVII
             const string del = "Aircraft.";
-            string s = aircraftInfo;
-            int idx = s.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
-            return idx == -1 ? s : s.Substring(idx + del.Length);
+            int idx = aircraftInfo.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
+            return idx == -1 ? aircraftInfo : aircraftInfo.Substring(idx + del.Length);
         }
 
         public IList<AircraftParametersInfo> GetAircraftParametersInfo(EMissionType missionType)
