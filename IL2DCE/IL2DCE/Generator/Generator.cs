@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game;
-using maddox.GP;
 using System;
 using System.Collections.Generic;
+using maddox.game;
 
 namespace IL2DCE
 {
@@ -55,7 +54,7 @@ namespace IL2DCE
             }
 
         }
-        
+
         private Core _core;
 
         internal Core Core
@@ -65,7 +64,7 @@ namespace IL2DCE
                 return _core;
             }
         }
-        
+
         private IGamePlay GamePlay
         {
             get
@@ -99,7 +98,7 @@ namespace IL2DCE
         public void GenerateInitialMissionTempalte(IEnumerable<string> initialMissionTemplateFiles, out ISectionFile initialMissionTemplateFile)
         {
             initialMissionTemplateFile = null;
-           
+
             foreach (string fileName in initialMissionTemplateFiles)
             {
                 // Use the first template file to load the map.
@@ -140,12 +139,12 @@ namespace IL2DCE
 
                 MissionFile initialMission = new MissionFile(GamePlay, initialMissionTemplateFiles);
 
-                foreach(AirGroup airGroup in initialMission.AirGroups)
+                foreach (AirGroup airGroup in initialMission.AirGroups)
                 {
                     airGroup.WriteTo(initialMissionTemplateFile, Config);
                 }
-                
-                foreach(GroundGroup groundGroup in initialMission.GroundGroups)
+
+                foreach (GroundGroup groundGroup in initialMission.GroundGroups)
                 {
                     groundGroup.WriteTo(initialMissionTemplateFile);
                 }
@@ -207,7 +206,7 @@ namespace IL2DCE
                     GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium1", ECountry.gb, "/sleep 0/skill 2/slowfire 1", waterway.Waypoints);
                     supplyShip.WriteTo(missionTemplateFile);
                 }
-                else if(GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y) == 2)
+                else if (GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y) == 2)
                 {
                     string id = chiefIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
@@ -241,7 +240,7 @@ namespace IL2DCE
                 }
             }
 
-            foreach(Building depot in staticTemplateFile.Depots)
+            foreach (Building depot in staticTemplateFile.Depots)
             {
                 // For depots the position must be in friendly territory.
                 if (GamePlay.gpFrontArmy(depot.X, depot.Y) == 1)
@@ -253,7 +252,7 @@ namespace IL2DCE
                     Stationary fuelTruck = new Stationary(id, "Stationary.Morris_CS8_tank", ECountry.gb, depot.X, depot.Y, depot.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
-                else if(GamePlay.gpFrontArmy(depot.X, depot.Y) == 2)
+                else if (GamePlay.gpFrontArmy(depot.X, depot.Y) == 2)
                 {
                     string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
@@ -342,7 +341,7 @@ namespace IL2DCE
             GeneratorAirOperation = new GeneratorAirOperation(this, Career.CampaignInfo, missionTemplateFile, Core.GamePlay, Core.Config);
             GeneratorGroundOperation = new GeneratorGroundOperation(this, Career.CampaignInfo, missionTemplateFile, Core.GamePlay, Core.Config);
             GeneratorBriefing = new GeneratorBriefing(Core, this);
-            
+
             // Load the environment template file for the generated mission.
 
             missionFile = GamePlay.gpLoadSectionFile(environmentTemplateFile);
@@ -350,7 +349,7 @@ namespace IL2DCE
 
             briefingFile.MissionName = missionId;
             briefingFile.MissionDescription = "";
-            
+
             // Delete things from the template file.
 
             // It is not necessary to delete air groups and ground groups from the missionFile as it 
@@ -466,11 +465,11 @@ namespace IL2DCE
             // Add all stationaries.
             if (GeneratorGroundOperation.AvailableStationaries != null && GeneratorGroundOperation.AvailableStationaries.Count > 0)
             {
-                for(int i = 0; i < GeneratorGroundOperation.AvailableStationaries.Count; i++)
+                for (int i = 0; i < GeneratorGroundOperation.AvailableStationaries.Count; i++)
                 {
                     Stationary stationary = GeneratorGroundOperation.AvailableStationaries[i];
-                    stationary.WriteTo(missionFile);                    
-                }                
+                    stationary.WriteTo(missionFile);
+                }
             }
         }
 

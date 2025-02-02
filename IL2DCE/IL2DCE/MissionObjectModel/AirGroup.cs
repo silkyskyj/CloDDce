@@ -290,7 +290,7 @@ namespace IL2DCE
                 }
             }
         }
-        
+
         public AirGroupInfo AirGroupInfo
         {
             get
@@ -307,7 +307,7 @@ namespace IL2DCE
             }
         }
         IList<AirGroupWaypoint> _waypoints = new List<AirGroupWaypoint>();
-        
+
         public double? Altitude
         {
             get
@@ -488,7 +488,7 @@ namespace IL2DCE
                 createInbetweenWaypoints(target, point);
             }
         }
-        
+
         private Point3d? calculateRendevouzPoint(AirGroup escortAirGroup)
         {
             var altitude = Altitude.Value;
@@ -603,7 +603,7 @@ namespace IL2DCE
             this.reset();
             this.Altitude = altitude;
             this.TargetAirGroup = offensiveAirGroup;
-            
+
 
             Point3d? position = null;
             if (offensiveAirGroup.TargetGroundGroup != null)
@@ -614,9 +614,9 @@ namespace IL2DCE
                 {
                     position = new Point3d(offensiveAirGroup.TargetGroundGroup.Waypoints[0].Position.x, offensiveAirGroup.TargetGroundGroup.Waypoints[0].Position.y, altitude);
                 }
-                
+
             }
-            else if(offensiveAirGroup.TargetStationary != null)
+            else if (offensiveAirGroup.TargetStationary != null)
             {
                 this.TargetStationary = offensiveAirGroup.TargetStationary;
                 position = new Point3d(offensiveAirGroup.TargetStationary.Position.x, offensiveAirGroup.TargetStationary.Position.y, altitude);
@@ -645,7 +645,7 @@ namespace IL2DCE
                 createEndWaypoints(landingAirport);
             }
         }
-        
+
         //public void Hunting(Point2d targetArea, double altitude, AiAirport landingAirport = null)
         //{
         //    this.reset();
@@ -662,7 +662,7 @@ namespace IL2DCE
         //    createEndInbetweenPoints(p, landingAirport);
         //    createEndWaypoints(landingAirport);
         //}
-        
+
         public void GroundAttack(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
         {
             this.reset();
@@ -675,7 +675,7 @@ namespace IL2DCE
             {
                 rendevouzPosition = calculateRendevouzPoint(EscortAirGroup);
             }
-            
+
             createStartWaypoints();
 
             if (rendevouzPosition != null && rendevouzPosition.HasValue)
@@ -691,10 +691,10 @@ namespace IL2DCE
             }
 
             Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.GATTACK_TARG, targetStationary.X, targetStationary.Y, altitude, 300.0, targetStationary.Id));
-            
+
             Point3d pEnd = new Point3d(targetStationary.X, targetStationary.Y, altitude);
             createEndInbetweenPoints(pEnd, landingAirport);
-            
+
             createEndWaypoints(landingAirport);
         }
 
@@ -702,7 +702,7 @@ namespace IL2DCE
         {
             this.reset();
             this.Altitude = altitude;
-            this.TargetGroundGroup= targetGroundGroup;
+            this.TargetGroundGroup = targetGroundGroup;
             this.EscortAirGroup = escortAirGroup;
 
             Point3d? rendevouzPosition = null;
@@ -790,7 +790,7 @@ namespace IL2DCE
 
             createEndWaypoints(landingAirport);
         }
-        
+
         public void Recon(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
         {
             this.reset();
@@ -812,7 +812,7 @@ namespace IL2DCE
                 {
                     Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, 300.0));
                     Point3d pStart = new Point3d(targetGroundGroup.Waypoints[0].Position.x, targetGroundGroup.Waypoints[0].Position.y, altitude);
-                    createInbetweenWaypoints(rendevouzPosition.Value, pStart);                    
+                    createInbetweenWaypoints(rendevouzPosition.Value, pStart);
                 }
                 else
                 {
@@ -946,9 +946,8 @@ namespace IL2DCE
         {
             // tobruk:Tobruk_RA_30St_87_Gruppo_192Sq -> Tobruk_RA_30St_87_Gruppo_192Sq
             const string del = ":";
-            string s = airGroupKey;
-            int idx = s.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
-            return idx == -1 ? s : s.Substring(idx + del.Length);
+            int idx = airGroupKey.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
+            return idx == -1 ? airGroupKey : airGroupKey.Substring(idx + del.Length);
         }
 
         #endregion

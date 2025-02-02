@@ -34,7 +34,7 @@ namespace IL2DCE
             _gamePlay = game;
             _random = random;
 
-            
+
             ISectionFile confFile = game.gameInterface.SectionFileLoad("$home/parts/IL2DCE/conf.ini");
             _config = new Config(confFile);
 
@@ -94,7 +94,7 @@ namespace IL2DCE
         public void AdvanceCampaign(IGame game)
         {
             Generator generator = new Generator(this);
-            
+
             ISectionFile previousMissionTemplateFile = null;
 
             if (!CurrentCareer.Date.HasValue)
@@ -102,7 +102,7 @@ namespace IL2DCE
                 // It is the first mission.
                 CurrentCareer.Date = CurrentCareer.CampaignInfo.StartDate;
                 CurrentCareer.Experience = CurrentCareer.RankIndex * 1000;
-                                
+
                 // Generate the initial mission tempalte
                 generator.GenerateInitialMissionTempalte(CurrentCareer.CampaignInfo.InitialMissionTemplateFiles, out previousMissionTemplateFile);
             }
@@ -156,7 +156,7 @@ namespace IL2DCE
             ISectionFile missionTemplateFile = null;
             generator.GenerateMissionTemplate(CurrentCareer.CampaignInfo.StaticTemplateFiles, previousMissionTemplateFile, out missionTemplateFile);
             missionTemplateFile.save(CurrentCareer.MissionTemplateFileName);
-            
+
             // Generate the next mission based on the new template.
 
             ISectionFile missionFile = null;
@@ -193,12 +193,12 @@ namespace IL2DCE
             CurrentCareer.WriteTo(careerFile);
             careerFile.save(careerFileName);
         }
-        
+
         public void InitCampaign()
         {
-            
+
         }
-        
+
         public void DeleteCareer(Career career)
         {
             AvailableCareers.Remove(career);
@@ -225,7 +225,7 @@ namespace IL2DCE
                 deleteFolders[i].Delete(true);
             }
         }
-        
+
         public Config Config
         {
             get

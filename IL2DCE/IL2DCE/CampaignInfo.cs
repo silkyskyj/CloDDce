@@ -15,9 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-
-using maddox.game;
 using System.Collections.Generic;
+using maddox.game;
 
 namespace IL2DCE
 {
@@ -68,7 +67,7 @@ namespace IL2DCE
                 foreach (string staticTemplate in staticTemplates)
                 {
                     StaticTemplateFiles.Add(campaignFolderPath + staticTemplate.Trim());
-                }           
+                }
             }
             if (StaticTemplateFiles.Count < 1)
             {
@@ -231,11 +230,11 @@ namespace IL2DCE
         /// <returns>If available it returns the definition of the local aircraft info file, otherwise the definiton of the global aircraft info is returned.</returns>
         public AircraftInfo GetAircraftInfo(string aircraft)
         {
-            if(_localAircraftInfoFile != null && _localAircraftInfoFile.exist("Main", aircraft))
+            if (_localAircraftInfoFile != null && _localAircraftInfoFile.exist("Main", aircraft))
             {
                 return new AircraftInfo(_localAircraftInfoFile, aircraft);
             }
-            else if(_globalAircraftInfoFile.exist("Main", aircraft))
+            else if (_globalAircraftInfoFile.exist("Main", aircraft))
             {
                 return new AircraftInfo(_globalAircraftInfoFile, aircraft);
             }

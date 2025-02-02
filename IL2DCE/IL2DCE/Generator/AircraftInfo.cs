@@ -15,12 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using maddox.game;
-using maddox.game.world;
-using maddox.GP;
 
 namespace IL2DCE
 {
@@ -35,7 +31,7 @@ namespace IL2DCE
 
         ATTACK_ARMOR,
         ATTACK_VEHICLE,
-        ATTACK_TRAIN,        
+        ATTACK_TRAIN,
         ATTACK_SHIP,
 
         ATTACK_ARTILLERY,
@@ -139,7 +135,7 @@ namespace IL2DCE
         {
             IList<AircraftParametersInfo> missionParameters = new List<AircraftParametersInfo>();
             string value = _aircraftInfoFile.get(Aircraft, missionType.ToString());
-            string[] valueParts = value.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] valueParts = value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (valueParts != null && valueParts.Length > 0)
             {
                 foreach (string valuePart in valueParts)

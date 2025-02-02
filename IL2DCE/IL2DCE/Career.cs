@@ -127,7 +127,7 @@ namespace IL2DCE
 
         public override string ToString()
         {
-            if(ArmyIndex == 1 && AirForceIndex == 1)
+            if (ArmyIndex == 1 && AirForceIndex == 1)
             {
                 return RafRanks[RankIndex] + " " + PilotName;
             }
@@ -265,7 +265,7 @@ namespace IL2DCE
             get
             {
                 return MissionFileName.Replace(".mis", "_Template.mis");
-            }            
+            }
         }
 
         public string AirGroup

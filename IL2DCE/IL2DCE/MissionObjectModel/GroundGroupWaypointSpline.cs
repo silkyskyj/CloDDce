@@ -16,7 +16,6 @@
 
 
 using maddox.game;
-using maddox.GP;
 
 namespace IL2DCE
 {
@@ -52,7 +51,7 @@ namespace IL2DCE
             string key;
             string value;
             sectionFile.get(id + "_Road", line, out key, out value);
-                        
+
             if (waypointLong.IsMatch(value))
             {
                 System.Text.RegularExpressions.Match match = waypointLong.Match(value);
@@ -62,18 +61,18 @@ namespace IL2DCE
                     _s = match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value;
 
                     double x;
-                    if(double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if(double.TryParse(match.Groups[6].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[6].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }
 
                     double v;
-                    if(double.TryParse(match.Groups[9].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out v))
+                    if (double.TryParse(match.Groups[9].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out v))
                     {
                         V = v;
                     }
@@ -88,12 +87,12 @@ namespace IL2DCE
                     _s = match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value;
 
                     double x;
-                    if(double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if(double.TryParse(match.Groups[6].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[6].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }
@@ -113,7 +112,7 @@ namespace IL2DCE
             }
         }
         private string _s;
-        
+
 
         #endregion
     }

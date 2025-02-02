@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game;
-using maddox.GP;
 using System;
 using System.Collections.Generic;
+using maddox.game;
+using maddox.GP;
 
 namespace IL2DCE
 {
@@ -59,7 +59,7 @@ namespace IL2DCE
             set;
 
         }
-        
+
         public GroundGroup getRandomTargetBasedOnRange(List<GroundGroup> availableGroundGroups, AirGroup offensiveAirGroup)
         {
             GroundGroup selectedGroundGroup = null;
@@ -103,11 +103,11 @@ namespace IL2DCE
                     }
                 }
             }
-            else if(availableGroundGroups.Count == 1)
+            else if (availableGroundGroups.Count == 1)
             {
                 selectedGroundGroup = availableGroundGroups[0];
-            }           
-                
+            }
+
             return selectedGroundGroup;
         }
 
@@ -155,7 +155,7 @@ namespace IL2DCE
                     }
                 }
             }
-            else if(availableStationaries.Count == 1)
+            else if (availableStationaries.Count == 1)
             {
                 selectedStationary = availableStationaries[0];
             }
@@ -185,7 +185,7 @@ namespace IL2DCE
                 AvailableStationaries.Add(stationary);
             }
         }
-        
+
         private void findPath(GroundGroup groundGroup, Point2d start, Point2d end)
         {
             IRecalcPathParams pathParams = null;
@@ -289,8 +289,7 @@ namespace IL2DCE
                 }
             }
         }
-        
-        
+
         public void CreateRandomGroundOperation(ISectionFile missionFile, GroundGroup groundGroup)
         {
             AvailableGroundGroups.Remove(groundGroup);
@@ -298,15 +297,15 @@ namespace IL2DCE
             if (groundGroup.Type == EGroundGroupType.Ship)
             {
                 // Ships already have the correct waypoint from the mission template. Only remove some waypoints to make the position more random, but leave at least 2 waypoints.
-                groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count-1));
-                
+                groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
+
                 groundGroup.WriteTo(missionFile);
 
                 generateColumnFormation(missionFile, groundGroup, 3);
             }
-            else if(groundGroup.Type == EGroundGroupType.Train)
+            else if (groundGroup.Type == EGroundGroupType.Train)
             {
-                groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count-1));
+                groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
 
                 groundGroup.WriteTo(missionFile);
             }
@@ -360,7 +359,7 @@ namespace IL2DCE
                 //                findPath(groundGroup, start, end);
 
                 //                groundGroup.WriteTo(missionFile);
-                                                                
+
                 //                generateColumnFormation(missionFile, groundGroup, 3);
                 //            }
                 //        }
@@ -410,7 +409,7 @@ namespace IL2DCE
                     for (int j = groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].SubWaypoints.Count - 1; j >= 0; j--)
                     {
                         GroundGroupWaypoint subWaypoint = groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].SubWaypoints[j];
-                        
+
                         Point2d p2 = subWaypoint.Position;
                         double distance = p1.distance(ref p2);
                         xOffset = 500 * ((p2.x - p1.x) / distance);
@@ -435,7 +434,6 @@ namespace IL2DCE
                 groundGroup.WriteTo(missionFile);
             }
         }
-
 
         #region GroundGroup
 
@@ -509,16 +507,16 @@ namespace IL2DCE
 
         public GroundGroup getAvailableRandomEnemyGroundGroup(AirGroup airGroup, EMissionType missionType)
         {
-            if(missionType == EMissionType.ARMED_MARITIME_RECON || missionType == EMissionType.MARITIME_RECON
+            if (missionType == EMissionType.ARMED_MARITIME_RECON || missionType == EMissionType.MARITIME_RECON
                 || missionType == EMissionType.ATTACK_SHIP)
             {
                 return getAvailableRandomEnemyGroundGroup(airGroup, new List<EGroundGroupType> { EGroundGroupType.Ship });
             }
-            else if(missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
+            else if (missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
             {
                 return getAvailableRandomEnemyGroundGroup(airGroup, new List<EGroundGroupType> { EGroundGroupType.Armor, EGroundGroupType.Train, EGroundGroupType.Vehicle });
             }
-            else if(missionType == EMissionType.ATTACK_ARMOR)
+            else if (missionType == EMissionType.ATTACK_ARMOR)
             {
                 return getAvailableRandomEnemyGroundGroup(airGroup, new List<EGroundGroupType> { EGroundGroupType.Armor });
             }
@@ -591,7 +589,7 @@ namespace IL2DCE
             }
         }
 
-#endregion
+        #endregion
 
         #region Stationary
 

@@ -15,12 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using maddox.game;
-using maddox.game.world;
-using maddox.GP;
 
 namespace IL2DCE
 {
@@ -28,7 +22,7 @@ namespace IL2DCE
     {
         public AircraftParametersInfo(string valuePart)
         {
-            string[] parameters = valuePart.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+            string[] parameters = valuePart.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (parameters != null && parameters.Length == 1)
             {
                 this.loadoutId = parameters[0];

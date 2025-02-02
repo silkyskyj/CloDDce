@@ -69,15 +69,15 @@ namespace IL2DCE
                 sectionFile.get(id + "_Road", i, out key, out value);
 
                 GroundGroupWaypoint waypoint = null;
-                if(!key.Contains("S"))
+                if (!key.Contains("S"))
                 {
                     waypoint = new GroundGroupWaypointLine(sectionFile, id, i);
                 }
-                else if(key.Contains("S"))
+                else if (key.Contains("S"))
                 {
                     waypoint = new GroundGroupWaypointSpline(sectionFile, id, i);
                 }
-                
+
                 // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
                 if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < sectionFile.lines(id + "_Road") - 1)
                 {
@@ -91,7 +91,7 @@ namespace IL2DCE
                     }
                 }
                 else
-                {   
+                {
                     Waypoints.Add(waypoint);
                     lastWaypoint = waypoint;
                 }

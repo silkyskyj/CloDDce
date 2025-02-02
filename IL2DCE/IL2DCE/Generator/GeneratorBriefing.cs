@@ -14,11 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game;
-using maddox.GP;
-using System;
-using System.Collections.Generic;
-
 namespace IL2DCE
 {
     class GeneratorBriefing
@@ -50,7 +45,7 @@ namespace IL2DCE
                 return Core.Random;
             }
         }
-        
+
         public void CreateBriefing(BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, AirGroup escortAirGroup)
         {
             briefingFile.Name[airGroup.Id] = airGroup.Id;

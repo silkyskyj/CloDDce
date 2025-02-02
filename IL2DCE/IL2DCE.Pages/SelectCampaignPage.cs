@@ -14,13 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using maddox.game;
-using maddox.game.play;
 using maddox.game.page;
+using maddox.game.play;
 
 namespace IL2DCE
 {
@@ -39,7 +34,7 @@ namespace IL2DCE
 
                 // TODO: Make button visible when it is possible to continue a campaign.
                 FrameworkElement.bNew.IsEnabled = false;
-                FrameworkElement.bContinue.Visibility = System.Windows.Visibility.Hidden;                
+                FrameworkElement.bContinue.Visibility = System.Windows.Visibility.Hidden;
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -49,12 +44,12 @@ namespace IL2DCE
                 _game = play as IGame;
 
                 FrameworkElement.ListCampaign.Items.Clear();
-                                
-                foreach(CampaignInfo campaignInfo in Game.Core.CampaignInfos)
+
+                foreach (CampaignInfo campaignInfo in Game.Core.CampaignInfos)
                 {
                     FrameworkElement.ListCampaign.Items.Add(campaignInfo);
                 }
-                                
+
                 if (FrameworkElement.ListCampaign.Items.Count > 0)
                 {
                     FrameworkElement.ListCampaign.SelectedIndex = 0;

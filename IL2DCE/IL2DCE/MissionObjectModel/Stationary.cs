@@ -15,13 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-using maddox.game;
-using maddox.GP;
 using System;
 using System.Collections.Generic;
+using maddox.game;
+using maddox.GP;
 
 namespace IL2DCE
-{    
+{
     public enum EStationaryType
     {
         Radar,
@@ -288,14 +288,14 @@ namespace IL2DCE
                 {
                     return EStationaryType.Artillery;
                 }
-                else if(_aircrafts.Contains(Class))
+                else if (_aircrafts.Contains(Class))
                 {
                     return EStationaryType.Aircraft;
                 }
-                else if(_depots.Contains(Class))
+                else if (_depots.Contains(Class))
                 {
                     return EStationaryType.Depot;
-                }             
+                }
                 else
                 {
                     return EStationaryType.Unknown;

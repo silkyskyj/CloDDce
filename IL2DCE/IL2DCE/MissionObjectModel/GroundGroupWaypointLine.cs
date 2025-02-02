@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-
 using maddox.game;
 using maddox.GP;
 
@@ -36,7 +34,7 @@ namespace IL2DCE
             string value;
             sectionFile.get(id + "_Road", line, out key, out value);
 
-            if(waypointShort.IsMatch(value) && !waypointLong.IsMatch(value))
+            if (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value))
             {
                 return true;
             }
@@ -69,15 +67,15 @@ namespace IL2DCE
             string key;
             string value;
             sectionFile.get(id + "_Road", line, out key, out value);
-                        
+
             if (waypointLong.IsMatch(value))
             {
                 System.Text.RegularExpressions.Match match = waypointLong.Match(value);
 
-                if(match.Groups.Count == 6)
+                if (match.Groups.Count == 6)
                 {
                     double x;
-                    if(double.TryParse(key, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(key, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
@@ -87,7 +85,7 @@ namespace IL2DCE
                         Y = y;
                     }
                     double z;
-                    if(double.TryParse(match.Groups[2].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out z))
+                    if (double.TryParse(match.Groups[2].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out z))
                     {
                         Z = z;
                     }
@@ -98,24 +96,24 @@ namespace IL2DCE
                     }
                 }
             }
-            else if(waypointShort.IsMatch(value))
+            else if (waypointShort.IsMatch(value))
             {
                 System.Text.RegularExpressions.Match match = waypointShort.Match(value);
 
                 if (match.Groups.Count == 3)
                 {
                     double x;
-                    if(double.TryParse(key, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(key, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if(double.TryParse(match.Groups[1].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[1].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }
                     double z;
-                    if(double.TryParse(match.Groups[2].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out z))
+                    if (double.TryParse(match.Groups[2].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out z))
                     {
                         Z = z;
                     }
@@ -127,13 +125,13 @@ namespace IL2DCE
         #endregion
 
         #region Public properties
-        
+
         public double Z
         {
             get;
             set;
         }
-        
+
         #endregion
     }
 }

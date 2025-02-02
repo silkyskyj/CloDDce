@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game.world;
-using System;
 using System.Collections.Generic;
 
 namespace IL2DCE
@@ -51,7 +49,10 @@ namespace IL2DCE
 
         public int AircraftMaxCount
         {
-            get { return FlightCount * FlightSize; }
+            get
+            {
+                return FlightCount * FlightSize;
+            }
         }
 
         public abstract int ArmyIndex
@@ -125,8 +126,8 @@ namespace IL2DCE
         new RafBomberCommandAirGroupInfo(),
         new RafFlyingTrainingSchoolEarlyAirGroupInfo(),
         new RafFlyingTrainingSchoolLateAirGroupInfo(),
-        new AAFighterCommandLateAirGroupInfo(),
-        new USAAFFighterCommandLateAirGroupInfo(),
+        new AaFighterCommandLateAirGroupInfo(),
+        new UsaafFighterCommandLateAirGroupInfo(),
     };
 
         static public AirGroupInfo[] BlueAirGroupInfos = new AirGroupInfo[]
@@ -257,27 +258,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 6; }
+            get
+            {
+                return 6;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -441,29 +457,44 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
-        
+
         #endregion
     }
 
@@ -581,27 +612,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 6; }
+            get
+            {
+                return 6;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -644,27 +690,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 6; }
+            get
+            {
+                return 6;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -708,33 +769,48 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
     }
 
-    public class AAFighterCommandLateAirGroupInfo : AirGroupInfo
+    public class AaFighterCommandLateAirGroupInfo : AirGroupInfo
     {
         #region Private members
 
@@ -772,33 +848,48 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         #endregion
     }
 
-    public class USAAFFighterCommandLateAirGroupInfo : AirGroupInfo
+    public class UsaafFighterCommandLateAirGroupInfo : AirGroupInfo
     {
         #region Private members
 
@@ -846,27 +937,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         #endregion
@@ -933,27 +1039,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1047,27 +1168,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1115,27 +1251,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1190,27 +1341,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1258,27 +1424,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1335,27 +1516,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1433,27 +1629,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1563,27 +1774,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1628,27 +1854,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 5; }
+            get
+            {
+                return 5;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1721,27 +1962,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 4; }
+            get
+            {
+                return 4;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         #endregion
@@ -1802,27 +2058,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         #endregion
@@ -1874,27 +2145,42 @@ namespace IL2DCE
 
         public override int SquadronCount
         {
-            get { return 1; }
+            get
+            {
+                return 1;
+            }
         }
 
         public override int FlightCount
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int FlightSize
         {
-            get { return 3; }
+            get
+            {
+                return 3;
+            }
         }
 
         public override int ArmyIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         public override int AirForceIndex
         {
-            get { return 2; }
+            get
+            {
+                return 2;
+            }
         }
 
         #endregion

@@ -15,12 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using maddox.game;
 using maddox.game.play;
-using maddox.game.page;
 
 namespace IL2DCE
 {
@@ -37,8 +32,8 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
                 FrameworkElement.textBoxPilotName.TextChanged += new System.Windows.Controls.TextChangedEventHandler(textBoxPilotName_TextChanged);
             }
-           
-            public override void  _enter(maddox.game.IGame play, object arg)
+
+            public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
 
@@ -54,7 +49,7 @@ namespace IL2DCE
                 itemArmyBlue.Content = "Blue";
                 itemArmyBlue.Tag = 2;
                 FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyBlue);
-                FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;                
+                FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
             }
 
             public override void _leave(maddox.game.IGame play, object arg)
@@ -104,7 +99,7 @@ namespace IL2DCE
 
             void comboBoxSelectArmy_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
             {
-                if(e.AddedItems.Count == 1)
+                if (e.AddedItems.Count == 1)
                 {
                     System.Windows.Controls.ComboBoxItem armySelected = e.AddedItems[0] as System.Windows.Controls.ComboBoxItem;
                     int armyIndex = (int)armySelected.Tag;
@@ -199,7 +194,7 @@ namespace IL2DCE
             private void Start_Click(object sender, System.Windows.RoutedEventArgs e)
             {
                 string pilotName = FrameworkElement.textBoxPilotName.Text;
-                
+
                 System.Windows.Controls.ComboBoxItem armySelected = FrameworkElement.comboBoxSelectArmy.SelectedItem as System.Windows.Controls.ComboBoxItem;
                 int armyIndex = (int)armySelected.Tag;
 

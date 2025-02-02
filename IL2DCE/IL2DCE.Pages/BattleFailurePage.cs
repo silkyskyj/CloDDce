@@ -58,7 +58,6 @@ namespace IL2DCE
 
                 string result = string.Empty;
 
-
                 if (Game is IGameSingle)
                 {
                     result = (Game as IGameSingle).BattleSuccess.ToString() + "\n";

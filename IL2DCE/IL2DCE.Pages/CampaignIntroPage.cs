@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using maddox.game;
 using maddox.game.play;
-using maddox.game.page;
 
 namespace IL2DCE
 {
@@ -33,7 +27,7 @@ namespace IL2DCE
             {
                 FrameworkElement.Start.Click += new System.Windows.RoutedEventHandler(Start_Click);
                 FrameworkElement.Start.IsEnabled = false;
-                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);                
+                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
                 FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
             }
 
@@ -48,7 +42,7 @@ namespace IL2DCE
                 }
             }
 
-            public override void  _enter(maddox.game.IGame play, object arg)
+            public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
 
@@ -94,7 +88,7 @@ namespace IL2DCE
 
                 _game = null;
             }
-            
+
             private CampaignIntro FrameworkElement
             {
                 get
@@ -127,7 +121,7 @@ namespace IL2DCE
                 Game.Core.ResetCampaign(Game);
 
                 Game.gameInterface.PageChange(new BattleIntroPage(), null);
-            }            
+            }
         }
     }
 }

@@ -77,7 +77,7 @@ namespace IL2DCE
 
         protected List<GroundGroupWaypoint> _subWaypoints = new List<GroundGroupWaypoint>();
         protected double? _v;
-        
+
         #endregion
     }
 }

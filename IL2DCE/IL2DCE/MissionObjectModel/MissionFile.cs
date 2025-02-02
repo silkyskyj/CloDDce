@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game;
-using maddox.GP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using maddox.game;
 
 namespace IL2DCE
 {
@@ -36,10 +33,10 @@ namespace IL2DCE
         {
             init();
 
-            foreach(string fileName in fileNames)
+            foreach (string fileName in fileNames)
             {
                 load(game.gpLoadSectionFile(fileName));
-            }            
+            }
         }
 
         public MissionFile(ISectionFile file)
@@ -71,26 +68,26 @@ namespace IL2DCE
         }
 
         private void load(ISectionFile file)
-        { 
+        {
             for (int i = 0; i < file.lines("Stationary"); i++)
             {
                 string key;
                 string value;
                 file.get("Stationary", i, out key, out value);
-                
+
                 Stationary stationary = new Stationary(file, key);
-                    
-                if(stationary.Army == 1)
+
+                if (stationary.Army == 1)
                 {
                     _redStationaries.Add(stationary);
                 }
-                else if(stationary.Army == 2)
+                else if (stationary.Army == 2)
                 {
                     _blueStationaries.Add(stationary);
                 }
                 else
                 {
-                    if(stationary.Type == EStationaryType.Radar)
+                    if (stationary.Type == EStationaryType.Radar)
                     {
                         _radars.Add(stationary);
                     }
@@ -98,7 +95,7 @@ namespace IL2DCE
                     {
                         _artilleries.Add(stationary);
                     }
-                    else if(stationary.Type == EStationaryType.Aircraft)
+                    else if (stationary.Type == EStationaryType.Aircraft)
                     {
                         _aircrafts.Add(stationary);
                     }
@@ -111,7 +108,7 @@ namespace IL2DCE
                 string value;
                 file.get("Buildings", i, out key, out value);
 
-                
+
                 string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (valueParts.Length > 4)
                 {
@@ -205,7 +202,7 @@ namespace IL2DCE
                     {
                         _waterways.Add(road);
                     }
-                    else if(value.StartsWith("Train"))
+                    else if (value.StartsWith("Train"))
                     {
                         _railways.Add(road);
                     }
@@ -289,7 +286,7 @@ namespace IL2DCE
         //        return _blueFrontMarkers;
         //    }
         //}
-        
+
         public IList<AirGroup> AirGroups
         {
             get
@@ -351,7 +348,7 @@ namespace IL2DCE
                 return groundGroups;
             }
         }
-        
+
         public IList<GroundGroup> GetGroundGroups(int armyIndex)
         {
             if (armyIndex == 1)
@@ -462,7 +459,7 @@ namespace IL2DCE
         //private List<Point3d> _redFrontMarkers = new List<Point3d>();
         //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
         //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
-        
+
 
 
         private List<Waterway> _roads = new List<Waterway>();

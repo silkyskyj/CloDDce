@@ -14,13 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game;
-using maddox.game.play;
-using maddox.game.world;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using maddox.game;
+using maddox.game.play;
 
 namespace IL2DCE.Pages
 {
@@ -31,25 +30,25 @@ namespace IL2DCE.Pages
         {
         }
 
-        protected string ToString<T>(Dictionary<string, T> ds)
+        protected string ToString<T>(Dictionary<string, T> dic)
         {
-            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", x.Key, x.Value)));
+            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", x.Key, x.Value)));
         }
 
-        protected string ToStringkillsTypes(Dictionary<string, double> ds)
+        protected string ToStringkillsTypes(Dictionary<string, double> dic)
         {
-            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), x.Value)));
+            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), x.Value)));
         }
 
-        protected string ToStringTimeSpan(Dictionary<string, float> ds)
+        protected string ToStringTimeSpan(Dictionary<string, float> dic)
         {
-            return string.Join(", ", ds.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
+            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
         }
 
         protected virtual string GetResultSummary(IGameSingle game)
         {
             int exp = game.Core.CurrentCareer.Experience;
-            int exp2 = game.BattleSuccess == EBattleResult.DRAW ? 100: 200;
+            int exp2 = game.BattleSuccess == EBattleResult.DRAW ? 100 : 200;
             int rank = game.Core.CurrentCareer.RankIndex;
             return string.Format("{0}\nExp: {1} + {2}/{3}\n{4}\n",
                                     game.BattleSuccess.ToString(),

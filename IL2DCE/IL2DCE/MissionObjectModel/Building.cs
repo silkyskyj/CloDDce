@@ -15,9 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+using System;
 using maddox.game;
 using maddox.GP;
-using System;
 
 namespace IL2DCE
 {
@@ -83,7 +83,7 @@ namespace IL2DCE
 
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = Class + " " + Status.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + X.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);            
+            string value = Class + " " + Status.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + X.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
             sectionFile.add("Buildings", Id, value);
         }
     }

@@ -73,7 +73,7 @@ namespace IL2DCE
 
             briefingFileWriter.Close();
         }
-        
+
         public string MissionName
         {
             get
@@ -97,7 +97,7 @@ namespace IL2DCE
                 _missionDescription = value;
             }
         }
-        
+
         public IDictionary<string, string> Name
         {
             get

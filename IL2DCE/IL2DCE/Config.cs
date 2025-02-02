@@ -85,7 +85,7 @@ namespace IL2DCE
                 return _additionalAirOperations;
             }
         }
-        
+
         public int AdditionalGroundOperations
         {
             get
@@ -93,7 +93,7 @@ namespace IL2DCE
                 return _additionalGroundOperations;
             }
         }
-        
+
         public double FlightSize
         {
             get
@@ -102,7 +102,7 @@ namespace IL2DCE
             }
 
         }
-        
+
         public double FlightCount
         {
             get
@@ -110,7 +110,7 @@ namespace IL2DCE
                 return _flightCount;
             }
         }
-        
+
         public bool SpawnParked
         {
             get
@@ -134,7 +134,7 @@ namespace IL2DCE
                 _debug = value;
             }
         }
-        
+
         public string CampaignsFolder
         {
             get
