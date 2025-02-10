@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Windows;
+using System.Windows.Controls;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -25,17 +27,17 @@ namespace IL2DCE
             public CampaignIntroPage()
                 : base("Campaign Into", new CampaignIntro())
             {
-                FrameworkElement.Start.Click += new System.Windows.RoutedEventHandler(Start_Click);
+                FrameworkElement.Start.Click += new RoutedEventHandler(Start_Click);
                 FrameworkElement.Start.IsEnabled = false;
-                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
-                FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
+                FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
+                FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
             }
 
-            void comboBoxSelectAirGroup_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+            void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
                 if (e.AddedItems.Count == 1)
                 {
-                    System.Windows.Controls.ComboBoxItem itemAirGroup = e.AddedItems[0] as System.Windows.Controls.ComboBoxItem;
+                    ComboBoxItem itemAirGroup = e.AddedItems[0] as ComboBoxItem;
                     AirGroup airGroup = (AirGroup)itemAirGroup.Tag;
 
                     Game.Core.CurrentCareer.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
@@ -50,17 +52,20 @@ namespace IL2DCE
 
                 _game = play as IGame;
 
+                Career career = Game.Core.CurrentCareer;
+                CampaignInfo campaignInfo = career.CampaignInfo;
 
-                MissionFile campaignTemplate = new MissionFile(Game, Game.Core.CurrentCareer.CampaignInfo.InitialMissionTemplateFiles);
+                MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
 
                 foreach (AirGroup airGroup in campaignTemplate.AirGroups)
                 {
-                    if (airGroup.AirGroupInfo.ArmyIndex == Game.Core.CurrentCareer.ArmyIndex
-                        && airGroup.AirGroupInfo.AirForceIndex == Game.Core.CurrentCareer.AirForceIndex && Game.Core.CurrentCareer.CampaignInfo.GetAircraftInfo(airGroup.Class).IsFlyable)
+                    AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                    if (airGroupInfo.ArmyIndex == career.ArmyIndex && airGroupInfo.AirForceIndex == career.AirForceIndex 
+                        && campaignInfo.GetAircraftInfo(airGroup.Class).IsFlyable)
                     {
-                        System.Windows.Controls.ComboBoxItem itemAirGroup = new System.Windows.Controls.ComboBoxItem();
+                        ComboBoxItem itemAirGroup = new ComboBoxItem();
 
-                        itemAirGroup.Content = airGroup.DisplayName + " (" + Game.Core.CurrentCareer.CampaignInfo.GetAircraftInfo(airGroup.Class).DisplayName + ")";
+                        itemAirGroup.Content = airGroup.DisplayName + " (" + campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName + ")";
                         if (airGroup.Airstart == true)
                         {
                             itemAirGroup.Content += " [AIRSTART]";
@@ -106,7 +111,7 @@ namespace IL2DCE
             }
             private IGame _game;
 
-            private void Back_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void Back_Click(object sender, RoutedEventArgs e)
             {
                 if (Game.gameInterface.BattleIsRun())
                 {
@@ -116,7 +121,7 @@ namespace IL2DCE
                 Game.gameInterface.PagePop(null);
             }
 
-            private void Start_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void Start_Click(object sender, RoutedEventArgs e)
             {
                 Game.Core.ResetCampaign(Game);
 

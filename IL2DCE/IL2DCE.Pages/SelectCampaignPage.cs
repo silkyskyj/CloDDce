@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Windows;
+using System.Windows.Controls;
 using maddox.game.page;
 using maddox.game.play;
 
@@ -26,11 +28,11 @@ namespace IL2DCE
             public SelectCampaignPage()
                 : base("Select Campaign", new SelectCampaign())
             {
-                FrameworkElement.bBack.Click += new System.Windows.RoutedEventHandler(bBack_Click);
-                FrameworkElement.bNew.Click += new System.Windows.RoutedEventHandler(bNew_Click);
-                FrameworkElement.bContinue.Click += new System.Windows.RoutedEventHandler(bContinue_Click);
+                FrameworkElement.bBack.Click += new RoutedEventHandler(bBack_Click);
+                FrameworkElement.bNew.Click += new RoutedEventHandler(bNew_Click);
+                FrameworkElement.bContinue.Click += new RoutedEventHandler(bContinue_Click);
 
-                FrameworkElement.ListCampaign.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(listCampaign_SelectionChanged);
+                FrameworkElement.ListCampaign.SelectionChanged += new SelectionChangedEventHandler(listCampaign_SelectionChanged);
 
                 // TODO: Make button visible when it is possible to continue a campaign.
                 FrameworkElement.bNew.IsEnabled = false;
@@ -84,7 +86,7 @@ namespace IL2DCE
             }
             private IGame _game;
 
-            private void bBack_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void bBack_Click(object sender, RoutedEventArgs e)
             {
                 // Remove the selection
                 Game.Core.CurrentCareer.CampaignInfo = null;
@@ -92,33 +94,36 @@ namespace IL2DCE
                 Game.gameInterface.PagePop(null);
             }
 
-            private void bNew_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void bNew_Click(object sender, RoutedEventArgs e)
             {
                 Game.Core.InitCampaign();
 
                 Game.gameInterface.PageChange(new CampaignIntroPage(), null);
             }
 
-            private void bContinue_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void bContinue_Click(object sender, RoutedEventArgs e)
             {
                 Game.gameInterface.PagePop(null);
             }
 
-            private void listCampaign_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+            private void listCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
+                Career career = Game.Core.CurrentCareer;
+
                 if (e.AddedItems.Count > 0)
                 {
                     CampaignInfo campaignInfo = e.AddedItems[0] as CampaignInfo;
 
-                    MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles);
+                    MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
 
                     string description = "Available AirGroups:\n";
 
                     int availableAirGroups = 0;
                     foreach (AirGroup airGroup in campaignTemplate.AirGroups)
                     {
-                        if (airGroup.AirGroupInfo.ArmyIndex == Game.Core.CurrentCareer.ArmyIndex
-                            && airGroup.AirGroupInfo.AirForceIndex == Game.Core.CurrentCareer.AirForceIndex && campaignInfo.GetAircraftInfo(airGroup.Class).IsFlyable)
+                        AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                        if (airGroupInfo.ArmyIndex == career.ArmyIndex && airGroupInfo.AirForceIndex == career.AirForceIndex 
+                            && campaignInfo.GetAircraftInfo(airGroup.Class).IsFlyable)
                         {
                             description += airGroup.DisplayName + "\n";
                             availableAirGroups++;
@@ -127,20 +132,18 @@ namespace IL2DCE
 
                     if (availableAirGroups > 0)
                     {
-                        Game.Core.CurrentCareer.CampaignInfo = campaignInfo;
+                        career.CampaignInfo = campaignInfo;
                     }
                     else
                     {
                         description += "None for your AirForce! Please select a different campaign.\n";
-                        Game.Core.CurrentCareer.CampaignInfo = null;
+                        career.CampaignInfo = null;
                     }
-
-
 
                     FrameworkElement.txtDesc.Text = description;
                 }
 
-                if (Game.Core.CurrentCareer.CampaignInfo != null)
+                if (career.CampaignInfo != null)
                 {
                     FrameworkElement.bNew.IsEnabled = true;
                 }

@@ -95,7 +95,7 @@ namespace IL2DCE
             _core = core;
         }
 
-        public void GenerateInitialMissionTempalte(IEnumerable<string> initialMissionTemplateFiles, out ISectionFile initialMissionTemplateFile)
+        public void GenerateInitialMissionTempalte(IEnumerable<string> initialMissionTemplateFiles, out ISectionFile initialMissionTemplateFile, AirGroupInfos airGroupInfos = null)
         {
             initialMissionTemplateFile = null;
 
@@ -137,7 +137,7 @@ namespace IL2DCE
                     initialMissionTemplateFile.delete("Chiefs");
                 }
 
-                MissionFile initialMission = new MissionFile(GamePlay, initialMissionTemplateFiles);
+                MissionFile initialMission = new MissionFile(GamePlay, initialMissionTemplateFiles, airGroupInfos);
 
                 foreach (AirGroup airGroup in initialMission.AirGroups)
                 {
@@ -157,12 +157,13 @@ namespace IL2DCE
         /// <param name="staticTemplateFiles"></param>
         /// <param name="previousMissionTemplate"></param>
         /// <param name="missionTemplateFile"></param>
+        /// <param name="airGroupInfos"></param>
         /// <remarks>
         /// For now it has a simplified implementaiton. It only generated random supply ships and air groups.
         /// </remarks>
-        public void GenerateMissionTemplate(IEnumerable<string> staticTemplateFiles, ISectionFile previousMissionTemplate, out ISectionFile missionTemplateFile)
+        public void GenerateMissionTemplate(IEnumerable<string> staticTemplateFiles, ISectionFile previousMissionTemplate, out ISectionFile missionTemplateFile, AirGroupInfos airGroupInfos = null)
         {
-            MissionFile staticTemplateFile = new MissionFile(GamePlay, staticTemplateFiles);
+            MissionFile staticTemplateFile = new MissionFile(GamePlay, staticTemplateFiles, airGroupInfos);
 
             // Use the previous mission template to initialise the next mission template.
             missionTemplateFile = previousMissionTemplate;
@@ -331,12 +332,11 @@ namespace IL2DCE
                     radarSite.WriteTo(missionTemplateFile);
                 }
             }
-
         }
 
         public void GenerateMission(string environmentTemplateFile, string missionTemplateFileName, string missionId, out ISectionFile missionFile, out BriefingFile briefingFile)
         {
-            MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName));
+            MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName), Career.CampaignInfo.AirGroupInfos);
 
             GeneratorAirOperation = new GeneratorAirOperation(this, Career.CampaignInfo, missionTemplateFile, Core.GamePlay, Core.Config);
             GeneratorGroundOperation = new GeneratorGroundOperation(this, Career.CampaignInfo, missionTemplateFile, Core.GamePlay, Core.Config);
@@ -476,7 +476,8 @@ namespace IL2DCE
         private static List<string> determineAircraftOrder(AirGroup airGroup)
         {
             List<string> aircraftOrder = new List<string>();
-            if (airGroup.AirGroupInfo.FlightSize % 3 == 0)
+            AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+            if (airGroupInfo.FlightSize % 3 == 0)
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -497,7 +498,7 @@ namespace IL2DCE
                     }
                 }
             }
-            else if (airGroup.AirGroupInfo.FlightSize % 2 == 0)
+            else if (airGroupInfo.FlightSize % 2 == 0)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -518,7 +519,7 @@ namespace IL2DCE
                     }
                 }
             }
-            else if (airGroup.AirGroupInfo.FlightSize % 1 == 0)
+            else if (airGroupInfo.FlightSize % 1 == 0)
             {
                 foreach (int key in airGroup.Flights.Keys)
                 {

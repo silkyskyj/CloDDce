@@ -111,7 +111,6 @@ namespace IL2DCE
             return selectedGroundGroup;
         }
 
-
         public Stationary getRandomTargetBasedOnRange(List<Stationary> availableStationaries, AirGroup offensiveAirGroup)
         {
             Stationary selectedStationary = null;
@@ -162,8 +161,6 @@ namespace IL2DCE
 
             return selectedStationary;
         }
-
-
 
         public GeneratorGroundOperation(Generator generator, CampaignInfo campaignInfo, MissionFile missionTemplate, IGamePlay gamePlay, Config config)
         {
@@ -534,7 +531,6 @@ namespace IL2DCE
             }
         }
 
-
         public GroundGroup getAvailableRandomEnemyGroundGroup(AirGroup airGroup, List<EGroundGroupType> groundGroupTypes)
         {
             List<GroundGroup> groundGroups = getAvailableEnemyGroundGroups(airGroup.ArmyIndex, groundGroupTypes);
@@ -686,7 +682,6 @@ namespace IL2DCE
             }
         }
 
-
         public Stationary getAvailableRandomEnemyStationary(AirGroup airGroup, List<EStationaryType> stationaryTypes)
         {
             List<Stationary> stationaries = getAvailableEnemyStationaries(airGroup.ArmyIndex, stationaryTypes);
@@ -740,7 +735,6 @@ namespace IL2DCE
                 return null;
             }
         }
-
 
         #endregion
     }

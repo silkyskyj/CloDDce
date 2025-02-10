@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE
 {
@@ -27,7 +28,7 @@ namespace IL2DCE
     {
         ISectionFile _globalAircraftInfoFile;
         ISectionFile _localAircraftInfoFile;
-
+ 
         /// <summary>
         /// The constructor parses the campaign info file.
         /// </summary>
@@ -36,11 +37,13 @@ namespace IL2DCE
         /// <param name="campaignFile">The section file with the campaign configuration.</param>
         /// <param name="globalAircraftInfoFile">The global aircraft info file.</param>
         /// <param name="localAircraftInfoFile">If available the local aircraft info file, otherwise the global aircraft info file is used.</param>
-        public CampaignInfo(string id, string campaignFolderPath, ISectionFile campaignFile, ISectionFile globalAircraftInfoFile, ISectionFile localAircraftInfoFile = null)
+        /// <param name="localAirGroupInfos">If available the local aigroup info file, otherwise the global aigroup info file is used.</param>
+        public CampaignInfo(string id, string campaignFolderPath, ISectionFile campaignFile, ISectionFile globalAircraftInfoFile, ISectionFile localAircraftInfoFile = null, AirGroupInfos localAirGroupInfos = null)
         {
             _id = id;
             _globalAircraftInfoFile = globalAircraftInfoFile;
             _localAircraftInfoFile = localAircraftInfoFile;
+            _localAirGroupInfos = localAirGroupInfos;
 
             if (campaignFile.exist("Main", "name"))
             {
@@ -223,6 +226,15 @@ namespace IL2DCE
         }
         private DateTime _endDate;
 
+        public AirGroupInfos AirGroupInfos
+        {
+            get
+            {
+                return _localAirGroupInfos;
+            }
+        }
+        private AirGroupInfos _localAirGroupInfos;
+
         /// <summary>
         /// Gets the aircraft info for the given aicraft name. 
         /// </summary>
@@ -237,6 +249,23 @@ namespace IL2DCE
             else if (_globalAircraftInfoFile.exist("Main", aircraft))
             {
                 return new AircraftInfo(_globalAircraftInfoFile, aircraft);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public AirGroupInfo GetAirGroupInfo(string airGroupKey)
+        {
+            AirGroupInfo airGroupInfo = null;
+            if (_localAirGroupInfos != null && (airGroupInfo = _localAirGroupInfos.GetAirGroupInfo(airGroupKey)) != null)
+            {
+                return airGroupInfo;
+            }
+            else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey)) != null)
+            {
+                return airGroupInfo;
             }
             else
             {

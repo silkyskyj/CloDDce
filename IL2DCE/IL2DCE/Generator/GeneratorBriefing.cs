@@ -36,8 +36,6 @@ namespace IL2DCE
             Generator = generator;
         }
 
-
-
         private IRandom Random
         {
             get

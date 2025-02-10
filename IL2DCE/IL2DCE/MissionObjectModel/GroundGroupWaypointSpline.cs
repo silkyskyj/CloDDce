@@ -113,7 +113,6 @@ namespace IL2DCE
         }
         private string _s;
 
-
         #endregion
     }
 }

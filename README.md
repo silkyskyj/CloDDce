@@ -1,4 +1,4 @@
-A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
+A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz Edition
 
 Original: https://code.google.com/archive/p/il2dce/
 

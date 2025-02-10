@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Windows;
 using maddox.game.page;
 
 namespace IL2DCE
@@ -25,22 +26,22 @@ namespace IL2DCE
             public BattleSuccessPage()
                 : base("Battle Success", new CampaignBattleSuccess())
             {
-                FrameworkElement.Fly.Click += new System.Windows.RoutedEventHandler(Fly_Click);
-                FrameworkElement.ReFly.Click += new System.Windows.RoutedEventHandler(ReFly_Click);
-                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
+                FrameworkElement.Fly.Click += new RoutedEventHandler(Fly_Click);
+                FrameworkElement.ReFly.Click += new RoutedEventHandler(ReFly_Click);
+                FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
             }
 
-            void ReFly_Click(object sender, System.Windows.RoutedEventArgs e)
+            void ReFly_Click(object sender, RoutedEventArgs e)
             {
                 Game.gameInterface.PageChange(new BattleIntroPage(), null);
             }
 
-            void Back_Click(object sender, System.Windows.RoutedEventArgs e)
+            void Back_Click(object sender, RoutedEventArgs e)
             {
                 Game.gameInterface.PagePop(null);
             }
 
-            void Fly_Click(object sender, System.Windows.RoutedEventArgs e)
+            void Fly_Click(object sender, RoutedEventArgs e)
             {
                 Game.Core.AdvanceCampaign(Game);
 
@@ -50,8 +51,6 @@ namespace IL2DCE
             public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
-
-                _game = play as IGame;
 
                 string result = string.Empty;
 
@@ -66,6 +65,7 @@ namespace IL2DCE
                 }
 
                 FrameworkElement.textBoxDescription.Text = result;
+                FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
             }
 
             private CampaignBattleSuccess FrameworkElement

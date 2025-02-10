@@ -177,8 +177,9 @@ namespace IL2DCE
             airGroup.Flights.Clear();
             int aircraftNumber = 1;
 
-            int flightCount = (int)Math.Ceiling(airGroup.AirGroupInfo.FlightCount * this.Config.FlightCount);
-            int flightSize = (int)Math.Ceiling(airGroup.AirGroupInfo.FlightSize * this.Config.FlightSize);
+            AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+            int flightCount = (int)Math.Ceiling(airGroupInfo.FlightCount * this.Config.FlightCount);
+            int flightSize = (int)Math.Ceiling(airGroupInfo.FlightSize * this.Config.FlightSize);
 
             if (missionType == EMissionType.RECON || missionType == EMissionType.MARITIME_RECON)
             {
@@ -681,7 +682,6 @@ namespace IL2DCE
                         int offensiveMissionTypeIndex = Random.Next(availableOffensiveMissionTypes.Count);
                         EMissionType possibleOffensiveMissionType = availableOffensiveMissionTypes[offensiveMissionTypeIndex];
 
-
                         GroundGroup possibleTargetGroundGroup = Generator.GeneratorGroundOperation.getAvailableRandomEnemyGroundGroup(possibleOffensiveAirGroup, possibleOffensiveMissionType);
                         Stationary possibleTargetStationary = Generator.GeneratorGroundOperation.getAvailableRandomEnemyStationary(possibleOffensiveAirGroup, possibleOffensiveMissionType);
 
@@ -904,8 +904,6 @@ namespace IL2DCE
         //        return null;
         //    }
         //}
-
-
 
         private bool isMissionTypeEscorted(EMissionType missionType)
         {
@@ -1154,6 +1152,5 @@ namespace IL2DCE
                 throw new NotImplementedException(missionType.ToString());
             }
         }
-
     }
 }

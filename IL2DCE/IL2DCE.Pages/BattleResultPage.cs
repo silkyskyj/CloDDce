@@ -16,7 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using maddox.game;
 using maddox.game.play;
@@ -25,9 +27,53 @@ namespace IL2DCE.Pages
 {
     public class BattleResultPage : PageDefImpl
     {
+        protected IGame Game
+        {
+            get
+            {
+                return _game;
+            }
+        }
+        protected IGame _game;
+
         public BattleResultPage(string name, FrameworkElement fe)
             : base(name, fe)
         {
+        }
+
+        public override void _enter(maddox.game.IGame play, object arg)
+        {
+            base._enter(play, arg);
+
+            _game = play as IGame;
+
+            UpdateTotalPlayerStat(play.gameInterface.Player());
+        }
+
+        public override void _leave(maddox.game.IGame play, object arg)
+        {
+            base._leave(play, arg);
+
+            _game = null;
+        }
+
+        protected void UpdateTotalPlayerStat(IPlayer player)
+        {
+            IGameSingle game = (Game as IGameSingle);
+            Career creer = game.Core.CurrentCareer;
+
+            IPlayerStat st = player.GetBattleStat();
+
+            creer.Takeoffs += st.takeoffs;
+            creer.Landings += st.landings;
+            creer.Bails += st.bails;
+            creer.Deaths += st.deaths;
+            creer.Kills += st.kills;
+            string killsTypes = ToStringkillsTypes(st.killsTypes);
+            if (!string.IsNullOrEmpty(killsTypes))
+            {
+                creer.KillsHistory.Add(creer.Date.Value, ToStringkillsTypes(st.killsTypes));
+            }
         }
 
         protected string ToString<T>(Dictionary<string, T> dic)
@@ -47,9 +93,10 @@ namespace IL2DCE.Pages
 
         protected virtual string GetResultSummary(IGameSingle game)
         {
-            int exp = game.Core.CurrentCareer.Experience;
+            Career career = game.Core.CurrentCareer;
+            int exp = career.Experience;
             int exp2 = game.BattleSuccess == EBattleResult.DRAW ? 100 : 200;
-            int rank = game.Core.CurrentCareer.RankIndex;
+            int rank = career.RankIndex;
             return string.Format("{0}\nExp: {1} + {2}/{3}\n{4}\n",
                                     game.BattleSuccess.ToString(),
                                     exp,
@@ -105,21 +152,26 @@ namespace IL2DCE.Pages
 #endif
         }
 
-        public override void _leave(maddox.game.IGame play, object arg)
+        protected virtual string GetTotalPlayerStat()
         {
-            base._leave(play, arg);
+            IGameSingle game = (Game as IGameSingle);
+            Career career = game.Core.CurrentCareer;
 
-            _game = null;
-        }
-
-        protected IGame Game
-        {
-            get
+            StringBuilder builder = new StringBuilder();
+            var sorted = career.KillsHistory.OrderByDescending(x => x.Key.Date);
+            foreach (var item in sorted)
             {
-                return _game;
+                builder.AppendFormat("    {0}, {1}\n", item.Key.ToString("d", DateTimeFormatInfo.InvariantInfo), item.Value);
             }
-        }
 
-        protected IGame _game;
+            return String.Format("Total Result - {0}\n Takeoffs: {1}\n Landings: {2}\n Deaths: {3}\n Bails: {4}\n Kills: {5}\n Kills History:\n{6}\n",
+                                    career.ToString(),
+                                    career.Takeoffs,
+                                    career.Landings,
+                                    career.Deaths,
+                                    career.Bails,
+                                    career.Kills,
+                                    builder.ToString());
+        }
     }
 }

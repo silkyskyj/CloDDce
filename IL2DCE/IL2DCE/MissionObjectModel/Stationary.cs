@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 using System;
 using System.Collections.Generic;
 using maddox.game;
@@ -201,7 +200,6 @@ namespace IL2DCE
             "tobruk:Stationary.BR-20M_Trop"
         };
 
-
         public Stationary(ISectionFile sectionFile, string id)
         {
             _id = id;
@@ -274,7 +272,6 @@ namespace IL2DCE
             }
         }
 
-
         public EStationaryType Type
         {
             get
@@ -303,7 +300,6 @@ namespace IL2DCE
             }
         }
 
-
         public int Army
         {
             get
@@ -328,7 +324,6 @@ namespace IL2DCE
             get;
             set;
         }
-
 
         public void WriteTo(ISectionFile sectionFile)
         {

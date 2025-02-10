@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Windows;
 using maddox.game.page;
 using maddox.game.play;
 
@@ -26,16 +27,16 @@ namespace IL2DCE
             public BattleIntroPage()
                 : base("Battle Intro", new CampaignBattleIntro())
             {
-                FrameworkElement.Fly.Click += new System.Windows.RoutedEventHandler(Fly_Click);
-                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
+                FrameworkElement.Fly.Click += new RoutedEventHandler(Fly_Click);
+                FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
             }
 
-            void Back_Click(object sender, System.Windows.RoutedEventArgs e)
+            void Back_Click(object sender, RoutedEventArgs e)
             {
                 Game.gameInterface.PagePop(null);
             }
 
-            void Fly_Click(object sender, System.Windows.RoutedEventArgs e)
+            void Fly_Click(object sender, RoutedEventArgs e)
             {
                 if (Game is IGameSingle)
                 {

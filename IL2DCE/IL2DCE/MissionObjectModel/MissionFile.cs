@@ -29,8 +29,10 @@ namespace IL2DCE
 
     public class MissionFile
     {
-        public MissionFile(IGamePlay game, IEnumerable<string> fileNames)
+        public MissionFile(IGamePlay game, IEnumerable<string> fileNames, AirGroupInfos airGroupInfos = null)
         {
+            this.airGroupInfos = airGroupInfos;
+
             init();
 
             foreach (string fileName in fileNames)
@@ -39,8 +41,10 @@ namespace IL2DCE
             }
         }
 
-        public MissionFile(ISectionFile file)
+        public MissionFile(ISectionFile file, AirGroupInfos airGroupInfos = null)
         {
+            this.airGroupInfos = airGroupInfos;
+
             init();
             load(file);
         }
@@ -162,18 +166,17 @@ namespace IL2DCE
                 string value;
                 file.get("AirGroups", i, out key, out value);
 
-                AirGroup airGroup = new AirGroup(file, key);
+                AirGroup airGroup = new AirGroup(file, key, airGroupInfos);
 
-                if (AirGroupInfo.GetAirGroupInfo(1, airGroup.AirGroupKey) != null)
+                if (GetAirGroupInfo(1, airGroup.AirGroupKey) != null)
                 {
                     _redAirGroups.Add(airGroup);
                 }
-                else if (AirGroupInfo.GetAirGroupInfo(2, airGroup.AirGroupKey) != null)
+                else if (GetAirGroupInfo(2, airGroup.AirGroupKey) != null)
                 {
                     _blueAirGroups.Add(airGroup);
                 }
             }
-
 
             for (int i = 0; i < file.lines("Chiefs"); i++)
             {
@@ -424,6 +427,21 @@ namespace IL2DCE
             }
         }
 
+        private AirGroupInfo GetAirGroupInfo(int armyIndex, string airGroupKey)
+        {
+            AirGroupInfo airGroupInfo;
+            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(armyIndex, airGroupKey)) != null)
+            {
+                return airGroupInfo;
+            }
+            else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(armyIndex, airGroupKey)) != null)
+            {
+                return airGroupInfo;
+            }
+
+            return null;
+        }
+
         //public IList<Point3d> GetFriendlyMarkers(int armyIndex)
         //{
         //    if (armyIndex == 1)
@@ -440,25 +458,25 @@ namespace IL2DCE
         //    }
         //}
 
-        //public IList<Point3d> GetEnemyMarkers(int armyIndex)
-        //{
-        //    if (armyIndex == 1)
-        //    {
-        //        return _blueFrontMarkers;
-        //    }
-        //    else if (armyIndex == 2)
-        //    {
-        //        return _redFrontMarkers;
-        //    }
-        //    else
-        //    {
-        //        return new List<Point3d>();
-        //    }
-        //}
+            //public IList<Point3d> GetEnemyMarkers(int armyIndex)
+            //{
+            //    if (armyIndex == 1)
+            //    {
+            //        return _blueFrontMarkers;
+            //    }
+            //    else if (armyIndex == 2)
+            //    {
+            //        return _redFrontMarkers;
+            //    }
+            //    else
+            //    {
+            //        return new List<Point3d>();
+            //    }
+            //}
 
-        //private List<Point3d> _redFrontMarkers = new List<Point3d>();
-        //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
-        //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
+            //private List<Point3d> _redFrontMarkers = new List<Point3d>();
+            //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
+            //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
 
 
 
@@ -479,5 +497,7 @@ namespace IL2DCE
 
         private List<Stationary> _redStationaries = new List<Stationary>();
         private List<Stationary> _blueStationaries = new List<Stationary>();
+
+        private AirGroupInfos airGroupInfos;
     }
 }

@@ -20,7 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>..\Debug\parts\IL2DCE\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -54,10 +54,17 @@
     <Reference Include="gamePlay, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8b6839725e48404f, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePlay.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gameWorld, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8b6839725e48404f, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gameWorld.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="part, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8b6839725e48404f, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\part.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -65,17 +72,17 @@
     <ProjectReference Include="..\IL2DCE.Mission\IL2DCE.Mission.csproj">
       <Project>{75e92407-3d44-4802-a09a-5ed7e6febc12}</Project>
       <Name>IL2DCE.Mission</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\IL2DCE.Pages\IL2DCE.Pages.csproj">
       <Project>{ECBA2DA0-44D1-4449-9240-E57F07460A14}</Project>
       <Name>IL2DCE.Pages</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\IL2DCE\IL2DCE.csproj">
       <Project>{22442D49-0A77-4CBE-A1F3-9806958C10AE}</Project>
       <Name>IL2DCE</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

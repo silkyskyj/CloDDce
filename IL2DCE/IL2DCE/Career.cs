@@ -16,14 +16,22 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Globalization;
 using maddox.game;
 
 namespace IL2DCE
 {
     public class Career
     {
-        public static List<string> RafRanks = new List<string> {
+        public const string SectionStat = "Stat";
+        public const string SectionKillsResult = "KillsResult";
+        public const string KeyTakeoffs = "Takeoffs";
+        public const string KeyLandings = "Landings";
+        public const string KeyBails = "Bails";
+        public const string KeyDeaths = "Deaths";
+        public const string KeyKills = "Kills";
+
+        public static readonly string [] RafRanks = new string[] {
             "Pilot Officer",
             "Flying Officer",
             "Flight Lieutenant",
@@ -32,7 +40,7 @@ namespace IL2DCE
             "Group Captain",
         };
 
-        public static List<string> LwRanks = new List<string> {
+        public static readonly string[] LwRanks = new string[] {
             "Leutnant",
             "Oberleutnant",
             "Hauptmann",
@@ -41,7 +49,7 @@ namespace IL2DCE
             "Oberst",
         };
 
-        public static List<string> RaRanks = new List<string> {
+        public static readonly string[] RaRanks = new string[] {
             "Sottotenente",
             "Tenente",
             "Capitano",
@@ -50,7 +58,7 @@ namespace IL2DCE
             "Colonnello",
         };
 
-        public static List<string> FrRanks = new List<string> {
+        public static readonly string[] AaRanks = new string[] {
             "Aspirant",
             "Lieutenant",
             "Capitaine",
@@ -59,7 +67,7 @@ namespace IL2DCE
             "Colonel",
         };
 
-        public static List<string> UsaRanks = new List<string> {
+        public static readonly string[] UsaafRanks = new string[] {
             "Flight Officer",
             "Lieutenant",
             "Captain",
@@ -67,91 +75,6 @@ namespace IL2DCE
             "Lt. Colonel",
             "Colonel",
         };
-
-        public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
-        {
-            _pilotName = pilotName;
-            _armyIndex = armyIndex;
-            _airForceIndex = airForceIndex;
-            _rankIndex = rankIndex;
-            _experience = 0;
-
-            _campaignInfo = null;
-            _date = null;
-            _airGroup = null;
-            _missionFileName = null;
-
-        }
-
-        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile)
-        {
-            _pilotName = pilotName;
-
-            if (careerFile.exist("Main", "armyIndex")
-                && careerFile.exist("Main", "rankIndex")
-                && careerFile.exist("Main", "experience"))
-            {
-                _armyIndex = int.Parse(careerFile.get("Main", "armyIndex"));
-                _airForceIndex = int.Parse(careerFile.get("Main", "airForceIndex"));
-                _rankIndex = int.Parse(careerFile.get("Main", "rankIndex"));
-                _experience = int.Parse(careerFile.get("Main", "experience"));
-            }
-            else
-            {
-                throw new FormatException();
-            }
-
-            if (careerFile.exist("Campaign", "date")
-                && careerFile.exist("Campaign", "id")
-                && careerFile.exist("Campaign", "airGroup")
-                && careerFile.exist("Campaign", "missionFile"))
-            {
-                string id = careerFile.get("Campaign", "id");
-                foreach (CampaignInfo campaignInfo in campaignInfos)
-                {
-                    if (campaignInfo.Id == id)
-                    {
-                        CampaignInfo = campaignInfo;
-                        break;
-                    }
-                }
-                _date = DateTime.Parse(careerFile.get("Campaign", "date"));
-                _airGroup = careerFile.get("Campaign", "airGroup");
-                _missionFileName = careerFile.get("Campaign", "missionFile");
-            }
-            else
-            {
-                throw new FormatException();
-            }
-        }
-
-        public override string ToString()
-        {
-            if (ArmyIndex == 1 && AirForceIndex == 1)
-            {
-                return RafRanks[RankIndex] + " " + PilotName;
-            }
-            else if (ArmyIndex == 1 && AirForceIndex == 2)
-            {
-                return FrRanks[RankIndex] + " " + PilotName;
-            }
-            else if (ArmyIndex == 1 && AirForceIndex == 3)
-            {
-                return UsaRanks[RankIndex] + " " + PilotName;
-            }
-            else if (ArmyIndex == 2 && AirForceIndex == 1)
-            {
-                return LwRanks[RankIndex] + " " + PilotName;
-            }
-            else if (ArmyIndex == 2 && AirForceIndex == 2)
-            {
-                return RaRanks[RankIndex] + " " + PilotName;
-            }
-            else
-            {
-                return PilotName;
-            }
-        }
 
         public string PilotName
         {
@@ -281,17 +204,175 @@ namespace IL2DCE
         }
         private string _airGroup;
 
+        public int Takeoffs
+        {
+            get;
+            set;
+        }
+
+        public int Landings
+        {
+            get;
+            set;
+        }
+
+        public int Bails
+        {
+            get;
+            set;
+        }
+
+        public int Deaths
+        {
+            get;
+            set;
+        }
+
+        public double Kills
+        {
+            get;
+            set;
+        }
+
+        public Dictionary<DateTime, string> KillsHistory
+        {
+            get;
+            set;
+        }
+
+        public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
+        {
+            _pilotName = pilotName;
+            _armyIndex = armyIndex;
+            _airForceIndex = airForceIndex;
+            _rankIndex = rankIndex;
+            _experience = 0;
+
+            _campaignInfo = null;
+            _date = null;
+            _airGroup = null;
+            _missionFileName = null;
+
+            KillsHistory = new Dictionary<DateTime, string>();
+        }
+
+        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile)
+        {
+            _pilotName = pilotName;
+
+            if (careerFile.exist("Main", "armyIndex")
+                && careerFile.exist("Main", "rankIndex")
+                && careerFile.exist("Main", "experience"))
+            {
+                _armyIndex = int.Parse(careerFile.get("Main", "armyIndex"));
+                _airForceIndex = int.Parse(careerFile.get("Main", "airForceIndex"));
+                _rankIndex = int.Parse(careerFile.get("Main", "rankIndex"));
+                _experience = int.Parse(careerFile.get("Main", "experience"));
+            }
+            else
+            {
+                throw new FormatException();
+            }
+
+            if (careerFile.exist("Campaign", "date")
+                && careerFile.exist("Campaign", "id")
+                && careerFile.exist("Campaign", "airGroup")
+                && careerFile.exist("Campaign", "missionFile"))
+            {
+                string id = careerFile.get("Campaign", "id");
+                foreach (CampaignInfo campaignInfo in campaignInfos)
+                {
+                    if (campaignInfo.Id == id)
+                    {
+                        CampaignInfo = campaignInfo;
+                        break;
+                    }
+                }
+                _date = DateTime.Parse(careerFile.get("Campaign", "date"));
+                _airGroup = careerFile.get("Campaign", "airGroup");
+                _missionFileName = careerFile.get("Campaign", "missionFile");
+
+                Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
+                Landings = careerFile.get(SectionStat, KeyLandings, 0);
+                Bails = careerFile.get(SectionStat, KeyBails, 0);
+                Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
+                Kills = careerFile.get(SectionStat, KeyKills, 0);
+
+                KillsHistory = new Dictionary<DateTime, string>();
+                int killsResult = careerFile.lines(SectionKillsResult);
+                string key;
+                string value;
+                DateTime dt;
+                for (int i = 0; i < killsResult; i++)
+                {
+                    careerFile.get(SectionKillsResult, i,  out key, out value);
+                    if (DateTime.TryParse(key, out dt))
+                    {
+                        KillsHistory.Add(dt, value);
+                    }
+                }
+            }
+            else
+            {
+                throw new FormatException();
+            }
+        }
+
+        public override string ToString()
+        {
+            if (ArmyIndex == (int)AirGroupInfo.Army.Red)
+            {
+                if (AirForceIndex == (int)AirGroupInfo.AirForceRed.Raf)
+                {
+                    return RafRanks[RankIndex] + " " + PilotName;
+                }
+                else if (AirForceIndex == (int)AirGroupInfo.AirForceRed.Aa)
+                {
+                    return AaRanks[RankIndex] + " " + PilotName;
+                }
+                else if (AirForceIndex == (int)AirGroupInfo.AirForceRed.Usaaf)
+                {
+                    return UsaafRanks[RankIndex] + " " + PilotName;
+                }
+
+            }
+            else if (ArmyIndex == (int)AirGroupInfo.Army.Blue)
+            {
+                if (AirForceIndex == (int)AirGroupInfo.AirForceBlue.Lw)
+                {
+                    return LwRanks[RankIndex] + " " + PilotName;
+                }
+                else if (AirForceIndex == (int)AirGroupInfo.AirForceBlue.Ra)
+                {
+                    return RaRanks[RankIndex] + " " + PilotName;
+                }
+            }
+
+            return PilotName;
+        }
+
         public void WriteTo(ISectionFile careerFile)
         {
-            careerFile.add("Main", "armyIndex", ArmyIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add("Main", "airForceIndex", AirForceIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add("Main", "rankIndex", RankIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add("Main", "experience", Experience.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add("Main", "armyIndex", ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add("Main", "airForceIndex", AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add("Main", "rankIndex", RankIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add("Main", "experience", Experience.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            careerFile.add("Campaign", "date", Date.Value.Year.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "-" + Date.Value.Month.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "-" + Date.Value.Day.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add("Campaign", "date", Date.Value.Year.ToString(CultureInfo.InvariantCulture.NumberFormat) + "-" + Date.Value.Month.ToString(CultureInfo.InvariantCulture.NumberFormat) + "-" + Date.Value.Day.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add("Campaign", "airGroup", AirGroup);
             careerFile.add("Campaign", "missionFile", MissionFileName);
             careerFile.add("Campaign", "id", CampaignInfo.Id);
+
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString());
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString());
+            careerFile.add(SectionStat, KeyBails, Bails.ToString());
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString());
+            careerFile.add(SectionStat, KeyKills, Kills.ToString());
+
+            foreach (var item in KillsHistory)
+            {
+                careerFile.add(SectionKillsResult, item.Key.ToString("yyyy/M/d"), item.Value);
+            }
         }
     }
 }
