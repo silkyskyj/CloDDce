@@ -27,6 +27,8 @@ namespace IL2DCE.Pages
 {
     public class BattleResultPage : PageDefImpl
     {
+        public const string KillsFormat = "F2";
+
         protected IGame Game
         {
             get
@@ -60,19 +62,26 @@ namespace IL2DCE.Pages
         protected void UpdateTotalPlayerStat(IPlayer player)
         {
             IGameSingle game = (Game as IGameSingle);
-            Career creer = game.Core.CurrentCareer;
+            Career career = game.Core.CurrentCareer;
 
             IPlayerStat st = player.GetBattleStat();
 
-            creer.Takeoffs += st.takeoffs;
-            creer.Landings += st.landings;
-            creer.Bails += st.bails;
-            creer.Deaths += st.deaths;
-            creer.Kills += st.kills;
+            career.Takeoffs += st.takeoffs;
+            career.Landings += st.landings;
+            career.Bails += st.bails;
+            career.Deaths += st.deaths;
+            career.Kills += ((int)(st.kills *100)) / 100.0;
             string killsTypes = ToStringkillsTypes(st.killsTypes);
             if (!string.IsNullOrEmpty(killsTypes))
             {
-                creer.KillsHistory.Add(creer.Date.Value, ToStringkillsTypes(st.killsTypes));
+                if (career.KillsHistory.ContainsKey(career.Date.Value.Date))
+                {
+                    career.KillsHistory[career.Date.Value.Date] += ", " + killsTypes;
+                }
+                else
+                {
+                    career.KillsHistory.Add(career.Date.Value.Date, killsTypes);
+                }
             }
         }
 
@@ -83,12 +92,13 @@ namespace IL2DCE.Pages
 
         protected string ToStringkillsTypes(Dictionary<string, double> dic)
         {
-            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), x.Value)));
+            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(KillsFormat))));
         }
 
         protected string ToStringTimeSpan(Dictionary<string, float> dic)
         {
-            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
+            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", 
+                                                    AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
         }
 
         protected virtual string GetResultSummary(IGameSingle game)
@@ -108,33 +118,6 @@ namespace IL2DCE.Pages
         protected virtual string GetPlayerStat(IPlayer player)
         {
             IPlayerStat st = player.GetBattleStat();
-#if false
-            return String.Format("PlayerStat [{0}]\n Flying Time: {1}\n Takeoffs: {2}\n Landings: {3}\n Deaths: {4}\n Bails: {5}\n Ditches: {6}\n PlanesWrittenOff: {7}\n" +
-                                    " Kills: {8}\n Friendly Kills: {9}\n KillsTypes: {10}\n" + 
-                                    " Bullets Fire: {11}\n         Hit: {12}\n         HitAir: {13}\n Rockets Fire: {14}\n         Hit: {15}\n" +
-                                    " Bombs Fire: {16}\n        Weight: {16}\n        Hit: {18}\n Torpedos Fire: {19}\n          Hit: {20}\n",
-                                    player?.Name() ?? string.Empty,
-                                    ToString(st.tTotalTypes),
-                                    st.takeoffs,
-                                    st.landings,
-                                    st.deaths,
-                                    st.bails,
-                                    st.ditches,
-                                    st.planesWrittenOff,
-                                    st.kills,
-                                    st.fkills,
-                                    ToString(st.killsTypes),
-                                    st.bulletsFire,
-                                    st.bulletsHit,
-                                    st.bulletsHitAir,
-                                    st.rocketsFire,
-                                    st.rocketsHit,
-                                    st.bombsFire,
-                                    st.bombsWeight,
-                                    st.bombsHit,
-                                    st.torpedosFire,
-                                    st.torpedosHit);
-#else
             return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs: {3}\n Landings: {4}\n Deaths: {5}\n Bails: {6}\n Ditches: {7}\n PlanesWrittenOff: {8}\n" +
                                     " Kills: {9}\n Friendly Kills: {10}\n KillsTypes: {11}\n",
                                     player?.Name() ?? string.Empty,
@@ -146,10 +129,9 @@ namespace IL2DCE.Pages
                                     st.bails,
                                     st.ditches,
                                     st.planesWrittenOff,
-                                    st.kills,
-                                    st.fkills,
+                                    st.kills.ToString(KillsFormat),
+                                    st.fkills.ToString(KillsFormat),
                                     ToStringkillsTypes(st.killsTypes));
-#endif
         }
 
         protected virtual string GetTotalPlayerStat()
@@ -170,7 +152,7 @@ namespace IL2DCE.Pages
                                     career.Landings,
                                     career.Deaths,
                                     career.Bails,
-                                    career.Kills,
+                                    career.Kills.ToString(KillsFormat),
                                     builder.ToString());
         }
     }

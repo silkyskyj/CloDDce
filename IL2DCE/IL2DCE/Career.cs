@@ -296,7 +296,7 @@ namespace IL2DCE
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
                 Bails = careerFile.get(SectionStat, KeyBails, 0);
                 Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
-                Kills = careerFile.get(SectionStat, KeyKills, 0);
+                Kills = careerFile.get(SectionStat, KeyKills, 0f);
 
                 KillsHistory = new Dictionary<DateTime, string>();
                 int killsResult = careerFile.lines(SectionKillsResult);
@@ -308,13 +308,20 @@ namespace IL2DCE
                     careerFile.get(SectionKillsResult, i,  out key, out value);
                     if (DateTime.TryParse(key, out dt))
                     {
-                        KillsHistory.Add(dt, value);
+                        if (KillsHistory.ContainsKey(dt.Date))
+                        {
+                            KillsHistory[dt.Date] += ", " + value;
+                        }
+                        else
+                        {
+                            KillsHistory.Add(dt.Date, value);
+                        }
                     }
                 }
             }
             else
             {
-                throw new FormatException();
+                throw new FormatException("Career File Format Error");
             }
         }
 
@@ -367,7 +374,7 @@ namespace IL2DCE
             careerFile.add(SectionStat, KeyLandings, Landings.ToString());
             careerFile.add(SectionStat, KeyBails, Bails.ToString());
             careerFile.add(SectionStat, KeyDeaths, Deaths.ToString());
-            careerFile.add(SectionStat, KeyKills, Kills.ToString());
+            careerFile.add(SectionStat, KeyKills, Kills.ToString("F2"));
 
             foreach (var item in KillsHistory)
             {
