@@ -101,7 +101,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release copy "$(ProjectDir)\IL2DCE.Inst.nsi" "$(TargetDir)..\..\IL2DCE.Inst.nsi"
-</PostBuildEvent>
+copy "$(SolutionDir)..\README.md" "$(TargetDir)..\..\README.md"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

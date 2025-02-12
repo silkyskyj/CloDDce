@@ -24,9 +24,9 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("https://github.com/il2dce/il2dce")]
 [assembly: AssemblyProduct("IL2DCE [Forked by silkyskyj]")]
-[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2016")]
+[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2016 & silkyskyj 2025")]
 [assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.3.3.1")]
-[assembly: AssemblyFileVersion("0.3.3.1")]
+[assembly: AssemblyVersion("0.3.4.0")]
+[assembly: AssemblyFileVersion("0.3.4.0")]
