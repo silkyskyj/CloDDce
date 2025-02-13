@@ -16,7 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -934,6 +936,17 @@ namespace IL2DCE
             const string del = ":";
             int idx = airGroupKey.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
             return idx != -1 ? airGroupKey.Substring(idx + del.Length): airGroupKey;
+        }
+
+        #endregion
+
+        #region Debug methods
+
+        [Conditional("DEBUG")]
+        public void TraceLoadoutInfo()
+        {
+            Debug.WriteLine("[AirGroup.Loadout] Class:{0}, AirGroupKey:{1}, Weapons:{2}, Detonator{3}",
+                Class, AirGroupKey, string.Join(" ", Weapons.Select(x => x.ToString())), string.Join(" ", Detonator));
         }
 
         #endregion

@@ -17,6 +17,19 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
 [assembly: AssemblyTitle("IL2DCE.Core")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings")]
 [assembly: Guid("df52f1e2-6b2a-4726-9f24-39b7c3adc6da")]
+[assembly: AssemblyCompany("https://github.com/il2dce/il2dce")]
+[assembly: AssemblyProduct("IL2DCE [Forked by silkyskyj]")]
+[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2016 & silkyskyj 2025")]
+[assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
+[assembly: AssemblyVersion("0.3.5.0")]
+[assembly: AssemblyFileVersion("0.3.5.0")]

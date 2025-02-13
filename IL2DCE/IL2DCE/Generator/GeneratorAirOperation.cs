@@ -281,7 +281,6 @@ namespace IL2DCE
             return selectedAirGroup;
         }
 
-
         public int getRandomIndex(ref List<AirGroup> airGroups, Point3d position)
         {
             // Sort the air groups by their distance to the position.
@@ -333,7 +332,6 @@ namespace IL2DCE
             return airGroups.IndexOf(selectedAirGroup);
         }
 
-
         public void CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup)
         {
             IList<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
@@ -371,6 +369,7 @@ namespace IL2DCE
                 AircraftLoadoutInfo aircraftLoadoutInfo = CampaignInfo.GetAircraftInfo(airGroup.Class).GetAircraftLoadoutInfo(randomAircraftParametersInfo.LoadoutId);
                 airGroup.Weapons = aircraftLoadoutInfo.Weapons;
                 airGroup.Detonator = aircraftLoadoutInfo.Detonator;
+                airGroup.TraceLoadoutInfo();
 
                 AirGroup escortAirGroup = forcedEscortAirGroup;
                 if (isMissionTypeEscorted(missionType))
@@ -585,6 +584,7 @@ namespace IL2DCE
                                 AircraftParametersInfo defensiveRandomAircraftParametersInfo = defensiveAircraftParametersInfos[defensiveAircraftParametersInfoIndex];
                                 AircraftLoadoutInfo defensiveAircraftLoadoutInfo = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class).GetAircraftLoadoutInfo(defensiveRandomAircraftParametersInfo.LoadoutId);
                                 defensiveAirGroup.Weapons = defensiveAircraftLoadoutInfo.Weapons;
+                                defensiveAirGroup.TraceLoadoutInfo();
 
                                 if (randomDefensiveMissionType == EMissionType.INTERCEPT)
                                 {

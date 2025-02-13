@@ -13,6 +13,56 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IL2DCE.Pages", "IL2DCE.Page
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupIL2DCE", "SetupIL2DCE\SetupIL2DCE.vdproj", "{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Campaigns", "Campaigns", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\AircraftInfo.ini = Campaigns\AircraftInfo.ini
+		Campaigns\AirGroupInfo.ini = Campaigns\AirGroupInfo.ini
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adlerangriff", "Adlerangriff", "{E4CFEBBA-6807-4642-A5E8-4111BBA5B859}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Adlerangriff\CampaignInfo.ini = Campaigns\Adlerangriff\CampaignInfo.ini
+		Campaigns\Adlerangriff\LW_OrderOfBattle_August1940.mis = Campaigns\Adlerangriff\LW_OrderOfBattle_August1940.mis
+		Campaigns\Adlerangriff\MissionSingle.cs = Campaigns\Adlerangriff\MissionSingle.cs
+		Campaigns\Adlerangriff\RAF_OrderOfBattle_August1940.mis = Campaigns\Adlerangriff\RAF_OrderOfBattle_August1940.mis
+		Campaigns\Adlerangriff\StaticTemplate.mis = Campaigns\Adlerangriff\StaticTemplate.mis
+		Campaigns\Adlerangriff\Summer1940.mis = Campaigns\Adlerangriff\Summer1940.mis
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kanalkampf", "Kanalkampf", "{85AF6006-C929-4478-AD67-FA895A2B51A7}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Kanalkampf\CampaignInfo.ini = Campaigns\Kanalkampf\CampaignInfo.ini
+		Campaigns\Kanalkampf\LW_OrderOfBattle_August1940.mis = Campaigns\Kanalkampf\LW_OrderOfBattle_August1940.mis
+		Campaigns\Kanalkampf\MissionSingle.cs = Campaigns\Kanalkampf\MissionSingle.cs
+		Campaigns\Kanalkampf\RAF_OrderOfBattle_August1940.mis = Campaigns\Kanalkampf\RAF_OrderOfBattle_August1940.mis
+		Campaigns\Kanalkampf\StaticTemplate.mis = Campaigns\Kanalkampf\StaticTemplate.mis
+		Campaigns\Kanalkampf\Summer1940.mis = Campaigns\Kanalkampf\Summer1940.mis
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars", "Supply Wars", "{359B04C2-59DD-4167-9CEC-DB40A4B9772E}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Supply Wars\CampaignInfo.ini = Campaigns\Supply Wars\CampaignInfo.ini
+		Campaigns\Supply Wars\MissionSingle.cs = Campaigns\Supply Wars\MissionSingle.cs
+		Campaigns\Supply Wars\SupplyWars_Environment.mis = Campaigns\Supply Wars\SupplyWars_Environment.mis
+		Campaigns\Supply Wars\SupplyWars_Initial.mis = Campaigns\Supply Wars\SupplyWars_Initial.mis
+		Campaigns\Supply Wars\SupplyWars_Static.mis = Campaigns\Supply Wars\SupplyWars_Static.mis
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars.tobruk", "Supply Wars.tobruk", "{197175B4-BD2C-4289-9C47-CB4660DBF7B2}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Supply Wars.tobruk\CampaignInfo.ini = Campaigns\Supply Wars.tobruk\CampaignInfo.ini
+		Campaigns\Supply Wars.tobruk\MissionSingle.cs = Campaigns\Supply Wars.tobruk\MissionSingle.cs
+		Campaigns\Supply Wars.tobruk\SupplyWars_Environment.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Environment.mis
+		Campaigns\Supply Wars.tobruk\SupplyWars_Initial.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Initial.mis
+		Campaigns\Supply Wars.tobruk\SupplyWars_Static.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Static.mis
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
+	ProjectSection(SolutionItems) = preProject
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -37,9 +87,16 @@ Global
 		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|x64.Build.0 = Release|x64
 		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Debug|x64.ActiveCfg = Debug
 		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Release|x64.ActiveCfg = Release
+		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Release|x64.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E4CFEBBA-6807-4642-A5E8-4111BBA5B859} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{85AF6006-C929-4478-AD67-FA895A2B51A7} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{359B04C2-59DD-4167-9CEC-DB40A4B9772E} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{197175B4-BD2C-4289-9C47-CB4660DBF7B2} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60E924F7-66B7-4DA3-884D-0E0FA7339A19}

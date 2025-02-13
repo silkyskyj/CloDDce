@@ -55,7 +55,6 @@
     <Compile Include="MissionObjectModel\GroundGroupWaypointLine.cs" />
     <Compile Include="MissionObjectModel\GroundGroupWaypointSpline.cs" />
     <Compile Include="MissionObjectModel\Building.cs" />
-    <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="MissionObjectModel\GroundGroup.cs" />
     <Compile Include="MissionObjectModel\GroundGroupWaypoint.cs" />
     <Compile Include="IGame.cs" />
