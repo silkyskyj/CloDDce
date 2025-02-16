@@ -40,10 +40,14 @@
     <Compile Include="BattlePage.cs" />
     <Compile Include="BattleResultPage.cs" />
     <Compile Include="BattleSuccessPage.cs" />
+    <Compile Include="CampaignCompletion.xaml.cs">
+      <DependentUpon>CampaignCompletion.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CampaignIntro.xaml.cs">
       <DependentUpon>CampaignIntro.xaml</DependentUpon>
     </Compile>
     <Compile Include="CampaignIntroPage.cs" />
+    <Compile Include="CampaignCompletionPage.cs" />
     <Compile Include="QuickMissionPage.cs" />
     <Compile Include="QuickMission.xaml.cs">
       <DependentUpon>QuickMission.xaml</DependentUpon>
@@ -85,6 +89,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CampaignCompletion.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CampaignIntro.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

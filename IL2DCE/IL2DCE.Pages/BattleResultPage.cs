@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using maddox.game;
 using maddox.game.play;
@@ -27,8 +26,6 @@ namespace IL2DCE.Pages
 {
     public class BattleResultPage : PageDefImpl
     {
-        public const string KillsFormat = "F2";
-
         protected IGame Game
         {
             get
@@ -70,7 +67,7 @@ namespace IL2DCE.Pages
             career.Landings += st.landings;
             career.Bails += st.bails;
             career.Deaths += st.deaths;
-            career.Kills += ((int)(st.kills *100)) / 100.0;
+            career.Kills += ((int)(st.kills * 100)) / 100.0;
             string killsTypes = ToStringkillsTypes(st.killsTypes);
             if (!string.IsNullOrEmpty(killsTypes))
             {
@@ -92,12 +89,12 @@ namespace IL2DCE.Pages
 
         protected string ToStringkillsTypes(Dictionary<string, double> dic)
         {
-            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(KillsFormat))));
+            return string.Join(", ", dic.Select(x => string.Format("{0} x {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Career.KillsFormat))));
         }
 
         protected string ToStringTimeSpan(Dictionary<string, float> dic)
         {
-            return string.Join(", ", dic.Select(x => string.Format("[{0}]={1}", 
+            return string.Join(", ", dic.Select(x => string.Format("{0} {1}", 
                                                     AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
         }
 
@@ -105,14 +102,15 @@ namespace IL2DCE.Pages
         {
             Career career = game.Core.CurrentCareer;
             int exp = career.Experience;
-            int exp2 = game.BattleSuccess == EBattleResult.DRAW ? 100 : 200;
+            int exp2 = game.BattleSuccess == EBattleResult.DRAW ? 100 : game.BattleSuccess == EBattleResult.SUCCESS ? 200: 0;
             int rank = career.RankIndex;
-            return string.Format("{0}\nExp: {1} + {2}/{3}\n{4}\n",
+            return string.Format("Date: {0} - {1}\nExp: {2} + {3}/{4}\n{5}\n",
+                                    career.Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo),
                                     game.BattleSuccess.ToString(),
-                                    exp,
-                                    exp2,
-                                    ((rank + 1) * 1000),
-                                    (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty);
+                                    exp,                       // Before 
+                                    exp2,                      // Add Now
+                                    ((rank + 1) * 1000),       // Next Rank
+                                    (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty); // Rank Up
         }
 
         protected virtual string GetPlayerStat(IPlayer player)
@@ -129,31 +127,15 @@ namespace IL2DCE.Pages
                                     st.bails,
                                     st.ditches,
                                     st.planesWrittenOff,
-                                    st.kills.ToString(KillsFormat),
-                                    st.fkills.ToString(KillsFormat),
+                                    st.kills.ToString(Career.KillsFormat),
+                                    st.fkills.ToString(Career.KillsFormat),
                                     ToStringkillsTypes(st.killsTypes));
         }
 
         protected virtual string GetTotalPlayerStat()
         {
             IGameSingle game = (Game as IGameSingle);
-            Career career = game.Core.CurrentCareer;
-
-            StringBuilder builder = new StringBuilder();
-            var sorted = career.KillsHistory.OrderByDescending(x => x.Key.Date);
-            foreach (var item in sorted)
-            {
-                builder.AppendFormat("    {0}, {1}\n", item.Key.ToString("d", DateTimeFormatInfo.InvariantInfo), item.Value);
-            }
-
-            return String.Format("Total Result - {0}\n Takeoffs: {1}\n Landings: {2}\n Deaths: {3}\n Bails: {4}\n Kills: {5}\n Kills History:\n{6}\n",
-                                    career.ToString(),
-                                    career.Takeoffs,
-                                    career.Landings,
-                                    career.Deaths,
-                                    career.Bails,
-                                    career.Kills.ToString(KillsFormat),
-                                    builder.ToString());
+            return game.Core.CurrentCareer.ToTotalResultString();
         }
     }
 }

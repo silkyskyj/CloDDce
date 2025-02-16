@@ -17,17 +17,142 @@
 using System;
 using System.Collections.Generic;
 using maddox.game;
-using maddox.game.world;
 
 namespace IL2DCE
 {
+    public enum CampaignStatus
+    {
+        Empty,
+        InProgress,
+        DateEnd,
+        Count,
+    };
+
     /// <summary>
     /// The campaign info object holds the configuration of a campaign.
     /// </summary>
     public class CampaignInfo
     {
-        ISectionFile _globalAircraftInfoFile;
-        ISectionFile _localAircraftInfoFile;
+        /// <summary>
+        /// Max Campaign Period
+        /// </summary>
+        public const int MaxCampaignPeriod = 730;
+
+        /// <summary>
+        /// The id of the campaign.
+        /// </summary>
+        public string Id
+        {
+            get
+            {
+                return _id;
+            }
+        }
+        string _id;
+
+        /// <summary>
+        /// The name of the campaign.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+        }
+        string name;
+
+        /// <summary>
+        /// The environment template file that contains the definition of scenery objects.
+        /// </summary>
+        public string EnvironmentTemplateFile
+        {
+            get
+            {
+                return _environmentTemplateFile;
+            }
+        }
+        string _environmentTemplateFile;
+
+        /// <summary>
+        /// The list of static tempalte files that contain the definiton of the supply routes.
+        /// </summary>
+        public List<string> StaticTemplateFiles
+        {
+            get
+            {
+                return _staticTemplateFiles;
+            }
+        }
+        private List<string> _staticTemplateFiles = new List<string>();
+
+        /// <summary>
+        /// The list of initial mission template files that contain the starting location of air and ground groups.
+        /// </summary>
+        public List<string> InitialMissionTemplateFiles
+        {
+            get
+            {
+                return _initialMissionTemplateFiles;
+            }
+        }
+        private List<string> _initialMissionTemplateFiles = new List<string>();
+
+        /// <summary>
+        /// The name of the script file that will be used in the generated missions.
+        /// </summary>
+        public string ScriptFileName
+        {
+            get
+            {
+                return _scriptFileName;
+            }
+        }
+        private string _scriptFileName;
+
+        /// <summary>
+        /// The start date of the campaign.
+        /// </summary>
+        public DateTime StartDate
+        {
+            get
+            {
+                return _startDate;
+            }
+            set
+            {
+                _startDate = value;
+            }
+        }
+        private DateTime _startDate;
+
+        /// <summary>
+        /// The end date of the campaign.
+        /// </summary>
+        public DateTime EndDate
+        {
+            get
+            {
+                return _endDate;
+            }
+            set
+            {
+                _endDate = value;
+            }
+        }
+        private DateTime _endDate;
+
+        public AirGroupInfos AirGroupInfos
+        {
+            get
+            {
+                return _localAirGroupInfos;
+            }
+        }
+        private AirGroupInfos _localAirGroupInfos;
+
+        private ISectionFile _globalAircraftInfoFile;
+        private ISectionFile _localAircraftInfoFile;
  
         /// <summary>
         /// The constructor parses the campaign info file.
@@ -130,112 +255,7 @@ namespace IL2DCE
             return Name;
         }
 
-        /// <summary>
-        /// The id of the campaign.
-        /// </summary>
-        public string Id
-        {
-            get
-            {
-                return _id;
-            }
-        }
-        string _id;
-
-        /// <summary>
-        /// The name of the campaign.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
-        string name;
-
-        /// <summary>
-        /// The environment template file that contains the definition of scenery objects.
-        /// </summary>
-        public string EnvironmentTemplateFile
-        {
-            get
-            {
-                return _environmentTemplateFile;
-            }
-        }
-        string _environmentTemplateFile;
-
-        /// <summary>
-        /// The list of static tempalte files that contain the definiton of the supply routes.
-        /// </summary>
-        public List<string> StaticTemplateFiles
-        {
-            get
-            {
-                return _staticTemplateFiles;
-            }
-        }
-        private List<string> _staticTemplateFiles = new List<string>();
-
-        /// <summary>
-        /// The list of initial mission template files that contain the starting location of air and ground groups.
-        /// </summary>
-        public List<string> InitialMissionTemplateFiles
-        {
-            get
-            {
-                return _initialMissionTemplateFiles;
-            }
-        }
-        private List<string> _initialMissionTemplateFiles = new List<string>();
-
-        /// <summary>
-        /// The name of the script file that will be used in the generated missions.
-        /// </summary>
-        public string ScriptFileName
-        {
-            get
-            {
-                return _scriptFileName;
-            }
-        }
-        private string _scriptFileName;
-
-        /// <summary>
-        /// The start date of the campaign.
-        /// </summary>
-        public DateTime StartDate
-        {
-            get
-            {
-                return _startDate;
-            }
-        }
-        private DateTime _startDate;
-
-        /// <summary>
-        /// The end date of the campaign.
-        /// </summary>
-        public DateTime EndDate
-        {
-            get
-            {
-                return _endDate;
-            }
-        }
-        private DateTime _endDate;
-
-        public AirGroupInfos AirGroupInfos
-        {
-            get
-            {
-                return _localAirGroupInfos;
-            }
-        }
-        private AirGroupInfos _localAirGroupInfos;
-
-        /// <summary>
+         /// <summary>
         /// Gets the aircraft info for the given aicraft name. 
         /// </summary>
         /// <param name="aircraft">The name of the aircraft.</param>

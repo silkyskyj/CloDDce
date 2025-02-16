@@ -27,6 +27,7 @@ namespace IL2DCE
 
         #region Define
 
+        public const string HomeFolder = "$home/parts/IL2DCE";
         public const string ConfigFilePath = "$home/parts/IL2DCE/conf.ini";
         public const string CampaignInfoFileName = "CampaignInfo.ini";
         public const string AircraftInfoFileName = "AircraftInfo.ini";
@@ -163,10 +164,17 @@ namespace IL2DCE
                     FileInfo[] fileInfo = careerFolder.GetFiles(CareerInfoFileName);
                     if (fileInfo.Length == 1)
                     {
-                        ISectionFile careerFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}/{2}", UserMissionFolder, careerFolder.Name, CareerInfoFileName));
-
-                        Career career = new Career(careerFolder.Name, CampaignInfos, careerFile);
-                        AvailableCareers.Add(career);
+                        string path = string.Format("{0}/{1}/{2}", UserMissionFolder, careerFolder.Name, CareerInfoFileName);
+                        ISectionFile careerFile = gameInterface.SectionFileLoad(path);
+                        try
+                        {
+                            Career career = new Career(careerFolder.Name, CampaignInfos, careerFile);
+                            AvailableCareers.Add(career);
+                        }
+                        catch (Exception ex)
+                        {
+                            gameInterface.LogErrorToConsole("Error: read & parse Career file [{0}] {1}", path, ex.Message);
+                        }
                     }
                 }
             }
@@ -182,8 +190,9 @@ namespace IL2DCE
             AdvanceCampaign(game);
         }
 
-        public void AdvanceCampaign(IGame game)
+        public CampaignStatus AdvanceCampaign(IGame game)
         {
+            CampaignStatus result;
             Generator generator = new Generator(this);
             ISectionFile previousMissionTemplateFile = null;
 
@@ -198,11 +207,10 @@ namespace IL2DCE
 
                 // Generate the initial mission tempalte
                 generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out previousMissionTemplateFile, campaignInfo.AirGroupInfos);
+                result = CampaignStatus.Empty;
             }
             else
             {
-                career.Date = career.Date.Value.Add(new TimeSpan(1, 0, 0, 0));
-
                 if (game is IGameSingle)
                 {
                     if ((game as IGameSingle).BattleSuccess == EBattleResult.SUCCESS)
@@ -215,9 +223,19 @@ namespace IL2DCE
                     }
                 }
 
-                if (career.Experience >= (career.RankIndex + 1) * 1000)
+                if (career.RankIndex < Career.RankMax && career.Experience >= (career.RankIndex + 1) * 1000)
                 {
                     career.RankIndex += 1;
+                }
+
+                if (career.Date >= campaignInfo.EndDate)
+                {
+                    result = CampaignStatus.DateEnd;
+                }
+                else
+                {
+                    result = CampaignStatus.InProgress;
+                    career.Date = career.Date.Value.Add(new TimeSpan(1, 0, 0, 0));
                 }
 
                 previousMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
@@ -240,53 +258,59 @@ namespace IL2DCE
 
             ISectionFile careerFile = GamePlay.gpCreateSectionFile();
             string careerFileName = string.Format("{0}/{1}/{2}", UserMissionFolder, career.PilotName, CareerInfoFileName);
-            string missionId = string.Format("{0}_{1}-{2}-{3}", 
-                                                campaignInfo.Id, 
-                                                career.Date.Value.Date.Year.ToString(CultureInfo.InvariantCulture.NumberFormat), 
-                                                career.Date.Value.Date.Month.ToString(CultureInfo.InvariantCulture.NumberFormat), 
-                                                career.Date.Value.Date.Day.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            string missionFileName = string.Format("{0}/{1}/{2}.mis", UserMissionFolder,  career.PilotName, missionId);
-            career.MissionFileName = missionFileName;
+            
+            if (result != CampaignStatus.DateEnd)
+            {
+                string missionId = string.Format("{0}_{1}-{2}-{3}",
+                                                    campaignInfo.Id,
+                                                    career.Date.Value.Date.Year.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                                    career.Date.Value.Date.Month.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                                    career.Date.Value.Date.Day.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                string missionFileName = string.Format("{0}/{1}/{2}.mis", UserMissionFolder, career.PilotName, missionId);
+                career.MissionFileName = missionFileName;
 
-            // Generate the template for the next mission
-            ISectionFile missionTemplateFile = null;
-            generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, previousMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
-            missionTemplateFile.save(career.MissionTemplateFileName);
+                // Generate the template for the next mission
+                ISectionFile missionTemplateFile = null;
+                generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, previousMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
+                missionTemplateFile.save(career.MissionTemplateFileName);
 
-            // Generate the next mission based on the new template.
+                // Generate the next mission based on the new template.
 
-            ISectionFile missionFile = null;
-            BriefingFile briefingFile = null;
-            generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, out missionFile, out briefingFile);
+                ISectionFile missionFile = null;
+                BriefingFile briefingFile = null;
+                generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, out missionFile, out briefingFile);
 
-            string briefingFileSystemPath = string.Format(this._careersFolderSystemPath + "\\" + career.PilotName + "\\{0}.briefing", missionId);
-            string scriptSourceFileSystemPath = this._campaignsFolderSystemPath + "\\" + campaignInfo.Id + "\\" + campaignInfo.ScriptFileName;
-            string scriptDestinationFileSystemPath = this._careersFolderSystemPath + "\\" + career.PilotName + "\\" + missionId + ".cs";
-            File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
+                string briefingFileSystemPath = string.Format(this._careersFolderSystemPath + "\\" + career.PilotName + "\\{0}.briefing", missionId);
+                string scriptSourceFileSystemPath = this._campaignsFolderSystemPath + "\\" + campaignInfo.Id + "\\" + campaignInfo.ScriptFileName;
+                string scriptDestinationFileSystemPath = this._careersFolderSystemPath + "\\" + career.PilotName + "\\" + missionId + ".cs";
+                File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
-            missionFile.save(missionFileName);
-            briefingFile.SaveTo(briefingFileSystemPath);
+                missionFile.save(missionFileName);
+                briefingFile.SaveTo(briefingFileSystemPath);
+
+#if DEBUG
+                Config.Debug = 1;
+#endif
+                if (Config.Debug == 1)
+                {
+                    if (!Directory.Exists(this._debugFolderSystemPath))
+                    {
+                        Directory.CreateDirectory(this._debugFolderSystemPath);
+                    }
+                    missionTemplateFile.save("$user/missions/IL2DCE/Debug/IL2DCEDebugTemplate.mis");
+                    missionFile.save("$user/missions/IL2DCE/Debug/IL2DCEDebug.mis");
+                    briefingFile.SaveTo(this._debugFolderSystemPath + "\\IL2DCEDebug.briefing");
+                    File.Copy(scriptSourceFileSystemPath, this._debugFolderSystemPath + "\\IL2DCEDebug.cs", true);
+                }
+            }
 
             // Stop the preloaded battle to prevent a postload.
             game.gameInterface.BattleStop();
 
-#if DEBUG
-            Config.Debug = 1;
-#endif
-            if (Config.Debug == 1)
-            {
-                if (!Directory.Exists(this._debugFolderSystemPath))
-                {
-                    Directory.CreateDirectory(this._debugFolderSystemPath);
-                }
-                missionTemplateFile.save("$user/missions/IL2DCE/Debug/IL2DCEDebugTemplate.mis");
-                missionFile.save("$user/missions/IL2DCE/Debug/IL2DCEDebug.mis");
-                briefingFile.SaveTo(this._debugFolderSystemPath + "\\IL2DCEDebug.briefing");
-                File.Copy(scriptSourceFileSystemPath, this._debugFolderSystemPath + "\\IL2DCEDebug.cs", true);
-            }
-
             career.WriteTo(careerFile);
             careerFile.save(careerFileName);
+
+            return result;
         }
 
         public void InitCampaign()

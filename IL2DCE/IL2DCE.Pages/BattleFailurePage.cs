@@ -23,6 +23,14 @@ namespace IL2DCE
     {
         public class BattleFailurePage : BattleResultPage
         {
+            private CampaignBattleFailure FrameworkElement
+            {
+                get
+                {
+                    return FE as CampaignBattleFailure;
+                }
+            }
+
             public BattleFailurePage()
                 : base("Battle Failure", new CampaignBattleFailure())
             {
@@ -34,22 +42,6 @@ namespace IL2DCE
                 FrameworkElement.Fly.Visibility = Visibility.Hidden;
             }
 
-            void ReFly_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PageChange(new BattleIntroPage(), null);
-            }
-
-            void Back_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PagePop(null);
-            }
-
-            void Fly_Click(object sender, RoutedEventArgs e)
-            {
-                Game.Core.AdvanceCampaign(Game);
-
-                Game.gameInterface.PageChange(new BattleIntroPage(), null);
-            }
 
             public override void _enter(maddox.game.IGame play, object arg)
             {
@@ -59,7 +51,7 @@ namespace IL2DCE
 
                 if (Game is IGameSingle)
                 {
-                    result = (Game as IGameSingle).BattleSuccess.ToString() + "\n";
+                    result += GetResultSummary(Game as IGameSingle);
                 }
 
                 if (play.gameInterface != null)
@@ -71,11 +63,25 @@ namespace IL2DCE
                 FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
             }
 
-            private CampaignBattleFailure FrameworkElement
+            void Back_Click(object sender, RoutedEventArgs e)
             {
-                get
+                Game.gameInterface.PagePop(null);
+            }
+
+            void ReFly_Click(object sender, RoutedEventArgs e)
+            {
+                Game.gameInterface.PageChange(new BattleIntroPage(), null);
+            }
+
+            void Fly_Click(object sender, RoutedEventArgs e)
+            {
+                CampaignStatus status = Game.Core.AdvanceCampaign(Game);
+                if (status != CampaignStatus.DateEnd)
                 {
-                    return FE as CampaignBattleFailure;
+                    Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                }
+                {
+                    Game.gameInterface.PageChange(new CampaignCompletionPage(), null);
                 }
             }
         }

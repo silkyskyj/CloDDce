@@ -24,27 +24,28 @@ namespace IL2DCE
     {
         public class BattleIntroPage : PageDefImpl
         {
+            private CampaignBattleIntro FrameworkElement
+            {
+                get
+                {
+                    return FE as CampaignBattleIntro;
+                }
+            }
+
+            private IGame Game
+            {
+                get
+                {
+                    return _game;
+                }
+            }
+            private IGame _game;
+ 
             public BattleIntroPage()
                 : base("Battle Intro", new CampaignBattleIntro())
             {
                 FrameworkElement.Fly.Click += new RoutedEventHandler(Fly_Click);
                 FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
-            }
-
-            void Back_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PagePop(null);
-            }
-
-            void Fly_Click(object sender, RoutedEventArgs e)
-            {
-                if (Game is IGameSingle)
-                {
-                    IGameSingle gameSingle = Game as IGameSingle;
-                    gameSingle.BattleSuccess = EBattleResult.DRAW;
-                }
-
-                Game.gameInterface.PageChange(new BattlePage(), null);
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -71,22 +72,21 @@ namespace IL2DCE
                 _game = null;
             }
 
-            private CampaignBattleIntro FrameworkElement
+            void Back_Click(object sender, RoutedEventArgs e)
             {
-                get
-                {
-                    return FE as CampaignBattleIntro;
-                }
+                Game.gameInterface.PagePop(null);
             }
 
-            private IGame Game
+            void Fly_Click(object sender, RoutedEventArgs e)
             {
-                get
+                if (Game is IGameSingle)
                 {
-                    return _game;
+                    IGameSingle gameSingle = Game as IGameSingle;
+                    gameSingle.BattleSuccess = EBattleResult.DRAW;
                 }
+
+                Game.gameInterface.PageChange(new BattlePage(), null);
             }
-            private IGame _game;
         }
     }
 }

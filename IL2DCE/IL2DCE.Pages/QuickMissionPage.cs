@@ -23,6 +23,24 @@ namespace IL2DCE
     {
         public class QuickMissionPage : PageDefImpl
         {
+
+            private CareerIntro FrameworkElement
+            {
+                get
+                {
+                    return FE as CareerIntro;
+                }
+            }
+
+            private IGame Game
+            {
+                get
+                {
+                    return _game;
+                }
+            }
+            private IGame _game;
+
             public QuickMissionPage()
                 : base("Quick Mission", new QuickMission())
             {
@@ -42,11 +60,11 @@ namespace IL2DCE
                 _game = play as IGame;
 
                 System.Windows.Controls.ComboBoxItem itemArmyRed = new System.Windows.Controls.ComboBoxItem();
-                itemArmyRed.Content = "Red";
+                itemArmyRed.Content = Career.Army[0];
                 itemArmyRed.Tag = 1;
                 FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyRed);
                 System.Windows.Controls.ComboBoxItem itemArmyBlue = new System.Windows.Controls.ComboBoxItem();
-                itemArmyBlue.Content = "Blue";
+                itemArmyBlue.Content = Career.Army[1];
                 itemArmyBlue.Tag = 2;
                 FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyBlue);
                 FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
@@ -58,23 +76,6 @@ namespace IL2DCE
 
                 _game = null;
             }
-
-            private CareerIntro FrameworkElement
-            {
-                get
-                {
-                    return FE as CareerIntro;
-                }
-            }
-
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
 
             void textBoxPilotName_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
             {

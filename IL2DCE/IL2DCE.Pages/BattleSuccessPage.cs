@@ -23,6 +23,14 @@ namespace IL2DCE
     {
         public class BattleSuccessPage : BattleResultPage
         {
+            private CampaignBattleSuccess FrameworkElement
+            {
+                get
+                {
+                    return FE as CampaignBattleSuccess;
+                }
+            }
+
             public BattleSuccessPage()
                 : base("Battle Success", new CampaignBattleSuccess())
             {
@@ -43,9 +51,15 @@ namespace IL2DCE
 
             void Fly_Click(object sender, RoutedEventArgs e)
             {
-                Game.Core.AdvanceCampaign(Game);
-
-                Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                CampaignStatus status = Game.Core.AdvanceCampaign(Game);
+                if (status != CampaignStatus.DateEnd)
+                {
+                    Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                }
+                else
+                {
+                    Game.gameInterface.PageChange(new CampaignCompletionPage(), null);
+                }
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -66,14 +80,6 @@ namespace IL2DCE
 
                 FrameworkElement.textBoxDescription.Text = result;
                 FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
-            }
-
-            private CampaignBattleSuccess FrameworkElement
-            {
-                get
-                {
-                    return FE as CampaignBattleSuccess;
-                }
             }
         }
     }

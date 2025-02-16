@@ -25,6 +25,23 @@ namespace IL2DCE
     {
         public class CareerIntroPage : PageDefImpl
         {
+            private CareerIntro FrameworkElement
+            {
+                get
+                {
+                    return FE as CareerIntro;
+                }
+            }
+
+            private IGame Game
+            {
+                get
+                {
+                    return _game;
+                }
+            }
+            private IGame _game;
+
             public CareerIntroPage()
                 : base("Career Intro", new CareerIntro())
             {
@@ -44,11 +61,11 @@ namespace IL2DCE
                 _game = play as IGame;
 
                 ComboBoxItem itemArmyRed = new ComboBoxItem();
-                itemArmyRed.Content = "Red";
+                itemArmyRed.Content = Career.Army[0];
                 itemArmyRed.Tag = 1;
                 FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyRed);
                 ComboBoxItem itemArmyBlue = new ComboBoxItem();
-                itemArmyBlue.Content = "Blue";
+                itemArmyBlue.Content = Career.Army[1];
                 itemArmyBlue.Tag = 2;
                 FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyBlue);
                 FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
@@ -60,23 +77,6 @@ namespace IL2DCE
 
                 _game = null;
             }
-
-            private CareerIntro FrameworkElement
-            {
-                get
-                {
-                    return FE as CareerIntro;
-                }
-            }
-
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
 
             void textBoxPilotName_TextChanged(object sender, TextChangedEventArgs e)
             {
@@ -106,40 +106,42 @@ namespace IL2DCE
                     ComboBoxItem armySelected = e.AddedItems[0] as ComboBoxItem;
                     int armyIndex = (int)armySelected.Tag;
 
-                    FrameworkElement.comboBoxSelectAirForce.Items.Clear();
+                    ComboBox comboBox = FrameworkElement.comboBoxSelectAirForce;
+
+                    comboBox.Items.Clear();
 
                     if (armyIndex == 1)
                     {
                         ComboBoxItem itemRaf = new ComboBoxItem();
                         itemRaf.Tag = 1;
-                        itemRaf.Content = "Royal Air Force";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemRaf);
+                        itemRaf.Content = Career.AirForce[0];
+                        comboBox.Items.Add(itemRaf);
 
                         ComboBoxItem itemFr = new ComboBoxItem();
                         itemFr.Tag = 2;
-                        itemFr.Content = "Armee de l'air";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemFr);
+                        itemFr.Content = Career.AirForce[1];
+                        comboBox.Items.Add(itemFr);
 
                         ComboBoxItem itemUsa = new ComboBoxItem();
                         itemUsa.Tag = 3;
-                        itemUsa.Content = "United States Army Air Forces";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemUsa);
+                        itemUsa.Content = Career.AirForce[2];
+                        comboBox.Items.Add(itemUsa);
 
-                        FrameworkElement.comboBoxSelectAirForce.SelectedIndex = 0;
+                        comboBox.SelectedIndex = 0;
                     }
                     else if (armyIndex == 2)
                     {
                         ComboBoxItem itemLw = new ComboBoxItem();
                         itemLw.Tag = 1;
-                        itemLw.Content = "Luftwaffe";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemLw);
+                        itemLw.Content = Career.AirForce[3];
+                        comboBox.Items.Add(itemLw);
 
                         ComboBoxItem itemRa = new ComboBoxItem();
                         itemRa.Tag = 2;
-                        itemRa.Content = "Regia Aeronautica";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemRa);
+                        itemRa.Content = Career.AirForce[4];
+                        comboBox.Items.Add(itemRa);
 
-                        FrameworkElement.comboBoxSelectAirForce.SelectedIndex = 0;
+                        comboBox.SelectedIndex = 0;
                     }
                 }
             }
@@ -154,55 +156,21 @@ namespace IL2DCE
                     ComboBoxItem airForceSelected = e.AddedItems[0] as ComboBoxItem;
                     int airForceIndex = (int)airForceSelected.Tag;
 
-                    if (armyIndex == 1 && airForceIndex == 1)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Joe Bloggs";
-                    }
-                    else if (armyIndex == 1 && airForceIndex == 2)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Jean Dupont";
-                    }
-                    else if (armyIndex == 1 && airForceIndex == 3)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "John Smith";
-                    }
-                    else if (armyIndex == 2 && airForceIndex == 1)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Max Mustermann";
-                    }
-                    else if (armyIndex == 2 && airForceIndex == 2)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Mario Rossi";
-                    }
+                    int airforce = (armyIndex - 1) * 3 + airForceIndex - 1;
+                    FrameworkElement.textBoxPilotName.Text = Career.PilotNameDefault[airforce];
 
-                    FrameworkElement.comboBoxSelectRank.Items.Clear();
-                    for (int i = 0; i < 6; i++)
+                    ComboBox comboBoxRank = FrameworkElement.comboBoxSelectRank;
+                    comboBoxRank.Items.Clear();
+                    for (int i = 0; i <= Career.RankMax; i++)
                     {
-                        ComboBoxItem itemRank = new ComboBoxItem();
-                        if (armyIndex == 1 && airForceIndex == 1)
-                        {
-                            itemRank.Content = Career.RafRanks[i];
-                        }
-                        else if (armyIndex == 1 && airForceIndex == 2)
-                        {
-                            itemRank.Content = Career.AaRanks[i];
-                        }
-                        else if (armyIndex == 1 && airForceIndex == 3)
-                        {
-                            itemRank.Content = Career.UsaafRanks[i];
-                        }
-                        else if (armyIndex == 2 && airForceIndex == 1)
-                        {
-                            itemRank.Content = Career.LwRanks[i];
-                        }
-                        else if (armyIndex == 2 && airForceIndex == 2)
-                        {
-                            itemRank.Content = Career.RaRanks[i];
-                        }
-                        itemRank.Tag = i;
-                        FrameworkElement.comboBoxSelectRank.Items.Add(itemRank);
+                        comboBoxRank.Items.Add(
+                            new ComboBoxItem()
+                            {
+                                Content = Career.Rank[airforce][i],
+                                Tag = i,
+                            });
                     }
-                    FrameworkElement.comboBoxSelectRank.SelectedIndex = 0;
+                    comboBoxRank.SelectedIndex = 0;
                 }
             }
 
@@ -213,7 +181,7 @@ namespace IL2DCE
                     Game.gameInterface.BattleStop();
                 }
 
-                Game.gameInterface.PagePop(null);
+                Game.gameInterface.PageChange(new SelectCareerPage(), null);
             }
 
             private void Start_Click(object sender, RoutedEventArgs e)

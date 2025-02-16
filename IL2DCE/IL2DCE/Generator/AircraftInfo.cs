@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using maddox.game;
 
 namespace IL2DCE
@@ -128,7 +129,7 @@ namespace IL2DCE
             // tobruk:Aircraft.Macchi-C202-SeriesVII -> Macchi-C202-SeriesVII
             const string del = "Aircraft.";
             int idx = aircraftInfo.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
-            return idx != -1 ? aircraftInfo.Substring(idx + del.Length): aircraftInfo;
+            return idx != -1 ? aircraftInfo.Substring(idx + del.Length) : aircraftInfo;
         }
 
         public IList<AircraftParametersInfo> GetAircraftParametersInfo(EMissionType missionType)
@@ -155,6 +156,79 @@ namespace IL2DCE
         public AircraftLoadoutInfo GetAircraftLoadoutInfo(string loadoutId)
         {
             return new AircraftLoadoutInfo(this._aircraftInfoFile, Aircraft, loadoutId);
+        }
+
+        public static string GetImagePath(string partsFolder, string aircraftClass)
+        {
+            const string del = "Aircraft.";
+
+            string[]  endis = { "trop", "late", "late_trop", "Derated", "AltoQuota", "Trop_Derated", "100oct", "NF", "Heartbreaker", "Torpedo", "Torpedo_trop",  };
+            // Aircraft.Bf-110C-7 -> Bf-110C-7
+            // tobruk:Aircraft.Macchi-C202-SeriesVII -> Macchi-C202-SeriesVII
+            string path;
+
+            int idx = aircraftClass.IndexOf(":");
+            string part = idx != -1 ? aircraftClass.Substring(0, idx) : "bob";
+            aircraftClass = idx != -1 ? aircraftClass.Substring(idx + 1) : aircraftClass;
+            idx = aircraftClass.IndexOf(del);
+            string cls = idx != -1 ? aircraftClass.Substring(idx + del.Length) : aircraftClass;
+            string folderBase = string.Format("{0}/{1}/3do/Plane", partsFolder, part);
+            string folder = string.Format("{0}/{1}", folderBase, cls);
+            if (Directory.Exists(folder))
+            {
+                if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
+                {
+                    return path;
+                }
+            }
+
+            foreach (var item in endis)
+            {
+                if (cls.EndsWith(item, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    folder = string.Format("{0}/{1}", folderBase, cls.Substring(0, cls.Length - item.Length - 1));
+                    if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
+                    {
+                        return path;
+                    }
+                }
+            }
+
+            return string.Empty;
+
+        }
+
+        private static string GetImagePathfromFolder(string folder, string aircraftClass)
+        {
+            const string file = "item.tif";
+            const string fileTrop = "item_trop.tif";
+            const string fileTropLate = "item_trop_late.tif";
+
+            string path = string.Format("{0}/{1}", folder, file);
+            if (File.Exists(path))
+            {
+                return path;
+            }
+
+            if (aircraftClass.EndsWith("trop", StringComparison.InvariantCultureIgnoreCase))
+            {
+                path = string.Format("{0}/{1}", folder, file);
+                if (File.Exists(fileTrop))
+                {
+                    return path;
+                }
+            }
+
+            if (aircraftClass.EndsWith("late", StringComparison.InvariantCultureIgnoreCase))
+            {
+                path = string.Format("{0}/{1}", folder, fileTropLate);
+                if (File.Exists(fileTrop))
+                {
+                    return path;
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2025 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,8 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using maddox.game;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -24,76 +28,6 @@ namespace IL2DCE
     {
         public class CampaignIntroPage : PageDefImpl
         {
-            public CampaignIntroPage()
-                : base("Campaign Into", new CampaignIntro())
-            {
-                FrameworkElement.Start.Click += new RoutedEventHandler(Start_Click);
-                FrameworkElement.Start.IsEnabled = false;
-                FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
-                FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
-            }
-
-            void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            {
-                if (e.AddedItems.Count == 1)
-                {
-                    ComboBoxItem itemAirGroup = e.AddedItems[0] as ComboBoxItem;
-                    AirGroup airGroup = (AirGroup)itemAirGroup.Tag;
-
-                    Game.Core.CurrentCareer.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
-                }
-            }
-
-            public override void _enter(maddox.game.IGame play, object arg)
-            {
-                base._enter(play, arg);
-
-                FrameworkElement.comboBoxSelectAirGroup.Items.Clear();
-
-                _game = play as IGame;
-
-                Career career = Game.Core.CurrentCareer;
-                CampaignInfo campaignInfo = career.CampaignInfo;
-
-                MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
-
-                foreach (AirGroup airGroup in campaignTemplate.AirGroups)
-                {
-                    AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
-                    if (airGroupInfo.ArmyIndex == career.ArmyIndex && airGroupInfo.AirForceIndex == career.AirForceIndex 
-                        && campaignInfo.GetAircraftInfo(airGroup.Class).IsFlyable)
-                    {
-                        ComboBoxItem itemAirGroup = new ComboBoxItem();
-
-                        itemAirGroup.Content = airGroup.DisplayName + " (" + campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName + ")";
-                        if (airGroup.Airstart == true)
-                        {
-                            itemAirGroup.Content += " [AIRSTART]";
-                        }
-
-                        itemAirGroup.Tag = airGroup;
-                        FrameworkElement.comboBoxSelectAirGroup.Items.Add(itemAirGroup);
-                    }
-                }
-
-                if (FrameworkElement.comboBoxSelectAirGroup.Items.Count > 0)
-                {
-                    FrameworkElement.comboBoxSelectAirGroup.SelectedIndex = 0;
-                    FrameworkElement.Start.IsEnabled = true;
-                }
-                else
-                {
-                    FrameworkElement.Start.IsEnabled = false;
-                }
-            }
-
-            public override void _leave(maddox.game.IGame play, object arg)
-            {
-                base._leave(play, arg);
-
-                _game = null;
-            }
-
             private CampaignIntro FrameworkElement
             {
                 get
@@ -111,6 +45,116 @@ namespace IL2DCE
             }
             private IGame _game;
 
+            public CampaignIntroPage()
+                : base("Campaign Into", new CampaignIntro())
+            {
+                FrameworkElement.Start.Click += new RoutedEventHandler(Start_Click);
+                FrameworkElement.Start.IsEnabled = false;
+                FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
+                FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
+                FrameworkElement.datePickerStart.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerStart_SelectedDateChanged);
+                FrameworkElement.datePickerEnd.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerEnd_SelectedDateChanged);
+            }
+
+            public override void _enter(maddox.game.IGame play, object arg)
+            {
+                base._enter(play, arg);
+
+                _game = play as IGame;
+
+                Career career = Game.Core.CurrentCareer;
+                CampaignInfo campaignInfo = career.CampaignInfo;
+
+                MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+
+                ComboBox comboBoxAirGroup = FrameworkElement.comboBoxSelectAirGroup;
+                comboBoxAirGroup.Items.Clear();
+                foreach (AirGroup airGroup in campaignTemplate.AirGroups)
+                {
+                    AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                    AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                    if (airGroupInfo.ArmyIndex == career.ArmyIndex && airGroupInfo.AirForceIndex == career.AirForceIndex && aircraftInfo.IsFlyable)
+                    {
+                        ComboBoxItem itemAirGroup = new ComboBoxItem();
+                        itemAirGroup.Content = airGroup.DisplayName + " (" + aircraftInfo.DisplayName + ")";
+                        if (airGroup.Airstart == true)
+                        {
+                            itemAirGroup.Content += " [AIRSTART]";
+                        }
+
+                        itemAirGroup.Tag = airGroup;
+                        comboBoxAirGroup.Items.Add(itemAirGroup);
+                    }
+                }
+                if (comboBoxAirGroup.Items.Count > 0)
+                {
+                    comboBoxAirGroup.SelectedIndex = 0;
+                }
+
+                DatePicker datePickerStart = FrameworkElement.datePickerStart;
+                datePickerStart.SelectedDate = campaignInfo.StartDate;
+                DatePicker datePickerEnd = FrameworkElement.datePickerEnd;
+                datePickerEnd.SelectedDate = campaignInfo.EndDate;
+
+                UpdateButtonStatus();
+            }
+
+            public override void _leave(maddox.game.IGame play, object arg)
+            {
+                base._leave(play, arg);
+
+                _game = null;
+            }
+
+            private void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                ComboBoxItem itemAirGroup = FrameworkElement.comboBoxSelectAirGroup.SelectedItem as ComboBoxItem;
+                if (itemAirGroup != null)
+                {
+                    AirGroup airGroup = itemAirGroup.Tag as AirGroup;
+                    if (airGroup != null)
+                    {
+                        string partsFolder = Game.gameInterface.ToFileSystemPath("$home/parts");
+                        string path = AircraftInfo.GetImagePath(partsFolder, airGroup.Class);
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            // using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                                var decoder = new TiffBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                                BitmapSource source = decoder.Frames[0];
+                                FrameworkElement.imageAircraft.Source = source;
+                                FrameworkElement.borderImage.Visibility = Visibility.Visible;
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                FrameworkElement.imageAircraft.Source = null;
+                FrameworkElement.borderImage.Visibility = Visibility.Hidden;
+            }
+
+            private void datePickerStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+            {
+                UpdateButtonStatus();
+            }
+
+            private void datePickerEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+            {
+                UpdateButtonStatus();
+            }
+
+            private void UpdateButtonStatus()
+            {
+                DatePicker datePickerStart = FrameworkElement.datePickerStart;
+                DatePicker datePickerEnd = FrameworkElement.datePickerEnd;
+                FrameworkElement.Start.IsEnabled = FrameworkElement.comboBoxSelectAirGroup.Items.Count > 0 &&
+                                                    datePickerStart.SelectedDate.HasValue && datePickerEnd.SelectedDate.HasValue &&
+                                                    datePickerStart.SelectedDate.Value <= datePickerEnd.SelectedDate.Value &&
+                                                    (datePickerEnd.SelectedDate.Value - datePickerStart.SelectedDate.Value).TotalDays <= CampaignInfo.MaxCampaignPeriod;
+            }
+
             private void Back_Click(object sender, RoutedEventArgs e)
             {
                 if (Game.gameInterface.BattleIsRun())
@@ -118,11 +162,21 @@ namespace IL2DCE
                     Game.gameInterface.BattleStop();
                 }
 
-                Game.gameInterface.PagePop(null);
+                Game.gameInterface.PageChange(new SelectCampaignPage(), null);
             }
 
             private void Start_Click(object sender, RoutedEventArgs e)
             {
+                ComboBoxItem item = FrameworkElement.comboBoxSelectAirGroup.SelectedItem as ComboBoxItem;
+                AirGroup airGroup = (AirGroup)item.Tag;
+                string aircraft = Regex.Match((item.Content as string), "\\(.+\\)").Value.Trim("()".ToCharArray());
+                Career career = Game.Core.CurrentCareer;
+                career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
+                career.Aircraft = aircraft;
+                CampaignInfo campaignInfo = career.CampaignInfo;
+                campaignInfo.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
+                campaignInfo.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
+
                 Game.Core.ResetCampaign(Game);
 
                 Game.gameInterface.PageChange(new BattleIntroPage(), null);

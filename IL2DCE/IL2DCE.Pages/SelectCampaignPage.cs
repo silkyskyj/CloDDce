@@ -25,12 +25,28 @@ namespace IL2DCE
     {
         public class SelectCampaignPage : PageDefImpl
         {
+            private SelectCampaign FrameworkElement
+            {
+                get
+                {
+                    return FE as SelectCampaign;
+                }
+            }
+
+            private IGame Game
+            {
+                get
+                {
+                    return _game;
+                }
+            }
+            private IGame _game;
+
             public SelectCampaignPage()
                 : base("Select Campaign", new SelectCampaign())
             {
                 FrameworkElement.bBack.Click += new RoutedEventHandler(bBack_Click);
                 FrameworkElement.bNew.Click += new RoutedEventHandler(bNew_Click);
-                FrameworkElement.bContinue.Click += new RoutedEventHandler(bContinue_Click);
 
                 FrameworkElement.ListCampaign.SelectionChanged += new SelectionChangedEventHandler(listCampaign_SelectionChanged);
 
@@ -69,23 +85,6 @@ namespace IL2DCE
                 _game = null;
             }
 
-            private SelectCampaign FrameworkElement
-            {
-                get
-                {
-                    return FE as SelectCampaign;
-                }
-            }
-
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
-
             private void bBack_Click(object sender, RoutedEventArgs e)
             {
                 // Remove the selection
@@ -99,11 +98,6 @@ namespace IL2DCE
                 Game.Core.InitCampaign();
 
                 Game.gameInterface.PageChange(new CampaignIntroPage(), null);
-            }
-
-            private void bContinue_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PagePop(null);
             }
 
             private void listCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -143,14 +137,7 @@ namespace IL2DCE
                     FrameworkElement.txtDesc.Text = description;
                 }
 
-                if (career.CampaignInfo != null)
-                {
-                    FrameworkElement.bNew.IsEnabled = true;
-                }
-                else
-                {
-                    FrameworkElement.bNew.IsEnabled = false;
-                }
+                FrameworkElement.bNew.IsEnabled = career.CampaignInfo != null;
             }
         }
     }

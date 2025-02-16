@@ -10,10 +10,11 @@
         <my1:ButtonAsMenuItem Content="New" Height="77" HorizontalAlignment="Left" Margin="1010,808,0,0" Name="New" VerticalAlignment="Top" Width="206" />
         <my1:ButtonAsMenuItem Content="Delete" Height="77" HorizontalAlignment="Left" Margin="1222,808,0,0" Name="Delete" VerticalAlignment="Top" Width="206" />
         <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="34,808,0,0" Name="Back" VerticalAlignment="Top" Width="206" />
-        <ListBox Height="646" HorizontalAlignment="Left" Margin="34,0,0,95" Name="ListCareer" VerticalAlignment="Bottom" Width="552" FontSize="28" Foreground="#FFA0854A" BorderBrush="#FF707070">
+        <ListBox Height="646" HorizontalAlignment="Left" Margin="34,150,0,95" Name="ListCareer" VerticalAlignment="Top" Width="552" FontSize="28" Foreground="#7FFFFFFF" BorderBrush="#FF707070">
             <ListBox.Background>
                 <SolidColorBrush />
             </ListBox.Background>
         </ListBox>
+        <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="649,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#7FFFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
     </Grid>
 </UserControl>

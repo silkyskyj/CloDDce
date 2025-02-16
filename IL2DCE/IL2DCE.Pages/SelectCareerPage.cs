@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using maddox.game;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -22,6 +23,23 @@ namespace IL2DCE
     {
         public class SelectCareerPage : PageDefImpl
         {
+            private SelectCareer FrameworkElement
+            {
+                get
+                {
+                    return FE as SelectCareer;
+                }
+            }
+
+            private IGame Game
+            {
+                get
+                {
+                    return _game;
+                }
+            }
+            private IGame _game;
+
             public SelectCareerPage()
                 : base("Select Career", new SelectCareer())
             {
@@ -66,23 +84,6 @@ namespace IL2DCE
 
                 _game = null;
             }
-
-            private SelectCareer FrameworkElement
-            {
-                get
-                {
-                    return FE as SelectCareer;
-                }
-            }
-
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
 
             private void bBack_Click(object sender, System.Windows.RoutedEventArgs e)
             {
@@ -137,15 +138,17 @@ namespace IL2DCE
                     Game.Core.CurrentCareer = careerSelected;
                 }
 
-                if (Game.Core.CurrentCareer != null)
+                Career career = Game.Core.CurrentCareer;
+                if (career != null && career.CampaignInfo != null)
                 {
-                    FrameworkElement.Continue.IsEnabled = true;
+                    FrameworkElement.Continue.IsEnabled = career.Date < career.CampaignInfo.EndDate;
                     FrameworkElement.Delete.IsEnabled = true;
+                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}", career.ToCurrestStatusString(), career.ToTotalResultString());
                 }
                 else
                 {
                     FrameworkElement.Continue.IsEnabled = false;
-                    FrameworkElement.Delete.IsEnabled = false;
+                    FrameworkElement.Delete.IsEnabled = true;
                 }
             }
         }
