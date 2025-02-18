@@ -21,6 +21,7 @@ namespace IL2DCE.Util
 
         public static string ReplaceKillsHistory(string str)
         {
+#if false
             StringBuilder builder = new StringBuilder();
             if (!string.IsNullOrEmpty(str))
             {
@@ -53,6 +54,14 @@ namespace IL2DCE.Util
                 }
             }
             return builder.ToString();
+#else
+            if (!string.IsNullOrEmpty(str))
+            {
+                return str.Replace(" x ", " ").Replace("[", string.Empty).Replace("]", string.Empty).Replace("=", " ").Replace(", ", "|").Replace(",", ".").Replace("|", ", ");
+            }
+
+            return string.Empty;
+#endif
         }
     }
 }

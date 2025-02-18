@@ -129,7 +129,7 @@ namespace IL2DCE.Pages
 
         protected string ToStringkillsTypes(Dictionary<string, double> dic)
         {
-            return string.Join(", ", dic.Select(x => string.Format("{0} x {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Career.KillsFormat, Career.Culture))));
+            return string.Join(", ", dic.Select(x => string.Format("{0} {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Career.KillsFormat, Career.Culture))));
         }
 
         protected string ToStringTimeSpan(Dictionary<string, float> dic)
