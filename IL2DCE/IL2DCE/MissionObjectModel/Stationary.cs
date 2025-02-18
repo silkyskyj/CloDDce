@@ -200,43 +200,6 @@ namespace IL2DCE
             "tobruk:Stationary.BR-20M_Trop"
         };
 
-        public Stationary(ISectionFile sectionFile, string id)
-        {
-            _id = id;
-
-            string value = sectionFile.get("Stationary", id);
-
-            string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (valueParts.Length > 4)
-            {
-                Class = valueParts[0];
-                Country = (ECountry)Enum.Parse(typeof(ECountry), valueParts[1]);
-                double.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueParts[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueParts[4], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Direction);
-
-                if (valueParts.Length > 5)
-                {
-                    for (int i = 5; i < valueParts.Length; i++)
-                    {
-                        Options += valueParts[i] + " ";
-                    }
-                    Options = Options.Trim();
-                }
-            }
-        }
-
-        public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)
-        {
-            _id = id;
-            X = x;
-            Y = y;
-            Direction = direction;
-            Class = @class;
-            Country = country;
-            Options = options;
-        }
-
         public string Id
         {
             get
@@ -323,6 +286,43 @@ namespace IL2DCE
         {
             get;
             set;
+        }
+
+        public Stationary(ISectionFile sectionFile, string id)
+        {
+            _id = id;
+
+            string value = sectionFile.get("Stationary", id);
+
+            string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (valueParts.Length > 4)
+            {
+                Class = valueParts[0];
+                Country = (ECountry)Enum.Parse(typeof(ECountry), valueParts[1]);
+                double.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
+                double.TryParse(valueParts[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
+                double.TryParse(valueParts[4], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Direction);
+
+                if (valueParts.Length > 5)
+                {
+                    for (int i = 5; i < valueParts.Length; i++)
+                    {
+                        Options += valueParts[i] + " ";
+                    }
+                    Options = Options.Trim();
+                }
+            }
+        }
+
+        public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)
+        {
+            _id = id;
+            X = x;
+            Y = y;
+            Direction = direction;
+            Class = @class;
+            Country = country;
+            Options = options;
         }
 
         public void WriteTo(ISectionFile sectionFile)

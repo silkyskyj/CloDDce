@@ -23,33 +23,6 @@ namespace IL2DCE
 {
     public class Building
     {
-        public Building(ISectionFile sectionFile, string id)
-        {
-            _id = id;
-
-            string value = sectionFile.get("Buildings", id);
-
-            string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (valueParts.Length > 4)
-            {
-                Class = valueParts[0];
-                int.TryParse(valueParts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Status);
-                double.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueParts[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueParts[4], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Direction);
-            }
-        }
-
-        public Building(string id, string @class, int status, double x, double y, double direction)
-        {
-            _id = id;
-            Class = @class;
-            Status = status;
-            X = x;
-            Y = y;
-            Direction = direction;
-        }
-
         public string Id
         {
             get
@@ -79,6 +52,33 @@ namespace IL2DCE
             {
                 return new Point2d(this.X, this.Y);
             }
+        }
+
+        public Building(ISectionFile sectionFile, string id)
+        {
+            _id = id;
+
+            string value = sectionFile.get("Buildings", id);
+
+            string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (valueParts.Length > 4)
+            {
+                Class = valueParts[0];
+                int.TryParse(valueParts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Status);
+                double.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
+                double.TryParse(valueParts[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
+                double.TryParse(valueParts[4], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Direction);
+            }
+        }
+
+        public Building(string id, string @class, int status, double x, double y, double direction)
+        {
+            _id = id;
+            Class = @class;
+            Status = status;
+            X = x;
+            Y = y;
+            Direction = direction;
         }
 
         public void WriteTo(ISectionFile sectionFile)

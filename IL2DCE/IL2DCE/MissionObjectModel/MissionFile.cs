@@ -29,6 +29,171 @@ namespace IL2DCE
 
     public class MissionFile
     {
+
+        public IList<Waterway> Roads
+        {
+            get
+            {
+                return _roads;
+            }
+        }
+        private List<Waterway> _roads = new List<Waterway>();
+
+        public IList<Waterway> Waterways
+        {
+            get
+            {
+                return _waterways;
+            }
+        }
+        private List<Waterway> _waterways = new List<Waterway>();
+
+        public IList<Waterway> Railways
+        {
+            get
+            {
+                return _railways;
+            }
+        }
+        private List<Waterway> _railways = new List<Waterway>();
+
+        public IList<Building> Depots
+        {
+            get
+            {
+                return _depots;
+            }
+        }
+        private List<Building> _depots = new List<Building>();
+
+        public IList<Stationary> Radar
+        {
+            get
+            {
+                return _radars;
+            }
+        }
+        private List<Stationary> _radars = new List<Stationary>();
+
+        public IList<Stationary> Aircraft
+        {
+            get
+            {
+                return _aircrafts;
+            }
+        }
+        private List<Stationary> _aircrafts = new List<Stationary>();
+
+        public IList<Stationary> Artilleries
+        {
+            get
+            {
+                return _artilleries;
+            }
+        }
+        private List<Stationary> _artilleries = new List<Stationary>();
+
+        //public IList<Point3d> RedFrontMarkers
+        //{
+        //    get
+        //    {
+        //        return _redFrontMarkers;
+        //    }
+        //}
+
+        //public IList<Point3d> BlueFrontMarkers
+        //{
+        //    get
+        //    {
+        //        return _blueFrontMarkers;
+        //    }
+        //}
+
+        public IList<AirGroup> AirGroups
+        {
+            get
+            {
+                List<AirGroup> airGroups = new List<AirGroup>();
+                airGroups.AddRange(_redAirGroups);
+                airGroups.AddRange(_blueAirGroups);
+                return airGroups;
+            }
+        }
+
+        public IList<AirGroup> RedAirGroups
+        {
+            get
+            {
+                List<AirGroup> airGroups = new List<AirGroup>();
+                airGroups.AddRange(_redAirGroups);
+                return airGroups;
+            }
+        }
+        private List<AirGroup> _redAirGroups = new List<AirGroup>();
+
+        public IList<AirGroup> BlueAirGroups
+        {
+            get
+            {
+                List<AirGroup> airGroups = new List<AirGroup>();
+                airGroups.AddRange(_blueAirGroups);
+                return airGroups;
+            }
+        }
+        private List<AirGroup> _blueAirGroups = new List<AirGroup>();
+
+        public IList<GroundGroup> GroundGroups
+        {
+            get
+            {
+                List<GroundGroup> groundGroups = new List<GroundGroup>();
+                groundGroups.AddRange(_redGroundGroups);
+                groundGroups.AddRange(_blueGroundGroups);
+                return groundGroups;
+            }
+        }
+
+        public IList<GroundGroup> RedGroundGroups
+        {
+            get
+            {
+                List<GroundGroup> groundGroups = new List<GroundGroup>();
+                groundGroups.AddRange(_redGroundGroups);
+                return groundGroups;
+            }
+        }
+        private List<GroundGroup> _redGroundGroups = new List<GroundGroup>();
+
+        public IList<GroundGroup> BlueGroundGroups
+        {
+            get
+            {
+                List<GroundGroup> groundGroups = new List<GroundGroup>();
+                groundGroups.AddRange(_blueGroundGroups);
+                return groundGroups;
+            }
+        }
+        private List<GroundGroup> _blueGroundGroups = new List<GroundGroup>();
+
+        public IList<Stationary> Stationaries
+        {
+            get
+            {
+                List<Stationary> stationaries = new List<Stationary>();
+                stationaries.AddRange(_redStationaries);
+                stationaries.AddRange(_blueStationaries);
+                return stationaries;
+            }
+        }
+        private List<Stationary> _redStationaries = new List<Stationary>();
+        private List<Stationary> _blueStationaries = new List<Stationary>();
+
+        //private List<Point3d> _redFrontMarkers = new List<Point3d>();
+        //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
+        //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
+
+        private AirGroupInfos airGroupInfos;
+
         public MissionFile(IGamePlay game, IEnumerable<string> fileNames, AirGroupInfos airGroupInfos = null)
         {
             this.airGroupInfos = airGroupInfos;
@@ -159,7 +324,6 @@ namespace IL2DCE
             //    }
             //}
 
-
             for (int i = 0; i < file.lines("AirGroups"); i++)
             {
                 string key;
@@ -212,146 +376,6 @@ namespace IL2DCE
                 }
             }
         }
-
-        public IList<Waterway> Roads
-        {
-            get
-            {
-                return _roads;
-            }
-        }
-
-        public IList<Waterway> Waterways
-        {
-            get
-            {
-                return _waterways;
-            }
-        }
-
-        public IList<Waterway> Railways
-        {
-            get
-            {
-                return _railways;
-            }
-        }
-
-        public IList<Building> Depots
-        {
-            get
-            {
-                return _depots;
-            }
-        }
-
-        public IList<Stationary> Radar
-        {
-            get
-            {
-                return _radars;
-            }
-        }
-
-        public IList<Stationary> Aircraft
-        {
-            get
-            {
-                return _aircrafts;
-            }
-        }
-
-        public IList<Stationary> Artilleries
-        {
-            get
-            {
-                return _artilleries;
-            }
-        }
-
-
-
-
-
-
-        //public IList<Point3d> RedFrontMarkers
-        //{
-        //    get
-        //    {
-        //        return _redFrontMarkers;
-        //    }
-        //}
-
-        //public IList<Point3d> BlueFrontMarkers
-        //{
-        //    get
-        //    {
-        //        return _blueFrontMarkers;
-        //    }
-        //}
-
-        public IList<AirGroup> AirGroups
-        {
-            get
-            {
-                List<AirGroup> airGroups = new List<AirGroup>();
-                airGroups.AddRange(_redAirGroups);
-                airGroups.AddRange(_blueAirGroups);
-                return airGroups;
-            }
-        }
-
-        public IList<AirGroup> RedAirGroups
-        {
-            get
-            {
-                List<AirGroup> airGroups = new List<AirGroup>();
-                airGroups.AddRange(_redAirGroups);
-                return airGroups;
-            }
-        }
-
-        public IList<AirGroup> BlueAirGroups
-        {
-            get
-            {
-                List<AirGroup> airGroups = new List<AirGroup>();
-                airGroups.AddRange(_blueAirGroups);
-                return airGroups;
-            }
-        }
-
-        public IList<GroundGroup> GroundGroups
-        {
-            get
-            {
-                List<GroundGroup> groundGroups = new List<GroundGroup>();
-                groundGroups.AddRange(_redGroundGroups);
-                groundGroups.AddRange(_blueGroundGroups);
-                return groundGroups;
-            }
-        }
-
-        public IList<GroundGroup> RedGroundGroups
-        {
-            get
-            {
-                List<GroundGroup> groundGroups = new List<GroundGroup>();
-                groundGroups.AddRange(_redGroundGroups);
-                return groundGroups;
-            }
-        }
-
-        public IList<GroundGroup> BlueGroundGroups
-        {
-            get
-            {
-                List<GroundGroup> groundGroups = new List<GroundGroup>();
-                groundGroups.AddRange(_blueGroundGroups);
-                return groundGroups;
-            }
-        }
-
         public IList<GroundGroup> GetGroundGroups(int armyIndex)
         {
             if (armyIndex == 1)
@@ -381,17 +405,6 @@ namespace IL2DCE
             else
             {
                 return new List<AirGroup>();
-            }
-        }
-
-        public IList<Stationary> Stationaries
-        {
-            get
-            {
-                List<Stationary> stationaries = new List<Stationary>();
-                stationaries.AddRange(_redStationaries);
-                stationaries.AddRange(_blueStationaries);
-                return stationaries;
             }
         }
 
@@ -473,31 +486,5 @@ namespace IL2DCE
             //        return new List<Point3d>();
             //    }
             //}
-
-            //private List<Point3d> _redFrontMarkers = new List<Point3d>();
-            //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
-            //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
-
-
-
-        private List<Waterway> _roads = new List<Waterway>();
-        private List<Waterway> _waterways = new List<Waterway>();
-        private List<Waterway> _railways = new List<Waterway>();
-        private List<Building> _depots = new List<Building>();
-        private List<Stationary> _radars = new List<Stationary>();
-        private List<Stationary> _artilleries = new List<Stationary>();
-        private List<Stationary> _aircrafts = new List<Stationary>();
-
-
-        private List<AirGroup> _redAirGroups = new List<AirGroup>();
-        private List<AirGroup> _blueAirGroups = new List<AirGroup>();
-
-        private List<GroundGroup> _redGroundGroups = new List<GroundGroup>();
-        private List<GroundGroup> _blueGroundGroups = new List<GroundGroup>();
-
-        private List<Stationary> _redStationaries = new List<Stationary>();
-        private List<Stationary> _blueStationaries = new List<Stationary>();
-
-        private AirGroupInfos airGroupInfos;
-    }
+     }
 }

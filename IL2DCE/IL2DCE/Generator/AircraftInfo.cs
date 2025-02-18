@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using maddox.game;
 
 namespace IL2DCE
@@ -25,27 +28,52 @@ namespace IL2DCE
     {
         //LIASON,
 
+        [Description("Recon")]
         RECON,
+
+        [Description("Martime Recon")]
         MARITIME_RECON,
+
+        [Description("Armed Recon")] 
         ARMED_RECON,
+
+        [Description("Armed Martime Recon")]
         ARMED_MARITIME_RECON,
 
+        [Description("Attack Armor")]
         ATTACK_ARMOR,
+
+        [Description("Attack Vehicle")] 
         ATTACK_VEHICLE,
+        
+        [Description("Attack Train")]
         ATTACK_TRAIN,
+
+        [Description("Attack Ship")]
         ATTACK_SHIP,
 
+        [Description("Attack Artillery")]
         ATTACK_ARTILLERY,
+
+        [Description("Attack Radar")]
         ATTACK_RADAR,
+
+        [Description("Attack Aircraft")]
         ATTACK_AIRCRAFT,
+
+        [Description("Attack Depot")]
         ATTACK_DEPOT,
 
+        [Description("Intercept")]
         INTERCEPT,
+        
         //MARITIME_INTERCEPT,
         //NIGHT_INTERCEPT,
 
+        [Description("Escort")]
         ESCORT,
 
+        [Description("Cover")]
         COVER,
         //MARITIME_COVER,
 
@@ -54,16 +82,18 @@ namespace IL2DCE
         //NIGHT_INTRUDER,
     };
 
+    public static class EnumExtensions
+    {
+        public static string ToDescription(this Enum value)
+        {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+            object attr = field.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
+            return attr != null ? (attr as DescriptionAttribute).Description: value.ToString();
+        }
+    }
+
     public class AircraftInfo
     {
-        ISectionFile _aircraftInfoFile;
-
-        public AircraftInfo(ISectionFile aircraftInfoFile, string aircraft)
-        {
-            _aircraftInfoFile = aircraftInfoFile;
-            Aircraft = aircraft;
-        }
-
         public bool IsFlyable
         {
             get
@@ -123,6 +153,14 @@ namespace IL2DCE
             }
         }
 
+        private ISectionFile _aircraftInfoFile;
+
+        public AircraftInfo(ISectionFile aircraftInfoFile, string aircraft)
+        {
+            _aircraftInfoFile = aircraftInfoFile;
+            Aircraft = aircraft;
+        }
+
         public static string CreateDisplayName(string aircraftInfo)
         {
             // Aircraft.Bf-110C-7 -> Bf-110C-7
@@ -158,22 +196,44 @@ namespace IL2DCE
             return new AircraftLoadoutInfo(this._aircraftInfoFile, Aircraft, loadoutId);
         }
 
+        #region GetImagePath
+
+        private static readonly string[] endIs = { "trop", "late", "late_trop", "Derated", "AltoQuota", "Trop_Derated", "100oct", "NF", "Heartbreaker", "Torpedo", "Torpedo_trop", };
+        private static readonly string[] middleIs = { "Mk" };
+
         public static string GetImagePath(string partsFolder, string aircraftClass)
         {
-            const string del = "Aircraft.";
-
-            string[]  endis = { "trop", "late", "late_trop", "Derated", "AltoQuota", "Trop_Derated", "100oct", "NF", "Heartbreaker", "Torpedo", "Torpedo_trop",  };
-            // Aircraft.Bf-110C-7 -> Bf-110C-7
-            // tobruk:Aircraft.Macchi-C202-SeriesVII -> Macchi-C202-SeriesVII
+            const string defaultPart = "bob";
             string path;
 
             int idx = aircraftClass.IndexOf(":");
-            string part = idx != -1 ? aircraftClass.Substring(0, idx) : "bob";
+            string part = idx != -1 ? aircraftClass.Substring(0, idx) : defaultPart;
             aircraftClass = idx != -1 ? aircraftClass.Substring(idx + 1) : aircraftClass;
-            idx = aircraftClass.IndexOf(del);
+            if (!string.IsNullOrEmpty(path = GetImagePathfromPart(partsFolder, part, aircraftClass)))
+            {
+                return path;
+            }
+
+            if (string.Compare(part, defaultPart) != 0)
+            {
+                if (!string.IsNullOrEmpty(path = GetImagePathfromPart(partsFolder, defaultPart, aircraftClass)))
+                {
+                    return path;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static string GetImagePathfromPart(string partsFolder, string part, string aircraftClass)
+        {
+            const string del = "Aircraft.";
+            string path;
+
+            int idx = aircraftClass.IndexOf(del);
             string cls = idx != -1 ? aircraftClass.Substring(idx + del.Length) : aircraftClass;
-            string folderBase = string.Format("{0}/{1}/3do/Plane", partsFolder, part);
-            string folder = string.Format("{0}/{1}", folderBase, cls);
+            string folderBase = string.Format("{0}\\{1}\\3do\\Plane", partsFolder, part);
+            string folder = string.Format("{0}\\{1}", folderBase, cls);
             if (Directory.Exists(folder))
             {
                 if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
@@ -182,11 +242,11 @@ namespace IL2DCE
                 }
             }
 
-            foreach (var item in endis)
+            foreach (var item in endIs)
             {
                 if (cls.EndsWith(item, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    folder = string.Format("{0}/{1}", folderBase, cls.Substring(0, cls.Length - item.Length - 1));
+                    folder = string.Format("{0}\\{1}", folderBase, cls.Substring(0, cls.Length - item.Length - 1));
                     if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
                     {
                         return path;
@@ -194,8 +254,32 @@ namespace IL2DCE
                 }
             }
 
-            return string.Empty;
+            foreach (var item in middleIs)
+            {
+                if ((idx = cls.IndexOf(item)) != -1)
+                {
+                    string cls2 = string.Format("{0}_{1}", cls.Substring(0, idx), cls.Substring(idx));
+                    folder = string.Format("{0}\\{1}", folderBase, cls2);
+                    if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
+                    {
+                        return path;
+                    }
 
+                    foreach (var item2 in endIs)
+                    {
+                        if (cls2.EndsWith(item2, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            folder = string.Format("{0}/{1}", folderBase, cls.Substring(0, cls2.Length - item2.Length - 1));
+                            if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls2)))
+                            {
+                                return path;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return string.Empty;
         }
 
         private static string GetImagePathfromFolder(string folder, string aircraftClass)
@@ -204,7 +288,7 @@ namespace IL2DCE
             const string fileTrop = "item_trop.tif";
             const string fileTropLate = "item_trop_late.tif";
 
-            string path = string.Format("{0}/{1}", folder, file);
+            string path = string.Format("{0}\\{1}", folder, file);
             if (File.Exists(path))
             {
                 return path;
@@ -212,7 +296,7 @@ namespace IL2DCE
 
             if (aircraftClass.EndsWith("trop", StringComparison.InvariantCultureIgnoreCase))
             {
-                path = string.Format("{0}/{1}", folder, file);
+                path = string.Format("{0}\\{1}", folder, file);
                 if (File.Exists(fileTrop))
                 {
                     return path;
@@ -221,7 +305,7 @@ namespace IL2DCE
 
             if (aircraftClass.EndsWith("late", StringComparison.InvariantCultureIgnoreCase))
             {
-                path = string.Format("{0}/{1}", folder, fileTropLate);
+                path = string.Format("{0}\\{1}", folder, fileTropLate);
                 if (File.Exists(fileTrop))
                 {
                     return path;
@@ -230,5 +314,7 @@ namespace IL2DCE
 
             return string.Empty;
         }
+
+        #endregion
     }
 }

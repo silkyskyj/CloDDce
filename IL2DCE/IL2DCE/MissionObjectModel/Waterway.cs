@@ -23,6 +23,31 @@ namespace IL2DCE
 {
     public class Waterway
     {
+        public List<GroundGroupWaypoint> Waypoints
+        {
+            get
+            {
+                return _waypoints;
+            }
+        }
+        private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
+
+        public GroundGroupWaypoint Start
+        {
+            get
+            {
+                return Waypoints[0];
+            }
+        }
+
+        public GroundGroupWaypoint End
+        {
+            get
+            {
+                return Waypoints[Waypoints.Count - 1];
+            }
+        }
+
         public Waterway(ISectionFile sectionFile, string id)
         {
             // Waypoints
@@ -60,31 +85,6 @@ namespace IL2DCE
                     Waypoints.Add(waypoint);
                     lastWaypoint = waypoint;
                 }
-            }
-        }
-
-        public List<GroundGroupWaypoint> Waypoints
-        {
-            get
-            {
-                return _waypoints;
-            }
-        }
-        private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
-
-        public GroundGroupWaypoint Start
-        {
-            get
-            {
-                return Waypoints[0];
-            }
-        }
-
-        public GroundGroupWaypoint End
-        {
-            get
-            {
-                return Waypoints[Waypoints.Count - 1];
             }
         }
     }

@@ -23,13 +23,6 @@ namespace IL2DCE
     {
         public class BattlePage : PageDefImpl
         {
-            public override void _leave(maddox.game.IGame play, object arg)
-            {
-                base._leave(play, arg);
-
-                _game = null;
-            }
-
             private IGame Game
             {
                 get
@@ -38,7 +31,7 @@ namespace IL2DCE
                 }
             }
             private IGame _game;
- 
+
             public BattlePage()
                 : base("Battle", new CampaignBattleIntro())
             {
@@ -85,6 +78,13 @@ namespace IL2DCE
                     }
                 }
             }
-       }
+
+            public override void _leave(maddox.game.IGame play, object arg)
+            {
+                base._leave(play, arg);
+
+                _game = null;
+            }
+        }
     }
 }

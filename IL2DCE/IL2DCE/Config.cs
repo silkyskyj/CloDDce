@@ -21,6 +21,78 @@ namespace IL2DCE
 {
     public class Config
     {
+
+        public int AdditionalAirOperations
+        {
+            get
+            {
+                return _additionalAirOperations;
+            }
+        }
+        private int _additionalAirOperations = 0;
+
+        public int AdditionalGroundOperations
+        {
+            get
+            {
+                return _additionalGroundOperations;
+            }
+        }
+        private int _additionalGroundOperations = 0;
+
+        public double FlightSize
+        {
+            get
+            {
+                return _flightSize;
+            }
+        }
+        private double _flightSize = 1.0;
+
+        public double FlightCount
+        {
+            get
+            {
+                return _flightCount;
+            }
+        }
+        private double _flightCount = 1.0;
+
+        public bool SpawnParked
+        {
+            get
+            {
+                return _spawnParked;
+            }
+            set
+            {
+                _spawnParked = value;
+            }
+        }
+        public static bool _spawnParked = false;
+
+        public int Debug
+        {
+            get
+            {
+                return _debug;
+            }
+            set
+            {
+                _debug = value;
+            }
+        }
+        private int _debug = 0;
+
+        public string CampaignsFolder
+        {
+            get
+            {
+                return _campaignsFolder;
+            }
+        }
+        private string _campaignsFolder = "$home/parts/IL2DCE/Campaigns";
+
         public Config(ISectionFile confFile)
         {
             SpawnParked = false;
@@ -77,78 +149,5 @@ namespace IL2DCE
                 string _campaignsFolder = confFile.get("Main", "campaignsFolder");
             }
         }
-
-        public int AdditionalAirOperations
-        {
-            get
-            {
-                return _additionalAirOperations;
-            }
-        }
-
-        public int AdditionalGroundOperations
-        {
-            get
-            {
-                return _additionalGroundOperations;
-            }
-        }
-
-        public double FlightSize
-        {
-            get
-            {
-                return _flightSize;
-            }
-
-        }
-
-        public double FlightCount
-        {
-            get
-            {
-                return _flightCount;
-            }
-        }
-
-        public bool SpawnParked
-        {
-            get
-            {
-                return _spawnParked;
-            }
-            set
-            {
-                _spawnParked = value;
-            }
-        }
-
-        public int Debug
-        {
-            get
-            {
-                return _debug;
-            }
-            set
-            {
-                _debug = value;
-            }
-        }
-
-        public string CampaignsFolder
-        {
-            get
-            {
-                return _campaignsFolder;
-            }
-        }
-
-        private int _additionalAirOperations = 0;
-        private int _additionalGroundOperations = 0;
-        private double _flightSize = 1.0;
-        private double _flightCount = 1.0;
-        public static bool _spawnParked = false;
-        private int _debug = 0;
-        private string _campaignsFolder = "$home/parts/IL2DCE/Campaigns";
     }
 }

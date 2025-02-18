@@ -21,6 +21,17 @@ namespace IL2DCE
 {
     public class GroundGroupWaypointLine : GroundGroupWaypoint
     {
+
+        #region Public properties
+
+        public double Z
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
         // Example: 321223.63 175654.06 38.40  0 2 6.67
         // X, Y, Z, ?, SubCount+2, V
         private System.Text.RegularExpressions.Regex waypointLong = new System.Text.RegularExpressions.Regex(@"^([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
@@ -120,16 +131,6 @@ namespace IL2DCE
                     V = null;
                 }
             }
-        }
-
-        #endregion
-
-        #region Public properties
-
-        public double Z
-        {
-            get;
-            set;
         }
 
         #endregion

@@ -22,18 +22,6 @@ namespace IL2DCE
     {
         public class GameSingle : maddox.game.GameSingleDef, IGameSingle
         {
-            public GameSingle(GameSingleIterface game)
-                : base(game)
-            {
-                _core = new Core(this);
-                _battleSuccess = EBattleResult.DRAW;
-            }
-
-            public override maddox.game.play.PageInterface getStartPage()
-            {
-                return new Pages.SelectCareerPage();
-            }
-
             public Core Core
             {
                 get
@@ -41,6 +29,7 @@ namespace IL2DCE
                     return _core;
                 }
             }
+            private Core _core;
 
             public EBattleResult BattleSuccess
             {
@@ -53,9 +42,19 @@ namespace IL2DCE
                     _battleSuccess = value;
                 }
             }
-
-            private Core _core;
             EBattleResult _battleSuccess;
+
+            public GameSingle(GameSingleIterface game)
+                : base(game)
+            {
+                _core = new Core(this);
+                _battleSuccess = EBattleResult.DRAW;
+            }
+
+            public override maddox.game.play.PageInterface getStartPage()
+            {
+                return new Pages.SelectCareerPage();
+            }
         }
     }
 }

@@ -42,38 +42,6 @@ namespace IL2DCE
             }
         }
 
-        public void SaveTo(string systemFileName)
-        {
-            System.IO.TextWriter briefingFileWriter = new System.IO.StreamWriter(systemFileName, false);
-
-            briefingFileWriter.WriteLine("[Info]");
-            briefingFileWriter.WriteLine("<Name>");
-            briefingFileWriter.WriteLine("Info");
-            briefingFileWriter.WriteLine("<Caption>");
-            briefingFileWriter.WriteLine(MissionName);
-            briefingFileWriter.WriteLine("<Caption>");
-            briefingFileWriter.WriteLine(MissionDescription);
-
-            foreach (string key in Name.Keys)
-            {
-                briefingFileWriter.WriteLine("[" + key + "]");
-                briefingFileWriter.WriteLine("<Name>");
-                briefingFileWriter.WriteLine(Name[key]);
-
-                briefingFileWriter.WriteLine("<Description>");
-                if (Description.ContainsKey(key))
-                {
-                    briefingFileWriter.WriteLine(Description[key]);
-                }
-                else
-                {
-                    briefingFileWriter.WriteLine("");
-                }
-            }
-
-            briefingFileWriter.Close();
-        }
-
         public string MissionName
         {
             get
@@ -118,5 +86,37 @@ namespace IL2DCE
         private string _missionDescription = "";
         private Dictionary<string, string> _name = new Dictionary<string, string>();
         private Dictionary<string, Text> _description = new Dictionary<string, Text>();
+
+        public void SaveTo(string systemFileName)
+        {
+            System.IO.TextWriter briefingFileWriter = new System.IO.StreamWriter(systemFileName, false);
+
+            briefingFileWriter.WriteLine("[Info]");
+            briefingFileWriter.WriteLine("<Name>");
+            briefingFileWriter.WriteLine("Info");
+            briefingFileWriter.WriteLine("<Caption>");
+            briefingFileWriter.WriteLine(MissionName);
+            briefingFileWriter.WriteLine("<Caption>");
+            briefingFileWriter.WriteLine(MissionDescription);
+
+            foreach (string key in Name.Keys)
+            {
+                briefingFileWriter.WriteLine("[" + key + "]");
+                briefingFileWriter.WriteLine("<Name>");
+                briefingFileWriter.WriteLine(Name[key]);
+
+                briefingFileWriter.WriteLine("<Description>");
+                if (Description.ContainsKey(key))
+                {
+                    briefingFileWriter.WriteLine(Description[key]);
+                }
+                else
+                {
+                    briefingFileWriter.WriteLine("");
+                }
+            }
+
+            briefingFileWriter.Close();
+        }
     }
 }

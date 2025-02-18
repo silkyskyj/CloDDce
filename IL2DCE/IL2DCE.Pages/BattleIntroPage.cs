@@ -74,7 +74,15 @@ namespace IL2DCE
 
             void Back_Click(object sender, RoutedEventArgs e)
             {
-                Game.gameInterface.PagePop(null);
+                Career career = Game.Core.CurrentCareer;
+                if (career.BattleType == EBattleType.QuickMission)
+                {
+                    Game.gameInterface.PageChange(new QuickMissionPage(), null);
+                }
+                else
+                {
+                    Game.gameInterface.PagePop(null);
+                }
             }
 
             void Fly_Click(object sender, RoutedEventArgs e)

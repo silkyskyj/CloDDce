@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using maddox.game;
 using maddox.GP;
@@ -206,7 +207,7 @@ namespace IL2DCE
                 List<string> aircraftNumbers = new List<string>();
                 for (int j = 0; j < flightSize; j++)
                 {
-                    aircraftNumbers.Add(aircraftNumber.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+                    aircraftNumbers.Add(aircraftNumber.ToString(CultureInfo.InvariantCulture.NumberFormat));
                     aircraftNumber++;
                 }
                 airGroup.Flights[i] = aircraftNumbers;

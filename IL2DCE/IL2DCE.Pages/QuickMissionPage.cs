@@ -14,7 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using maddox.game;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -23,12 +26,11 @@ namespace IL2DCE
     {
         public class QuickMissionPage : PageDefImpl
         {
-
-            private CareerIntro FrameworkElement
+            private QuickMission FrameworkElement
             {
                 get
                 {
-                    return FE as CareerIntro;
+                    return FE as QuickMission;
                 }
             }
 
@@ -41,33 +43,118 @@ namespace IL2DCE
             }
             private IGame _game;
 
+            private int SelectedArmyIndex
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectArmy.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private int SelectedAirForceIndex
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectAirForce.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private CampaignInfo SelectedCampaign
+            {
+                get
+                {
+                    return FrameworkElement.comboBoxSelectCampaign.SelectedItem as CampaignInfo;
+                }
+            }
+
+            private AirGroup SelectedAirGroup
+            {
+                get
+                {
+                    ComboBoxItem selected =  FrameworkElement.comboBoxSelectAirGroup.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        return (AirGroup)selected.Tag;
+                    }
+
+                    return null;
+                }
+            }
+
+            private EMissionType? SelectedMissionType
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectMissionType.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        if (selected.Tag != null)
+                        {
+                            return (EMissionType)selected.Tag;
+                        }
+                    }
+
+                    return null;
+                }
+            }
+
+            private int SelectedRank
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectRank.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private MissionFile CurrentMissionFile = null;
+
             public QuickMissionPage()
                 : base("Quick Mission", new QuickMission())
             {
                 FrameworkElement.Start.Click += new System.Windows.RoutedEventHandler(Start_Click);
                 FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
-                FrameworkElement.comboBoxSelectArmy.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
-                FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
-                FrameworkElement.textBoxPilotName.TextChanged += new System.Windows.Controls.TextChangedEventHandler(textBoxPilotName_TextChanged);
+                FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
+                FrameworkElement.comboBoxSelectArmy.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
+                FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
+                FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
+                FrameworkElement.comboBoxSelectMissionType.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectMissionType_SelectionChanged);
+
+                FrameworkElement.labelSelectMissionTarget.Visibility = Visibility.Hidden;
+                FrameworkElement.comboBoxSelectTarget.Visibility = Visibility.Hidden;
+                FrameworkElement.labelSelectAltitude.Visibility = Visibility.Hidden;
+                FrameworkElement.comboBoxSelectAltitude.Visibility = Visibility.Hidden;
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
 
-                FrameworkElement.comboBoxSelectArmy.Items.Clear();
-
                 _game = play as IGame;
 
-                System.Windows.Controls.ComboBoxItem itemArmyRed = new System.Windows.Controls.ComboBoxItem();
-                itemArmyRed.Content = Career.Army[0];
-                itemArmyRed.Tag = 1;
-                FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyRed);
-                System.Windows.Controls.ComboBoxItem itemArmyBlue = new System.Windows.Controls.ComboBoxItem();
-                itemArmyBlue.Content = Career.Army[1];
-                itemArmyBlue.Tag = 2;
-                FrameworkElement.comboBoxSelectArmy.Items.Add(itemArmyBlue);
-                FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
+                UpdateCampaignComboBoxInfo();
+
+                if (Game.Core.CurrentCareer != null)
+                {
+                    SelectLastInfo(Game.Core.CurrentCareer);
+                }
             }
 
             public override void _leave(maddox.game.IGame play, object arg)
@@ -77,140 +164,395 @@ namespace IL2DCE
                 _game = null;
             }
 
-            void textBoxPilotName_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            void comboBoxSelectCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (Game != null)
+                if (e.AddedItems.Count > 0)
                 {
-                    string pilotName = FrameworkElement.textBoxPilotName.Text;
-                    if (pilotName != null && pilotName != String.Empty)
+
+                    UpdateArmyComboBoxInfo();
+
+                    CampaignInfo campaignInfo = SelectedCampaign;
+                    if (campaignInfo != null)
                     {
-                        foreach (Career career in Game.Core.AvailableCareers)
-                        {
-                            if (career.PilotName == pilotName)
-                            {
-                                FrameworkElement.Start.IsEnabled = false;
-                                return;
-                            }
-                        }
-                    }
 
-                    FrameworkElement.Start.IsEnabled = true;
-                }
-            }
-
-            void comboBoxSelectArmy_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-            {
-                if (e.AddedItems.Count == 1)
-                {
-                    System.Windows.Controls.ComboBoxItem armySelected = e.AddedItems[0] as System.Windows.Controls.ComboBoxItem;
-                    int armyIndex = (int)armySelected.Tag;
-
-                    FrameworkElement.comboBoxSelectAirForce.Items.Clear();
-
-                    if (armyIndex == 1)
-                    {
-                        System.Windows.Controls.ComboBoxItem itemRaf = new System.Windows.Controls.ComboBoxItem();
-                        itemRaf.Tag = 1;
-                        itemRaf.Content = "Royal Air Force";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemRaf);
-
-                        FrameworkElement.comboBoxSelectAirForce.SelectedIndex = 0;
-                    }
-                    else if (armyIndex == 2)
-                    {
-                        System.Windows.Controls.ComboBoxItem itemLw = new System.Windows.Controls.ComboBoxItem();
-                        itemLw.Tag = 1;
-                        itemLw.Content = "Luftwaffe";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemLw);
-
-                        System.Windows.Controls.ComboBoxItem itemRa = new System.Windows.Controls.ComboBoxItem();
-                        itemRa.Tag = 2;
-                        itemRa.Content = "Regia Aeronautica";
-                        FrameworkElement.comboBoxSelectAirForce.Items.Add(itemRa);
-
-                        FrameworkElement.comboBoxSelectAirForce.SelectedIndex = 0;
                     }
                 }
+
+                UpdateButtonStatus();
             }
 
-            void comboBoxSelectAirForce_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+            void comboBoxSelectArmy_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count == 1)
+                if (e.AddedItems.Count > 0)
                 {
-                    System.Windows.Controls.ComboBoxItem armySelected = FrameworkElement.comboBoxSelectArmy.SelectedItem as System.Windows.Controls.ComboBoxItem;
-                    int armyIndex = (int)armySelected.Tag;
-
-                    System.Windows.Controls.ComboBoxItem airForceSelected = e.AddedItems[0] as System.Windows.Controls.ComboBoxItem;
-                    int airForceIndex = (int)airForceSelected.Tag;
-
-
-
-                    if (armyIndex == 1 && airForceIndex == 1)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Joe Bloggs";
-                    }
-                    else if (armyIndex == 2 && airForceIndex == 1)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Max Mustermann";
-                    }
-                    else if (armyIndex == 2 && airForceIndex == 2)
-                    {
-                        FrameworkElement.textBoxPilotName.Text = "Mario Rossi";
-                    }
-
-
-                    FrameworkElement.comboBoxSelectRank.Items.Clear();
-                    for (int i = 0; i < 6; i++)
-                    {
-                        System.Windows.Controls.ComboBoxItem itemRank = new System.Windows.Controls.ComboBoxItem();
-                        if (armyIndex == 1 && airForceIndex == 1)
-                        {
-                            itemRank.Content = Career.RafRanks[i];
-                        }
-                        else if (armyIndex == 2 && airForceIndex == 1)
-                        {
-                            itemRank.Content = Career.LwRanks[i];
-                        }
-                        else if (armyIndex == 2 && airForceIndex == 2)
-                        {
-                            itemRank.Content = Career.RaRanks[i];
-                        }
-                        itemRank.Tag = i;
-                        FrameworkElement.comboBoxSelectRank.Items.Add(itemRank);
-                    }
-                    FrameworkElement.comboBoxSelectRank.SelectedIndex = 0;
+                    UpdateAirForceComboBoxInfo();
                 }
+
+                UpdateButtonStatus();
             }
 
-            private void Back_Click(object sender, System.Windows.RoutedEventArgs e)
+            void comboBoxSelectAirForce_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if (e.AddedItems.Count > 0)
+                {
+                    UpdateRankComboBoxInfo();
+                    UpdateAirGroupComboBoxInfo();
+                }
+
+                UpdateButtonStatus();
+            }
+
+            void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if (e.AddedItems.Count > 0)
+                {
+                    UpdateMissionTypeComboBoxInfo();
+                }
+
+                UpdateButtonStatus();
+            }
+
+            void comboBoxSelectMissionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if (e.AddedItems.Count > 0)
+                {
+                    UpdateSelectTargetComboBoxInfo();
+                }
+
+                UpdateButtonStatus();
+            }
+
+            private void Back_Click(object sender, RoutedEventArgs e)
             {
                 if (Game.gameInterface.BattleIsRun())
                 {
                     Game.gameInterface.BattleStop();
                 }
 
+                Game.Core.CurrentCareer.CampaignInfo = null;
+                Game.Core.CurrentCareer = null;
+
                 Game.gameInterface.PagePop(null);
             }
 
-            private void Start_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void Start_Click(object sender, RoutedEventArgs e)
             {
-                string pilotName = FrameworkElement.textBoxPilotName.Text;
+                GameIterface gameInterface = Game.gameInterface;
+                string pilotName = gameInterface.Player().Name();
 
-                System.Windows.Controls.ComboBoxItem armySelected = FrameworkElement.comboBoxSelectArmy.SelectedItem as System.Windows.Controls.ComboBoxItem;
-                int armyIndex = (int)armySelected.Tag;
-
-                System.Windows.Controls.ComboBoxItem airForceSelected = FrameworkElement.comboBoxSelectAirForce.SelectedItem as System.Windows.Controls.ComboBoxItem;
-                int airForceIndex = (int)airForceSelected.Tag;
-
-                System.Windows.Controls.ComboBoxItem rankSelected = FrameworkElement.comboBoxSelectRank.SelectedItem as System.Windows.Controls.ComboBoxItem;
-                int rankIndex = (int)rankSelected.Tag;
+                int armyIndex = SelectedArmyIndex;
+                int airForceIndex = SelectedAirForceIndex;
+                int rankIndex = SelectedRank;
+                AirGroup airGroup = SelectedAirGroup;
+                CampaignInfo campaignInfo = SelectedCampaign;
 
                 Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
-                Game.Core.CurrentCareer = career;
-                Game.Core.AvailableCareers.Add(career);
+                career.BattleType = EBattleType.QuickMission;
+                career.CampaignInfo = campaignInfo;
+                career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
+                career.MissionType = SelectedMissionType;
+                career.PlayerAirGroup = airGroup;
 
-                Game.gameInterface.PageChange(new SelectCampaignPage(), null);
+                // string aircraft = Regex.Match((item.Content as string), "\\(.+\\)").Value.Trim("()".ToCharArray());
+                // career.Aircraft = aircraft;
+                Game.Core.CurrentCareer = career;
+
+                campaignInfo.EndDate = campaignInfo.StartDate;
+                Game.Core.CreateQuickMission(Game, career);
+
+                Game.gameInterface.PageChange(new BattleIntroPage(), null);
             }
+
+            private void SelectLastInfo(Career career)
+            {
+                FrameworkElement.comboBoxSelectCampaign.SelectedItem = career.CampaignInfo;
+                EnableSelectItem(FrameworkElement.comboBoxSelectArmy, Career.Army[career.ArmyIndex - 1]);
+                EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, Career.AirForce[(career.ArmyIndex - 1) * 3 + career.AirForceIndex - 1]);
+                FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
+                EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
+                EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription(): string.Empty);
+            }
+
+            private void UpdateCampaignComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectCampaign;
+
+                comboBox.Items.Clear();
+
+                foreach (CampaignInfo campaignInfo in Game.Core.CampaignInfos)
+                {
+                    comboBox.Items.Add(campaignInfo);
+                }
+
+                comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
+            }
+
+            private void UpdateArmyComboBoxInfo(bool checkArmy = false)
+            {
+                CampaignInfo campaignInfo = SelectedCampaign;
+
+                ComboBox comboBox = FrameworkElement.comboBoxSelectArmy;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string: string.Empty;
+                comboBox.Items.Clear();
+
+                if (campaignInfo != null && (!checkArmy || CurrentMissionFile != null))
+                {
+                    var armys = checkArmy ? CurrentMissionFile.AirGroups.Select(x => x.ArmyIndex).Distinct(): new int [0];
+                    for (int i = 0; i < (int)ArmyType.Count; i++)
+                    {
+                        if (!checkArmy || armys.Contains(i + 1))
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.Army[i] });
+                        }
+                    }
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateAirForceComboBoxInfo(bool checkAirForce = false)
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectAirForce;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                int armyIndex = SelectedArmyIndex;
+                CampaignInfo campaignInfo = SelectedCampaign;
+                if (campaignInfo != null && armyIndex != -1 && (!checkAirForce || CurrentMissionFile != null))
+                {
+                    var airForces = checkAirForce ? CurrentMissionFile.AirGroups.Where(x => x.ArmyIndex == armyIndex).Select(x => x.AirGroupInfo.AirForceIndex).Distinct(): new int [0];
+                    if (armyIndex == (int)ArmyType.Red)
+                    {
+                        for (int i = 0; i < (int)AirForceRed.Count; i++)
+                        {
+                            if (!checkAirForce || airForces.Contains(i + 1))
+                            {
+                                comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
+                            }
+                        }
+                    }
+                    else if (armyIndex == (int)ArmyType.Blue)
+                    {
+                        int diff = (int)AirForceRed.Count;
+                        for (int i = 0; i < (int)AirForceBlue.Count; i++)
+                        {
+                            if (!checkAirForce || airForces.Contains(i + 1))
+                            {
+                                comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i + diff] });
+                            }
+                        }
+                    }
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateRankComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectRank;
+                int selected = comboBox.SelectedIndex;
+                comboBox.Items.Clear();
+
+                int armyIndex = SelectedArmyIndex;
+                int airForceIndex = SelectedAirForceIndex;
+
+                if (armyIndex != -1 && airForceIndex != -1)
+                {
+                    int airforce = (armyIndex - 1) * 3 + airForceIndex - 1;
+
+                    for (int i = 0; i <= Career.RankMax; i++)
+                    {
+                        comboBox.Items.Add(
+                            new ComboBoxItem()
+                            {
+                                Content = Career.Rank[airforce][i],
+                                Tag = i,
+                            });
+                    }
+                }
+
+                if (comboBox.Items.Count > 0)
+                {
+                    comboBox.IsEnabled = true;
+                    comboBox.SelectedIndex = selected != -1 ? selected: 0;
+                }
+                else
+                {
+                    comboBox.IsEnabled = false;
+                    comboBox.SelectedIndex = -1;
+                }
+            }
+
+            private void UpdateAirGroupComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectAirGroup;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                CampaignInfo campaignInfo = SelectedCampaign;
+                if (campaignInfo != null)
+                {
+                    int armyIndex = SelectedArmyIndex;
+                    int airForceIndex = SelectedAirForceIndex;
+
+                    if (armyIndex != -1 && airForceIndex != -1)
+                    {
+                        CurrentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+                        foreach (AirGroup airGroup in CurrentMissionFile.AirGroups)
+                        {
+                            AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                            AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                            if (airGroupInfo.ArmyIndex == armyIndex && airGroupInfo.AirForceIndex == airForceIndex && aircraftInfo.IsFlyable)
+                            {
+                                comboBox.Items.Add(new ComboBoxItem() { Tag = airGroup, Content = CreateAirGroupContent(airGroup, campaignInfo) });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        CurrentMissionFile = null;
+                    }
+                }
+                else
+                {
+                    CurrentMissionFile = null;
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo)
+            {
+                AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                return string.Format("{0} ({1})", airGroup.DisplayName, aircraftInfo.DisplayName);
+            }
+
+            private void UpdateMissionTypeComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectMissionType;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                CampaignInfo campaignInfo = SelectedCampaign;
+                AirGroup airGroup = SelectedAirGroup;
+                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = " - Random - " });
+                    // AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                    AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                    foreach (var item in aircraftInfo.MissionTypes)
+                    {
+                        comboBox.Items.Add(new ComboBoxItem() { Tag = item, Content = item.ToDescription() });
+                    }
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateSelectTargetComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectTarget;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                CampaignInfo campaignInfo = SelectedCampaign;
+                AirGroup airGroup = SelectedAirGroup;
+                EMissionType? missionType = SelectedMissionType;
+                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null && missionType != null)
+                {
+                    //AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                    //AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                    //foreach (var item in aircraftInfo.MissionTypes)
+                    //{
+                    //    comboBox.Items.Add(item.ToDescription());
+                    //}
+
+                    switch (missionType.Value)
+                    {
+                        case EMissionType.RECON:
+                            break;
+
+                        case EMissionType.MARITIME_RECON:
+                            break;
+
+                        case EMissionType.ARMED_RECON:
+                            break;
+
+                        case EMissionType.ARMED_MARITIME_RECON:
+                            break;
+
+                        case EMissionType.ATTACK_ARMOR:
+                            break;
+
+                        case EMissionType.ATTACK_VEHICLE:
+                            break;
+
+                        case EMissionType.ATTACK_TRAIN:
+                            break;
+
+                        case EMissionType.ATTACK_SHIP:
+                            break;
+
+                        case EMissionType.ATTACK_ARTILLERY:
+                            break;
+
+                        case EMissionType.ATTACK_RADAR:
+                            break;
+
+                        case EMissionType.ATTACK_AIRCRAFT:
+                            break;
+
+                        case EMissionType.ATTACK_DEPOT:
+                            break;
+
+                        case EMissionType.INTERCEPT:
+                            break;
+
+                        case EMissionType.ESCORT:
+                            break;
+
+                        case EMissionType.COVER:
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void EnableSelectItem(ComboBox comboBox, string selected)
+            {
+                if (comboBox.Items.Count > 0)
+                {
+                    comboBox.IsEnabled = true;
+                    comboBox.Text = selected;
+                    if (comboBox.SelectedIndex == -1)
+                    {
+                        comboBox.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    comboBox.IsEnabled = false;
+                    comboBox.SelectedIndex = -1;
+                }
+            }
+
+            private void UpdateAltitudeComboBoxInfo()
+            {
+
+            }
+
+            private void UpdateButtonStatus()
+            {
+                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
+                                                    SelectedAirGroup != null && SelectedRank != -1;
+
+
+            }
+
         }
     }
 }

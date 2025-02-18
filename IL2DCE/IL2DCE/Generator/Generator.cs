@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using maddox.game;
 
 namespace IL2DCE
@@ -200,7 +201,7 @@ namespace IL2DCE
                 // For waterways only the end must be in friendly territory.
                 if (GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y) == 1)
                 {
-                    string id = chiefIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For red army
@@ -209,7 +210,7 @@ namespace IL2DCE
                 }
                 else if (GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y) == 2)
                 {
-                    string id = chiefIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For blue army
@@ -223,7 +224,7 @@ namespace IL2DCE
                 // For railways the start and the end must be in friendly territory.
                 if (GamePlay.gpFrontArmy(railway.Start.X, railway.Start.Y) == 1 && GamePlay.gpFrontArmy(railway.End.X, railway.End.Y) == 1)
                 {
-                    string id = chiefIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For red army
@@ -232,7 +233,7 @@ namespace IL2DCE
                 }
                 else if (GamePlay.gpFrontArmy(railway.Start.X, railway.Start.Y) == 2 && GamePlay.gpFrontArmy(railway.End.X, railway.End.Y) == 2)
                 {
-                    string id = chiefIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For blue army
@@ -246,7 +247,7 @@ namespace IL2DCE
                 // For depots the position must be in friendly territory.
                 if (GamePlay.gpFrontArmy(depot.X, depot.Y) == 1)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For red army
@@ -255,7 +256,7 @@ namespace IL2DCE
                 }
                 else if (GamePlay.gpFrontArmy(depot.X, depot.Y) == 2)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For blue army
@@ -269,7 +270,7 @@ namespace IL2DCE
                 // For aircraft the position must be in friendly territory.
                 if (GamePlay.gpFrontArmy(aircraft.X, aircraft.Y) == 1)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For red army
@@ -278,7 +279,7 @@ namespace IL2DCE
                 }
                 else if (GamePlay.gpFrontArmy(aircraft.X, aircraft.Y) == 2)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For blue army
@@ -292,7 +293,7 @@ namespace IL2DCE
                 // For artillery the position must be in friendly territory.
                 if (GamePlay.gpFrontArmy(artillery.X, artillery.Y) == 1)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For red army
@@ -301,7 +302,7 @@ namespace IL2DCE
                 }
                 else if (GamePlay.gpFrontArmy(artillery.X, artillery.Y) == 2)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For blue army
@@ -315,7 +316,7 @@ namespace IL2DCE
                 // For artillery the position must be in friendly territory.
                 if (GamePlay.gpFrontArmy(radar.X, radar.Y) == 1)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For red army
@@ -324,7 +325,7 @@ namespace IL2DCE
                 }
                 else if (GamePlay.gpFrontArmy(radar.X, radar.Y) == 2)
                 {
-                    string id = stationaryIndex.ToString("Static" + System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
                     stationaryIndex++;
 
                     // For blue army
@@ -370,13 +371,13 @@ namespace IL2DCE
             // Add things to the template file.
 
             int randomTime = Core.Random.Next(5, 21);
-            missionFile.set("MAIN", "TIME", randomTime.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set("MAIN", "TIME", randomTime.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             int randomWeatherIndex = Core.Random.Next(0, 3);
-            missionFile.set("MAIN", "WeatherIndex", randomWeatherIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set("MAIN", "WeatherIndex", randomWeatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             int randomCloudsHeight = Core.Random.Next(5, 15);
-            missionFile.set("MAIN", "CloudsHeight", (randomCloudsHeight * 100).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set("MAIN", "CloudsHeight", (randomCloudsHeight * 100).ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = "";
             if (randomWeatherIndex == 0)
@@ -401,9 +402,18 @@ namespace IL2DCE
 
             foreach (AirGroup airGroup in GeneratorAirOperation.AvailableAirGroups)
             {
-                if ((airGroup.ArmyIndex == Career.ArmyIndex) && (airGroup.AirGroupKey + "." + airGroup.SquadronIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat)) == Career.AirGroup)
+                if ((airGroup.ArmyIndex == Career.ArmyIndex) && (airGroup.AirGroupKey + "." + airGroup.SquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat)) == Career.AirGroup)
                 {
-                    GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup);
+                    EMissionType? missionType = Career.MissionType;
+                    if (missionType == null)
+                    {
+                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup);
+                    }
+                    else
+                    {
+                        GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation, 
+                                                                    Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary);
+                    }
 
                     // Determine the aircraft that is controlled by the player.
                     List<string> aircraftOrder = determineAircraftOrder(airGroup);
@@ -421,11 +431,11 @@ namespace IL2DCE
 
                         if (missionFile.exist("MAIN", "player"))
                         {
-                            missionFile.set("MAIN", "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
+                            missionFile.set("MAIN", "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
                         }
                         else
                         {
-                            missionFile.add("MAIN", "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
+                            missionFile.add("MAIN", "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
                         }
                     }
                     break;
@@ -485,7 +495,7 @@ namespace IL2DCE
                     {
                         if (airGroup.Flights[key].Count > i)
                         {
-                            aircraftOrder.Add(key.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + i.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + i.ToString(CultureInfo.InvariantCulture.NumberFormat));
                         }
                     }
 
@@ -493,7 +503,7 @@ namespace IL2DCE
                     {
                         if (airGroup.Flights[key].Count > i + 3)
                         {
-                            aircraftOrder.Add(key.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + (i + 3).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + (i + 3).ToString(CultureInfo.InvariantCulture.NumberFormat));
                         }
                     }
                 }
@@ -506,7 +516,7 @@ namespace IL2DCE
                     {
                         if (airGroup.Flights[key].Count > i)
                         {
-                            aircraftOrder.Add(key.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + i.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + i.ToString(CultureInfo.InvariantCulture.NumberFormat));
                         }
                     }
 
@@ -514,7 +524,7 @@ namespace IL2DCE
                     {
                         if (airGroup.Flights[key].Count > i + 2)
                         {
-                            aircraftOrder.Add(key.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + (i + 2).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + (i + 2).ToString(CultureInfo.InvariantCulture.NumberFormat));
                         }
                     }
                 }
@@ -525,7 +535,7 @@ namespace IL2DCE
                 {
                     if (airGroup.Flights[key].Count == 1)
                     {
-                        aircraftOrder.Add(key.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + "0");
+                        aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + "0");
                     }
                 }
             }

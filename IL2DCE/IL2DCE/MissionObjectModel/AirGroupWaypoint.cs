@@ -43,6 +43,38 @@ namespace IL2DCE
 
         #endregion
 
+        #region Public properties
+
+        public AirGroupWaypointTypes Type
+        {
+            get;
+            set;
+        }
+
+        public Point3d Position
+        {
+            get
+            {
+                return new Point3d(X, Y, Z);
+            }
+        }
+
+        public double X;
+
+        public double Y;
+
+        public double Z;
+
+        public double V;
+
+        public string Target
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
         #region Public constructors
 
         public AirGroupWaypoint(AirGroupWaypointTypes type, Point3d position, double v, string target = null)
@@ -80,38 +112,6 @@ namespace IL2DCE
                 double.TryParse(valueList[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Z);
                 double.TryParse(valueList[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out V);
             }
-        }
-
-        #endregion
-
-        #region Public properties
-
-        public AirGroupWaypointTypes Type
-        {
-            get;
-            set;
-        }
-
-        public Point3d Position
-        {
-            get
-            {
-                return new Point3d(X, Y, Z);
-            }
-        }
-
-        public double X;
-
-        public double Y;
-
-        public double Z;
-
-        public double V;
-
-        public string Target
-        {
-            get;
-            set;
         }
 
         #endregion

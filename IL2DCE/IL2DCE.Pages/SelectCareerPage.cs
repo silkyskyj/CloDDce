@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using maddox.game;
+using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -141,9 +142,13 @@ namespace IL2DCE
                 Career career = Game.Core.CurrentCareer;
                 if (career != null && career.CampaignInfo != null)
                 {
-                    FrameworkElement.Continue.IsEnabled = career.Date < career.CampaignInfo.EndDate;
+                    CampaignInfo campaignInfo = career.CampaignInfo;
+                    FrameworkElement.Continue.IsEnabled = career.Date < campaignInfo.EndDate;
                     FrameworkElement.Delete.IsEnabled = true;
-                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}", career.ToCurrestStatusString(), career.ToTotalResultString());
+                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n", 
+                                                                        campaignInfo.ToSummaryString(), 
+                                                                        career.ToCurrestStatusString(), 
+                                                                        career.ToTotalResultString());
                 }
                 else
                 {

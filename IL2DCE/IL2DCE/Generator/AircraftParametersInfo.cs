@@ -20,25 +20,6 @@ namespace IL2DCE
 {
     public class AircraftParametersInfo
     {
-        public AircraftParametersInfo(string valuePart)
-        {
-            string[] parameters = valuePart.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parameters != null && parameters.Length == 1)
-            {
-                this.loadoutId = parameters[0];
-            }
-            else if (parameters != null && parameters.Length == 3)
-            {
-                this.loadoutId = parameters[0];
-                minAltitude = double.Parse(parameters[1]);
-                maxAltitude = double.Parse(parameters[2]);
-            }
-            else
-            {
-                throw new FormatException(valuePart);
-            }
-        }
-
         public string LoadoutId
         {
             get
@@ -65,5 +46,24 @@ namespace IL2DCE
             }
         }
         private double? maxAltitude = null;
+
+        public AircraftParametersInfo(string valuePart)
+        {
+            string[] parameters = valuePart.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parameters != null && parameters.Length == 1)
+            {
+                this.loadoutId = parameters[0];
+            }
+            else if (parameters != null && parameters.Length == 3)
+            {
+                this.loadoutId = parameters[0];
+                minAltitude = double.Parse(parameters[1]);
+                maxAltitude = double.Parse(parameters[2]);
+            }
+            else
+            {
+                throw new FormatException(valuePart);
+            }
+        }
     }
 }

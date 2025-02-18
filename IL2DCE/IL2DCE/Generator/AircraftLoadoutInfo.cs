@@ -23,6 +23,24 @@ namespace IL2DCE
 {
     public class AircraftLoadoutInfo
     {
+        public int[] Weapons
+        {
+            get
+            {
+                return this.weapons;
+            }
+        }
+        private int[] weapons = null;
+
+        public List<string> Detonator
+        {
+            get
+            {
+                return this.detonator;
+            }
+        }
+        private List<string> detonator = new List<string>();
+
         public AircraftLoadoutInfo(ISectionFile aircraftInfoFile, string aircraft, string loadoutId)
         {
             if (aircraftInfoFile.exist(aircraft + "_" + loadoutId))
@@ -62,23 +80,5 @@ namespace IL2DCE
                 throw new ArgumentException(aircraft + "_" + loadoutId);
             }
         }
-
-        public int[] Weapons
-        {
-            get
-            {
-                return this.weapons;
-            }
-        }
-        private int[] weapons = null;
-
-        public List<string> Detonator
-        {
-            get
-            {
-                return this.detonator;
-            }
-        }
-        private List<string> detonator = new List<string>();
     }
 }

@@ -19,13 +19,45 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 
 namespace IL2DCE
 {
+    public enum ArmyType
+    {
+        Red = 1,
+        Blue = 2,
+        Count = 2,
+    };
+
+    public enum AirForceRed
+    {
+        Raf = 1,
+        Aa = 2,
+        Usaaf = 3,
+        Count = 3,
+    };
+
+    public enum AirForceBlue
+    {
+        Lw = 1,
+        Ra = 2,
+        Count = 2,
+    };
+
+    public enum EBattleType
+    {
+        Unknown,
+        Campaign,
+        QuickMission,
+        Count,
+    };
+
     public class Career
     {
+        public const string KeyVersion = "Ver";
         public const string SectionMain = "Main";
         public const string SectionCampaign = "Campaign";
         public const string SectionStat = "Stat";
@@ -38,6 +70,7 @@ namespace IL2DCE
         public const string KeyAircraft = "Aircraft";
 
         public const string KillsFormat = "F2";
+        public const string DateFormat = "yyyy/M/d";
 
         public const int RankMax = 5;
 
@@ -287,6 +320,52 @@ namespace IL2DCE
             set;
         }
 
+        #region Quick Mission Info
+
+        public EBattleType BattleType
+        {
+            get;
+            set;
+        }
+
+        public EMissionType? MissionType
+        {
+            get;
+            set;
+        }
+
+        public bool AllowDefensiveOperation
+        {
+            get;
+            set;
+        }
+
+        public AirGroup EscortAirGroup
+        {
+            get;
+            set;
+        }
+
+        public GroundGroup TargetGroundGroup
+        {
+            get;
+            set;
+        }
+
+        public Stationary TargetStationary
+        {
+            get;
+            set;
+        }
+
+        public AirGroup PlayerAirGroup
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
         {
             _pilotName = pilotName;
@@ -303,11 +382,16 @@ namespace IL2DCE
             Aircraft = string.Empty;
 
             KillsHistory = new Dictionary<DateTime, string>();
+
+            AllowDefensiveOperation = true;
+            BattleType = EBattleType.Unknown;
         }
 
         public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile)
         {
             _pilotName = pilotName;
+
+            string ver = careerFile.exist(SectionMain, KeyVersion) ? careerFile.get(SectionMain, KeyVersion): string.Empty;
 
             if (careerFile.exist(SectionMain, "armyIndex")
                 && careerFile.exist(SectionMain, "rankIndex")
@@ -346,7 +430,16 @@ namespace IL2DCE
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
                 Bails = careerFile.get(SectionStat, KeyBails, 0);
                 Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
-                Kills = careerFile.get(SectionStat, KeyKills, 0f);
+                if (string.IsNullOrEmpty(ver) && careerFile.exist(SectionStat, KeyKills))
+                {
+                    string temp = careerFile.get(SectionStat, KeyKills);
+                    double d;
+                    Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out d) ? d : 0;
+                }
+                else
+                {
+                    Kills = careerFile.get(SectionStat, KeyKills, 0f);
+                }
 
                 KillsHistory = new Dictionary<DateTime, string>();
                 int killsResult = careerFile.lines(SectionKillsResult);
@@ -356,7 +449,7 @@ namespace IL2DCE
                 for (int i = 0; i < killsResult; i++)
                 {
                     careerFile.get(SectionKillsResult, i, out key, out value);
-                    if (DateTime.TryParse(key, out dt))
+                    if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.None, out dt))
                     {
                         if (KillsHistory.ContainsKey(dt.Date))
                         {
@@ -373,6 +466,8 @@ namespace IL2DCE
             {
                 throw new FormatException("Career File Format Error");
             }
+
+            AllowDefensiveOperation = true;
         }
 
         public override string ToString()
@@ -389,6 +484,8 @@ namespace IL2DCE
 
         public void WriteTo(ISectionFile careerFile)
         {
+            careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
+            
             careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
@@ -400,15 +497,15 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, "id", CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
 
-            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString());
-            careerFile.add(SectionStat, KeyLandings, Landings.ToString());
-            careerFile.add(SectionStat, KeyBails, Bails.ToString());
-            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString());
-            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat));
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, CultureInfo.InvariantCulture.NumberFormat));
 
             foreach (var item in KillsHistory)
             {
-                careerFile.add(SectionKillsResult, item.Key.ToString("yyyy/M/d"), item.Value);
+                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, CultureInfo.InvariantCulture.NumberFormat), item.Value);
             }
         }
 
@@ -440,7 +537,7 @@ namespace IL2DCE
                                     Landings,
                                     Deaths,
                                     Bails,
-                                    Kills.ToString(KillsFormat),
+                                    Kills.ToString(KillsFormat, CultureInfo.InvariantCulture.NumberFormat),
                                     builder.ToString());
 
         }

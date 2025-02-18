@@ -107,42 +107,25 @@ namespace IL2DCE
                     int armyIndex = (int)armySelected.Tag;
 
                     ComboBox comboBox = FrameworkElement.comboBoxSelectAirForce;
-
                     comboBox.Items.Clear();
 
-                    if (armyIndex == 1)
+                    if (armyIndex == (int)ArmyType.Red)
                     {
-                        ComboBoxItem itemRaf = new ComboBoxItem();
-                        itemRaf.Tag = 1;
-                        itemRaf.Content = Career.AirForce[0];
-                        comboBox.Items.Add(itemRaf);
-
-                        ComboBoxItem itemFr = new ComboBoxItem();
-                        itemFr.Tag = 2;
-                        itemFr.Content = Career.AirForce[1];
-                        comboBox.Items.Add(itemFr);
-
-                        ComboBoxItem itemUsa = new ComboBoxItem();
-                        itemUsa.Tag = 3;
-                        itemUsa.Content = Career.AirForce[2];
-                        comboBox.Items.Add(itemUsa);
-
-                        comboBox.SelectedIndex = 0;
+                        for (int i = 0; i < (int)AirForceRed.Count; i++)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
+                        }
                     }
-                    else if (armyIndex == 2)
+                    else if (armyIndex == (int)ArmyType.Blue)
                     {
-                        ComboBoxItem itemLw = new ComboBoxItem();
-                        itemLw.Tag = 1;
-                        itemLw.Content = Career.AirForce[3];
-                        comboBox.Items.Add(itemLw);
-
-                        ComboBoxItem itemRa = new ComboBoxItem();
-                        itemRa.Tag = 2;
-                        itemRa.Content = Career.AirForce[4];
-                        comboBox.Items.Add(itemRa);
-
-                        comboBox.SelectedIndex = 0;
+                        int diff = (int)AirForceRed.Count;
+                        for (int i = 0; i < (int)AirForceBlue.Count; i++)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i + diff] });
+                        }
                     }
+
+                    comboBox.SelectedIndex = 0;
                 }
             }
 
@@ -198,6 +181,7 @@ namespace IL2DCE
                 int rankIndex = (int)rankSelected.Tag;
 
                 Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
+                career.BattleType = EBattleType.Campaign;
                 Game.Core.CurrentCareer = career;
                 Game.Core.AvailableCareers.Add(career);
 

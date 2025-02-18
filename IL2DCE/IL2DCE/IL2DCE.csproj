@@ -64,6 +64,7 @@
     <Compile Include="MissionObjectModel\Waterway.cs" />
     <Compile Include="MissionObjectModel\MissionFile.cs" />
     <Compile Include="Random.cs" />
+    <Compile Include="Util\VersionConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="core">

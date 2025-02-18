@@ -73,25 +73,6 @@ namespace IL2DCE
 
     public class AirGroupInfo/* : IAirGroupInfo*/
     {
-        public enum Army
-        {
-            Red = 1,
-            Blue = 2,
-        };
-
-        public enum AirForceRed
-        {
-            Raf = 1,
-            Aa = 2,
-            Usaaf = 3,
-        };
-
-        public enum AirForceBlue
-        {
-            Lw = 1,
-            Ra = 2,
-        };
-
         #region Public properties
 
         public List<string> Aircrafts

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using maddox.game;
 
 namespace IL2DCE
@@ -253,6 +254,14 @@ namespace IL2DCE
         public override string ToString()
         {
             return Name;
+        }
+
+        public string ToSummaryString()
+        {
+            return string.Format("Campaign\n Name: {0}\n StartDate: {1}\n EndDate: {2}\n",
+                                Name,
+                                StartDate.ToString("d", DateTimeFormatInfo.InvariantInfo),
+                                EndDate.ToString("d", DateTimeFormatInfo.InvariantInfo));
         }
 
          /// <summary>

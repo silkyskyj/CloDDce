@@ -33,6 +33,101 @@ namespace IL2DCE
 
     public class GroundGroup
     {
+        public EGroundGroupType Type
+        {
+            get
+            {
+                // Type
+                if (Class.StartsWith("Vehicle"))
+                {
+                    return EGroundGroupType.Vehicle;
+                }
+                else if (Class.StartsWith("Armor"))
+                {
+                    return EGroundGroupType.Armor;
+                }
+                else if (Class.StartsWith("Ship"))
+                {
+                    return EGroundGroupType.Ship;
+                }
+                else if (Class.StartsWith("Train"))
+                {
+                    return EGroundGroupType.Train;
+                }
+                else
+                {
+                    return EGroundGroupType.Unknown;
+                }
+            }
+        }
+
+        public Point2d Position
+        {
+            get
+            {
+                return new Point2d(Waypoints[0].X, Waypoints[0].Y);
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                _id = value;
+            }
+        }
+        private string _id;
+
+        public string Class
+        {
+            get;
+            set;
+        }
+
+        public ECountry Country
+        {
+            get;
+            set;
+        }
+
+        public int Army
+        {
+            get
+            {
+                if (Country == ECountry.gb)
+                {
+                    return 1;
+                }
+                else if (Country == ECountry.de)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public string Options
+        {
+            get;
+            set;
+        }
+
+        public List<GroundGroupWaypoint> Waypoints
+        {
+            get
+            {
+                return _waypoints;
+            }
+        }
+        private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
+
         public GroundGroup(string id, string @class, ECountry country, string options, List<GroundGroupWaypoint> waypoints)
         {
             _id = id;
@@ -98,99 +193,6 @@ namespace IL2DCE
             }
         }
 
-        public EGroundGroupType Type
-        {
-            get
-            {
-                // Type
-                if (Class.StartsWith("Vehicle"))
-                {
-                    return EGroundGroupType.Vehicle;
-                }
-                else if (Class.StartsWith("Armor"))
-                {
-                    return EGroundGroupType.Armor;
-                }
-                else if (Class.StartsWith("Ship"))
-                {
-                    return EGroundGroupType.Ship;
-                }
-                else if (Class.StartsWith("Train"))
-                {
-                    return EGroundGroupType.Train;
-                }
-                else
-                {
-                    return EGroundGroupType.Unknown;
-                }
-            }
-        }
-
-        public Point2d Position
-        {
-            get
-            {
-                return new Point2d(Waypoints[0].X, Waypoints[0].Y);
-            }
-        }
-
-        public string Id
-        {
-            get
-            {
-                return _id;
-            }
-            set
-            {
-                _id = value;
-            }
-        }
-
-        public string Class
-        {
-            get;
-            set;
-        }
-
-        public ECountry Country
-        {
-            get;
-            set;
-        }
-
-        public int Army
-        {
-            get
-            {
-                if (Country == ECountry.gb)
-                {
-                    return 1;
-                }
-                else if (Country == ECountry.de)
-                {
-                    return 2;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
-
-        public string Options
-        {
-            get;
-            set;
-        }
-
-        public List<GroundGroupWaypoint> Waypoints
-        {
-            get
-            {
-                return _waypoints;
-            }
-        }
-
         public void WriteTo(ISectionFile sectionFile)
         {
             if (Waypoints.Count > 1)
@@ -238,8 +240,5 @@ namespace IL2DCE
                 }
             }
         }
-
-        private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
-        private string _id;
-    }
+   }
 }

@@ -56,6 +56,45 @@ namespace IL2DCE.Pages
             _game = null;
         }
 
+        protected void ReFly_Click(object sender, RoutedEventArgs e)
+        {
+            Game.gameInterface.PageChange(new BattleIntroPage(), null);
+        }
+
+        protected void Back_Click(object sender, RoutedEventArgs e)
+        {
+            Career career = Game.Core.CurrentCareer;
+            if (career.BattleType == EBattleType.QuickMission)
+            {
+                Game.gameInterface.PageChange(new QuickMissionPage(), null);
+            }
+            else
+            {
+                Game.gameInterface.PagePop(null);
+            }
+        }
+
+        protected void Fly_Click(object sender, RoutedEventArgs e)
+        {
+            Career career = Game.Core.CurrentCareer;
+            if (career.BattleType == EBattleType.QuickMission)
+            {
+                Game.gameInterface.PageChange(new QuickMissionPage(), null);
+            }
+            else
+            {
+                CampaignStatus status = Game.Core.AdvanceCampaign(Game);
+                if (status != CampaignStatus.DateEnd)
+                {
+                    Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                }
+                else
+                {
+                    Game.gameInterface.PageChange(new CampaignCompletionPage(), null);
+                }
+            }
+        }
+
         protected void UpdateTotalPlayerStat(IPlayer player)
         {
             IGameSingle game = (Game as IGameSingle);
@@ -127,8 +166,8 @@ namespace IL2DCE.Pages
                                     st.bails,
                                     st.ditches,
                                     st.planesWrittenOff,
-                                    st.kills.ToString(Career.KillsFormat),
-                                    st.fkills.ToString(Career.KillsFormat),
+                                    st.kills.ToString(Career.KillsFormat, CultureInfo.InvariantCulture.NumberFormat),
+                                    st.fkills.ToString(Career.KillsFormat, CultureInfo.InvariantCulture.NumberFormat),
                                     ToStringkillsTypes(st.killsTypes));
         }
 

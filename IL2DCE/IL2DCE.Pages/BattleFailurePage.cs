@@ -34,55 +34,20 @@ namespace IL2DCE
             public BattleFailurePage()
                 : base("Battle Failure", new CampaignBattleFailure())
             {
-                FrameworkElement.Fly.Click += new RoutedEventHandler(Fly_Click);
                 FrameworkElement.ReFly.Click += new RoutedEventHandler(ReFly_Click);
                 FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
-
                 FrameworkElement.Fly.IsEnabled = false;
                 FrameworkElement.Fly.Visibility = Visibility.Hidden;
             }
-
 
             public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
 
-                string result = string.Empty;
-
-                if (Game is IGameSingle)
-                {
-                    result += GetResultSummary(Game as IGameSingle);
-                }
-
-                if (play.gameInterface != null)
-                {
-                    result += GetPlayerStat(play.gameInterface.Player());
-                }
+                string result = GetResultSummary(Game as IGameSingle) + GetPlayerStat(play.gameInterface.Player());
 
                 FrameworkElement.textBoxDescription.Text = result;
                 FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
-            }
-
-            void Back_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PagePop(null);
-            }
-
-            void ReFly_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PageChange(new BattleIntroPage(), null);
-            }
-
-            void Fly_Click(object sender, RoutedEventArgs e)
-            {
-                CampaignStatus status = Game.Core.AdvanceCampaign(Game);
-                if (status != CampaignStatus.DateEnd)
-                {
-                    Game.gameInterface.PageChange(new BattleIntroPage(), null);
-                }
-                {
-                    Game.gameInterface.PageChange(new CampaignCompletionPage(), null);
-                }
             }
         }
     }

@@ -15,7 +15,7 @@
         </ComboBox>
         <Label Content="Select Air Group:" HorizontalAlignment="Left" Margin="36,164,0,0" Name="labelSelectAirGroup" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
         <Label Content="Select Period:" HorizontalAlignment="Left" Margin="36,335,0,0" x:Name="labelSelectPeriod" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
-        <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="36,405,0,0" VerticalAlignment="Top" FontSize="36" SelectedDateFormat="Short" Width="260" Background="#7FFFFFFF">
+        <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="36,405,0,0" VerticalAlignment="Top" FontSize="36" SelectedDateFormat="Long" Width="400" Background="#7FFFFFFF" IsTodayHighlighted="True">
             <DatePicker.CalendarStyle>
                 <Style TargetType="Calendar">
                     <Setter Property="LayoutTransform">
@@ -26,7 +26,7 @@
                 </Style>
             </DatePicker.CalendarStyle>
         </DatePicker>
-        <DatePicker x:Name="datePickerEnd" HorizontalAlignment="Left" Margin="362,405,0,0" VerticalAlignment="Top" Width="260" FontSize="36" SelectedDateFormat="Short" Background="#7FFFFFFF">
+        <DatePicker x:Name="datePickerEnd" HorizontalAlignment="Left" Margin="530,405,0,0" VerticalAlignment="Top" Width="400" FontSize="36" SelectedDateFormat="Long" Background="#7FFFFFFF">
             <DatePicker.CalendarStyle>
                 <Style TargetType="Calendar">
                     <Setter Property="LayoutTransform">
@@ -37,7 +37,7 @@
                 </Style>
             </DatePicker.CalendarStyle>
         </DatePicker>
-        <Label Content=" - " HorizontalAlignment="Left" Margin="304,402,0,0" x:Name="labelSelectPeriodRange_" VerticalAlignment="Top" Width="61" FontSize="36" Foreground="#FFA0854A" />
+        <Label Content=" - " HorizontalAlignment="Left" Margin="454,392,0,0" x:Name="labelSelectPeriodRange_" VerticalAlignment="Top" Width="61" FontSize="48" Foreground="#FFA0854A" RenderTransformOrigin="2.623,0.795" />
         <Border x:Name="borderImage" BorderBrush="#FFA0854A" BorderThickness="2" Margin="37,532,1357,184" Width="258" Height="182" Background="#20F7F2F2" Opacity="1">
             <Image x:Name="imageAircraft" HorizontalAlignment="Left" Height="180"  VerticalAlignment="Top" Width="256" RenderTransformOrigin="-1.555,1.944"/>
         </Border>

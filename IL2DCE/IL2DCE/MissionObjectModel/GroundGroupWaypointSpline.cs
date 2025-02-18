@@ -21,6 +21,20 @@ namespace IL2DCE
 {
     public class GroundGroupWaypointSpline : GroundGroupWaypoint
     {
+
+        #region Public properties
+
+        public string S
+        {
+            get
+            {
+                return _s;
+            }
+        }
+        private string _s;
+
+        #endregion
+
         // Example: S 503 91 0.61 5.00 P 360207.22 223055.25  0 2 11.11
         // S ? ? ? ? P X Y  0 SubCount V
         private System.Text.RegularExpressions.Regex waypointLong = new System.Text.RegularExpressions.Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
@@ -99,19 +113,6 @@ namespace IL2DCE
                 }
             }
         }
-
-        #endregion
-
-        #region Public properties
-
-        public string S
-        {
-            get
-            {
-                return _s;
-            }
-        }
-        private string _s;
 
         #endregion
     }

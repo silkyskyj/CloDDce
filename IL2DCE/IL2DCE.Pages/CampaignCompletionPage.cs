@@ -1,5 +1,5 @@
 ﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
-// Copyright (C) 2025 Stefan Rothdach & 2025 silkyskyj
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Globalization;
 using System.Windows;
 using maddox.game.play;
 
@@ -55,10 +54,7 @@ namespace IL2DCE.Pages
             Career career = Game.Core.CurrentCareer;
             CampaignInfo campaignInfo = career.CampaignInfo;
 
-            FrameworkElement.textBoxInfo.Text = string.Format("Campaign\n Name: {0}:\n StartDate: {1}\n EndDate: {2}\n", 
-                                                                campaignInfo.Name, 
-                                                                campaignInfo.StartDate.ToString("d", DateTimeFormatInfo.InvariantInfo), 
-                                                                campaignInfo.EndDate.ToString("d", DateTimeFormatInfo.InvariantInfo));
+            FrameworkElement.textBoxInfo.Text = campaignInfo.ToSummaryString();
             FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n", 
                                                                 career.ToCurrestStatusString(), 
                                                                 career.ToTotalResultString());
