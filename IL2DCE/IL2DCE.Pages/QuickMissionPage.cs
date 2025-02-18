@@ -229,7 +229,6 @@ namespace IL2DCE
                     Game.gameInterface.BattleStop();
                 }
 
-                Game.Core.CurrentCareer.CampaignInfo = null;
                 Game.Core.CurrentCareer = null;
 
                 Game.gameInterface.PagePop(null);

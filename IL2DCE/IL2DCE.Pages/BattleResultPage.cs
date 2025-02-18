@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using maddox.game;
 using maddox.game.play;
@@ -128,7 +129,7 @@ namespace IL2DCE.Pages
 
         protected string ToStringkillsTypes(Dictionary<string, double> dic)
         {
-            return string.Join(", ", dic.Select(x => string.Format("{0} x {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Career.KillsFormat))));
+            return string.Join(", ", dic.Select(x => string.Format("{0} x {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Career.KillsFormat, Career.Culture))));
         }
 
         protected string ToStringTimeSpan(Dictionary<string, float> dic)
@@ -166,8 +167,8 @@ namespace IL2DCE.Pages
                                     st.bails,
                                     st.ditches,
                                     st.planesWrittenOff,
-                                    st.kills.ToString(Career.KillsFormat, CultureInfo.InvariantCulture.NumberFormat),
-                                    st.fkills.ToString(Career.KillsFormat, CultureInfo.InvariantCulture.NumberFormat),
+                                    st.kills.ToString(Career.KillsFormat, Career.Culture),
+                                    st.fkills.ToString(Career.KillsFormat, Career.Culture),
                                     ToStringkillsTypes(st.killsTypes));
         }
 
