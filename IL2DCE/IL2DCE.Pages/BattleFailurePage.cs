@@ -44,7 +44,7 @@ namespace IL2DCE
             {
                 base._enter(play, arg);
 
-                string result = GetResultSummary(Game as IGameSingle) + GetPlayerStat(play.gameInterface.Player());
+                string result = GetResultSummary() + GetPlayerStat();
 
                 FrameworkElement.textBoxDescription.Text = result;
                 FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();

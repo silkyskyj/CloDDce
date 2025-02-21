@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE
 {
@@ -281,7 +282,7 @@ namespace IL2DCE
             }
             else
             {
-                throw new ArgumentException();
+                throw new ArgumentException(string.Format("no aircraft[{0}] info in the file[{1}]", aircraft, "Aircraftinfo.ini"));
             }
         }
 
@@ -298,7 +299,7 @@ namespace IL2DCE
             }
             else
             {
-                throw new ArgumentException();
+                throw new ArgumentException(string.Format("no AirGroup[{0}] info in the file[{1}]", airGroupKey, "AirGroupinfo.ini"));
             }
         }
     }

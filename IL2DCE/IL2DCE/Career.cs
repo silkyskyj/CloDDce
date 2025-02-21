@@ -21,7 +21,6 @@ using System.Linq;
 using System.Text;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.world;
 
 namespace IL2DCE
 {
@@ -62,14 +61,16 @@ namespace IL2DCE
         public const string SectionCampaign = "Campaign";
         public const string SectionStat = "Stat";
         public const string SectionKillsResult = "KillsResult";
+        public const string SectionKillsGroundResult = "KillsGroundResult";
         public const string KeyTakeoffs = "Takeoffs";
         public const string KeyLandings = "Landings";
         public const string KeyBails = "Bails";
         public const string KeyDeaths = "Deaths";
         public const string KeyKills = "Kills";
+        public const string KeyKillsGround = "KillsGround";
         public const string KeyAircraft = "Aircraft";
 
-        public const string KillsFormat = "F2";
+        public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
 
         public const int RankMax = 5;
@@ -314,7 +315,19 @@ namespace IL2DCE
             set;
         }
 
+        public double KillsGround
+        {
+            get;
+            set;
+        }
+
         public Dictionary<DateTime, string> KillsHistory
+        {
+            get;
+            set;
+        }
+
+        public Dictionary<DateTime, string> KillsGroundHistory
         {
             get;
             set;
@@ -366,8 +379,6 @@ namespace IL2DCE
 
         #endregion
 
-        public static CultureInfo Culture = new CultureInfo("en-US", true);
-
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
         {
             _pilotName = pilotName;
@@ -384,6 +395,7 @@ namespace IL2DCE
             Aircraft = string.Empty;
 
             KillsHistory = new Dictionary<DateTime, string>();
+            KillsGroundHistory = new Dictionary<DateTime, string>();
 
             AllowDefensiveOperation = true;
             BattleType = EBattleType.Unknown;
@@ -436,19 +448,21 @@ namespace IL2DCE
                 {
                     string temp = careerFile.get(SectionStat, KeyKills);
                     double d;
-                    Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, Culture, out d) ? d : 0;
+                    Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, Config.Culture, out d) ? d : 0;
                 }
                 else
                 {
                     Kills = careerFile.get(SectionStat, KeyKills, 0f);
                 }
 
-                KillsHistory = new Dictionary<DateTime, string>();
-                int killsResult = careerFile.lines(SectionKillsResult);
                 string key;
                 string value;
                 DateTime dt;
-                for (int i = 0; i < killsResult; i++)
+                int lines;
+
+                KillsHistory = new Dictionary<DateTime, string>();
+                lines = careerFile.lines(SectionKillsResult);
+                for (int i = 0; i < lines; i++)
                 {
                     careerFile.get(SectionKillsResult, i, out key, out value);
                     if (DateTime.TryParse(key, out dt))
@@ -461,6 +475,25 @@ namespace IL2DCE
                         else
                         {
                             KillsHistory.Add(dt.Date, value);
+                        }
+                    }
+                }
+
+                KillsGround = careerFile.get(SectionStat, KeyKillsGround, 0f);
+                KillsGroundHistory = new Dictionary<DateTime, string>();
+                lines = careerFile.lines(SectionKillsGroundResult);
+                for (int i = 0; i < lines; i++)
+                {
+                    careerFile.get(SectionKillsGroundResult, i, out key, out value);
+                    if (DateTime.TryParse(key, out dt))
+                    {
+                        if (KillsGroundHistory.ContainsKey(dt.Date))
+                        {
+                            KillsGroundHistory[dt.Date] += ", " + value;
+                        }
+                        else
+                        {
+                            KillsGroundHistory.Add(dt.Date, value);
                         }
                     }
                 }
@@ -489,26 +522,30 @@ namespace IL2DCE
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
             
-            careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(Culture));
-            careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(Culture));
-            careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(Culture));
-            careerFile.add(SectionMain, "experience", Experience.ToString(Culture));
+            careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(Config.Culture));
+            careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(Config.Culture));
+            careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(Config.Culture));
+            careerFile.add(SectionMain, "experience", Experience.ToString(Config.Culture));
 
-            careerFile.add(SectionCampaign, "date", Date.Value.Year.ToString(Culture) + "-" + Date.Value.Month.ToString(Culture) + "-" + Date.Value.Day.ToString(Culture.NumberFormat));
+            careerFile.add(SectionCampaign, "date", Date.Value.Year.ToString(Config.Culture) + "-" + Date.Value.Month.ToString(Config.Culture) + "-" + Date.Value.Day.ToString(Config.Culture.NumberFormat));
             careerFile.add(SectionCampaign, "airGroup", AirGroup);
             careerFile.add(SectionCampaign, "missionFile", MissionFileName);
             careerFile.add(SectionCampaign, "id", CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
 
-            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Culture));
-            careerFile.add(SectionStat, KeyLandings, Landings.ToString(Culture));
-            careerFile.add(SectionStat, KeyBails, Bails.ToString(Culture));
-            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(Culture));
-            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Culture));
-
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Config.Culture));
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString(Config.Culture));
+            careerFile.add(SectionStat, KeyBails, Bails.ToString(Config.Culture));
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(Config.Culture));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
             foreach (var item in KillsHistory)
             {
-                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Culture), item.Value);
+                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+            }
+            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(KillsFormat, Config.Culture));
+            foreach (var item in KillsGroundHistory)
+            {
+                careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
         }
 
@@ -528,20 +565,30 @@ namespace IL2DCE
 
         public string ToTotalResultString()
         {
-            StringBuilder builder = new StringBuilder();
-            var sorted = KillsHistory.OrderByDescending(x => x.Key.Date);
-            foreach (var item in sorted)
+            StringBuilder sb = new StringBuilder();
+            List<DateTime> dtList = KillsHistory.Keys.ToList();
+            dtList.AddRange(KillsGroundHistory.Keys);
+            var orderd = dtList.OrderByDescending(x => x.Date);
+            foreach (var item in orderd)
             {
-                builder.AppendFormat("    {0}, {1}\n", item.Key.ToString("d", DateTimeFormatInfo.InvariantInfo), item.Value);
+                if (KillsHistory.ContainsKey(item))
+                {
+                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), KillsHistory[item]);
+                }
+                if (KillsGroundHistory.ContainsKey(item))
+                {
+                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), KillsGroundHistory[item]);
+                }
             }
 
-            return String.Format("Total Result\n Takeoffs: {0}\n Landings: {1}\n Deaths: {2}\n Bails: {3}\n Kills: {4}\n Kills History:\n{5}\n",
+            return String.Format("Total Result\n Takeoffs: {0}\n Landings: {1}\n Deaths: {2}\n Bails: {3}\n Kills[Aircraft]: {4}\n Kills[GroundUnit]: {5}\n Kills History:\n{6}\n",
                                     Takeoffs,
                                     Landings,
                                     Deaths,
                                     Bails,
-                                    Kills.ToString(KillsFormat, Culture),
-                                    builder.ToString());
+                                    Kills.ToString(KillsFormat, Config.Culture),
+                                    KillsGround.ToString(KillsFormat, Config.Culture),
+                                    sb.ToString());
 
         }
     }

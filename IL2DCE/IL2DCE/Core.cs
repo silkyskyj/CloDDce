@@ -104,6 +104,12 @@ namespace IL2DCE
         }
         private IRandom _random;
 
+        public AMission Mission
+        {
+            get;
+            set;
+        }
+
         private string _debugFolderSystemPath;
         private string _careersFolderSystemPath;
         private string _campaignsFolderSystemPath;

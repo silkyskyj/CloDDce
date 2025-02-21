@@ -15,12 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+using System.Globalization;
 using maddox.game;
+using static maddox.game.play.StartupAutoStep;
 
 namespace IL2DCE
 {
     public class Config
     {
+        public const string SectionCore = "Core";
 
         public int AdditionalAirOperations
         {
@@ -84,6 +87,32 @@ namespace IL2DCE
         }
         private int _debug = 0;
 
+        public int StatType
+        {
+            get
+            {
+                return _statType;
+            }
+            set
+            {
+                _statType = value;
+            }
+        }
+        private int _statType = 0;
+
+        public double StatKillsOver
+        {
+            get
+            {
+                return _statKillsOver;
+            }
+            set
+            {
+                _statKillsOver = value;
+            }
+        }
+        private double _statKillsOver = 0.5;
+
         public string CampaignsFolder
         {
             get
@@ -93,12 +122,14 @@ namespace IL2DCE
         }
         private string _campaignsFolder = "$home/parts/IL2DCE/Campaigns";
 
+        public static CultureInfo Culture = new CultureInfo("en-US", true);
+
         public Config(ISectionFile confFile)
         {
             SpawnParked = false;
-            if (confFile.exist("Core", "forceSetOnPark"))
+            if (confFile.exist(SectionCore, "forceSetOnPark"))
             {
-                string value = confFile.get("Core", "forceSetOnPark");
+                string value = confFile.get(SectionCore, "forceSetOnPark");
                 if (value == "1")
                 {
                     SpawnParked = true;
@@ -110,38 +141,52 @@ namespace IL2DCE
             }
 
             _additionalAirOperations = 0;
-            if (confFile.exist("Core", "additionalAirOperations"))
+            if (confFile.exist(SectionCore, "additionalAirOperations"))
             {
-                string value = confFile.get("Core", "additionalAirOperations");
-                int.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out _additionalAirOperations);
+                string value = confFile.get(SectionCore, "additionalAirOperations");
+                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _additionalAirOperations);
             }
 
             _additionalGroundOperations = 0;
-            if (confFile.exist("Core", "additionalGroundOperations"))
+            if (confFile.exist(SectionCore, "additionalGroundOperations"))
             {
-                string value = confFile.get("Core", "additionalGroundOperations");
-                int.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out _additionalGroundOperations);
+                string value = confFile.get(SectionCore, "additionalGroundOperations");
+                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _additionalGroundOperations);
             }
 
             _flightSize = 1.0;
-            if (confFile.exist("Core", "flightSize"))
+            if (confFile.exist(SectionCore, "flightSize"))
             {
-                string value = confFile.get("Core", "flightSize");
-                double.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out _flightSize);
+                string value = confFile.get(SectionCore, "flightSize");
+                double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _flightSize);
             }
 
             _flightCount = 1.0;
-            if (confFile.exist("Core", "flightCount"))
+            if (confFile.exist(SectionCore, "flightCount"))
             {
-                string value = confFile.get("Core", "flightCount");
-                double.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out _flightCount);
+                string value = confFile.get(SectionCore, "flightCount");
+                double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _flightCount);
             }
 
             _debug = 0;
-            if (confFile.exist("Core", "debug"))
+            if (confFile.exist(SectionCore, "debug"))
             {
-                string value = confFile.get("Core", "debug");
-                int.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out _debug);
+                string value = confFile.get(SectionCore, "debug");
+                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _debug);
+            }
+
+            _statType = 0;
+            if (confFile.exist(SectionCore, "statType"))
+            {
+                string value = confFile.get(SectionCore, "statType");
+                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _statType);
+            }
+
+            _statKillsOver = 0.5;
+            if (confFile.exist(SectionCore, "statKillsOver"))
+            {
+                string value = confFile.get(SectionCore, "statKillsOver");
+                double.TryParse(value, NumberStyles.Any, Culture, out _statKillsOver);
             }
 
             if (confFile.exist("Main", "campaignsFolder"))

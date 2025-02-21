@@ -169,11 +169,11 @@ namespace IL2DCE
             {
                 ComboBoxItem item = FrameworkElement.comboBoxSelectAirGroup.SelectedItem as ComboBoxItem;
                 AirGroup airGroup = (AirGroup)item.Tag;
-                string aircraft = Regex.Match((item.Content as string), "\\(.+\\)").Value.Trim("()".ToCharArray());
                 Career career = Game.Core.CurrentCareer;
                 career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
-                career.Aircraft = aircraft;
                 CampaignInfo campaignInfo = career.CampaignInfo;
+                AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
+                career.Aircraft = aircraftInfo.DisplayName;
                 campaignInfo.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaignInfo.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
 

@@ -126,6 +126,8 @@ namespace IL2DCE
 
             private MissionFile CurrentMissionFile = null;
 
+            private bool hookComboSelectionChanged = false;
+
             public QuickMissionPage()
                 : base("Quick Mission", new QuickMission())
             {
@@ -149,11 +151,16 @@ namespace IL2DCE
 
                 _game = play as IGame;
 
-                UpdateCampaignComboBoxInfo();
-
                 if (Game.Core.CurrentCareer != null)
                 {
+                    hookComboSelectionChanged = true;
+                    UpdateCampaignComboBoxInfo();
+                    hookComboSelectionChanged = false;
                     SelectLastInfo(Game.Core.CurrentCareer);
+                }
+                else
+                {
+                    UpdateCampaignComboBoxInfo();
                 }
             }
 
@@ -166,7 +173,7 @@ namespace IL2DCE
 
             void comboBoxSelectCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count > 0)
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
 
                     UpdateArmyComboBoxInfo();
@@ -183,7 +190,7 @@ namespace IL2DCE
 
             void comboBoxSelectArmy_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count > 0)
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateAirForceComboBoxInfo();
                 }
@@ -193,7 +200,7 @@ namespace IL2DCE
 
             void comboBoxSelectAirForce_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count > 0)
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateRankComboBoxInfo();
                     UpdateAirGroupComboBoxInfo();
@@ -204,7 +211,7 @@ namespace IL2DCE
 
             void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count > 0)
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateMissionTypeComboBoxInfo();
                 }
@@ -214,7 +221,7 @@ namespace IL2DCE
 
             void comboBoxSelectMissionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count > 0)
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateSelectTargetComboBoxInfo();
                 }
@@ -251,9 +258,8 @@ namespace IL2DCE
                 career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
                 career.MissionType = SelectedMissionType;
                 career.PlayerAirGroup = airGroup;
+                career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
 
-                // string aircraft = Regex.Match((item.Content as string), "\\(.+\\)").Value.Trim("()".ToCharArray());
-                // career.Aircraft = aircraft;
                 Game.Core.CurrentCareer = career;
 
                 campaignInfo.EndDate = campaignInfo.StartDate;

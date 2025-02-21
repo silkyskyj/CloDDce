@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Diagnostics;
+
 namespace IL2DCE
 {
     namespace Mission
@@ -35,6 +37,11 @@ namespace IL2DCE
                 {
                     return GamePlay as IGameSingle;
                 }
+            }
+
+            public MissionSingle()
+            {
+                Debug.WriteLine("MissionSingle.MissionSingle()");
             }
 
             public override void OnSingleBattleSuccess(bool success)

@@ -113,7 +113,7 @@ namespace IL2DCE
                 }
                 else
                 {
-                    throw new FormatException();
+                    throw new FormatException(string.Format("no Palyer info in the file{0}", "Aircraftinfo.ini"));
                 }
             }
         }
