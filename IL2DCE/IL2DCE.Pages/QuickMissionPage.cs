@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.play;
 
@@ -26,6 +27,15 @@ namespace IL2DCE
     {
         public class QuickMissionPage : PageDefImpl
         {
+
+            #region Constant
+
+            private const string RandomString = "[Random]";
+
+            #endregion
+
+            #region Property
+
             private QuickMission FrameworkElement
             {
                 get
@@ -98,12 +108,9 @@ namespace IL2DCE
                 get
                 {
                     ComboBoxItem selected = FrameworkElement.comboBoxSelectMissionType.SelectedItem as ComboBoxItem;
-                    if (selected != null)
+                    if (selected != null && selected.Tag != null)
                     {
-                        if (selected.Tag != null)
-                        {
-                            return (EMissionType)selected.Tag;
-                        }
+                        return (EMissionType)selected.Tag;
                     }
 
                     return null;
@@ -124,9 +131,71 @@ namespace IL2DCE
                 }
             }
 
+            private Skill SelectedSkill
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectSkill.SelectedItem as ComboBoxItem;
+                    if (selected != null && selected.Tag != null)
+                    {
+                        return (Skill)selected.Tag;
+                    }
+
+                    return null;
+                }
+            }
+
+            private double SelectedTime
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectTime.SelectedItem as ComboBoxItem;
+                    if (selected != null && selected.Tag != null)
+                    {
+                        return (double)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private int SelectedWeather
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectWeather.SelectedItem as ComboBoxItem;
+                    if (selected != null && selected.Tag != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private int SelectedCloudAltitude
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectCloudAltitude.SelectedItem as ComboBoxItem;
+                    if (selected != null && selected.Tag != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            #endregion 
+
+            #region Variable
+
             private MissionFile CurrentMissionFile = null;
 
             private bool hookComboSelectionChanged = false;
+
+            #endregion
 
             public QuickMissionPage()
                 : base("Quick Mission", new QuickMission())
@@ -155,13 +224,24 @@ namespace IL2DCE
                 {
                     hookComboSelectionChanged = true;
                     UpdateCampaignComboBoxInfo();
+                    FrameworkElement.comboBoxSelectCampaign.SelectedItem = null;
+                    UpdateNoRelatedComboBoxInfo();
                     hookComboSelectionChanged = false;
                     SelectLastInfo(Game.Core.CurrentCareer);
                 }
                 else
                 {
                     UpdateCampaignComboBoxInfo();
+                    UpdateNoRelatedComboBoxInfo();
                 }
+            }
+
+            private void UpdateNoRelatedComboBoxInfo()
+            {
+                UpdateSkillComboBoxInfo();
+                UpdateTimeComboBoxInfo();
+                UpdateWeatherComboBoxInfo();
+                UpdateCloudAltitudeComboBoxInfo();
             }
 
             public override void _leave(maddox.game.IGame play, object arg)
@@ -170,6 +250,8 @@ namespace IL2DCE
 
                 _game = null;
             }
+
+            #region Event Handler
 
             void comboBoxSelectCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
@@ -257,6 +339,10 @@ namespace IL2DCE
                 career.CampaignInfo = campaignInfo;
                 career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
                 career.MissionType = SelectedMissionType;
+                career.PlayerAirGroupSkill = SelectedSkill;
+                career.Time = SelectedTime;
+                career.Weather = SelectedWeather;
+                career.CloudAltitude = SelectedCloudAltitude;
                 career.PlayerAirGroup = airGroup;
                 career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
 
@@ -276,7 +362,13 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
                 EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription(): string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null ? career.PlayerAirGroupSkill.Name : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time != -1 ? MissionTime.ToString(career.Time) : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather != -1 ? ((Weather)career.Weather).ToDescription() : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude !=-1 ? career.CloudAltitude.ToString() : string.Empty);
             }
+
+            #endregion
 
             private void UpdateCampaignComboBoxInfo()
             {
@@ -442,13 +534,73 @@ namespace IL2DCE
                 AirGroup airGroup = SelectedAirGroup;
                 if (campaignInfo != null && CurrentMissionFile != null && airGroup != null)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = " - Random - " });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
                     // AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
                     AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
                     foreach (var item in aircraftInfo.MissionTypes)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = item, Content = item.ToDescription() });
                     }
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateTimeComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectTime;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                for (double d = MissionTime.Begin; d <= MissionTime.End; d += 0.5)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = d, Content = MissionTime.ToString(d) });
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateSkillComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                for (Skill.SystemType skill = Skill.SystemType.Rookie; skill < Skill.SystemType.Count; skill++)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.GetSystemType(skill), Content = skill.ToString() });
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateWeatherComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectWeather;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                for (Weather w = Weather.Clear; w <= Weather.MediumClouds; w++)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = w, Content = w.ToDescription() });
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateCloudAltitudeComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectCloudAltitude;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                for (int alt = (int)CloudAltitude.Min; alt <= CloudAltitude.Max; alt += CloudAltitude.Step)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = alt, Content = alt.ToString("####") });
                 }
 
                 EnableSelectItem(comboBox, selected);
@@ -527,6 +679,11 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected);
             }
 
+            private void UpdateAltitudeComboBoxInfo()
+            {
+
+            }
+
             private void EnableSelectItem(ComboBox comboBox, string selected)
             {
                 if (comboBox.Items.Count > 0)
@@ -545,19 +702,11 @@ namespace IL2DCE
                 }
             }
 
-            private void UpdateAltitudeComboBoxInfo()
-            {
-
-            }
-
             private void UpdateButtonStatus()
             {
                 FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
                                                     SelectedAirGroup != null && SelectedRank != -1;
-
-
             }
-
         }
     }
 }

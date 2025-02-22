@@ -20,78 +20,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 
 namespace IL2DCE
 {
-    public enum EMissionType
-    {
-        //LIASON,
-
-        [Description("Recon")]
-        RECON,
-
-        [Description("Martime Recon")]
-        MARITIME_RECON,
-
-        [Description("Armed Recon")] 
-        ARMED_RECON,
-
-        [Description("Armed Martime Recon")]
-        ARMED_MARITIME_RECON,
-
-        [Description("Attack Armor")]
-        ATTACK_ARMOR,
-
-        [Description("Attack Vehicle")] 
-        ATTACK_VEHICLE,
-        
-        [Description("Attack Train")]
-        ATTACK_TRAIN,
-
-        [Description("Attack Ship")]
-        ATTACK_SHIP,
-
-        [Description("Attack Artillery")]
-        ATTACK_ARTILLERY,
-
-        [Description("Attack Radar")]
-        ATTACK_RADAR,
-
-        [Description("Attack Aircraft")]
-        ATTACK_AIRCRAFT,
-
-        [Description("Attack Depot")]
-        ATTACK_DEPOT,
-
-        [Description("Intercept")]
-        INTERCEPT,
-        
-        //MARITIME_INTERCEPT,
-        //NIGHT_INTERCEPT,
-
-        [Description("Escort")]
-        ESCORT,
-
-        [Description("Cover")]
-        COVER,
-        //MARITIME_COVER,
-
-        //SWEEP,
-        //INTRUDER,
-        //NIGHT_INTRUDER,
-    };
-
-    public static class EnumExtensions
-    {
-        public static string ToDescription(this Enum value)
-        {
-            FieldInfo field = value.GetType().GetField(value.ToString());
-            object attr = field.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
-            return attr != null ? (attr as DescriptionAttribute).Description: value.ToString();
-        }
-    }
-
     public class AircraftInfo
     {
         public bool IsFlyable

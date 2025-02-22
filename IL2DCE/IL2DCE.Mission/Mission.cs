@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -288,7 +288,7 @@ namespace IL2DCE
                     // 0:tobruk:Tobruk_LW_JG53_10.00 -> tobruk:Tobruk_LW_JG53_10.001
                     // _human(0).0:tobruk:Tobruk_LW_JG53_10.001 -> tobruk:Tobruk_LW_JG53_10.001
                     string name = actor.Name();
-                    int idx = actor.Name().IndexOf(":");
+                    int idx = name.IndexOf(":");
                     if (idx != -1)
                     {
                         PlayerActorName = name.Substring(idx + 1);
@@ -342,7 +342,7 @@ namespace IL2DCE
 
             public override void OnStationaryKilled(int missionNumber, GroundStationary _stationary, AiDamageInitiator initiator, int eventArgInt)
             {
-                Debug.WriteLine("Mission.OnBuildingKilled({0}, {1}, {2}, {3})", missionNumber, _stationary.Name, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
+                Debug.WriteLine("Mission.OnStationaryKilled({0}, {1}, {2}, {3})", missionNumber, _stationary.Name, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
                 base.OnStationaryKilled(missionNumber, _stationary, initiator, eventArgInt);
             }
 

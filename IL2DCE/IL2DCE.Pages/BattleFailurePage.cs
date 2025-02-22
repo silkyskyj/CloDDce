@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,8 +36,10 @@ namespace IL2DCE
             {
                 FrameworkElement.ReFly.Click += new RoutedEventHandler(ReFly_Click);
                 FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
+#if false       // 2025.02.22 < User Request
                 FrameworkElement.Fly.IsEnabled = false;
                 FrameworkElement.Fly.Visibility = Visibility.Hidden;
+#endif
             }
 
             public override void _enter(maddox.game.IGame play, object arg)

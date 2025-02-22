@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
 
@@ -377,6 +378,43 @@ namespace IL2DCE
             set;
         }
 
+        public Skill PlayerAirGroupSkill
+        {
+            get;
+            set;
+        }
+
+        public double Time
+        {
+            get;
+            set;
+        }
+
+        public int Weather
+        {
+            get;
+            set;
+        }
+
+        public int CloudAltitude
+        {
+            get;
+            set;
+        }
+
+        public int BreezeActivity
+        {
+            get;
+            set;
+        }
+
+        public int ThermalActivity
+        {
+            get;
+            set;
+        }
+
+
         #endregion
 
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
@@ -398,7 +436,19 @@ namespace IL2DCE
             KillsGroundHistory = new Dictionary<DateTime, string>();
 
             AllowDefensiveOperation = true;
+
+            #region Quick Mission Info 
+
             BattleType = EBattleType.Unknown;
+            MissionType = null;
+            PlayerAirGroupSkill = null;
+            Time = -1;
+            Weather = -1;
+            CloudAltitude = -1;
+            BreezeActivity = -1;
+            ThermalActivity = -1;
+
+            #endregion
         }
 
         public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile)

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.GP;
 

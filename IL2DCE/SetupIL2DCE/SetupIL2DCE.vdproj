@@ -106,6 +106,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5FDCC28FDD7C1FD7D620A3BF574CDB6F"
+        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5FDCC28FDD7C1FD7D620A3BF574CDB6F"
         "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -131,6 +137,12 @@
         {
         "MsmKey" = "8:_7CCFFE9A68175057E58EAACB00C61F0D"
         "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7CCFFE9A68175057E58EAACB00C61F0D"
+        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -239,6 +251,12 @@
         {
         "MsmKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
         "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -952,7 +970,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE, Version=0.3.7.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE, Version=0.3.8.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_A733BDCD8D05B26FE64E57C03E48D121"
@@ -1054,7 +1072,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE.Mission, Version=0.3.7.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE.Mission, Version=0.3.8.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_BF1A350921A7A64AD6C592B0A98A2554"
@@ -1216,7 +1234,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE.Pages, Version=0.3.7.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE.Pages, Version=0.3.8.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_E6FF180B83966ABEDCEC72CA3483AEF4"
@@ -1445,15 +1463,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:IL2DCE [silkyskyj]"
-        "ProductCode" = "8:{F776F363-3BB4-4BC0-A1A2-F972C26A45D9}"
-        "PackageCode" = "8:{49A145F7-8CCF-4CC9-8A2A-EA66D38B75B7}"
+        "ProductCode" = "8:{7C69E2B8-8655-4DDB-BD01-F6D7BADDF3C3}"
+        "PackageCode" = "8:{20F95E8A-6764-4696-921D-0D9646CECFF1}"
         "UpgradeCode" = "8:{CC7C88D9-649D-49CC-9CCE-475DE0EC7480}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.3.8"
+        "ProductVersion" = "8:0.3.9"
         "Manufacturer" = "8:Stefan Rothdach & silkyskyj"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/silkyskyj/il2dce"
@@ -2061,7 +2079,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A50EAECDA0A5493B93A24481C1FF5DB2"
             {
-            "SourcePath" = "8:..\\IL2DCE.Game\\obj\\x64\\Debug\\IL2DCE.Game.dll"
+            "SourcePath" = "8:..\\IL2DCE.Game\\obj\\x64\\Release\\IL2DCE.Game.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F44B8545759E4B548C60583827695FE5"

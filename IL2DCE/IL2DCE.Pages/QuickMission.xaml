@@ -7,39 +7,47 @@
     <Grid Height="897" Width="1652" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Label Content="Quick Mission" Height="138" HorizontalAlignment="Left" Margin="12,12,0,0" x:Name="labelQuickMission" VerticalAlignment="Top" Width="640" FontSize="64" FontWeight="Bold" Foreground="#FF791313" />
 
-        <Label Content="Select Campaign:" Height="60" Margin="34,150,999,0" x:Name="labelSelectCampaign" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="34,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
+        <Label Content="Select Campaign:" Height="52" Margin="34,150,999,0" x:Name="labelSelectCampaign" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox HorizontalAlignment="Left" Margin="34,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="1"/>
 
-        <Label Content="Select Army:" Height="60" Margin="34,293,1000,0" Name="labelSelectArmy" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="34,357,0,0" Name="comboBoxSelectArmy" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A">
+        <Label Content="Select Army:" Height="52" Margin="34,293,1000,0" Name="labelSelectArmy" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,357,0,0" Name="comboBoxSelectArmy" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" TabIndex="2">
             <ComboBox.Background>
                 <SolidColorBrush />
             </ComboBox.Background>
         </ComboBox>
 
-        <Label Content="Select Air Force:" Height="60" Margin="34,425,1000,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="34,489,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
+        <Label Content="Select Air Force:" Height="52" Margin="34,425,1000,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,489,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="3"/>
 
-        <Label Content="Select Rank:" Height="60" HorizontalAlignment="Left" Margin="34,557,0,0" x:Name="labelSelectRank" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="34,621,0,0" x:Name="comboBoxSelectRank" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
+        <Label Content="Select Rank:" Height="52" HorizontalAlignment="Left" Margin="34,557,0,0" x:Name="labelSelectRank" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,621,0,0" x:Name="comboBoxSelectRank" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="4"/>
 
-        <Label Content="Select Air Group:" Height="60" HorizontalAlignment="Left" Margin="714,149,0,0" Name="labelSelectAirGroup" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="713,214,0,0" Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="720" FontSize="28" Foreground="#FFA0854A">
+        <Label Content="Select Air Group:" Height="52" HorizontalAlignment="Left" Margin="700,149,0,0" Name="labelSelectAirGroup" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,214,0,0" Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="720" FontSize="28" Foreground="#FFA0854A" TabIndex="5">
             <ComboBox.Background>
                 <SolidColorBrush />
             </ComboBox.Background>
         </ComboBox>
 
-        <Label Content="Select Mission Type:" Height="60" HorizontalAlignment="Left" Margin="714,295,0,0" x:Name="labelSelectMissionType" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="713,357,0,0" x:Name="comboBoxSelectMissionType" VerticalAlignment="Top" Width="400" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
+        <Label Content="Select Mission Type:" Height="52" HorizontalAlignment="Left" Margin="700,295,0,0" x:Name="labelSelectMissionType" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,357,0,0" x:Name="comboBoxSelectMissionType" VerticalAlignment="Top" Width="400" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="7"/>
 
-        <Label Content="Select Target:" Height="60" HorizontalAlignment="Left" Margin="714,426,0,0" x:Name="labelSelectMissionTarget" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="713,489,0,0" x:Name="comboBoxSelectTarget" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
+        <Label Content="Select Target:" Height="52" HorizontalAlignment="Left" Margin="530,745,0,0" x:Name="labelSelectMissionTarget" VerticalAlignment="Top" Width="199" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="529,808,0,0" x:Name="comboBoxSelectTarget" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
 
-        <Label Content="Select Altitude:" Height="60" HorizontalAlignment="Left" Margin="714,558,0,0" x:Name="labelSelectAltitude" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" />
-        <ComboBox Height="60" HorizontalAlignment="Left" Margin="713,621,0,0" x:Name="comboBoxSelectAltitude" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
+        <Label Content="Select Altitude:" Height="52" HorizontalAlignment="Left" Margin="244,745,0,0" x:Name="labelSelectAltitude" VerticalAlignment="Top" Width="226" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="244,808,0,0" x:Name="comboBoxSelectAltitude" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" Background="#00000000"/>
 
-        <my1:ButtonAsMenuItem Content="Start" Height="77" HorizontalAlignment="Left" Margin="1434,808,0,0" Name="Start" VerticalAlignment="Top" Width="206" />
-        <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="12,808,0,0" Name="Back" VerticalAlignment="Top" Width="206" />
+        <my1:ButtonAsMenuItem Content="Start" Height="77" HorizontalAlignment="Left" Margin="1434,808,0,0" Name="Start" VerticalAlignment="Top" Width="206" TabIndex="200" />
+        <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="12,808,0,0" Name="Back" VerticalAlignment="Top" Width="206" TabIndex="100" />
+        <Label Content="Time:" Height="52" HorizontalAlignment="Left" Margin="700,557,0,0" x:Name="labelSelectTime" VerticalAlignment="Top" Width="150" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,621,0,0" x:Name="comboBoxSelectTime" VerticalAlignment="Top" Width="150" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="8" MaxDropDownHeight="275" HorizontalContentAlignment="Center"/>
+        <Label Content="Weather:" Height="52" HorizontalAlignment="Left" Margin="899,555,0,0" x:Name="labelSelectWeather" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="897,621,0,0" x:Name="comboBoxSelectWeather" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="9" MaxDropDownHeight="275"/>
+        <Label Content="Cloud Alt:" Height="52" HorizontalAlignment="Left" Margin="1145,555,0,0" x:Name="labelSelectCloudAltitude" VerticalAlignment="Top" Width="150" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="1143,621,0,0" x:Name="comboBoxSelectCloudAltitude" VerticalAlignment="Top" Width="150" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="10" MaxDropDownHeight="275" HorizontalContentAlignment="Center"/>
+        <Label Content="Skill:" Height="52" HorizontalAlignment="Left" Margin="1465,150,0,0" x:Name="labelSelectSkill" VerticalAlignment="Top" Width="150" FontSize="28" Foreground="#FFA0854A" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="1465,214,0,0" x:Name="comboBoxSelectSkill" VerticalAlignment="Top" Width="150" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="6"/>
     </Grid>
 </UserControl>

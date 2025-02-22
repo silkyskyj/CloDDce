@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.GP;
 
@@ -120,6 +121,13 @@ namespace IL2DCE
         ///     string bveteran = " 0.73 0.14 0.92 0.30 0.74 0.95 0.95 0.95";
         ///     string bace = " 0.93 0.15 0.96 0.35 0.74 1 1 0.97";
         /// 
+        ///     Min 0 - Max 1
+        ///     Rookie:     0.79 0.26 0.26 0.16 0.16 0.26 0.37 0.26
+        ///     Avarage:    0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+        ///     Veteran:    1,0.74 0.84 0.63 0.84 0.84 0.74 0.74
+        ///     Ace:        1 0.95 0.95 0.84 0.84 0.95 0.89 0.89
+        ///     Min:        0 0 0 0 0 0 0 0
+        ///     Max:        1 1 1 1 1 1 1 1
         /// </remarks>
         private string getTweakedSkill(EMissionType missionType, int level)
         {
@@ -159,7 +167,7 @@ namespace IL2DCE
                     "0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91",
                     "0.52 0.13 0.89 0.28 0.74 0.92 0.95 0.91",
                     "0.73 0.14 0.92 0.30 0.74 0.95 0.95 0.95",
-                    "0.93 0.15 0.96 0.35 0.74 1 1 0.97",
+                    "0.93 0.15 0.96 0.35 0.74 1.00 1.00 0.97",
                 };
 
                 return skills[level];
@@ -333,7 +341,7 @@ namespace IL2DCE
             return airGroups.IndexOf(selectedAirGroup);
         }
 
-        public void CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup)
+        public void CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, Skill skill = null)
         {
             IList<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
             if (missionTypes != null && missionTypes.Count > 0)
@@ -352,12 +360,12 @@ namespace IL2DCE
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     EMissionType randomMissionType = availableMissionTypes[randomMissionTypeIndex];
 
-                    CreateAirOperation(sectionFile, briefingFile, airGroup, randomMissionType, true, null, null, null);
+                    CreateAirOperation(sectionFile, briefingFile, airGroup, randomMissionType, true, null, null, null, skill);
                 }
             }
         }
 
-        public void CreateAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, bool allowDefensiveOperation, AirGroup forcedEscortAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary)
+        public void CreateAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, bool allowDefensiveOperation, AirGroup forcedEscortAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Skill skill = null)
         {
             if (isMissionTypeAvailable(airGroup, missionType))
             {
@@ -527,7 +535,7 @@ namespace IL2DCE
                 }
 
                 getRandomFlightSize(airGroup, missionType);
-                airGroup.Skill = getRandomSkill(missionType);
+                airGroup.Skill = skill != null ? skill.ToString(): getRandomSkill(missionType);
                 Generator.GeneratorBriefing.CreateBriefing(briefingFile, airGroup, missionType, escortAirGroup);
                 airGroup.WriteTo(sectionFile, Config);
 

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 
 namespace IL2DCE
@@ -369,37 +370,35 @@ namespace IL2DCE
             }
 
             // Add things to the template file.
+            double time = Career.Time < 0 ? Core.Random.Next(5, 21): Career.Time;
+            missionFile.set("MAIN", "TIME", time.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int randomTime = Core.Random.Next(5, 21);
-            missionFile.set("MAIN", "TIME", randomTime.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            int weatherIndex = Career.Weather < 0 ? Core.Random.Next(0, 3): (int)Career.Weather;
+            missionFile.set("MAIN", "WeatherIndex", weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int randomWeatherIndex = Core.Random.Next(0, 3);
-            missionFile.set("MAIN", "WeatherIndex", randomWeatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
-
-            int randomCloudsHeight = Core.Random.Next(5, 15);
-            missionFile.set("MAIN", "CloudsHeight", (randomCloudsHeight * 100).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            int cloudsHeight = Career.CloudAltitude < 0 ? Core.Random.Next(5, 15) * 100: Career.CloudAltitude;
+            missionFile.set("MAIN", "CloudsHeight", (cloudsHeight).ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = "";
-            if (randomWeatherIndex == 0)
+            if (weatherIndex == 0)
             {
                 weatherString = "Clear";
             }
-            else if (randomWeatherIndex == 1)
+            else if (weatherIndex == 1)
             {
-                weatherString = "Light clouds at " + randomCloudsHeight * 100 + "m";
+                weatherString = "Light clouds at " + cloudsHeight + "m";
             }
-            else if (randomWeatherIndex == 2)
+            else if (weatherIndex == 2)
             {
-                weatherString = "Medium clouds at " + randomCloudsHeight * 100 + "m";
+                weatherString = "Medium clouds at " + cloudsHeight + "m";
             }
 
-            briefingFile.MissionDescription += this.Career.CampaignInfo.Name + "\n";
-            briefingFile.MissionDescription += "Date: " + this.Career.Date.Value.ToShortDateString() + "\n";
-            briefingFile.MissionDescription += "Time: " + randomTime + ":00\n";
+            briefingFile.MissionDescription += Career.CampaignInfo.Name + "\n";
+            briefingFile.MissionDescription += "Date: " + Career.Date.Value.ToShortDateString() + "\n";
+            briefingFile.MissionDescription += "Time: " + MissionTime.ToString(time) + "\n";
             briefingFile.MissionDescription += "Weather: " + weatherString + "\n";
 
             // Create a air operation for the player.
-
             foreach (AirGroup airGroup in GeneratorAirOperation.AvailableAirGroups)
             {
                 if ((airGroup.ArmyIndex == Career.ArmyIndex) && (airGroup.AirGroupKey + "." + airGroup.SquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat)) == Career.AirGroup)
@@ -407,12 +406,12 @@ namespace IL2DCE
                     EMissionType? missionType = Career.MissionType;
                     if (missionType == null)
                     {
-                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup);
+                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup, Career.PlayerAirGroupSkill);
                     }
                     else
                     {
                         GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation, 
-                                                                    Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary);
+                                                                    Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill);
                     }
 
                     // Determine the aircraft that is controlled by the player.
@@ -443,7 +442,6 @@ namespace IL2DCE
             }
 
             // Add additional air operations.
-
             if (GeneratorAirOperation.AvailableAirGroups != null && GeneratorAirOperation.AvailableAirGroups.Count > 0)
             {
                 for (int i = 0; i < Config.AdditionalAirOperations; i++)
@@ -458,7 +456,6 @@ namespace IL2DCE
             }
 
             // Add additional ground operations.
-
             if (GeneratorGroundOperation.AvailableGroundGroups != null && GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
             {
                 for (int i = 0; i < Config.AdditionalGroundOperations; i++)
