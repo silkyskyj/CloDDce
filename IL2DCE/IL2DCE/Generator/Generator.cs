@@ -111,7 +111,6 @@ namespace IL2DCE
             if (initialMissionTemplateFile != null)
             {
                 // Delete everything from the template file.
-
                 if (initialMissionTemplateFile.exist("AirGroups"))
                 {
                     // Delete all air groups from the template file.
@@ -442,7 +441,7 @@ namespace IL2DCE
             }
 
             // Add additional air operations.
-            if (GeneratorAirOperation.AvailableAirGroups != null && GeneratorAirOperation.AvailableAirGroups.Count > 0)
+            if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
             {
                 for (int i = 0; i < Config.AdditionalAirOperations; i++)
                 {
@@ -456,7 +455,7 @@ namespace IL2DCE
             }
 
             // Add additional ground operations.
-            if (GeneratorGroundOperation.AvailableGroundGroups != null && GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
+            if (GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
             {
                 for (int i = 0; i < Config.AdditionalGroundOperations; i++)
                 {
@@ -470,7 +469,7 @@ namespace IL2DCE
             }
 
             // Add all stationaries.
-            if (GeneratorGroundOperation.AvailableStationaries != null && GeneratorGroundOperation.AvailableStationaries.Count > 0)
+            if (GeneratorGroundOperation.AvailableStationaries.Count > 0)
             {
                 for (int i = 0; i < GeneratorGroundOperation.AvailableStationaries.Count; i++)
                 {

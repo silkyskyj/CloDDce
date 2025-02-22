@@ -34,8 +34,10 @@ namespace IL2DCE
             public BattleFailurePage()
                 : base("Battle Failure", new CampaignBattleFailure())
             {
+                FrameworkElement.Fly.Click += new RoutedEventHandler(Fly_Click);
                 FrameworkElement.ReFly.Click += new RoutedEventHandler(ReFly_Click);
                 FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
+
 #if false       // 2025.02.22 < User Request
                 FrameworkElement.Fly.IsEnabled = false;
                 FrameworkElement.Fly.Visibility = Visibility.Hidden;

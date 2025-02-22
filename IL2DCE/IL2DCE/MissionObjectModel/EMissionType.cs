@@ -25,13 +25,13 @@ namespace IL2DCE.MissionObjectModel
         [Description("Recon")]
         RECON,
 
-        [Description("Martime Recon")]
+        [Description("Maritime Recon")]
         MARITIME_RECON,
 
         [Description("Armed Recon")]
         ARMED_RECON,
 
-        [Description("Armed Martime Recon")]
+        [Description("Armed Maritime Recon")]
         ARMED_MARITIME_RECON,
 
         [Description("Attack Armor")]

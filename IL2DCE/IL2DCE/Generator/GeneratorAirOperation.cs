@@ -344,7 +344,7 @@ namespace IL2DCE
         public void CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, Skill skill = null)
         {
             IList<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
-            if (missionTypes != null && missionTypes.Count > 0)
+            if (missionTypes.Count > 0)
             {
                 List<EMissionType> availableMissionTypes = new List<EMissionType>();
                 foreach (EMissionType missionType in missionTypes)

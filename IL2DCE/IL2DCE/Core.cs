@@ -140,7 +140,7 @@ namespace IL2DCE
                 AirGroupInfos.Default = AirGroupInfos.Create(globalAirGroupInfoFile);
                 foreach (DirectoryInfo campaignFolder in campaignsFolder.GetDirectories())
                 {
-                    FileInfo [] fileInfo = campaignFolder.GetFiles(CampaignInfoFileName);
+                    FileInfo[] fileInfo = campaignFolder.GetFiles(CampaignInfoFileName);
                     if (fileInfo.Length == 1)
                     {
                         string campaignsFolder1 = string.Format("{0}/{1}/", campaignsFolderPath, campaignFolder.Name);
@@ -269,7 +269,7 @@ namespace IL2DCE
 
             ISectionFile careerFile = GamePlay.gpCreateSectionFile();
             string careerFileName = string.Format("{0}/{1}/{2}", UserMissionFolder, career.PilotName, CareerInfoFileName);
-            
+
             if (result != CampaignStatus.DateEnd)
             {
                 string missionId = string.Format("{0}_{1}-{2}-{3}",
@@ -286,7 +286,6 @@ namespace IL2DCE
                 missionTemplateFile.save(career.MissionTemplateFileName);
 
                 // Generate the next mission based on the new template.
-
                 ISectionFile missionFile = null;
                 BriefingFile briefingFile = null;
                 generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, out missionFile, out briefingFile);
@@ -340,7 +339,7 @@ namespace IL2DCE
             ISectionFile previousMissionTemplateFile = null;
             generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out previousMissionTemplateFile, campaignInfo.AirGroupInfos);
 
-            string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName); 
+            string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
             if (!Directory.Exists(missionFolderSystemPath))
             {
                 Directory.CreateDirectory(missionFolderSystemPath);
@@ -438,5 +437,5 @@ namespace IL2DCE
                 }
             }
         }
-   }
+    }
 }
