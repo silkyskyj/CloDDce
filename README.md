@@ -7,6 +7,12 @@ Install: https://code.google.com/archive/p/il2dce/wikis/Install_Instructions.wik
 
 Campaign Creation Instructions: https://code.google.com/archive/p/il2dce/wikis/Campaign_Creation_Instructions.wiki
 
+
+---
+I am a programmer who runs a small software company in Japan.
+I customize this OSS as a personal hobby, separate from my main business.
+In this way, OSS can be developed by individuals as they like, while respecting copyright and rules. I would like to thank the original developer, Stefan Rothdach.
+
 ---
 IL2DCE [Forked by silkyskyj]
 Copyright © Stefan Rothdach 2016 & silkyskyj 2025
