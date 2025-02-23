@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 using maddox.game;
 
-namespace IL2DCE
+namespace IL2DCE.Generator
 {
     public class AircraftLoadoutInfo
     {

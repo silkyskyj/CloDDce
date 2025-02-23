@@ -19,11 +19,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using IL2DCE.Generator;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public class AirGroup
     {

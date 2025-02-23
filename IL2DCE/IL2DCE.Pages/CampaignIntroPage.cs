@@ -15,11 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using maddox.game;
+using IL2DCE.Generator;
+using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -115,7 +116,8 @@ namespace IL2DCE
                     if (airGroup != null)
                     {
                         string partsFolder = Game.gameInterface.ToFileSystemPath("$home/parts");
-                        string path = AircraftInfo.GetImagePath(partsFolder, airGroup.Class);
+                        AircraftImage aircraftImage = new AircraftImage(partsFolder);
+                        string path = aircraftImage.GetImagePath(airGroup.Class);
                         if (!string.IsNullOrEmpty(path))
                         {
                             // using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))

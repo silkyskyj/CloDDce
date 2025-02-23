@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using maddox.game;
 using maddox.GP;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public enum EGroundGroupType
     {
@@ -182,7 +182,7 @@ namespace IL2DCE
                     }
                     else
                     {
-                        throw new FormatException();
+                        throw new FormatException(string.Format("no GroundGroup sub Waypoint[{0}]", id));
                     }
                 }
                 else

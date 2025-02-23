@@ -20,7 +20,7 @@ using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.GP;
 
-namespace IL2DCE
+namespace IL2DCE.Generator
 {
     class GeneratorGroundOperation
     {

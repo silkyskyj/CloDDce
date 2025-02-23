@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using IL2DCE.Generator;
 using maddox.game;
 
 namespace IL2DCE

@@ -17,6 +17,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using maddox.game;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -180,12 +181,20 @@ namespace IL2DCE
                 ComboBoxItem rankSelected = FrameworkElement.comboBoxSelectRank.SelectedItem as ComboBoxItem;
                 int rankIndex = (int)rankSelected.Tag;
 
-                Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
-                career.BattleType = EBattleType.Campaign;
-                Game.Core.CurrentCareer = career;
-                Game.Core.AvailableCareers.Add(career);
+                try
+                {
+                    Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
+                    career.BattleType = EBattleType.Campaign;
+                    Game.Core.CurrentCareer = career;
+                    Game.Core.AvailableCareers.Add(career);
 
-                Game.gameInterface.PageChange(new SelectCampaignPage(), null);
+                    Game.gameInterface.PageChange(new SelectCampaignPage(), null);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("{0}", ex.Message));
+                    Game.gameInterface.LogErrorToConsole(string.Format("{0} - {1}", "CareerIntroPage.Start_Click", ex.Message));
+                }
             }
         }
     }

@@ -16,6 +16,8 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using IL2DCE.Generator;
+using IL2DCE.MissionObjectModel;
 using maddox.game.page;
 using maddox.game.play;
 

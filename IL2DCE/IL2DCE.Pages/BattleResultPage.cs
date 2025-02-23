@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
+using IL2DCE.Generator;
 using maddox.game;
 using maddox.game.play;
 using maddox.game.world;

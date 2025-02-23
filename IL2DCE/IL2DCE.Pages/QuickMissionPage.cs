@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.play;
@@ -333,25 +335,33 @@ namespace IL2DCE
                 int rankIndex = SelectedRank;
                 AirGroup airGroup = SelectedAirGroup;
                 CampaignInfo campaignInfo = SelectedCampaign;
+                
+                try
+                {
+                    Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
+                    career.BattleType = EBattleType.QuickMission;
+                    career.CampaignInfo = campaignInfo;
+                    career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
+                    career.MissionType = SelectedMissionType;
+                    career.PlayerAirGroupSkill = SelectedSkill;
+                    career.Time = SelectedTime;
+                    career.Weather = SelectedWeather;
+                    career.CloudAltitude = SelectedCloudAltitude;
+                    career.PlayerAirGroup = airGroup;
+                    career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
 
-                Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
-                career.BattleType = EBattleType.QuickMission;
-                career.CampaignInfo = campaignInfo;
-                career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
-                career.MissionType = SelectedMissionType;
-                career.PlayerAirGroupSkill = SelectedSkill;
-                career.Time = SelectedTime;
-                career.Weather = SelectedWeather;
-                career.CloudAltitude = SelectedCloudAltitude;
-                career.PlayerAirGroup = airGroup;
-                career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
+                    Game.Core.CurrentCareer = career;
 
-                Game.Core.CurrentCareer = career;
+                    campaignInfo.EndDate = campaignInfo.StartDate;
+                    Game.Core.CreateQuickMission(Game, career);
 
-                campaignInfo.EndDate = campaignInfo.StartDate;
-                Game.Core.CreateQuickMission(Game, career);
-
-                Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                    Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("{0}", ex.Message));
+                    gameInterface.LogErrorToConsole(string.Format("{0} - {1}", "QuickMissionPage.Start_Click", ex.Message));
+                }
             }
 
             private void SelectLastInfo(Career career)

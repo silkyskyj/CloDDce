@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -414,7 +414,6 @@ namespace IL2DCE
             set;
         }
 
-
         #endregion
 
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
@@ -468,7 +467,7 @@ namespace IL2DCE
             }
             else
             {
-                throw new FormatException();
+                throw new FormatException(string.Format("Career File Format Error[{0}]", "armyIndex/rankIndex/experience"));
             }
 
             if (careerFile.exist(SectionCampaign, "date")
@@ -479,7 +478,7 @@ namespace IL2DCE
                 string id = careerFile.get(SectionCampaign, "id");
                 foreach (CampaignInfo campaignInfo in campaignInfos)
                 {
-                    if (campaignInfo.Id == id)
+                    if (string.Compare(campaignInfo.Id, id, true) == 0)
                     {
                         CampaignInfo = campaignInfo;
                         break;
@@ -550,10 +549,23 @@ namespace IL2DCE
             }
             else
             {
-                throw new FormatException("Career File Format Error");
+                throw new FormatException(string.Format("Career File Format Error[{0}]", "date/id/airGroup/missionFile"));
             }
 
             AllowDefensiveOperation = true;
+
+            #region Quick Mission Info 
+
+            BattleType = EBattleType.Unknown;
+            MissionType = null;
+            PlayerAirGroupSkill = null;
+            Time = -1;
+            Weather = -1;
+            CloudAltitude = -1;
+            BreezeActivity = -1;
+            ThermalActivity = -1;
+
+            #endregion
         }
 
         public override string ToString()

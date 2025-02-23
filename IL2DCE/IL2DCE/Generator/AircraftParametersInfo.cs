@@ -16,7 +16,7 @@
 
 using System;
 
-namespace IL2DCE
+namespace IL2DCE.Generator
 {
     public class AircraftParametersInfo
     {

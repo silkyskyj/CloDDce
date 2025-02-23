@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 using maddox.game;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public class Waterway
     {
@@ -77,7 +77,7 @@ namespace IL2DCE
                     }
                     else
                     {
-                        throw new FormatException();
+                        throw new FormatException(string.Format("no last Waterway Waypoint[{0}]", id));
                     }
                 }
                 else

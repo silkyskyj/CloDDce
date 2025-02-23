@@ -16,9 +16,10 @@
 
 using System;
 using System.Collections.Generic;
+using IL2DCE.Generator;
 using maddox.game;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public enum ECountry
     {

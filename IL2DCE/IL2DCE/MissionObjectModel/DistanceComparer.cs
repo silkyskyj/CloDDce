@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using maddox.GP;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public class DistanceComparer : IComparer<AirGroup>, IComparer<GroundGroup>, IComparer<Stationary>
     {

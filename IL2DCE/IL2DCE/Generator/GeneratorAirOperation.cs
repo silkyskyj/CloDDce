@@ -22,7 +22,7 @@ using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.GP;
 
-namespace IL2DCE
+namespace IL2DCE.Generator
 {
     class GeneratorAirOperation
     {
@@ -534,8 +534,11 @@ namespace IL2DCE
                     }
                 }
 
+                // Set Sill
                 getRandomFlightSize(airGroup, missionType);
                 airGroup.Skill = skill != null ? skill.ToString(): getRandomSkill(missionType);
+
+                // Create Briefing 
                 Generator.GeneratorBriefing.CreateBriefing(briefingFile, airGroup, missionType, escortAirGroup);
                 airGroup.WriteTo(sectionFile, Config);
 
@@ -618,7 +621,7 @@ namespace IL2DCE
             }
             else
             {
-                throw new ArgumentException(missionType.ToString());
+                throw new ArgumentException(string.Format("no Available MissionType[{0}]", missionType.ToString()));
             }
         }
 

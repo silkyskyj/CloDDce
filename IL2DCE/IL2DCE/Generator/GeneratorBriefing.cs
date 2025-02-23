@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
 
 using IL2DCE.MissionObjectModel;
 
-namespace IL2DCE
+namespace IL2DCE.Generator
 {
     class GeneratorBriefing
     {
@@ -86,9 +86,15 @@ namespace IL2DCE
 
             if (airGroup.EscortAirGroup != null)
             {
-                string escortSection = "Escorted by: " + escortAirGroup.Id;
+                briefingFile.Description[airGroup.Id].Sections.Add("escortSection", "Escorted by: " + escortAirGroup.Id);
+            }
 
-                briefingFile.Description[airGroup.Id].Sections.Add("escortSection", escortSection);
+            if (airGroup.TargetAirGroup != null)
+            {
+                if (missionType == EMissionType.ESCORT)
+                {
+                    briefingFile.Description[airGroup.Id].Sections.Add("escortSection", "Escort: " + airGroup.TargetAirGroup.Id);
+                }
             }
         }
     }

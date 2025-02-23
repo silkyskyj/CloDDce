@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using IL2DCE.Generator;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 
 namespace IL2DCE
@@ -203,7 +205,7 @@ namespace IL2DCE
         public CampaignStatus AdvanceCampaign(IGame game)
         {
             CampaignStatus result;
-            Generator generator = new Generator(this);
+            Generator.Generator generator = new Generator.Generator(this);
 
             Career career = CurrentCareer;
             CampaignInfo campaignInfo = career.CampaignInfo;
@@ -329,7 +331,7 @@ namespace IL2DCE
 
         public void CreateQuickMission(IGame game, Career career)
         {
-            Generator generator = new Generator(this);
+            Generator.Generator generator = new Generator.Generator(this);
 
             CampaignInfo campaignInfo = career.CampaignInfo;
 

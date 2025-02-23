@@ -43,7 +43,7 @@
     <Compile Include="Generator\GeneratorGroundOperation.cs" />
     <Compile Include="IRandom.cs" />
     <Compile Include="MissionObjectModel\AirGroup.cs" />
-    <Compile Include="MissionObjectModel\AirGroupInfo.cs" />
+    <Compile Include="Generator\AirGroupInfo.cs" />
     <Compile Include="MissionObjectModel\AirGroupWaypoint.cs" />
     <Compile Include="MissionObjectModel\BriefingFile.cs" />
     <Compile Include="Career.cs" />
@@ -70,6 +70,7 @@
     <Compile Include="MissionObjectModel\Waterway.cs" />
     <Compile Include="MissionObjectModel\MissionFile.cs" />
     <Compile Include="Random.cs" />
+    <Compile Include="Util\AircraftImage.cs" />
     <Compile Include="Util\VersionConverter.cs" />
   </ItemGroup>
   <ItemGroup>

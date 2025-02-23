@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -152,6 +153,10 @@ namespace IL2DCE
                 {
                     FrameworkElement.Continue.IsEnabled = false;
                     FrameworkElement.Delete.IsEnabled = true;
+                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n",
+                                                                        "Campaign [no file]\n",
+                                                                        career.ToCurrestStatusString(),
+                                                                        career.ToTotalResultString());
                 }
             }
         }

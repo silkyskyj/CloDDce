@@ -19,7 +19,7 @@ using System;
 using maddox.game;
 using maddox.GP;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public class Building
     {

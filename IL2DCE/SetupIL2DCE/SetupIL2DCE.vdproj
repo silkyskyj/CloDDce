@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_0ADCED5D01784B3D838A0095BC55B326"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0B0172BEA20844BE9223B7EF140455D6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -70,7 +76,7 @@
         "Entry"
         {
         "MsmKey" = "8:_39CF677CACD4E509730B7BB55BB2123F"
-        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
+        "OwnerKey" = "8:_4A055842F8018FD1E794689DF365529E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -93,6 +99,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4A055842F8018FD1E794689DF365529E"
+        "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5BC74A6CB75B4A19807F22BD20FCCA41"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -106,7 +118,7 @@
         "Entry"
         {
         "MsmKey" = "8:_5FDCC28FDD7C1FD7D620A3BF574CDB6F"
-        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "OwnerKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -142,13 +154,13 @@
         "Entry"
         {
         "MsmKey" = "8:_7CCFFE9A68175057E58EAACB00C61F0D"
-        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "OwnerKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_7CCFFE9A68175057E58EAACB00C61F0D"
-        "OwnerKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
+        "OwnerKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -161,6 +173,12 @@
         {
         "MsmKey" = "8:_7CCFFE9A68175057E58EAACB00C61F0D"
         "OwnerKey" = "8:_B60746F9DD99972E565655FFAE480075"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_819EC5335D564F34A852F495182873D0"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -201,20 +219,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
+        "MsmKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
         "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
-        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
-        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "MsmKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
+        "OwnerKey" = "8:_4A055842F8018FD1E794689DF365529E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -225,6 +237,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B4549E538D194F8B8C0E7CB5FC3C588C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B60746F9DD99972E565655FFAE480075"
         "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
         "MsmSig" = "8:_UNDEFINED"
@@ -232,13 +250,19 @@
         "Entry"
         {
         "MsmKey" = "8:_B60746F9DD99972E565655FFAE480075"
-        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
+        "OwnerKey" = "8:_4A055842F8018FD1E794689DF365529E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_B60746F9DD99972E565655FFAE480075"
-        "OwnerKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
+        "OwnerKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B7632D27317E42448D4A1D78D6A85CE7"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -249,14 +273,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
-        "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
+        "MsmKey" = "8:_C1671EC684E74D8D8358CB0F23BBF84C"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
-        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
+        "MsmKey" = "8:_C1DCF185571A40F8B0E30EE843E1BE6A"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -269,6 +293,24 @@
         {
         "MsmKey" = "8:_C35E203329D545469AA08EED9F4AD824"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
+        "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
+        "OwnerKey" = "8:_4A055842F8018FD1E794689DF365529E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
+        "OwnerKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -291,6 +333,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D8279DFD97794A8BB1839BB88082BE1E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E353F41A287AB61FA1F1F28B6745022D"
         "OwnerKey" = "8:_B60746F9DD99972E565655FFAE480075"
         "MsmSig" = "8:_UNDEFINED"
@@ -298,30 +346,24 @@
         "Entry"
         {
         "MsmKey" = "8:_E353F41A287AB61FA1F1F28B6745022D"
-        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
+        "OwnerKey" = "8:_4A055842F8018FD1E794689DF365529E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_E353F41A287AB61FA1F1F28B6745022D"
-        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "OwnerKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_E353F41A287AB61FA1F1F28B6745022D"
-        "OwnerKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
+        "OwnerKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_E353F41A287AB61FA1F1F28B6745022D"
-        "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
         "OwnerKey" = "8:_A50EAECDA0A5493B93A24481C1FF5DB2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -358,19 +400,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E6FF180B83966ABEDCEC72CA3483AEF4"
+        "OwnerKey" = "8:_4A055842F8018FD1E794689DF365529E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BF1A350921A7A64AD6C592B0A98A2554"
+        "OwnerKey" = "8:_A6BA9159C444F3DEE2760046CACDBEBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A733BDCD8D05B26FE64E57C03E48D121"
+        "OwnerKey" = "8:_C58A371EF61BDF75C43B77F69306AA00"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -493,6 +535,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0ADCED5D01784B3D838A0095BC55B326"
+            {
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\Cross v Roundel_static.mis"
+            "TargetName" = "8:Cross v Roundel_static.mis"
+            "Tag" = "8:"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0B0172BEA20844BE9223B7EF140455D6"
             {
             "SourcePath" = "8:..\\Campaigns\\Adlerangriff\\LW_OrderOfBattle_August1940.mis"
@@ -724,6 +786,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4A055842F8018FD1E794689DF365529E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:IL2DCE.Pages, Version=0.3.10.1, Culture=neutral, processorArchitecture=AMD64"
+                "ScatterAssemblies"
+                {
+                    "_4A055842F8018FD1E794689DF365529E"
+                    {
+                    "Name" = "8:IL2DCE.Pages.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:IL2DCE.Pages.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_F44B8545759E4B548C60583827695FE5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5BC74A6CB75B4A19807F22BD20FCCA41"
             {
             "SourcePath" = "8:..\\Campaigns\\Supply Wars.tobruk\\MissionSingle.cs"
@@ -866,6 +959,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_819EC5335D564F34A852F495182873D0"
+            {
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\AircraftInfo.ini"
+            "TargetName" = "8:AircraftInfo.ini"
+            "Tag" = "8:"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_878BFB17848047DDAA0AB561A83FF07F"
             {
             "SourcePath" = "8:..\\..\\README.md"
@@ -966,20 +1079,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A733BDCD8D05B26FE64E57C03E48D121"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A6BA9159C444F3DEE2760046CACDBEBE"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE, Version=0.3.9.1, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE.Mission, Version=0.3.10.1, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
-                    "_A733BDCD8D05B26FE64E57C03E48D121"
+                    "_A6BA9159C444F3DEE2760046CACDBEBE"
                     {
-                    "Name" = "8:IL2DCE.dll"
+                    "Name" = "8:IL2DCE.Mission.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:IL2DCE.dll"
+            "SourcePath" = "8:IL2DCE.Mission.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F44B8545759E4B548C60583827695FE5"
@@ -1003,6 +1116,26 @@
             "TargetName" = "8:SupplyWars_Environment.mis"
             "Tag" = "8:"
             "Folder" = "8:_9DAA30AFDE7A4293919BE890AC64B32C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B4549E538D194F8B8C0E7CB5FC3C588C"
+            {
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\CampaignInfo.ini"
+            "TargetName" = "8:CampaignInfo.ini"
+            "Tag" = "8:"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1048,6 +1181,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B7632D27317E42448D4A1D78D6A85CE7"
+            {
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\MissionSingle.cs"
+            "TargetName" = "8:MissionSingle.cs"
+            "Tag" = "8:"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B9A38041998B4FF8AD1D655B0FB39BD5"
             {
             "SourcePath" = "8:..\\IL2DCE\\conf.ini"
@@ -1068,23 +1221,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BF1A350921A7A64AD6C592B0A98A2554"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C1671EC684E74D8D8358CB0F23BBF84C"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE.Mission, Version=0.3.9.1, Culture=neutral, processorArchitecture=AMD64"
-                "ScatterAssemblies"
-                {
-                    "_BF1A350921A7A64AD6C592B0A98A2554"
-                    {
-                    "Name" = "8:IL2DCE.Mission.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:IL2DCE.Mission.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\Cross v Roundel_environment.mis"
+            "TargetName" = "8:Cross v Roundel_environment.mis"
             "Tag" = "8:"
-            "Folder" = "8:_F44B8545759E4B548C60583827695FE5"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1096,7 +1238,27 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C1DCF185571A40F8B0E30EE843E1BE6A"
+            {
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\AirGroupInfo.ini"
+            "TargetName" = "8:AirGroupInfo.ini"
+            "Tag" = "8:"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C298730DA2694D448ABFEC2D3589FEAC"
@@ -1137,6 +1299,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C58A371EF61BDF75C43B77F69306AA00"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:IL2DCE, Version=0.3.10.1, Culture=neutral, processorArchitecture=AMD64"
+                "ScatterAssemblies"
+                {
+                    "_C58A371EF61BDF75C43B77F69306AA00"
+                    {
+                    "Name" = "8:IL2DCE.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:IL2DCE.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_F44B8545759E4B548C60583827695FE5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9359EA06C6B4AE7A375501F34BC0B3B"
@@ -1199,6 +1392,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D8279DFD97794A8BB1839BB88082BE1E"
+            {
+            "SourcePath" = "8:..\\Campaigns\\Cross v Roundel.Tobruk\\Cross v Roundel.mis"
+            "TargetName" = "8:Cross v Roundel.mis"
+            "Tag" = "8:"
+            "Folder" = "8:_9E5B7253867F40129D36078E1869C662"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E353F41A287AB61FA1F1F28B6745022D"
             {
             "AssemblyRegister" = "3:1"
@@ -1227,37 +1440,6 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E6FF180B83966ABEDCEC72CA3483AEF4"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE.Pages, Version=0.3.9.1, Culture=neutral, processorArchitecture=AMD64"
-                "ScatterAssemblies"
-                {
-                    "_E6FF180B83966ABEDCEC72CA3483AEF4"
-                    {
-                    "Name" = "8:IL2DCE.Pages.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:IL2DCE.Pages.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F44B8545759E4B548C60583827695FE5"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1406,9 +1588,20 @@
                                                 {
                                                 }
                                             }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_9E5B7253867F40129D36078E1869C662"
+                                            {
+                                            "Name" = "8:Cross v Roundel.Tobruk"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_99E7C511B9AE4AE6B2AE0CDD9173ACCD"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_9F7B602604F041B9B9B3877DDD5391F2"
                                             {
-                                            "Name" = "8:Supply Wars.tobruk"
+                                            "Name" = "8:Supply Wars.Tobruk"
                                             "AlwaysCreate" = "11:FALSE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
@@ -1463,15 +1656,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:IL2DCE [silkyskyj]"
-        "ProductCode" = "8:{8441F789-51BF-4376-A1A1-B18C51B77C31}"
-        "PackageCode" = "8:{5E6FF73B-9CEB-40EE-A86D-2E48186D3C2D}"
+        "ProductCode" = "8:{A5B0EF77-0C6C-482C-A95D-DC04ACB3D186}"
+        "PackageCode" = "8:{BB9B92DB-CF39-4F6E-BD6D-A646425692F3}"
         "UpgradeCode" = "8:{CC7C88D9-649D-49CC-9CCE-475DE0EC7480}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.3.10"
+        "ProductVersion" = "8:0.3.11"
         "Manufacturer" = "8:Stefan Rothdach & silkyskyj"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/silkyskyj/il2dce"
@@ -2079,7 +2272,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A50EAECDA0A5493B93A24481C1FF5DB2"
             {
-            "SourcePath" = "8:..\\IL2DCE.Game\\obj\\x64\\Release\\IL2DCE.Game.dll"
+            "SourcePath" = "8:..\\IL2DCE.Game\\obj\\x64\\Debug\\IL2DCE.Game.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F44B8545759E4B548C60583827695FE5"

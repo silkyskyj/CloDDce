@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,8 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.IO;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public class BriefingFile
     {
@@ -53,6 +54,7 @@ namespace IL2DCE
                 _missionName = value;
             }
         }
+        private string _missionName = "";
 
         public string MissionDescription
         {
@@ -65,6 +67,7 @@ namespace IL2DCE
                 _missionDescription = value;
             }
         }
+        private string _missionDescription = "";
 
         public IDictionary<string, string> Name
         {
@@ -73,6 +76,7 @@ namespace IL2DCE
                 return _name;
             }
         }
+        private Dictionary<string, string> _name = new Dictionary<string, string>();
 
         public IDictionary<string, Text> Description
         {
@@ -81,15 +85,11 @@ namespace IL2DCE
                 return _description;
             }
         }
-
-        private string _missionName = "";
-        private string _missionDescription = "";
-        private Dictionary<string, string> _name = new Dictionary<string, string>();
         private Dictionary<string, Text> _description = new Dictionary<string, Text>();
 
         public void SaveTo(string systemFileName)
         {
-            System.IO.TextWriter briefingFileWriter = new System.IO.StreamWriter(systemFileName, false);
+            TextWriter briefingFileWriter = new StreamWriter(systemFileName, false);
 
             briefingFileWriter.WriteLine("[Info]");
             briefingFileWriter.WriteLine("<Name>");

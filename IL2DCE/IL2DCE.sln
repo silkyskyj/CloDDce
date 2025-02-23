@@ -48,7 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars", "Supply Wars"
 		Campaigns\Supply Wars\SupplyWars_Static.mis = Campaigns\Supply Wars\SupplyWars_Static.mis
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars.tobruk", "Supply Wars.tobruk", "{197175B4-BD2C-4289-9C47-CB4660DBF7B2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars.Tobruk", "Supply Wars.Tobruk", "{197175B4-BD2C-4289-9C47-CB4660DBF7B2}"
 	ProjectSection(SolutionItems) = preProject
 		Campaigns\Supply Wars.tobruk\CampaignInfo.ini = Campaigns\Supply Wars.tobruk\CampaignInfo.ini
 		Campaigns\Supply Wars.tobruk\MissionSingle.cs = Campaigns\Supply Wars.tobruk\MissionSingle.cs
@@ -61,6 +61,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 	ProjectSection(SolutionItems) = preProject
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cross v Roundel.Tobruk", "Cross v Roundel.Tobruk", "{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Cross v Roundel.Tobruk\AircraftInfo.ini = Campaigns\Cross v Roundel.Tobruk\AircraftInfo.ini
+		Campaigns\Cross v Roundel.Tobruk\AirGroupInfo.ini = Campaigns\Cross v Roundel.Tobruk\AirGroupInfo.ini
+		Campaigns\Cross v Roundel.Tobruk\CampaignInfo.ini = Campaigns\Cross v Roundel.Tobruk\CampaignInfo.ini
+		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel.mis
+		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_environment.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_environment.mis
+		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_static.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_static.mis
+		Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs = Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs
 	EndProjectSection
 EndProject
 Global
@@ -96,6 +107,7 @@ Global
 		{85AF6006-C929-4478-AD67-FA895A2B51A7} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{359B04C2-59DD-4167-9CEC-DB40A4B9772E} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{197175B4-BD2C-4289-9C47-CB4660DBF7B2} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60E924F7-66B7-4DA3-884D-0E0FA7339A19}
