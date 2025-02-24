@@ -54,10 +54,7 @@ namespace IL2DCE.Generator
             {
                 return _core.Random;
             }
-
         }
-
-        private Core _core;
 
         internal Core Core
         {
@@ -66,6 +63,7 @@ namespace IL2DCE.Generator
                 return _core;
             }
         }
+        private Core _core;
 
         private IGamePlay GamePlay
         {
