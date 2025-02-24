@@ -17,6 +17,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.play;
 
@@ -110,14 +111,14 @@ namespace IL2DCE
                     ComboBox comboBox = FrameworkElement.comboBoxSelectAirForce;
                     comboBox.Items.Clear();
 
-                    if (armyIndex == (int)ArmyType.Red)
+                    if (armyIndex == (int)EArmy.Red)
                     {
                         for (int i = 0; i < (int)AirForceRed.Count; i++)
                         {
                             comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
                         }
                     }
-                    else if (armyIndex == (int)ArmyType.Blue)
+                    else if (armyIndex == (int)EArmy.Blue)
                     {
                         int diff = (int)AirForceRed.Count;
                         for (int i = 0; i < (int)AirForceBlue.Count; i++)

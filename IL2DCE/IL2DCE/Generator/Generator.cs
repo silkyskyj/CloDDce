@@ -195,11 +195,14 @@ namespace IL2DCE.Generator
             int chiefIndex = 0;
             int stationaryIndex = 0;
 
+            int army;
+            int army2;
             // TODO: Only create a random (or decent) amount of supply ships.
             foreach (Waterway waterway in staticTemplateFile.Waterways)
             {
+                army = GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y);
                 // For waterways only the end must be in friendly territory.
-                if (GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y) == 1)
+                if (army == (int)EArmy.Red)
                 {
                     string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
@@ -208,7 +211,7 @@ namespace IL2DCE.Generator
                     GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium1", ECountry.gb, "/sleep 0/skill 2/slowfire 1", waterway.Waypoints);
                     supplyShip.WriteTo(missionTemplateFile);
                 }
-                else if (GamePlay.gpFrontArmy(waterway.End.X, waterway.End.Y) == 2)
+                else if (army == (int)EArmy.Blue)
                 {
                     string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
@@ -221,8 +224,10 @@ namespace IL2DCE.Generator
 
             foreach (Waterway railway in staticTemplateFile.Railways)
             {
+                army = GamePlay.gpFrontArmy(railway.Start.X, railway.Start.Y);
+                army2 = GamePlay.gpFrontArmy(railway.End.X, railway.End.Y);
                 // For railways the start and the end must be in friendly territory.
-                if (GamePlay.gpFrontArmy(railway.Start.X, railway.Start.Y) == 1 && GamePlay.gpFrontArmy(railway.End.X, railway.End.Y) == 1)
+                if (army == (int)EArmy.Red && army2 == (int)EArmy.Red)
                 {
                     string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
@@ -231,7 +236,7 @@ namespace IL2DCE.Generator
                     GroundGroup supplyShip = new GroundGroup(id, "Train.57xx_0-6-0PT_c0", ECountry.gb, "", railway.Waypoints);
                     supplyShip.WriteTo(missionTemplateFile);
                 }
-                else if (GamePlay.gpFrontArmy(railway.Start.X, railway.Start.Y) == 2 && GamePlay.gpFrontArmy(railway.End.X, railway.End.Y) == 2)
+                else if (army == (int)EArmy.Blue && army2 == (int)EArmy.Blue)
                 {
                     string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
                     chiefIndex++;
@@ -244,19 +249,20 @@ namespace IL2DCE.Generator
 
             foreach (Building depot in staticTemplateFile.Depots)
             {
+                army = GamePlay.gpFrontArmy(depot.X, depot.Y);
                 // For depots the position must be in friendly territory.
-                if (GamePlay.gpFrontArmy(depot.X, depot.Y) == 1)
+                if (army == (int)EArmy.Red)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
                     Stationary fuelTruck = new Stationary(id, "Stationary.Morris_CS8_tank", ECountry.gb, depot.X, depot.Y, depot.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
-                else if (GamePlay.gpFrontArmy(depot.X, depot.Y) == 2)
+                else if (army == (int)EArmy.Blue)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -267,19 +273,20 @@ namespace IL2DCE.Generator
 
             foreach (Stationary aircraft in staticTemplateFile.Aircraft)
             {
+                army = GamePlay.gpFrontArmy(aircraft.X, aircraft.Y);
                 // For aircraft the position must be in friendly territory.
-                if (GamePlay.gpFrontArmy(aircraft.X, aircraft.Y) == 1)
+                if (army == (int)EArmy.Red)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
                     Stationary fuelTruck = new Stationary(id, "Stationary.HurricaneMkI_dH5-20", ECountry.gb, aircraft.X, aircraft.Y, aircraft.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
-                else if (GamePlay.gpFrontArmy(aircraft.X, aircraft.Y) == 2)
+                else if (army == (int)EArmy.Blue)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -290,19 +297,20 @@ namespace IL2DCE.Generator
 
             foreach (Stationary artillery in staticTemplateFile.Artilleries)
             {
+                army = GamePlay.gpFrontArmy(artillery.X, artillery.Y);
                 // For artillery the position must be in friendly territory.
-                if (GamePlay.gpFrontArmy(artillery.X, artillery.Y) == 1)
+                if (army == (int)EArmy.Red)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
                     Stationary aaGun = new Stationary(id, "Artillery.Bofors", ECountry.gb, artillery.X, artillery.Y, artillery.Direction, "/timeout 0/radius_hide 0");
                     aaGun.WriteTo(missionTemplateFile);
                 }
-                else if (GamePlay.gpFrontArmy(artillery.X, artillery.Y) == 2)
+                else if (army == (int)EArmy.Blue)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -313,19 +321,20 @@ namespace IL2DCE.Generator
 
             foreach (Stationary radar in staticTemplateFile.Radar)
             {
+                army = GamePlay.gpFrontArmy(radar.X, radar.Y);
                 // For artillery the position must be in friendly territory.
-                if (GamePlay.gpFrontArmy(radar.X, radar.Y) == 1)
+                if (army == (int)EArmy.Red)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
                     Stationary radarSite = new Stationary(id, "Stationary.Radar.EnglishRadar1", ECountry.gb, radar.X, radar.Y, radar.Direction);
                     radarSite.WriteTo(missionTemplateFile);
                 }
-                else if (GamePlay.gpFrontArmy(radar.X, radar.Y) == 2)
+                else if (army == (int)EArmy.Blue)
                 {
-                    string id = stationaryIndex.ToString("Static" + CultureInfo.InvariantCulture.NumberFormat);
+                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army

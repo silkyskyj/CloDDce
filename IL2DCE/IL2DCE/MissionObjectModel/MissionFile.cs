@@ -247,11 +247,11 @@ namespace IL2DCE.MissionObjectModel
 
                 Stationary stationary = new Stationary(file, key);
 
-                if (stationary.Army == 1)
+                if (stationary.Army == (int)EArmy.Red)
                 {
                     _redStationaries.Add(stationary);
                 }
-                else if (stationary.Army == 2)
+                else if (stationary.Army == (int)EArmy.Blue)
                 {
                     _blueStationaries.Add(stationary);
                 }
@@ -305,9 +305,9 @@ namespace IL2DCE.MissionObjectModel
             //        double x;
             //        double y;
             //        int army;
-            //        if (double.TryParse(valueParts[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x)
-            //            && double.TryParse(valueParts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y)
-            //            && int.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out army))
+            //        if (double.TryParse(valueParts[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x)
+            //            && double.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y)
+            //            && int.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out army))
             //        {
             //            if (army == 0)
             //            {
@@ -333,11 +333,11 @@ namespace IL2DCE.MissionObjectModel
 
                 AirGroup airGroup = new AirGroup(file, key, airGroupInfos);
 
-                if (GetAirGroupInfo(1, airGroup.AirGroupKey) != null)
+                if (GetAirGroupInfo((int)EArmy.Red, airGroup.AirGroupKey) != null)
                 {
                     _redAirGroups.Add(airGroup);
                 }
-                else if (GetAirGroupInfo(2, airGroup.AirGroupKey) != null)
+                else if (GetAirGroupInfo((int)EArmy.Blue, airGroup.AirGroupKey) != null)
                 {
                     _blueAirGroups.Add(airGroup);
                 }
@@ -351,11 +351,11 @@ namespace IL2DCE.MissionObjectModel
 
                 GroundGroup groundGroup = new GroundGroup(file, key);
 
-                if (groundGroup.Army == 1)
+                if (groundGroup.Army == (int)EArmy.Red)
                 {
                     _redGroundGroups.Add(groundGroup);
                 }
-                else if (groundGroup.Army == 2)
+                else if (groundGroup.Army == (int)EArmy.Blue)
                 {
                     _blueGroundGroups.Add(groundGroup);
                 }
@@ -377,13 +377,14 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
         }
+
         public IList<GroundGroup> GetGroundGroups(int armyIndex)
         {
-            if (armyIndex == 1)
+            if (armyIndex == (int)EArmy.Red)
             {
                 return _redGroundGroups;
             }
-            else if (armyIndex == 2)
+            else if (armyIndex == (int)EArmy.Blue)
             {
                 return _blueGroundGroups;
             }
@@ -395,11 +396,11 @@ namespace IL2DCE.MissionObjectModel
 
         public IList<AirGroup> GetAirGroups(int armyIndex)
         {
-            if (armyIndex == 1)
+            if (armyIndex == (int)EArmy.Red)
             {
                 return _redAirGroups;
             }
-            else if (armyIndex == 2)
+            else if (armyIndex == (int)EArmy.Blue)
             {
                 return _blueAirGroups;
             }
@@ -411,11 +412,11 @@ namespace IL2DCE.MissionObjectModel
 
         public IList<Stationary> GetFriendlyStationaries(int armyIndex)
         {
-            if (armyIndex == 1)
+            if (armyIndex == (int)EArmy.Red)
             {
                 return _redStationaries;
             }
-            else if (armyIndex == 2)
+            else if (armyIndex == (int)EArmy.Blue)
             {
                 return _blueStationaries;
             }
@@ -427,11 +428,11 @@ namespace IL2DCE.MissionObjectModel
 
         public IList<Stationary> GetEnemyStationaries(int armyIndex)
         {
-            if (armyIndex == 1)
+            if (armyIndex == (int)EArmy.Red)
             {
                 return _blueStationaries;
             }
-            else if (armyIndex == 2)
+            else if (armyIndex == (int)EArmy.Blue)
             {
                 return _redStationaries;
             }
@@ -458,11 +459,11 @@ namespace IL2DCE.MissionObjectModel
 
         //public IList<Point3d> GetFriendlyMarkers(int armyIndex)
         //{
-        //    if (armyIndex == 1)
+        //    if (armyIndex == (int)EArmy.Red)
         //    {
         //        return _redFrontMarkers;
         //    }
-        //    else if (armyIndex == 2)
+        //    else if (armyIndex == (int)EArmy.Blue)
         //    {
         //        return _blueFrontMarkers;
         //    }
@@ -472,20 +473,20 @@ namespace IL2DCE.MissionObjectModel
         //    }
         //}
 
-            //public IList<Point3d> GetEnemyMarkers(int armyIndex)
-            //{
-            //    if (armyIndex == 1)
-            //    {
-            //        return _blueFrontMarkers;
-            //    }
-            //    else if (armyIndex == 2)
-            //    {
-            //        return _redFrontMarkers;
-            //    }
-            //    else
-            //    {
-            //        return new List<Point3d>();
-            //    }
-            //}
-     }
+        //public IList<Point3d> GetEnemyMarkers(int armyIndex)
+        //{
+        //    if (armyIndex == (int)EArmy.Red)
+        //    {
+        //        return _blueFrontMarkers;
+        //    }
+        //    else if (armyIndex == (int)EArmy.Blue)
+        //    {
+        //        return _redFrontMarkers;
+        //    }
+        //    else
+        //    {
+        //        return new List<Point3d>();
+        //    }
+        //}
+    }
 }

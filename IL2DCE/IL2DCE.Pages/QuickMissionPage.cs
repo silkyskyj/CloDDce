@@ -405,7 +405,7 @@ namespace IL2DCE
                 if (campaignInfo != null && (!checkArmy || CurrentMissionFile != null))
                 {
                     var armys = checkArmy ? CurrentMissionFile.AirGroups.Select(x => x.ArmyIndex).Distinct(): new int [0];
-                    for (int i = 0; i < (int)ArmyType.Count; i++)
+                    for (int i = 0; i < (int)EArmy.Count; i++)
                     {
                         if (!checkArmy || armys.Contains(i + 1))
                         {
@@ -428,7 +428,7 @@ namespace IL2DCE
                 if (campaignInfo != null && armyIndex != -1 && (!checkAirForce || CurrentMissionFile != null))
                 {
                     var airForces = checkAirForce ? CurrentMissionFile.AirGroups.Where(x => x.ArmyIndex == armyIndex).Select(x => x.AirGroupInfo.AirForceIndex).Distinct(): new int [0];
-                    if (armyIndex == (int)ArmyType.Red)
+                    if (armyIndex == (int)EArmy.Red)
                     {
                         for (int i = 0; i < (int)AirForceRed.Count; i++)
                         {
@@ -438,7 +438,7 @@ namespace IL2DCE
                             }
                         }
                     }
-                    else if (armyIndex == (int)ArmyType.Blue)
+                    else if (armyIndex == (int)EArmy.Blue)
                     {
                         int diff = (int)AirForceRed.Count;
                         for (int i = 0; i < (int)AirForceBlue.Count; i++)

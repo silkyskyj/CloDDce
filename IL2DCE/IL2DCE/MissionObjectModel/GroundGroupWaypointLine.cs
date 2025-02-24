@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Globalization;
 using maddox.game;
 using maddox.GP;
 
@@ -86,22 +87,22 @@ namespace IL2DCE.MissionObjectModel
                 if (match.Groups.Count == 6)
                 {
                     double x;
-                    if (double.TryParse(key, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if (double.TryParse(match.Groups[1].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }
                     double z;
-                    if (double.TryParse(match.Groups[2].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out z))
+                    if (double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z))
                     {
                         Z = z;
                     }
                     double v;
-                    if (double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out v))
+                    if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
                     {
                         V = v;
                     }
@@ -114,17 +115,17 @@ namespace IL2DCE.MissionObjectModel
                 if (match.Groups.Count == 3)
                 {
                     double x;
-                    if (double.TryParse(key, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if (double.TryParse(match.Groups[1].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }
                     double z;
-                    if (double.TryParse(match.Groups[2].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out z))
+                    if (double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z))
                     {
                         Z = z;
                     }

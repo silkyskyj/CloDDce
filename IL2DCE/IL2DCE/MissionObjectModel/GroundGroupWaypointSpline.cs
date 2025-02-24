@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+using System.Globalization;
 using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
@@ -75,18 +76,18 @@ namespace IL2DCE.MissionObjectModel
                     _s = match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value;
 
                     double x;
-                    if (double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if (double.TryParse(match.Groups[6].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }
 
                     double v;
-                    if (double.TryParse(match.Groups[9].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out v))
+                    if (double.TryParse(match.Groups[9].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
                     {
                         V = v;
                     }
@@ -101,12 +102,12 @@ namespace IL2DCE.MissionObjectModel
                     _s = match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value;
 
                     double x;
-                    if (double.TryParse(match.Groups[5].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out x))
+                    if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
                     {
                         X = x;
                     }
                     double y;
-                    if (double.TryParse(match.Groups[6].Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out y))
+                    if (double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
                     {
                         Y = y;
                     }

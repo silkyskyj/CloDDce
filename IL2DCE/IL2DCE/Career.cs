@@ -25,13 +25,6 @@ using maddox.game;
 
 namespace IL2DCE
 {
-    public enum ArmyType
-    {
-        Red = 1,
-        Blue = 2,
-        Count = 2,
-    };
-
     public enum AirForceRed
     {
         Raf = 1,

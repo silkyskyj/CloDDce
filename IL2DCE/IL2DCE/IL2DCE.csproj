@@ -53,6 +53,7 @@
     <Compile Include="Generator\Generator.cs" />
     <Compile Include="MissionObjectModel\CloudAltitude.cs" />
     <Compile Include="MissionObjectModel\DistanceComparer.cs" />
+    <Compile Include="MissionObjectModel\EArmy.cs" />
     <Compile Include="MissionObjectModel\EMissionType.cs" />
     <Compile Include="MissionObjectModel\EnumExtensions.cs" />
     <Compile Include="MissionObjectModel\GroundGroupWaypointLine.cs" />

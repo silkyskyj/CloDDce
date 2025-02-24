@@ -144,12 +144,12 @@ namespace IL2DCE
                     CampaignInfo campaignInfo = career.CampaignInfo;
                     FrameworkElement.Continue.IsEnabled = career.Date < campaignInfo.EndDate;
                     FrameworkElement.Delete.IsEnabled = true;
-                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n", 
-                                                                        campaignInfo.ToSummaryString(), 
-                                                                        career.ToCurrestStatusString(), 
+                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n",
+                                                                        campaignInfo.ToSummaryString(),
+                                                                        career.ToCurrestStatusString(),
                                                                         career.ToTotalResultString());
                 }
-                else
+                else if (career != null)
                 {
                     FrameworkElement.Continue.IsEnabled = false;
                     FrameworkElement.Delete.IsEnabled = true;
@@ -157,6 +157,14 @@ namespace IL2DCE
                                                                         "Campaign [no file]\n",
                                                                         career.ToCurrestStatusString(),
                                                                         career.ToTotalResultString());
+                }
+                else
+                {
+                    FrameworkElement.Continue.IsEnabled = false;
+                    FrameworkElement.Delete.IsEnabled = true;
+                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n",
+                                                                        "Campaign [no file]\n",
+                                                                        "Career [no file]\n");
                 }
             }
         }

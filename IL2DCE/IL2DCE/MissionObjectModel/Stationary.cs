@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using maddox.game;
 using maddox.GP;
 
@@ -299,9 +300,9 @@ namespace IL2DCE.MissionObjectModel
             {
                 Class = valueParts[0];
                 Country = (ECountry)Enum.Parse(typeof(ECountry), valueParts[1]);
-                double.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueParts[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueParts[4], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Direction);
+                double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
+                double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
+                double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Direction);
 
                 if (valueParts.Length > 5)
                 {
@@ -327,7 +328,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = Class + " " + Country.ToString() + " " + X.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            string value = Class + " " + Country.ToString() + " " + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(CultureInfo.InvariantCulture.NumberFormat);
             if (Options != null)
             {
                 value += Options;

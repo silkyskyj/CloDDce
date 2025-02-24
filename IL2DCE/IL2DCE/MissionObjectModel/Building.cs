@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Globalization;
 using maddox.game;
 using maddox.GP;
 
@@ -64,10 +65,10 @@ namespace IL2DCE.MissionObjectModel
             if (valueParts.Length > 4)
             {
                 Class = valueParts[0];
-                int.TryParse(valueParts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Status);
-                double.TryParse(valueParts[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueParts[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueParts[4], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Direction);
+                int.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Status);
+                double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
+                double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
+                double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Direction);
             }
         }
 
@@ -83,7 +84,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = Class + " " + Status.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + X.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            string value = Class + " " + Status.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(CultureInfo.InvariantCulture.NumberFormat);
             sectionFile.add("Buildings", Id, value);
         }
     }

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-
+using System.Globalization;
 using maddox.game;
 using maddox.GP;
 
@@ -107,10 +107,10 @@ namespace IL2DCE.MissionObjectModel
             if (valueList != null && valueList.Length == 4)
             {
                 Type = (AirGroupWaypointTypes)Enum.Parse(typeof(AirGroupWaypointTypes), key);
-                double.TryParse(valueList[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueList[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueList[2], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out Z);
-                double.TryParse(valueList[3], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, out V);
+                double.TryParse(valueList[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
+                double.TryParse(valueList[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
+                double.TryParse(valueList[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Z);
+                double.TryParse(valueList[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out V);
             }
         }
 

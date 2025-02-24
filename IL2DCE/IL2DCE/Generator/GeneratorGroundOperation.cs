@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.GP;
@@ -427,7 +428,7 @@ namespace IL2DCE.Generator
                 groundGroup.Waypoints[groundGroup.Waypoints.Count - 1].X -= xOffset;
                 groundGroup.Waypoints[groundGroup.Waypoints.Count - 1].Y -= yOffset;
 
-                groundGroup.Id = groundGroupId + "." + i.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                groundGroup.Id = groundGroupId + "." + i.ToString(CultureInfo.InvariantCulture.NumberFormat);
 
                 groundGroup.WriteTo(missionFile);
             }
