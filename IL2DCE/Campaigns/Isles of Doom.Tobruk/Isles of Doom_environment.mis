@@ -1,0 +1,26 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$Online_Isles_of_Doom
+  DespawnAfterLandingTimeout 600
+  BattleArea 9500 8075 22000 16500 5500
+  TIME 9.00000021792948
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+[Chiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[FrontMarker]

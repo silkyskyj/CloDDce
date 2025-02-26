@@ -34,7 +34,7 @@ namespace IL2DCE.Util
         public static string ReplaceKillsHistory(string str)
         {
 #if false
-            StringBuilder builder = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             if (!string.IsNullOrEmpty(str))
             {
                 char[] sz = str.ToCharArray();
@@ -43,7 +43,7 @@ namespace IL2DCE.Util
                 {
                     if (sz[i] == '=')
                     {
-                        builder.Append(' ');
+                        sb.Append(' ');
                     }
                     else if (sz[i] == 'x' && i > 0 && sz[i - 1] == ' ' && (i + 1) < len && sz[i + 1] == ' ')
                     {
@@ -51,8 +51,8 @@ namespace IL2DCE.Util
                     }
                     else if (sz[i] == ',' && i > 0 && sz[i - 1] >= '0' && sz[i - 1] <= '9' && (i + 1) < len && sz[i + 1] >= '0' && sz[i + 1] <= '9')
                     {
-                        builder.Append('.');
-                        builder.Append(sz[i + 1]);
+                        sb.Append('.');
+                        sb.Append(sz[i + 1]);
                         i++;
                     }
                     else if (sz[i] == ']' || sz[i] == '[')
@@ -61,11 +61,11 @@ namespace IL2DCE.Util
                     }
                     else
                     {
-                        builder.Append(sz[i]);
+                        sb.Append(sz[i]);
                     }
                 }
             }
-            return builder.ToString();
+            return sb.ToString();
 #else
             if (!string.IsNullOrEmpty(str))
             {

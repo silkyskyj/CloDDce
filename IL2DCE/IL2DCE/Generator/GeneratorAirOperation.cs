@@ -341,7 +341,7 @@ namespace IL2DCE.Generator
             return airGroups.IndexOf(selectedAirGroup);
         }
 
-        public void CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, Skill skill = null)
+        public void CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, Skill skill = null, Spawn spawn = null)
         {
             IList<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
             if (missionTypes.Count > 0)
@@ -360,22 +360,24 @@ namespace IL2DCE.Generator
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     EMissionType randomMissionType = availableMissionTypes[randomMissionTypeIndex];
 
-                    CreateAirOperation(sectionFile, briefingFile, airGroup, randomMissionType, true, null, null, null, skill);
+                    CreateAirOperation(sectionFile, briefingFile, airGroup, randomMissionType, true, null, null, null, skill, spawn);
                 }
             }
         }
 
-        public void CreateAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, bool allowDefensiveOperation, AirGroup forcedEscortAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Skill skill = null)
+        public void CreateAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, bool allowDefensiveOperation, 
+            AirGroup forcedEscortAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Skill skill = null, Spawn spawn = null)
         {
             if (isMissionTypeAvailable(airGroup, missionType))
             {
                 AvailableAirGroups.Remove(airGroup);
                 jamRunway(airGroup);
 
-                IList<AircraftParametersInfo> aircraftParametersInfos = CampaignInfo.GetAircraftInfo(airGroup.Class).GetAircraftParametersInfo(missionType);
+                AircraftInfo aircraftInfo = CampaignInfo.GetAircraftInfo(airGroup.Class);
+                IList<AircraftParametersInfo> aircraftParametersInfos = aircraftInfo.GetAircraftParametersInfo(missionType);
                 int aircraftParametersInfoIndex = Random.Next(aircraftParametersInfos.Count);
                 AircraftParametersInfo randomAircraftParametersInfo = aircraftParametersInfos[aircraftParametersInfoIndex];
-                AircraftLoadoutInfo aircraftLoadoutInfo = CampaignInfo.GetAircraftInfo(airGroup.Class).GetAircraftLoadoutInfo(randomAircraftParametersInfo.LoadoutId);
+                AircraftLoadoutInfo aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(randomAircraftParametersInfo.LoadoutId);
                 airGroup.Weapons = aircraftLoadoutInfo.Weapons;
                 airGroup.Detonator = aircraftLoadoutInfo.Detonator;
                 airGroup.TraceLoadoutInfo();
@@ -534,9 +536,18 @@ namespace IL2DCE.Generator
                     }
                 }
 
-                // Set Sill
+                // Flight Size
                 getRandomFlightSize(airGroup, missionType);
+
+                // Skill
                 airGroup.Skill = skill != null ? skill.ToString(): getRandomSkill(missionType);
+
+                // Spawn
+                airGroup.SetOnParked = Config.SpawnParked;
+                if (spawn != null)
+                {
+                    airGroup.SetSpawn(spawn);
+                }
 
                 // Create Briefing 
                 Generator.GeneratorBriefing.CreateBriefing(briefingFile, airGroup, missionType, escortAirGroup);
@@ -548,10 +559,11 @@ namespace IL2DCE.Generator
                     AvailableAirGroups.Remove(escortAirGroup);
                     jamRunway(escortAirGroup);
 
-                    IList<AircraftParametersInfo> escortAircraftParametersInfos = CampaignInfo.GetAircraftInfo(escortAirGroup.Class).GetAircraftParametersInfo(EMissionType.ESCORT);
+                    aircraftInfo = CampaignInfo.GetAircraftInfo(escortAirGroup.Class);
+                    IList<AircraftParametersInfo> escortAircraftParametersInfos = aircraftInfo.GetAircraftParametersInfo(EMissionType.ESCORT);
                     int escortAircraftParametersInfoIndex = Random.Next(escortAircraftParametersInfos.Count);
                     AircraftParametersInfo escortRandomAircraftParametersInfo = escortAircraftParametersInfos[escortAircraftParametersInfoIndex];
-                    AircraftLoadoutInfo escortAircraftLoadoutInfo = CampaignInfo.GetAircraftInfo(escortAirGroup.Class).GetAircraftLoadoutInfo(escortRandomAircraftParametersInfo.LoadoutId);
+                    AircraftLoadoutInfo escortAircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(escortRandomAircraftParametersInfo.LoadoutId);
                     escortAirGroup.Weapons = escortAircraftLoadoutInfo.Weapons;
 
                     escortAirGroup.Escort(airGroup);
@@ -591,10 +603,11 @@ namespace IL2DCE.Generator
 
                                 // TODO: Consider calling CreateAirOperation with a forcedOffensiveAirGroup to remove duplicated code.
 
-                                IList<AircraftParametersInfo> defensiveAircraftParametersInfos = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class).GetAircraftParametersInfo(randomDefensiveMissionType);
+                                aircraftInfo = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class);
+                                IList<AircraftParametersInfo> defensiveAircraftParametersInfos = aircraftInfo.GetAircraftParametersInfo(randomDefensiveMissionType);
                                 int defensiveAircraftParametersInfoIndex = Random.Next(defensiveAircraftParametersInfos.Count);
                                 AircraftParametersInfo defensiveRandomAircraftParametersInfo = defensiveAircraftParametersInfos[defensiveAircraftParametersInfoIndex];
-                                AircraftLoadoutInfo defensiveAircraftLoadoutInfo = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class).GetAircraftLoadoutInfo(defensiveRandomAircraftParametersInfo.LoadoutId);
+                                AircraftLoadoutInfo defensiveAircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(defensiveRandomAircraftParametersInfo.LoadoutId);
                                 defensiveAirGroup.Weapons = defensiveAircraftLoadoutInfo.Weapons;
                                 defensiveAirGroup.TraceLoadoutInfo();
 
@@ -1161,7 +1174,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                throw new NotImplementedException(missionType.ToString());
+                throw new NotImplementedException(string.Format("Invalid MissionType[{0}]", missionType.ToString()));
             }
         }
     }

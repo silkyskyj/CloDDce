@@ -1,0 +1,159 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$Online_Isles_of_Doom
+  DespawnAfterLandingTimeout 600
+  BattleArea 9500 8075 22000 16500 5500
+  TIME 9.00000021792948
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[AirGroups]
+  tobruk:Tobruk_RAF_F_94Sqn.01
+  tobruk:Tobruk_SAAF_B_12Sqn.03
+  tobruk:Tobruk_SAAF_R_40Sqn.03
+  tobruk:Tobruk_USAAF_F_66Sqn.01
+  tobruk:Channel_AA_GCI3_SPA69.01
+  tobruk:Tobruk_LW_JG3_II.11
+  tobruk:Tobruk_LW_JG27_I.01
+  tobruk:Tobruk_LW_KG77_III.03
+  tobruk:Tobruk_RA_150Gruppo_363Sq.03
+  BoB_LW_KuFlGr_706.03
+[tobruk:Tobruk_RAF_F_94Sqn.01]
+  Flight0  1 2 3 4
+  Class tobruk:Aircraft.SpitfireMkVb
+  Formation FINGERFOUR
+  CallSign 28
+  Fuel 100
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+[tobruk:Tobruk_RAF_F_94Sqn.01_Way]
+  TAKEOFF 17250.91 11509.80 0 0
+  NORMFLY 17468.74 10776.37 0.00 0.00
+[tobruk:Tobruk_SAAF_B_12Sqn.03]
+  Flight0  1 2 3 4
+  Flight1  11 12 13 14
+  Class tobruk:Aircraft.BlenheimMkIV_Late_Trop
+  Formation LINEABREAST
+  CallSign 20
+  Fuel 81
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+[tobruk:Tobruk_SAAF_B_12Sqn.03_Way]
+  TAKEOFF 10232.10 11031.57 0 0
+  NORMFLY 11103.18 10570.48 0.00 0.00
+[tobruk:Tobruk_SAAF_R_40Sqn.03]
+  Flight0  1
+  Flight1  11
+  Class Aircraft.AnsonMkI
+  Formation LINEABREAST
+  CallSign 6
+  Fuel 100
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Tobruk_SAAF_R_40Sqn.03_Way]
+  NORMFLY 15445.37 14819.68 500.00 300.00
+  RECON 21290.66 15694.34 500.00 300.00
+[tobruk:Tobruk_USAAF_F_66Sqn.01]
+  Flight0  1 2 3 4
+  Class tobruk:Aircraft.TomahawkMkII-Late
+  Formation FINGERFOUR
+  CallSign 26
+  Fuel 100
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Tobruk_USAAF_F_66Sqn.01_Way]
+  TAKEOFF 16894.72 11185.24 0 0
+  NORMFLY 17751.91 11098.17 0.00 0.00
+[tobruk:Channel_AA_GCI3_SPA69.01]
+  Flight0  1 2 3 4
+  Class tobruk:Aircraft.D520_Serie1
+  Formation VIC3
+  CallSign 30
+  Fuel 50
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Channel_AA_GCI3_SPA69.01_Way]
+  TAKEOFF 12457.58 16462.13 0 0
+  NORMFLY 12551.53 16412.44 0.00 145.00
+[tobruk:Tobruk_LW_JG3_II.11]
+  Flight0  1 2 3 4
+  Class tobruk:Aircraft.Bf-109F-4
+  Formation FINGERFOUR
+  CallSign 30
+  BombSpacing 0
+  Fuel 50
+  Weapons 1 1 1 0
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+[tobruk:Tobruk_LW_JG3_II.11_Way]
+  TAKEOFF 29696.20 15893.83 0 0
+  NORMFLY 29437.28 15710.79 0.00 0.00
+[tobruk:Tobruk_LW_JG27_I.01]
+  Flight0  1 2 3 4
+  Class tobruk:Aircraft.Bf-109E-7
+  Formation FINGERFOUR
+  CallSign 20
+  Fuel 50
+  Weapons 1 1 0
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Tobruk_LW_JG27_I.01_Way]
+  TAKEOFF 28777.07 22287.41 0 0
+  NORMFLY 28435.97 22353.42 0.00 0.00
+[tobruk:Tobruk_LW_KG77_III.03]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Class tobruk:Aircraft.He-111H-6
+  Formation VIC3
+  CallSign 26
+  Fuel 40
+  Weapons 1 1 1 1 1 1 3 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+[tobruk:Tobruk_LW_KG77_III.03_Way]
+  TAKEOFF 29393.14 22138.96 0 0
+  NORMFLY 28502.23 22264.95 0.00 0.00
+[tobruk:Tobruk_RA_150Gruppo_363Sq.03]
+  Flight0  1 2 3
+  Flight1  11 12 13
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII
+  Formation VIC3
+  CallSign 28
+  Fuel 50
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Tobruk_RA_150Gruppo_363Sq.03_Way]
+  TAKEOFF 23437.97 23344.40 0 0
+  NORMFLY 23290.42 22846.71 0.00 0.00
+[BoB_LW_KuFlGr_706.03]
+  Flight0  1
+  Flight1  11
+  Class Aircraft.Do-17Z-1
+  Formation VIC3
+  CallSign 12
+  BombSpacing 20
+  Fuel 100
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_LW_KuFlGr_706.03_Way]
+  NORMFLY 24938.63 17976.99 500.00 300.00
+  RECON 19456.01 16121.01 500.00 300.00
+[CustomChiefs]
+[Chiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

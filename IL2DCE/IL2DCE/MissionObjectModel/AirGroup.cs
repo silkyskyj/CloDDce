@@ -227,6 +227,12 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public Spawn Spawn
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         #region private member
@@ -319,7 +325,7 @@ namespace IL2DCE.MissionObjectModel
                     flightMask = (flightMask | bit);
                 }
             }
-            Id = AirGroupKey + "." + SquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + flightMask.ToString("X");
+            Id = ToString() + flightMask.ToString("X");
 
             // Waypoints            
             for (int i = 0; i < sectionFile.lines(Id + "_Way"); i++)
@@ -339,6 +345,9 @@ namespace IL2DCE.MissionObjectModel
                     Airstart = true;
                 }
             }
+
+            // SetOnPark
+            SetOnParked = string.Compare(sectionFile.get(id, "SetOnPark", "0"), "1") == 0;
 
             // AirGroupInfo
             // ArmyIndex
@@ -401,7 +410,7 @@ namespace IL2DCE.MissionObjectModel
         {
             if (!Airstart)
             {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, Position, 0.0));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, Position, AirGroupWaypoint.DefaulttakeoffV));
             }
             else
             {
@@ -413,13 +422,13 @@ namespace IL2DCE.MissionObjectModel
         {
             if (landingAirport != null)
             {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, landingAirport.Pos(), 0.0));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, landingAirport.Pos(), AirGroupWaypoint.DefaultLandingV));
             }
             else
             {
                 if (!Airstart)
                 {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, Position, 0.0));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, Position, AirGroupWaypoint.DefaultLandingV));
                 }
                 else
                 {
@@ -434,9 +443,9 @@ namespace IL2DCE.MissionObjectModel
             Point3d p2 = new Point3d(a.x + 0.50 * (b.x - a.x), a.y + 0.50 * (b.y - a.y), a.z + 1.00 * (b.z - a.z));
             Point3d p3 = new Point3d(a.x + 0.75 * (b.x - a.x), a.y + 0.75 * (b.y - a.y), a.z + 1.00 * (b.z - a.z));
 
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p1, 300.0));
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p2, 300.0));
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p3, 300.0));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p1, AirGroupWaypoint.DefaultNormaflyV));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p2, AirGroupWaypoint.DefaultNormaflyV));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p3, AirGroupWaypoint.DefaultNormaflyV));
         }
 
         private void createStartInbetweenPoints(Point3d target)
@@ -537,13 +546,30 @@ namespace IL2DCE.MissionObjectModel
                     }
                 }
 
-                if (config.SpawnParked == true)
+                if (Spawn != null)
                 {
-                    sectionFile.add(Id, "SetOnPark", "1");
+                    switch (Spawn.Type)
+                    {
+                        case ESpawn.Parked:
+                            sectionFile.add(Id, "SetOnPark", "1");
+                            break;
+                        case ESpawn.Idle:
+                            sectionFile.add(Id, "Idle", "1");
+                            break;
+                        case ESpawn.Scramble:
+                            sectionFile.add(Id, "Scramble", "1");
+                            break;
+                        //case ESpawn.AirStart:
+                        //default:
+                        //    sectionFile.add(Id, "SetOnPark", "0");
+                        //    sectionFile.add(Id, "Idle", "0");
+                        //    sectionFile.add(Id, "Scramble", "0");
+                        //    break;
+                    }
                 }
                 else
                 {
-                    sectionFile.add(Id, "SetOnPark", "0");
+                    sectionFile.add(Id, "SetOnPark", SetOnParked ? "1": "0");
                 }
 
                 sectionFile.add(Id, "Skill", Skill);
@@ -552,11 +578,15 @@ namespace IL2DCE.MissionObjectModel
                 {
                     if (waypoint.Target == null)
                     {
-                        sectionFile.add(Id + "_Way", waypoint.Type.ToString(), waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                        sectionFile.add(Id + "_Way", 
+                                        waypoint.Type.ToString(), 
+                                        waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat));
                     }
                     else
                     {
-                        sectionFile.add(Id + "_Way", waypoint.Type.ToString(), waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Target);
+                        sectionFile.add(Id + "_Way", 
+                                        waypoint.Type.ToString(), 
+                                        waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Target);
                     }
                 }
 
@@ -566,7 +596,7 @@ namespace IL2DCE.MissionObjectModel
 
         public override string ToString()
         {
-            return AirGroupKey + "." + SquadronIndex;
+            return AirGroupKey + "." + SquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat);
         }
 
         //public void Transfer(double altitude, AiAirport landingAirport = null)
@@ -611,16 +641,16 @@ namespace IL2DCE.MissionObjectModel
 
                 createStartInbetweenPoints(position.Value);
 
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x, position.Value.y, altitude, 300.0));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x, position.Value.y, altitude, AirGroupWaypoint.DefaultFlyV));
 
                 AirGroupWaypoint start = _waypoints[_waypoints.Count - 1];
 
                 while (distanceBetween(start, _waypoints[_waypoints.Count - 1]) < 200000.0)
                 {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + 5000.0, position.Value.y + 5000.0, altitude, 300.0));
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + 5000.0, position.Value.y - 5000.0, altitude, 300.0));
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - 5000.0, position.Value.y - 5000.0, altitude, 300.0));
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - 5000.0, position.Value.y + 5000.0, altitude, 300.0));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + 5000.0, position.Value.y + 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + 5000.0, position.Value.y - 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - 5000.0, position.Value.y - 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - 5000.0, position.Value.y + 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
                 }
 
                 createEndInbetweenPoints(position.Value, landingAirport);
@@ -640,7 +670,7 @@ namespace IL2DCE.MissionObjectModel
         //    Point3d p = new Point3d(targetArea.x, targetArea.y, altitude);
         //    createStartInbetweenPoints(p);
 
-        //    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.HUNTING, targetArea.x, targetArea.y, altitude, 300.0));
+        //    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.HUNTING, targetArea.x, targetArea.y, altitude, AirGroupWaypoint.DefaultFlyV));
 
         //    createEndInbetweenPoints(p, landingAirport);
         //    createEndWaypoints(landingAirport);
@@ -663,7 +693,7 @@ namespace IL2DCE.MissionObjectModel
 
             if (rendevouzPosition != null && rendevouzPosition.HasValue)
             {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, 300.0));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormaflyV));
                 Point3d pStart = new Point3d(targetStationary.X, targetStationary.Y, altitude);
                 createInbetweenWaypoints(rendevouzPosition.Value, pStart);
             }
@@ -673,7 +703,7 @@ namespace IL2DCE.MissionObjectModel
                 createStartInbetweenPoints(pStart);
             }
 
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.GATTACK_TARG, targetStationary.X, targetStationary.Y, altitude, 300.0, targetStationary.Id));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.GATTACK_TARG, targetStationary.X, targetStationary.Y, altitude, AirGroupWaypoint.DefaultFlyV, targetStationary.Id));
 
             Point3d pEnd = new Point3d(targetStationary.X, targetStationary.Y, altitude);
             createEndInbetweenPoints(pEnd, landingAirport);
@@ -702,7 +732,7 @@ namespace IL2DCE.MissionObjectModel
                 Point2d point2d = targetWaypoints[0].Position;
                 if (rendevouzPosition != null && rendevouzPosition.HasValue)
                 {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, 300.0));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormaflyV));
                     Point3d pStart = new Point3d(point2d.x, point2d.y, altitude);
                     createInbetweenWaypoints(rendevouzPosition.Value, pStart);
                 }
@@ -718,7 +748,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     lastGroundGroupWaypoint = groundGroupWaypoint;
                     point2d = groundGroupWaypoint.Position;
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.GATTACK_TARG, point2d.x, point2d.y, altitude, 300.0, targetGroundGroup.Id + " " + targetWaypoints.IndexOf(groundGroupWaypoint)));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.GATTACK_TARG, point2d.x, point2d.y, altitude, AirGroupWaypoint.DefaultFlyV, targetGroundGroup.Id + " " + targetWaypoints.IndexOf(groundGroupWaypoint)));
                     if (start == null)
                     {
                         start = _waypoints[_waypoints.Count - 1];
@@ -759,7 +789,7 @@ namespace IL2DCE.MissionObjectModel
 
             if (rendevouzPosition != null && rendevouzPosition.HasValue)
             {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, 300.0));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormaflyV));
                 Point3d pStart = new Point3d(targetStationary.X, targetStationary.Y, altitude);
                 createInbetweenWaypoints(rendevouzPosition.Value, pStart);
             }
@@ -769,7 +799,7 @@ namespace IL2DCE.MissionObjectModel
                 createStartInbetweenPoints(pStart);
             }
 
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.RECON, targetStationary.X, targetStationary.Y, altitude, 300.0, targetStationary.Id));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.RECON, targetStationary.X, targetStationary.Y, altitude, AirGroupWaypoint.DefaultFlyV, targetStationary.Id));
 
             Point3d pEnd = new Point3d(targetStationary.X, targetStationary.Y, altitude);
             createEndInbetweenPoints(pEnd, landingAirport);
@@ -797,7 +827,7 @@ namespace IL2DCE.MissionObjectModel
 
                 if (rendevouzPosition != null && rendevouzPosition.HasValue)
                 {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, 300.0));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormaflyV));
                     Point3d pStart = new Point3d(targetWaypoints[0].Position.x, targetWaypoints[0].Position.y, altitude);
                     createInbetweenWaypoints(rendevouzPosition.Value, pStart);
                 }
@@ -813,7 +843,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     lastGroundGroupWaypoint = groundGroupWaypoint;
                     Point2d point2d = groundGroupWaypoint.Position;
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.RECON, point2d.x, point2d.y, altitude, 300.0, targetGroundGroup.Id + " " + targetWaypoints.IndexOf(groundGroupWaypoint)));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.RECON, point2d.x, point2d.y, altitude, AirGroupWaypoint.DefaultFlyV, targetGroundGroup.Id + " " + targetWaypoints.IndexOf(groundGroupWaypoint)));
                     if (start == null)
                     {
                         start = _waypoints[_waypoints.Count - 1];
@@ -850,7 +880,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 if (waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF && waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                 {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.ESCORT, waypoint.X, waypoint.Y, waypoint.Z, 300.0, targetAirGroup.Id + " " + targetWaypoints.IndexOf(waypoint)));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.ESCORT, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(waypoint)));
                 }
             }
 
@@ -895,12 +925,12 @@ namespace IL2DCE.MissionObjectModel
             if (interceptWaypoint != null)
             {
                 createStartInbetweenPoints(interceptWaypoint.Position);
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, interceptWaypoint.X, interceptWaypoint.Y, interceptWaypoint.Z, 300.0, targetAirGroup.Id + " " + targetWaypoints.IndexOf(interceptWaypoint)));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, interceptWaypoint.X, interceptWaypoint.Y, interceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(interceptWaypoint)));
 
                 if (targetWaypoints.IndexOf(interceptWaypoint) - 1 >= 0)
                 {
                     AirGroupWaypoint nextInterceptWaypoint = targetWaypoints[targetWaypoints.IndexOf(interceptWaypoint) - 1];
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, nextInterceptWaypoint.X, nextInterceptWaypoint.Y, nextInterceptWaypoint.Z, 300.0, targetAirGroup.Id + " " + targetWaypoints.IndexOf(nextInterceptWaypoint)));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, nextInterceptWaypoint.X, nextInterceptWaypoint.Y, nextInterceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(nextInterceptWaypoint)));
 
                     createEndInbetweenPoints(nextInterceptWaypoint.Position, landingAirport);
                 }
@@ -912,13 +942,13 @@ namespace IL2DCE.MissionObjectModel
             else if (closestInterceptWaypoint != null)
             {
                 createStartInbetweenPoints(closestInterceptWaypoint.Position);
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, closestInterceptWaypoint.X, closestInterceptWaypoint.Y, closestInterceptWaypoint.Z, 300.0, targetAirGroup.Id + " " + targetWaypoints.IndexOf(closestInterceptWaypoint)));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, closestInterceptWaypoint.X, closestInterceptWaypoint.Y, closestInterceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(closestInterceptWaypoint)));
 
 
                 if (targetWaypoints.IndexOf(closestInterceptWaypoint) + 1 < targetWaypoints.Count)
                 {
                     AirGroupWaypoint nextInterceptWaypoint = targetWaypoints[targetWaypoints.IndexOf(interceptWaypoint) + 1];
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, nextInterceptWaypoint.X, nextInterceptWaypoint.Y, nextInterceptWaypoint.Z, 300.0, targetAirGroup.Id + " " + targetWaypoints.IndexOf(nextInterceptWaypoint)));
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, nextInterceptWaypoint.X, nextInterceptWaypoint.Y, nextInterceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(nextInterceptWaypoint)));
 
                     createEndInbetweenPoints(nextInterceptWaypoint.Position, landingAirport);
                 }
@@ -929,6 +959,42 @@ namespace IL2DCE.MissionObjectModel
             }
 
             createEndWaypoints(landingAirport);
+        }
+
+        public void SetSpawn(Spawn spawn)
+        {
+            this.Spawn = spawn;
+
+            if (spawn != null)
+            {
+                AirGroupWaypoint way = Waypoints.FirstOrDefault();
+                if (way != null && spawn.Type !=  ESpawn.Default)
+                {
+                    ESpawn type = spawn.Type;
+                    if (type == ESpawn.Random)
+                    {
+                        type = new Spawn((int)ESpawn.Random).Type;
+                    }
+                    AirGroupWaypoint wayNew;
+                    switch (type)
+                    {
+                        case ESpawn.Parked:
+                        case ESpawn.Idle:
+                        case ESpawn.Scramble:
+                            wayNew = new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, way.X , way.Y, AirGroupWaypoint.DefaultTakeoffZ, AirGroupWaypoint.DefaulttakeoffV, way.Target);
+                            Airstart = false;
+                            break;
+                        case ESpawn.AirStart:
+                        default:
+                            wayNew = new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, way.X, way.Y, spawn.Altitude, AirGroupWaypoint.DefaultNormaflyV, way.Target);
+                            Airstart = true;
+                            break;
+                    }
+                    Waypoints[0] = wayNew;
+
+                    // TODO: Update after Waypoint Z(Altitude) value
+                }
+            }
         }
 
         public static string CreateDisplayName(string airGroupKey)

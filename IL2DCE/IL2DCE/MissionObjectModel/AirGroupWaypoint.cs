@@ -43,6 +43,14 @@ namespace IL2DCE.MissionObjectModel
 
         #endregion
 
+        public const int DefaultTakeoffZ = 0;
+        public const int DefaulttakeoffV = 0;
+        public const int DefaultNormaflyZ = 500;
+        public const int DefaultNormaflyV = 300;
+        public const int DefaultLandingZ = 0;
+        public const int DefaultLandingV = 0;
+        public const int DefaultFlyV = 300;
+
         #region Public properties
 
         public AirGroupWaypointTypes Type
@@ -59,12 +67,16 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        // X
         public double X;
 
+        // Y
         public double Y;
 
+        // Altitude
         public double Z;
 
+        // Speed
         public double V;
 
         public string Target

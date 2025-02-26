@@ -172,7 +172,7 @@ namespace IL2DCE
                 ComboBoxItem item = FrameworkElement.comboBoxSelectAirGroup.SelectedItem as ComboBoxItem;
                 AirGroup airGroup = (AirGroup)item.Tag;
                 Career career = Game.Core.CurrentCareer;
-                career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
+                career.AirGroup = airGroup.ToString();
                 CampaignInfo campaignInfo = career.CampaignInfo;
                 AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
                 career.Aircraft = aircraftInfo.DisplayName;

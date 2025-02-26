@@ -18,37 +18,24 @@
   GustPower 0
   GustAngle 45
 [splines]
-  18 0_SplineRoad 6/width 5
-  19 1_SplineRoad 6/width 5
-[0_SplineRoad]
-  9370.57 22352.67 0.00 null R 9882.43 23017.63 0.00 -5
-  10922.38 23524.53 0.00  L 9640.73 22766.64 0.00 null -5
-[1_SplineRoad]
-  21484.60 13318.07 0.44 null R 21468.54 13660.77 0.44 -5
-  21477.84 13992.32 1.00  L 21493.60 13839.46 0.86  R 21474.86 14153.12 1.00 -5
-  21482.19 14627.96 1.00  L 21498.16 14461.74 1.00  R 21487.32 14990.45 0.83 -5
-  21483.18 16096.37 0.31  L 21472.63 15711.10 0.48  R 20986.43 16106.78 0.44 -5
-  19535.21 16101.19 0.84  L 20017.86 16135.35 0.71 null -5
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.Minensuchboote de /sleep 0/skill 1/slowfire 1
-  1_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1
-  2_Chief Armor.Pz_38t de 
-  3_Chief Armor.Pz_38t de 
-  4_Chief Armor.Pz_38t de 
-  6_Chief Armor.Pz_38t de 
-  7_Chief Armor.Pz_38t de 
-  8_Chief Armor.tobruk:Matilda_2A_CS gb 
-  9_Chief Armor.tobruk:Matilda_2A_CS gb 
-  10_Chief Armor.tobruk:Matilda_2A_CS gb 
-  11_Chief Armor.tobruk:Matilda_2A_CS gb 
-  12_Chief Armor.tobruk:Matilda_2A_CS gb 
-  13_Chief Armor.tobruk:Matilda_2A_CS gb 
-  5_Chief Armor.Pz_38t de 
-  14_Chief Ship.tobruk:Leipzig_CL de /sleep 0/skill 1/slowfire 1
-  15_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1
-  17_Chief Train.C_Class_0-6-0_c2 gb 
-  16_Chief Train.BR56-00 de 
+  0_Chief Ship.Minensuchboote nn /sleep 0/skill 1/slowfire 1
+  1_Chief Ship.HMS_Flowers_Corvette nn /sleep 0/skill 1/slowfire 1
+  2_Chief Armor.Pz_38t nn 
+  3_Chief Armor.Pz_38t nn 
+  4_Chief Armor.Pz_38t nn 
+  6_Chief Armor.Pz_38t nn 
+  7_Chief Armor.Pz_38t nn 
+  8_Chief Armor.tobruk:Matilda_2A_CS nn 
+  9_Chief Armor.tobruk:Matilda_2A_CS nn 
+  10_Chief Armor.tobruk:Matilda_2A_CS nn 
+  11_Chief Armor.tobruk:Matilda_2A_CS nn 
+  12_Chief Armor.tobruk:Matilda_2A_CS nn 
+  13_Chief Armor.tobruk:Matilda_2A_CS nn 
+  5_Chief Armor.Pz_38t nn 
+  14_Chief Ship.tobruk:Leipzig_CL nn /sleep 0/skill 1/slowfire 1
+  15_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 1/slowfire 1
 [0_Chief_Road]
   18285.60 17714.58 38.40  0 2 5.56
   14241.82 13997.96 38.40
@@ -139,35 +126,21 @@
   8437.06 20311.29 38.40  0 2 2.92
   8699.29 21930.29 38.40  0 2 2.92
   9257.96 23344.06 38.40
-[17_Chief_Road]
-  S 18 0 0.10 10.00 P 9503.80 22526.60  0 2 11.11
-  S 18 0 0.20 10.00 P 9605.47 22657.13  0 2 5.56
-  S 18 0 0.46 10.00 P 9820.20 22876.23  0 2 5.56
-  S 18 0 0.23 10.00 P 9631.87 22689.55
-[16_Chief_Road]
-  S 19 0 0.00 5.00 P 21484.60 13318.07  0 2 11.11
-  S 19 0 0.07 5.00 P 21481.80 13387.67  0 2 5.56
-  S 19 0 0.19 5.00 P 21479.34 13496.59  0 2 5.56
-  S 19 0 1.00 5.00 P 21477.84 13992.32  0 2 5.56
-  S 19 1 0.97 5.00 P 21483.52 14612.62  0 2 5.56
-  S 19 2 0.72 5.00 P 21479.27 15709.09  0 2 5.56
-  S 19 2 0.99 5.00 P 21482.87 16084.71  0 2 5.56
-  S 19 3 0.98 5.00 P 19564.74 16103.16
 [Stationary]
-  Static3 Artillery.Zwillingssockel36_GER1 de 21150.89 9106.13 0.00 /timeout 0/radius_hide 0/dead 1
-  Static2 Artillery.Zwillingssockel36_GER1 de 19917.05 9390.63 0.00 /timeout 0/radius_hide 0/dead 1
-  Static0 Artillery.Zwillingssockel36_GER1 de 17309.57 14043.01 0.00 /timeout 0/radius_hide 0/dead 1
-  Static1 Artillery.Zwillingssockel36_GER1 de 16860.21 14571.66 0.00 /timeout 0/radius_hide 0/dead 1
-  Static11 Stationary.Radar.Wotan_II_ADD1 de 16765.62 15474.87 0.00 /dead 1
-  Static12 Stationary.Radar.Wotan_II_ADD1 de 16767.15 15686.18 0.00 /dead 1
-  Static13 Stationary.Radar.Wotan_II_ADD1 de 16807.77 15936.67 0.00 /dead 1
-  Static7 Artillery.Bofors_StandAlone gb 12461.85 17249.91 0.00 /timeout 0/radius_hide 0/dead 1
-  Static6 Artillery.Bofors_StandAlone gb 12646.03 17680.14 0.00 /timeout 0/radius_hide 0/dead 1
-  Static9 Stationary.Radar.EnglishRadar3 gb 14933.35 18433.31 0.00 /dead 1
-  Static8 Stationary.Radar.EnglishRadar3 gb 15259.26 18935.29 0.00 /dead 1
-  Static10 Stationary.Radar.EnglishRadar3 gb 15452.02 19365.52 0.00 /dead 1
-  Static4 Artillery.Bofors_StandAlone gb 11633.84 20740.47 0.00 /timeout 0/radius_hide 0/dead 1
-  Static5 Artillery.Bofors_StandAlone gb 12968.42 21212.78 0.00 /timeout 0/radius_hide 0/dead 1
+  Static3 Artillery.Zwillingssockel36_GER1 nn 21150.89 9106.13 0.00 /timeout 0/radius_hide 0/dead 1
+  Static2 Artillery.Zwillingssockel36_GER1 nn 19917.05 9390.63 0.00 /timeout 0/radius_hide 0/dead 1
+  Static0 Artillery.Zwillingssockel36_GER1 nn 17309.57 14043.01 0.00 /timeout 0/radius_hide 0/dead 1
+  Static1 Artillery.Zwillingssockel36_GER1 nn 16860.21 14571.66 0.00 /timeout 0/radius_hide 0/dead 1
+  Static11 Stationary.Radar.Wotan_II_ADD1 nn 16765.62 15474.87 0.00 /dead 1
+  Static12 Stationary.Radar.Wotan_II_ADD1 nn 16767.15 15686.18 0.00 /dead 1
+  Static13 Stationary.Radar.Wotan_II_ADD1 nn 16807.77 15936.67 0.00 /dead 1
+  Static7 Artillery.Bofors_StandAlone nn 12461.85 17249.91 0.00 /timeout 0/radius_hide 0/dead 1
+  Static6 Artillery.Bofors_StandAlone nn 12646.03 17680.14 0.00 /timeout 0/radius_hide 0/dead 1
+  Static9 Stationary.Radar.EnglishRadar3 nn 14933.35 18433.31 0.00 /dead 1
+  Static8 Stationary.Radar.EnglishRadar3 nn 15259.26 18935.29 0.00 /dead 1
+  Static10 Stationary.Radar.EnglishRadar3 nn 15452.02 19365.52 0.00 /dead 1
+  Static4 Artillery.Bofors_StandAlone nn 11633.84 20740.47 0.00 /timeout 0/radius_hide 0/dead 1
+  Static5 Artillery.Bofors_StandAlone nn 12968.42 21212.78 0.00 /timeout 0/radius_hide 0/dead 1
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Middle 1 11461.61 21566.66 0.00
   1_bld buildings.House$Oil_Bunker-Middle 1 11708.21 21719.72 0.00

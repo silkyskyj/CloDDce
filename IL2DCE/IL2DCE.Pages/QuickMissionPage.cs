@@ -15,12 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
+using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -119,6 +121,20 @@ namespace IL2DCE
                 }
             }
 
+            private int SelectedSpawn
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSpawn.SelectedItem as ComboBoxItem;
+                    if (selected != null && selected.Tag != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return (int)ESpawn.Random;
+                }
+            }
+
             private int SelectedRank
             {
                 get
@@ -212,8 +228,6 @@ namespace IL2DCE
 
                 FrameworkElement.labelSelectMissionTarget.Visibility = Visibility.Hidden;
                 FrameworkElement.comboBoxSelectTarget.Visibility = Visibility.Hidden;
-                FrameworkElement.labelSelectAltitude.Visibility = Visibility.Hidden;
-                FrameworkElement.comboBoxSelectAltitude.Visibility = Visibility.Hidden;
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -308,6 +322,7 @@ namespace IL2DCE
                 if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateSelectTargetComboBoxInfo();
+                    UpdateSpawnComboBoxInfo();
                 }
 
                 UpdateButtonStatus();
@@ -320,7 +335,11 @@ namespace IL2DCE
                     Game.gameInterface.BattleStop();
                 }
 
-                Game.Core.CurrentCareer = null;
+                if (Game.Core.CurrentCareer != null)
+                {
+                    Game.Core.CurrentCareer.InitQuickMssionInfo();
+                    Game.Core.CurrentCareer = null;
+                }
 
                 Game.gameInterface.PagePop(null);
             }
@@ -341,8 +360,9 @@ namespace IL2DCE
                     Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
                     career.BattleType = EBattleType.QuickMission;
                     career.CampaignInfo = campaignInfo;
-                    career.AirGroup = airGroup.AirGroupKey + "." + airGroup.SquadronIndex;
+                    career.AirGroup = airGroup.ToString();
                     career.MissionType = SelectedMissionType;
+                    career.Spawn = SelectedSpawn; 
                     career.PlayerAirGroupSkill = SelectedSkill;
                     career.Time = SelectedTime;
                     career.Weather = SelectedWeather;
@@ -372,6 +392,7 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
                 EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription(): string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayName(career.Spawn));
                 EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null ? career.PlayerAirGroupSkill.Name : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time != -1 ? MissionTime.ToString(career.Time) : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather != -1 ? ((Weather)career.Weather).ToDescription() : string.Empty);
@@ -511,7 +532,7 @@ namespace IL2DCE
                             AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
                             if (airGroupInfo.ArmyIndex == armyIndex && airGroupInfo.AirForceIndex == airForceIndex && aircraftInfo.IsFlyable)
                             {
-                                comboBox.Items.Add(new ComboBoxItem() { Tag = airGroup, Content = CreateAirGroupContent(airGroup, campaignInfo) });
+                                comboBox.Items.Add(new ComboBoxItem() { Tag = airGroup, Content = CreateAirGroupContent(airGroup, campaignInfo, aircraftInfo) });
                             }
                         }
                     }
@@ -528,9 +549,12 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected);
             }
 
-            private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo)
+            private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, AircraftInfo aircraftInfo = null)
             {
-                AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                if (aircraftInfo == null)
+                {
+                    aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                }
                 return string.Format("{0} ({1})", airGroup.DisplayName, aircraftInfo.DisplayName);
             }
 
@@ -550,6 +574,51 @@ namespace IL2DCE
                     foreach (var item in aircraftInfo.MissionTypes)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = item, Content = item.ToDescription() });
+                    }
+                }
+
+                EnableSelectItem(comboBox, selected);
+            }
+
+            private void UpdateSpawnComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSpawn;
+                string selected = /*comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : */string.Empty;
+                comboBox.Items.Clear();
+
+                CampaignInfo campaignInfo = SelectedCampaign;
+                AirGroup airGroup = SelectedAirGroup;
+                AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                EMissionType? missionType = SelectedMissionType;
+                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null && aircraftInfo != null)
+                {
+                    AircraftParametersInfo aircraftParam = missionType != null ? aircraftInfo.GetAircraftParametersInfo(missionType.Value).FirstOrDefault(): null;
+                    AirGroupWaypoint way = airGroup.Waypoints.FirstOrDefault();
+                    if (way != null)
+                    {
+                        // comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                        comboBox.Items.Add(new ComboBoxItem() { Tag = ESpawn.Default, Content = ESpawn.Default.ToDescription() });
+                        if (way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = ESpawn.Parked, Content = ESpawn.Parked.ToDescription() });
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = ESpawn.Idle, Content = ESpawn.Idle.ToDescription() });
+                            // comboBox.Items.Add(new ComboBoxItem() { Tag = ESpawn.Scramble, Content = ESpawn.Scramble.ToDescription() });
+                        }
+                        int startAlt = aircraftParam != null && aircraftParam.MinAltitude != null ? Math.Max((int)aircraftParam.MinAltitude.Value, Spawn.SelectStartAltitude) : Spawn.SelectStartAltitude;
+                        int endAlt = aircraftParam != null && aircraftParam.MaxAltitude != null ? Math.Min((int)aircraftParam.MaxAltitude.Value, Spawn.SelectEndAltitude) : Spawn.SelectEndAltitude;
+                        for (int i = startAlt; i <= endAlt; i += Spawn.SelectStepAltitude)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = i, Content = Spawn.CreateDisplayName(i) });
+                        }
+
+                        if (string.IsNullOrEmpty(selected))
+                        {
+                            selected = airGroup.SetOnParked ? 
+                                            ESpawn.Parked.ToDescription() : way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF ? 
+                                                    ESpawn.Idle.ToDescription() : ((((int)way.Z) / Spawn.SelectStepAltitude) * Spawn.SelectStepAltitude).ToString(Config.Culture);
+                        }
+
+                        FrameworkElement.labelDefaultAltitude.Content = string.Format(Config.Culture, "Mission Default: {0}", ((int)way.Z));
                     }
                 }
 
@@ -689,11 +758,6 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected);
             }
 
-            private void UpdateAltitudeComboBoxInfo()
-            {
-
-            }
-
             private void EnableSelectItem(ComboBox comboBox, string selected)
             {
                 if (comboBox.Items.Count > 0)
@@ -716,6 +780,16 @@ namespace IL2DCE
             {
                 FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
                                                     SelectedAirGroup != null && SelectedRank != -1;
+            }
+
+
+
+
+
+
+            private void Loadout_Click(object sender, RoutedEventArgs e)
+            {
+                Game.gameInterface.PagePush(new PlaneLoadoutPage(), SelectedAirGroup.Class);
             }
         }
     }

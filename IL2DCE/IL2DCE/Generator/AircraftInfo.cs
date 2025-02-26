@@ -105,7 +105,7 @@ namespace IL2DCE.Generator
             IList<AircraftParametersInfo> missionParameters = new List<AircraftParametersInfo>();
             string value = _aircraftInfoFile.get(Aircraft, missionType.ToString());
             string[] valueParts = value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            if (valueParts != null && valueParts.Length > 0)
+            if (valueParts.Length > 0)
             {
                 foreach (string valuePart in valueParts)
                 {
@@ -115,7 +115,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                throw new FormatException(Aircraft + "." + missionType.ToString() + " " + value);
+                throw new FormatException(string.Format("Invalid Aircraft Parameter Info[{0} {1}]", Aircraft + "." + missionType.ToString(), value));
             }
 
             return missionParameters;

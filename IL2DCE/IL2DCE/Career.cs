@@ -128,21 +128,21 @@ namespace IL2DCE
         };
 
         public static readonly string[] AirForce = new string[] {
-                "Royal Air Force",
-                "Armee de l'air",
-                "United States Army Air Forces",
-                "Luftwaffe",
-                "Regia Aeronautica",
+            "Royal Air Force",
+            "Armee de l'air",
+            "United States Army Air Forces",
+            "Luftwaffe",
+            "Regia Aeronautica",
                  "",
         };
 
         public static readonly string[] PilotNameDefault = new string[] {
-                "Joe Bloggs",
-                "Jean Dupont",
-                "John Smith",
-                "Max Mustermann",
-                "Mario Rossi",
-                 "",
+            "Joe Bloggs",
+            "Jean Dupont",
+            "John Smith",
+            "Max Mustermann",
+            "Mario Rossi",
+                "",
         };
 
         public string PilotName
@@ -192,7 +192,7 @@ namespace IL2DCE
             }
             set
             {
-                if (value < 6)
+                if (value <= RankMax)
                 {
                     _rankIndex = value;
                 }
@@ -341,6 +341,12 @@ namespace IL2DCE
             set;
         }
 
+        public int Spawn
+        {
+            get;
+            set;
+        }
+
         public bool AllowDefensiveOperation
         {
             get;
@@ -431,14 +437,7 @@ namespace IL2DCE
 
             #region Quick Mission Info 
 
-            BattleType = EBattleType.Unknown;
-            MissionType = null;
-            PlayerAirGroupSkill = null;
-            Time = -1;
-            Weather = -1;
-            CloudAltitude = -1;
-            BreezeActivity = -1;
-            ThermalActivity = -1;
+            InitQuickMssionInfo();
 
             #endregion
         }
@@ -447,7 +446,7 @@ namespace IL2DCE
         {
             _pilotName = pilotName;
 
-            string ver = careerFile.exist(SectionMain, KeyVersion) ? careerFile.get(SectionMain, KeyVersion): string.Empty;
+            string ver = careerFile.exist(SectionMain, KeyVersion) ? careerFile.get(SectionMain, KeyVersion) : string.Empty;
 
             if (careerFile.exist(SectionMain, "armyIndex")
                 && careerFile.exist(SectionMain, "rankIndex")
@@ -549,16 +548,22 @@ namespace IL2DCE
 
             #region Quick Mission Info 
 
+            InitQuickMssionInfo();
+
+            #endregion
+        }
+
+        public void InitQuickMssionInfo()
+        {
             BattleType = EBattleType.Unknown;
             MissionType = null;
+            Spawn = (int)ESpawn.Default;
             PlayerAirGroupSkill = null;
             Time = -1;
             Weather = -1;
             CloudAltitude = -1;
             BreezeActivity = -1;
             ThermalActivity = -1;
-
-            #endregion
         }
 
         public override string ToString()
@@ -576,7 +581,7 @@ namespace IL2DCE
         public void WriteTo(ISectionFile careerFile)
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
-            
+
             careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(Config.Culture));
             careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(Config.Culture));
             careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(Config.Culture));
@@ -613,7 +618,7 @@ namespace IL2DCE
                                     Army[army],
                                     AirForce[airforce],
                                     Rank[airforce][RankIndex],
-                                    AirGroup, 
+                                    AirGroup,
                                     Aircraft,
                                     Experience);
         }

@@ -30,6 +30,8 @@ namespace IL2DCE.Generator
     /// </remarks>
     class Generator
     {
+        private const string SectionMain = "MAIN";
+
         internal GeneratorAirOperation GeneratorAirOperation
         {
             get;
@@ -362,28 +364,28 @@ namespace IL2DCE.Generator
 
             // It is not necessary to delete air groups and ground groups from the missionFile as it 
             // is based on the environment template. If there is anything in it (air groups, ...) it is intentional.
-            for (int i = 0; i < missionFile.lines("MAIN"); i++)
+            for (int i = 0; i < missionFile.lines(SectionMain); i++)
             {
                 // Delete player from the template file.
                 string key;
                 string value;
-                missionFile.get("MAIN", i, out key, out value);
+                missionFile.get(SectionMain, i, out key, out value);
                 if (key == "player")
                 {
-                    missionFile.delete("MAIN", i);
+                    missionFile.delete(SectionMain, i);
                     break;
                 }
             }
 
             // Add things to the template file.
             double time = Career.Time < 0 ? Core.Random.Next(5, 21): Career.Time;
-            missionFile.set("MAIN", "TIME", time.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set(SectionMain, "TIME", time.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             int weatherIndex = Career.Weather < 0 ? Core.Random.Next(0, 3): (int)Career.Weather;
-            missionFile.set("MAIN", "WeatherIndex", weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set(SectionMain, "WeatherIndex", weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             int cloudsHeight = Career.CloudAltitude < 0 ? Core.Random.Next(5, 15) * 100: Career.CloudAltitude;
-            missionFile.set("MAIN", "CloudsHeight", (cloudsHeight).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set(SectionMain, "CloudsHeight", (cloudsHeight).ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = "";
             if (weatherIndex == 0)
@@ -407,17 +409,18 @@ namespace IL2DCE.Generator
             // Create a air operation for the player.
             foreach (AirGroup airGroup in GeneratorAirOperation.AvailableAirGroups)
             {
-                if ((airGroup.ArmyIndex == Career.ArmyIndex) && (airGroup.AirGroupKey + "." + airGroup.SquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat)) == Career.AirGroup)
+                if ((airGroup.ArmyIndex == Career.ArmyIndex) && string.Compare(airGroup.ToString(), Career.AirGroup) == 0)
                 {
                     EMissionType? missionType = Career.MissionType;
+                    Spawn spawn = new Spawn(Career.Spawn);
                     if (missionType == null)
                     {
-                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup, Career.PlayerAirGroupSkill);
+                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup, Career.PlayerAirGroupSkill, spawn);
                     }
                     else
                     {
                         GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation, 
-                                                                    Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill);
+                                                                    Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
                     }
 
                     // Determine the aircraft that is controlled by the player.
@@ -434,13 +437,13 @@ namespace IL2DCE.Generator
 
                         playerPosition = aircraftOrder[aircraftOrder.Count - 1 - playerPositionIndex];
 
-                        if (missionFile.exist("MAIN", "player"))
+                        if (missionFile.exist(SectionMain, "player"))
                         {
-                            missionFile.set("MAIN", "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
+                            missionFile.set(SectionMain, "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
                         }
                         else
                         {
-                            missionFile.add("MAIN", "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
+                            missionFile.add(SectionMain, "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
                         }
                     }
                     break;

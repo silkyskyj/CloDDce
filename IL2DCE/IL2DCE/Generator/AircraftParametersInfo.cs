@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using maddox.game.world;
 
 namespace IL2DCE.Generator
 {
@@ -62,7 +63,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                throw new FormatException(valuePart);
+                throw new FormatException(string.Format("Invalid Aircraft Parameters Info[{0}]", valuePart));
             }
         }
     }

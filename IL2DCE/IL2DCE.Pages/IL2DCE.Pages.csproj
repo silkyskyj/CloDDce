@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="CampaignIntroPage.cs" />
     <Compile Include="CampaignCompletionPage.cs" />
+    <Compile Include="PlaneLoadoutPage.cs" />
     <Compile Include="QuickMissionPage.cs" />
     <Compile Include="QuickMission.xaml.cs">
       <DependentUpon>QuickMission.xaml</DependentUpon>

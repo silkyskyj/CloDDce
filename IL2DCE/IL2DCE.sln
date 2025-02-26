@@ -74,6 +74,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cross v Roundel.Tobruk", "C
 		Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs = Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Isles of Doom.Tobruk", "Isles of Doom.Tobruk", "{AE78E049-6049-43C3-A593-36D58E50EE47}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Isles of Doom.Tobruk\AircraftInfo.ini = Campaigns\Isles of Doom.Tobruk\AircraftInfo.ini
+		Campaigns\Isles of Doom.Tobruk\AirGroupInfo.ini = Campaigns\Isles of Doom.Tobruk\AirGroupInfo.ini
+		Campaigns\Isles of Doom.Tobruk\CampaignInfo.ini = Campaigns\Isles of Doom.Tobruk\CampaignInfo.ini
+		Campaigns\Isles of Doom.Tobruk\Isles of Doom.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom.mis
+		Campaigns\Isles of Doom.Tobruk\Isles of Doom_environment.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom_environment.mis
+		Campaigns\Isles of Doom.Tobruk\Isles of Doom_static.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom_static.mis
+		Campaigns\Isles of Doom.Tobruk\MissionSingle.cs = Campaigns\Isles of Doom.Tobruk\MissionSingle.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -108,6 +119,7 @@ Global
 		{359B04C2-59DD-4167-9CEC-DB40A4B9772E} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{197175B4-BD2C-4289-9C47-CB4660DBF7B2} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{AE78E049-6049-43C3-A593-36D58E50EE47} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60E924F7-66B7-4DA3-884D-0E0FA7339A19}

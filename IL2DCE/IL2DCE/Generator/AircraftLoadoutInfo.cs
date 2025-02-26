@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE.Generator
 {
@@ -61,7 +62,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    throw new FormatException(aircraft + "_" + loadoutId + ".Weapons");
+                    throw new FormatException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}.Weapons]", aircraft, loadoutId));
                 }
 
                 for (int i = 0; i < aircraftInfoFile.lines(aircraft + "_" + loadoutId); i++)
@@ -77,7 +78,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                throw new ArgumentException(aircraft + "_" + loadoutId);
+                throw new ArgumentException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}]", aircraft, loadoutId));
             }
         }
     }

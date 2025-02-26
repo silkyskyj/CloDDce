@@ -8,7 +8,7 @@
     <Grid Height="897" Width="1652" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Label Content="Campaign Completion" Height="104" HorizontalAlignment="Left" Margin="12,12,0,0" Name="labelSelectCareer" VerticalAlignment="Top" Width="697" FontSize="64" FontWeight="Bold" Foreground="#FF791313" />
         <my1:ButtonAsMenuItem Content="Complete" Height="77" HorizontalAlignment="Left" Margin="1426,808,0,0" x:Name="Complete" VerticalAlignment="Top" Width="214" />
-        <TextBox x:Name="textBoxInfo" HorizontalAlignment="Left" Margin="52,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#7FFFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
-        <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="689,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#7FFFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
+        <TextBox x:Name="textBoxInfo" HorizontalAlignment="Left" Margin="52,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#FFA0854A" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
+        <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="689,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#FFA0854A" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
     </Grid>
 </UserControl>

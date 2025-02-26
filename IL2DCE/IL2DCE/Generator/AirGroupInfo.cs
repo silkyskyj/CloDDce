@@ -219,12 +219,12 @@ namespace IL2DCE.Generator
             int num = file.get(section, key, -1);
             if (num == -1)
             {
-                InvalidInifileFormat(FileInfo, section, key);
+                InvalidInifileFormatException(FileInfo, section, key);
             }
             return num;
         }
 
-        public static void InvalidInifileFormat(string file, string section, string key)
+        public static void InvalidInifileFormatException(string file, string section, string key)
         {
             throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file, section, key));
         }
