@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using IL2DCE.Generator;
 using maddox.game;
 
@@ -26,10 +28,42 @@ namespace IL2DCE.MissionObjectModel
         nn,
         gb,
         de,
+        fr,
+        pl,
+        ru,
+        rz,
+        us,
+        hu,
+        it,
+        ja,
+        fi,
+        ro,
+        sk,
     }
 
     public class MissionFile
     {
+        public const string SectionParts = "PARTS";
+        public const string SectionMain = "MAIN";
+        public const string SectionGlobalWind = "GlobalWind";
+        public const string SectionSplines = "splines";
+        public const string SectionCustomChiefs = "CustomChiefs";
+        public const string SectionStationary = "Stationary";
+        public const string SectionBuildings = "Buildings";
+        public const string SectionBuildingsLinks = "BuildingsLinks";
+        public const string SectionFrontMarker = "FrontMarker";
+        public const string SectionAirGroups = "AirGroups";
+        public const string SectionChiefs = "Chiefs";
+        public const string SectionChiefsRoad = "Chiefs_Road";
+        public const string SectionRoad = "Road";
+        public const string SectionTrigger = "Trigger";
+        public const string SectionAction = "Action";
+        public const string KeyPlayer = "player";
+
+        public static readonly string[] Country = new string[]
+            {
+            "gb", "fr", "pl", "ru", "rz", "us", "de", "hu", "it", "ja", "fi",  "ro", "sk"
+            };
 
         public IList<Waterway> Roads
         {
@@ -200,7 +234,6 @@ namespace IL2DCE.MissionObjectModel
             this.airGroupInfos = airGroupInfos;
 
             init();
-
             foreach (string fileName in fileNames)
             {
                 load(game.gpLoadSectionFile(fileName));
@@ -239,14 +272,14 @@ namespace IL2DCE.MissionObjectModel
 
         private void load(ISectionFile file)
         {
-            for (int i = 0; i < file.lines("Stationary"); i++)
+            // Stationary
+            for (int i = 0; i < file.lines(SectionStationary); i++)
             {
                 string key;
                 string value;
-                file.get("Stationary", i, out key, out value);
+                file.get(SectionStationary, i, out key, out value);
 
                 Stationary stationary = new Stationary(file, key);
-
                 if (stationary.Army == (int)EArmy.Red)
                 {
                     _redStationaries.Add(stationary);
@@ -272,12 +305,12 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
-            for (int i = 0; i < file.lines("Buildings"); i++)
+            // Buildings
+            for (int i = 0; i < file.lines(SectionBuildings); i++)
             {
                 string key;
                 string value;
-                file.get("Buildings", i, out key, out value);
-
+                file.get(SectionBuildings, i, out key, out value);
 
                 string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (valueParts.Length > 4)
@@ -293,11 +326,12 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
-            //for (int i = 0; i < file.lines("FrontMarker"); i++)
+            // FrontMaker
+            //for (int i = 0; i < file.lines(SectionFrontMarker); i++)
             //{
             //    string key;
             //    string value;
-            //    file.get("FrontMarker", i, out key, out value);
+            //    file.get(SectionFrontMarker, i, out key, out value);
 
             //    string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             //    if (valueParts.Length == 3)
@@ -325,29 +359,45 @@ namespace IL2DCE.MissionObjectModel
             //    }
             //}
 
-            for (int i = 0; i < file.lines("AirGroups"); i++)
+            // AirGroups
+            for (int i = 0; i < file.lines(SectionAirGroups); i++)
             {
                 string key;
                 string value;
-                file.get("AirGroups", i, out key, out value);
+                file.get(SectionAirGroups, i, out key, out value);
 
-                AirGroup airGroup = new AirGroup(file, key, airGroupInfos);
-
-                if (GetAirGroupInfo((int)EArmy.Red, airGroup.AirGroupKey) != null)
+                AirGroup airGroup = new AirGroup(file, key);
+                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGroup.AirGroupKey, airGroup.Class, false);
+                if (airGroupInfo.Count() > 0)
                 {
-                    _redAirGroups.Add(airGroup);
+                    AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
+                    airGroup.SetAirGroupInfo(airGroupInfoTarget);
+                    if (airGroup.ArmyIndex == (int)EArmy.Red)
+                    {
+                        _redAirGroups.Add(airGroup);
+                    }
+                    else if (airGroup.ArmyIndex == (int)EArmy.Blue)
+                    {
+                        _blueAirGroups.Add(airGroup);
+                    }
+                    else
+                    {
+                        Debug.Assert(false);
+                    }
                 }
-                else if (GetAirGroupInfo((int)EArmy.Blue, airGroup.AirGroupKey) != null)
+                else
                 {
-                    _blueAirGroups.Add(airGroup);
+                    Debug.WriteLine("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGroup.AirGroupKey, airGroup.Class, "AirGroupInfo.ini");
+                    Debug.Assert(false);
                 }
             }
 
-            for (int i = 0; i < file.lines("Chiefs"); i++)
+            // Chiefs
+            for (int i = 0; i < file.lines(SectionChiefs); i++)
             {
                 string key;
                 string value;
-                file.get("Chiefs", i, out key, out value);
+                file.get(SectionChiefs, i, out key, out value);
 
                 GroundGroup groundGroup = new GroundGroup(file, key);
 
@@ -376,6 +426,21 @@ namespace IL2DCE.MissionObjectModel
                     }
                 }
             }
+        }
+
+        private IEnumerable<AirGroupInfo> GetAirGroupInfo(string airGroupKey, string aircraft, bool ignoreCase)
+        {
+            IEnumerable<AirGroupInfo> airGroupInfo;
+            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Count() > 0)
+            {
+                return airGroupInfo;
+            }
+            else if (AirGroupInfos.Default != null && (airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Count() > 0)
+            {
+                return airGroupInfo;
+            }
+
+            return new AirGroupInfo [0];
         }
 
         public IList<GroundGroup> GetGroundGroups(int armyIndex)
@@ -440,21 +505,6 @@ namespace IL2DCE.MissionObjectModel
             {
                 return new List<Stationary>();
             }
-        }
-
-        private AirGroupInfo GetAirGroupInfo(int armyIndex, string airGroupKey)
-        {
-            AirGroupInfo airGroupInfo;
-            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(armyIndex, airGroupKey)) != null)
-            {
-                return airGroupInfo;
-            }
-            else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(armyIndex, airGroupKey)) != null)
-            {
-                return airGroupInfo;
-            }
-
-            return null;
         }
 
         //public IList<Point3d> GetFriendlyMarkers(int armyIndex)

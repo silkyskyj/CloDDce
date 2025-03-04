@@ -16,17 +16,17 @@
 
 using System.Globalization;
 
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE
 {
-    public sealed class CloudAltitude
+    public class Fuel
     {
-        public const int Min = 500;
-        public const int Max = 1500;
-        public const int Step = 100;
+        public const int SelectMinFuel = 10;
+        public const int SelectMaxFuel = 100;
+        public const int SelectStepFuel = 5;
 
-        public static string CreateDisplayString(int alt)
+        public static string CreateDisplayString(int fuel)
         {
-            return alt.ToString("#####", CultureInfo.InvariantCulture.NumberFormat);
+            return fuel.ToString("###", CultureInfo.InvariantCulture.NumberFormat);
         }
     }
 }

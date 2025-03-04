@@ -106,5 +106,10 @@ namespace IL2DCE.MissionObjectModel
         {
             return SystemSkills[(int)skill];
         }
+
+        public static Skill GetSystemType(SystemType? skill = null)
+        {
+            return skill != null ? GetSystemType(skill.Value): GetSystemType(SystemType.Avarage);
+        }
     }
 }

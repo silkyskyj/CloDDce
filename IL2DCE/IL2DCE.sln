@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Campaigns", "Campaigns", "{
 	ProjectSection(SolutionItems) = preProject
 		Campaigns\AircraftInfo.ini = Campaigns\AircraftInfo.ini
 		Campaigns\AirGroupInfo.ini = Campaigns\AirGroupInfo.ini
+		Campaigns\MissionSingle.cs = Campaigns\MissionSingle.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adlerangriff", "Adlerangriff", "{E4CFEBBA-6807-4642-A5E8-4111BBA5B859}"

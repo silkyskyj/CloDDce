@@ -28,6 +28,10 @@ namespace IL2DCE.MissionObjectModel
 {
     public class AirGroup
     {
+        public const string SquadronFormat = "D";
+        public const int FlightCount = 4;
+        public const string DefaultFormation = "LINEABREAST"; // "Line Abreast" or "Line Astern" is All Flight Group & All Country
+
         #region Public properties
 
         public string AirGroupKey
@@ -71,6 +75,8 @@ namespace IL2DCE.MissionObjectModel
             get;
             set;
         }
+
+        IDictionary<int, string> Skills = new Dictionary<int, string>();
 
         public int CallSign
         {
@@ -127,9 +133,10 @@ namespace IL2DCE.MissionObjectModel
             get
             {
                 // TODO: Use aicraft info to determine speed
-                return 300.0;
+                return speed;
             }
         }
+        public double speed = 300.0;
 
         public bool Airstart
         {
@@ -223,7 +230,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return CreateDisplayName(AirGroupKey) + "." + SquadronIndex;
+                return string.Format("{0}.{1}", CreateDisplayName(AirGroupKey), _squadronIndex.ToString(SquadronFormat, CultureInfo.InvariantCulture.NumberFormat));
             }
         }
 
@@ -235,33 +242,32 @@ namespace IL2DCE.MissionObjectModel
 
         #endregion
 
-        #region private member
-
-        AirGroupInfos airGroupInfos;
-
-        #endregion
-
         #region Public constructors
 
-        public AirGroup(ISectionFile sectionFile, string id, AirGroupInfos airGroupInfos = null)
+        public AirGroup(ISectionFile sectionFile, string id)
         {
-            this.airGroupInfos = airGroupInfos;
             // airGroupId = <airGroupKey>.<squadronIndex><flightMask>
 
             // AirGroupKey
             AirGroupKey = id.Substring(0, id.IndexOf("."));
 
             // SquadronIndex
-            int.TryParse(id.Substring(id.LastIndexOf(".") + 1, 1), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _squadronIndex);
+            if (!int.TryParse(id.Substring(id.LastIndexOf(".") + 1, 1), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _squadronIndex))
+            //if (!int.TryParse(id.Substring(id.LastIndexOf(".") + 1), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _squadronIndex))
+            {
+                Debug.Assert(false);
+                throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
+            }
 
             // Flight
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < FlightCount; i++)
             {
-                if (sectionFile.exist(id, "Flight" + i.ToString(CultureInfo.InvariantCulture.NumberFormat)))
+                string key = "Flight" + i.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                if (sectionFile.exist(id, key))
                 {
-                    string acNumberLine = sectionFile.get(id, "Flight" + i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                    string acNumberLine = sectionFile.get(id, key);
                     string[] acNumberList = acNumberLine.Split(new char[] { ' ' });
-                    if (acNumberList != null && acNumberList.Length > 0)
+                    if (acNumberList.Length > 0)
                     {
                         List<string> acNumbers = new List<string>();
                         Flights.Add(i, acNumbers);
@@ -277,13 +283,13 @@ namespace IL2DCE.MissionObjectModel
             Class = sectionFile.get(id, "Class");
 
             // Formation
-            Formation = sectionFile.get(id, "Formation");
+            Formation = sectionFile.get(id, "Formation", string.Empty);
 
             // CallSign
-            int.TryParse(sectionFile.get(id, "CallSign"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _callSign);
+            int.TryParse(sectionFile.get(id, "CallSign", "0"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _callSign);
 
             // Fuel
-            int.TryParse(sectionFile.get(id, "Fuel"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _fuel);
+            int.TryParse(sectionFile.get(id, "Fuel", "100"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _fuel);
 
             // Weapons
             string weaponsLine = sectionFile.get(id, "Weapons");
@@ -313,7 +319,21 @@ namespace IL2DCE.MissionObjectModel
             // TODO: Parse belt
 
             // Skill
+            // TODO: Multi Skill(=Different)
             Skill = sectionFile.get(id, "Skill");
+            foreach (int flightIndex in Flights.Keys)
+            {
+                for (int i = 0; i < Flights[flightIndex].Count; i++)
+                {
+                    string key = string.Format("Skill{0}{1}",
+                        flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                    if (sectionFile.exist(id, key))
+                    {
+                        string skill = sectionFile.get(id, key);
+                        Skills.Add(flightIndex * 10 + i, skill);
+                    }
+                }
+            }
 
             // Id
             int flightMask = 0x0;
@@ -349,21 +369,7 @@ namespace IL2DCE.MissionObjectModel
             // SetOnPark
             SetOnParked = string.Compare(sectionFile.get(id, "SetOnPark", "0"), "1") == 0;
 
-            // AirGroupInfo
-            // ArmyIndex
-            if ((AirGroupInfo = GetAirGroupInfo(1, AirGroupKey)) != null)
-            {
-                ArmyIndex = 1;
-            }
-            else if ((AirGroupInfo = GetAirGroupInfo(2, AirGroupKey)) != null)
-            {
-                ArmyIndex = 2;
-            }
-            else
-            {
-                AirGroupInfo = null;
-                ArmyIndex = 0;
-            }
+            Optimize();
         }
 
         #endregion
@@ -410,7 +416,7 @@ namespace IL2DCE.MissionObjectModel
         {
             if (!Airstart)
             {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, Position, AirGroupWaypoint.DefaulttakeoffV));
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, Position, AirGroupWaypoint.DefaultTakeoffV));
             }
             else
             {
@@ -485,26 +491,11 @@ namespace IL2DCE.MissionObjectModel
             //this.TargetArea = null;
         }
 
-        private AirGroupInfo GetAirGroupInfo(int armyIndex, string airGroupKey)
-        {
-            AirGroupInfo airGroupInfo;
-            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(armyIndex, airGroupKey)) != null)
-            {
-                return airGroupInfo;
-            }
-            else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(armyIndex, airGroupKey)) != null)
-            {
-                return airGroupInfo;
-            }
-
-            return null;
-        }
-
         #endregion
 
         #region Public methods
 
-        public void WriteTo(ISectionFile sectionFile, Config config)
+        public void WriteTo(ISectionFile sectionFile)
         {
             if (_waypoints.Count > 0)
             {
@@ -559,33 +550,34 @@ namespace IL2DCE.MissionObjectModel
                         case ESpawn.Scramble:
                             sectionFile.add(Id, "Scramble", "1");
                             break;
-                        //case ESpawn.AirStart:
-                        //default:
-                        //    sectionFile.add(Id, "SetOnPark", "0");
-                        //    sectionFile.add(Id, "Idle", "0");
-                        //    sectionFile.add(Id, "Scramble", "0");
-                        //    break;
+                            //case ESpawn.AirStart:
+                            //default:
+                            //    sectionFile.add(Id, "SetOnPark", "0");
+                            //    sectionFile.add(Id, "Idle", "0");
+                            //    sectionFile.add(Id, "Scramble", "0");
+                            //    break;
                     }
                 }
                 else
                 {
-                    sectionFile.add(Id, "SetOnPark", SetOnParked ? "1": "0");
+                    sectionFile.add(Id, "SetOnPark", SetOnParked ? "1" : "0");
                 }
 
+                // TODO: Multi Skill(=Different)
                 sectionFile.add(Id, "Skill", Skill);
 
                 foreach (AirGroupWaypoint waypoint in _waypoints)
                 {
                     if (waypoint.Target == null)
                     {
-                        sectionFile.add(Id + "_Way", 
-                                        waypoint.Type.ToString(), 
+                        sectionFile.add(Id + "_Way",
+                                        waypoint.Type.ToString(),
                                         waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat));
                     }
                     else
                     {
-                        sectionFile.add(Id + "_Way", 
-                                        waypoint.Type.ToString(), 
+                        sectionFile.add(Id + "_Way",
+                                        waypoint.Type.ToString(),
                                         waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Target);
                     }
                 }
@@ -596,7 +588,12 @@ namespace IL2DCE.MissionObjectModel
 
         public override string ToString()
         {
-            return AirGroupKey + "." + SquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat);
+            return CreateSquadronString(AirGroupKey, SquadronIndex);
+        }
+
+        public static string CreateSquadronString(string airGroupKey, int squadronIndex)
+        {
+            return string.Format("{0}.{1}", airGroupKey, squadronIndex.ToString(SquadronFormat, CultureInfo.InvariantCulture.NumberFormat));
         }
 
         //public void Transfer(double altitude, AiAirport landingAirport = null)
@@ -968,7 +965,7 @@ namespace IL2DCE.MissionObjectModel
             if (spawn != null)
             {
                 AirGroupWaypoint way = Waypoints.FirstOrDefault();
-                if (way != null && spawn.Type !=  ESpawn.Default)
+                if (way != null && spawn.Type != ESpawn.Default)
                 {
                     ESpawn type = spawn.Type;
                     if (type == ESpawn.Random)
@@ -981,7 +978,7 @@ namespace IL2DCE.MissionObjectModel
                         case ESpawn.Parked:
                         case ESpawn.Idle:
                         case ESpawn.Scramble:
-                            wayNew = new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, way.X , way.Y, AirGroupWaypoint.DefaultTakeoffZ, AirGroupWaypoint.DefaulttakeoffV, way.Target);
+                            wayNew = new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, way.X, way.Y, AirGroupWaypoint.DefaultTakeoffZ, AirGroupWaypoint.DefaultTakeoffV, way.Target);
                             Airstart = false;
                             break;
                         case ESpawn.AirStart:
@@ -997,12 +994,48 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public void SetSpeed(int speed)
+        {
+            if (speed != -1)
+            {
+                this.speed = speed;
+            }
+        }
+
+        public void SetFuel(int fuel)
+        {
+            if (speed != -1)
+            {
+                _fuel = fuel;
+            }
+        }
+
         public static string CreateDisplayName(string airGroupKey)
         {
             // tobruk:Tobruk_RA_30St_87_Gruppo_192Sq -> Tobruk_RA_30St_87_Gruppo_192Sq
             const string del = ":";
             int idx = airGroupKey.IndexOf(del, StringComparison.CurrentCultureIgnoreCase);
-            return idx != -1 ? airGroupKey.Substring(idx + del.Length): airGroupKey;
+            return idx != -1 ? airGroupKey.Substring(idx + del.Length) : airGroupKey;
+        }
+
+        public void SetAirGroupInfo(AirGroupInfo airGroupInfo)
+        {
+            AirGroupInfo = airGroupInfo;
+            ArmyIndex = airGroupInfo.ArmyIndex;
+        }
+
+        public void Optimize()
+        {
+            // TODO: Multi Skill(=Different)
+            if (string.IsNullOrEmpty(Skill))
+            {
+                Skill = MissionObjectModel.Skill.GetSystemType().ToString();
+            }
+
+            if (string.IsNullOrEmpty(Formation))
+            {
+                Formation = DefaultFormation;
+            }
         }
 
         #endregion

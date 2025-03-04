@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using maddox.game;
 using maddox.GP;
@@ -241,26 +242,27 @@ namespace IL2DCE.MissionObjectModel
             get
             {
                 // Type
-                if (Class.StartsWith("Stationary.Radar"))
+                if (!string.IsNullOrEmpty(Class))
                 {
-                    return EStationaryType.Radar;
+                    if (Class.StartsWith("Stationary.Radar"))
+                    {
+                        return EStationaryType.Radar;
+                    }
+                    else if (Class.StartsWith("Artillery"))
+                    {
+                        return EStationaryType.Artillery;
+                    }
+                    else if (_aircrafts.Contains(Class))
+                    {
+                        return EStationaryType.Aircraft;
+                    }
+                    else if (_depots.Contains(Class))
+                    {
+                        return EStationaryType.Depot;
+                    }
                 }
-                else if (Class.StartsWith("Artillery"))
-                {
-                    return EStationaryType.Artillery;
-                }
-                else if (_aircrafts.Contains(Class))
-                {
-                    return EStationaryType.Aircraft;
-                }
-                else if (_depots.Contains(Class))
-                {
-                    return EStationaryType.Depot;
-                }
-                else
-                {
-                    return EStationaryType.Unknown;
-                }
+
+                return EStationaryType.Unknown;
             }
         }
 
@@ -268,13 +270,13 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                if (Country == ECountry.gb)
+                if (Country == ECountry.gb || Country == ECountry.fr || Country == ECountry.us || Country == ECountry.ru || Country == ECountry.rz)
                 {
-                    return 1;
+                    return (int)EArmy.Red;
                 }
-                else if (Country == ECountry.de)
+                else if (Country == ECountry.de || Country == ECountry.it || Country == ECountry.ja || Country == ECountry.ro || Country == ECountry.fi)
                 {
-                    return 2;
+                    return (int)EArmy.Blue;
                 }
                 else
                 {
@@ -299,7 +301,7 @@ namespace IL2DCE.MissionObjectModel
             if (valueParts.Length > 4)
             {
                 Class = valueParts[0];
-                Country = (ECountry)Enum.Parse(typeof(ECountry), valueParts[1]);
+                Country = ParseCountry(valueParts[1]);
                 double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
                 double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
                 double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Direction);
@@ -313,6 +315,28 @@ namespace IL2DCE.MissionObjectModel
                     Options = Options.Trim();
                 }
             }
+        }
+
+        private ECountry ParseCountry(string str)
+        {
+            if (!string.IsNullOrWhiteSpace(str))
+            {
+                ECountry country;
+                if (Enum.TryParse(str, true, out country))
+                {
+                    return country;
+                }
+                string [] strs = str.Split("_-.".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                if (strs.Length >= 1)
+                {
+                    if (Enum.TryParse(strs[0], true, out country))
+                    {
+                        return country;
+                    }
+                }
+            }
+            Debug.Assert(false, "Parse Country");
+            return ECountry.nn;
         }
 
         public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)

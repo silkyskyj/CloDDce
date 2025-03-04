@@ -48,6 +48,13 @@
     </Compile>
     <Compile Include="CampaignIntroPage.cs" />
     <Compile Include="CampaignCompletionPage.cs" />
+    <Compile Include="Controls\FilterComboBox.xaml.cs">
+      <DependentUpon>FilterComboBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Input\Command.cs" />
     <Compile Include="PlaneLoadoutPage.cs" />
     <Compile Include="QuickMissionPage.cs" />
     <Compile Include="QuickMission.xaml.cs">
@@ -98,6 +105,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\FilterComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="QuickMission.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -123,6 +138,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

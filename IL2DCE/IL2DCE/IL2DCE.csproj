@@ -35,6 +35,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Fuel.cs" />
     <Compile Include="Generator\AircraftInfo.cs" />
     <Compile Include="Generator\AircraftLoadoutInfo.cs" />
     <Compile Include="Generator\AircraftParametersInfo.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Generator\Generator.cs" />
+    <Compile Include="MissionObjectModel\SilkySkyCloDFile.cs" />
     <Compile Include="MissionObjectModel\CloudAltitude.cs" />
     <Compile Include="MissionObjectModel\DistanceComparer.cs" />
     <Compile Include="MissionObjectModel\EArmy.cs" />
@@ -72,7 +74,10 @@
     <Compile Include="MissionObjectModel\Waterway.cs" />
     <Compile Include="MissionObjectModel\MissionFile.cs" />
     <Compile Include="Random.cs" />
+    <Compile Include="Speed.cs" />
     <Compile Include="Util\AircraftImage.cs" />
+    <Compile Include="Util\MissionFileConverter.cs" />
+    <Compile Include="Util\SectionFileUtil.cs" />
     <Compile Include="Util\VersionConverter.cs" />
   </ItemGroup>
   <ItemGroup>

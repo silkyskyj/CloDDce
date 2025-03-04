@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
-// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
+// Copyright (C) 2011 Stefan Rothdach
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,19 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Globalization;
+//$reference parts/IL2DCE/IL2DCE.Mission.dll
+//$debug
 
-namespace IL2DCE.MissionObjectModel
+public class Mission : IL2DCE.Mission.MissionSingle
 {
-    public sealed class CloudAltitude
-    {
-        public const int Min = 500;
-        public const int Max = 1500;
-        public const int Step = 100;
 
-        public static string CreateDisplayString(int alt)
-        {
-            return alt.ToString("#####", CultureInfo.InvariantCulture.NumberFormat);
-        }
-    }
 }

@@ -74,5 +74,9 @@ namespace IL2DCE.MissionObjectModel
         //SWEEP,
         //INTRUDER,
         //NIGHT_INTRUDER,
+
+        [Description("Follow")]
+        FOLLOW,
+
     };
 }

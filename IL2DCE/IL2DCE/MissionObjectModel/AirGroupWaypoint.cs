@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using maddox.game;
 using maddox.GP;
@@ -39,12 +40,13 @@ namespace IL2DCE.MissionObjectModel
             ESCORT,
             AATTACK_FIGHTERS,
             AATTACK_BOMBERS,
+            FOLLOW,
         };
 
         #endregion
 
         public const int DefaultTakeoffZ = 0;
-        public const int DefaulttakeoffV = 0;
+        public const int DefaultTakeoffV = 0;
         public const int DefaultNormaflyZ = 500;
         public const int DefaultNormaflyV = 300;
         public const int DefaultLandingZ = 0;
@@ -116,13 +118,21 @@ namespace IL2DCE.MissionObjectModel
             sectionFile.get(id + "_Way", line, out key, out value);
 
             string[] valueList = value.Split(new char[] { ' ' });
-            if (valueList != null && valueList.Length == 4)
+            if (valueList != null && valueList.Length >= 4)
             {
-                Type = (AirGroupWaypointTypes)Enum.Parse(typeof(AirGroupWaypointTypes), key);
-                double.TryParse(valueList[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueList[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueList[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Z);
-                double.TryParse(valueList[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out V);
+                AirGroupWaypointTypes type;
+                if (Enum.TryParse(key, true, out type))
+                {
+                    Type = type;
+                    double.TryParse(valueList[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
+                    double.TryParse(valueList[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
+                    double.TryParse(valueList[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Z);
+                    double.TryParse(valueList[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out V);
+                }
+                else
+                {
+                    Debug.Assert(false, "Parse AirGroupWaypointType");
+                }
             }
         }
 

@@ -381,7 +381,10 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.Init({0}, {1})", battle.ToString(), missionNumber);
                 base.Init(battle, missionNumber);
-                this.Core.Mission = this;
+                if (Core != null)
+                {
+                    Core.Mission = this;
+                }
             }
         }
     }

@@ -14,19 +14,40 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Globalization;
+using System;
+using System.Windows.Input;
 
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE.Pages.Input
 {
-    public sealed class CloudAltitude
+    class Command : ICommand
     {
-        public const int Min = 500;
-        public const int Max = 1500;
-        public const int Step = 100;
-
-        public static string CreateDisplayString(int alt)
+        public Action Action
         {
-            return alt.ToString("#####", CultureInfo.InvariantCulture.NumberFormat);
+            get
+            {
+                return action;
+            }
+        }
+        public Action action = null;
+
+        public event EventHandler CanExecuteChanged;
+
+        public Command(Action action)
+        {
+            this.action = action;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return action != null;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (action != null)
+            {
+                action();
+            }
         }
     }
 }

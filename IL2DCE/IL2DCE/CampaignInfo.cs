@@ -17,8 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using IL2DCE.Generator;
+using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE
 {
@@ -36,6 +41,14 @@ namespace IL2DCE
     public class CampaignInfo
     {
         public const string SectionMain = "Main";
+        public const string KeyName = "name";
+        public const string KeyEnvironmentTemplate = "environmentTemplate";
+        public const string KeyStaticTemplate = "staticTemplate";
+        public const string KeyInitialTemplate = "initialTemplate";
+        public const string KeyScriptFile = "scriptFile";
+        public const string KeyStartDate = "startDate";
+        public const string KeyEndDate = "endDate";
+        public const string FormatDate = "yyyy-MM-dd";
 
         /// <summary>
         /// Max Campaign Period
@@ -157,7 +170,28 @@ namespace IL2DCE
 
         private ISectionFile _globalAircraftInfoFile;
         private ISectionFile _localAircraftInfoFile;
- 
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="environmentTemplateFile"></param>
+        /// <param name="staticTemplateFiles"></param>
+        /// <param name="initialMissionTemplateFiles"></param>
+        /// <param name="scriptFileName"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        public CampaignInfo(string name, string environmentTemplateFile, string[] staticTemplateFiles, string[] initialMissionTemplateFiles, string scriptFileName, DateTime startDate, DateTime endDate)
+        {
+            this.name = name;
+            this._environmentTemplateFile = environmentTemplateFile;
+            this._staticTemplateFiles = staticTemplateFiles.ToList();
+            this._initialMissionTemplateFiles = initialMissionTemplateFiles.ToList();
+            this._scriptFileName = scriptFileName;
+            this._startDate = startDate;
+            this._endDate = endDate;
+        }
+
         /// <summary>
         /// The constructor parses the campaign info file.
         /// </summary>
@@ -174,27 +208,27 @@ namespace IL2DCE
             _localAircraftInfoFile = localAircraftInfoFile;
             _localAirGroupInfos = localAirGroupInfos;
 
-            if (campaignFile.exist(SectionMain, "name"))
+            if (campaignFile.exist(SectionMain, KeyName))
             {
-                name = campaignFile.get(SectionMain, "name");
+                name = campaignFile.get(SectionMain, KeyName);
             }
             else
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "name");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyName);
             }
 
-            if (campaignFile.exist(SectionMain, "environmentTemplate"))
+            if (campaignFile.exist(SectionMain, KeyEnvironmentTemplate))
             {
-                _environmentTemplateFile = campaignFolderPath + campaignFile.get(SectionMain, "environmentTemplate").Trim();
+                _environmentTemplateFile = campaignFolderPath + campaignFile.get(SectionMain, KeyEnvironmentTemplate).Trim();
             }
             else
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "environmentTemplate");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyEnvironmentTemplate);
             }
 
-            if (campaignFile.exist(SectionMain, "staticTemplate"))
+            if (campaignFile.exist(SectionMain, KeyStaticTemplate))
             {
-                var staticTemplates = campaignFile.get(SectionMain, "staticTemplate").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var staticTemplates = campaignFile.get(SectionMain, KeyStaticTemplate).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string staticTemplate in staticTemplates)
                 {
@@ -203,12 +237,12 @@ namespace IL2DCE
             }
             if (StaticTemplateFiles.Count < 1)
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "staticTemplate");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyStaticTemplate);
             }
 
-            if (campaignFile.exist(SectionMain, "initialTemplate"))
+            if (campaignFile.exist(SectionMain, KeyInitialTemplate))
             {
-                var initialTemplates = campaignFile.get(SectionMain, "initialTemplate").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var initialTemplates = campaignFile.get(SectionMain, KeyInitialTemplate).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string initialTemplate in initialTemplates)
                 {
@@ -217,36 +251,36 @@ namespace IL2DCE
             }
             if (InitialMissionTemplateFiles.Count < 1)
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "initialTemplate");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyInitialTemplate);
             }
 
-            if (campaignFile.exist(SectionMain, "scriptFile"))
+            if (campaignFile.exist(SectionMain, KeyScriptFile))
             {
-                _scriptFileName = campaignFile.get(SectionMain, "scriptFile");
+                _scriptFileName = campaignFile.get(SectionMain, KeyScriptFile);
             }
             else
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "scriptFile");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyScriptFile);
             }
 
-            if (campaignFile.exist(SectionMain, "startDate"))
+            if (campaignFile.exist(SectionMain, KeyStartDate))
             {
-                string startDateString = campaignFile.get(SectionMain, "startDate");
+                string startDateString = campaignFile.get(SectionMain, KeyStartDate);
                 _startDate = DateTime.Parse(startDateString);
             }
             else
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "campaignFolderPath");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyStartDate);
             }
 
-            if (campaignFile.exist(SectionMain, "endDate"))
+            if (campaignFile.exist(SectionMain, KeyEndDate))
             {
-                string endDateString = campaignFile.get(SectionMain, "endDate");
+                string endDateString = campaignFile.get(SectionMain, KeyEndDate);
                 _endDate = DateTime.Parse(endDateString);
             }
             else
             {
-                InvalidInifileFormatException(campaignFolderPath, SectionMain, "endDate");
+                InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyEndDate);
             }
         }
 
@@ -254,7 +288,6 @@ namespace IL2DCE
         {
             throw new FormatException(string.Format("Invalid Campaign File Format [Folder:{0}, Section:{1}, Key:{2}]", folder, section, key));
         }
-
 
         /// <summary>
         /// The textual representation of a CampaignInfo object.
@@ -294,21 +327,32 @@ namespace IL2DCE
             }
         }
 
-        public AirGroupInfo GetAirGroupInfo(string airGroupKey)
+        //public AirGroupInfo GetAirGroupInfo(string airGroupKey)
+        //{
+        //    AirGroupInfo airGroupInfo = null;
+        //    if (_localAirGroupInfos != null && (airGroupInfo = _localAirGroupInfos.GetAirGroupInfo(airGroupKey)) != null)
+        //    {
+        //        return airGroupInfo;
+        //    }
+        //    else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey)) != null)
+        //    {
+        //        return airGroupInfo;
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentException(string.Format("no AirGroup[{0}] info in the file[{1}]", airGroupKey, "AirGroupinfo.ini"));
+        //    }
+        //}
+
+        public void Write(ISectionFile file)
         {
-            AirGroupInfo airGroupInfo = null;
-            if (_localAirGroupInfos != null && (airGroupInfo = _localAirGroupInfos.GetAirGroupInfo(airGroupKey)) != null)
-            {
-                return airGroupInfo;
-            }
-            else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey)) != null)
-            {
-                return airGroupInfo;
-            }
-            else
-            {
-                throw new ArgumentException(string.Format("no AirGroup[{0}] info in the file[{1}]", airGroupKey, "AirGroupinfo.ini"));
-            }
+            SectionFileUtil.Write(file, SectionMain, KeyName, name);
+            SectionFileUtil.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile);
+            SectionFileUtil.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles));
+            SectionFileUtil.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles));
+            SectionFileUtil.Write(file, SectionMain, KeyScriptFile, ScriptFileName);
+            SectionFileUtil.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
+            SectionFileUtil.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
         }
     }
 }

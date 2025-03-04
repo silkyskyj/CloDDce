@@ -347,6 +347,18 @@ namespace IL2DCE
             set;
         }
 
+        public int Speed
+        {
+            get;
+            set;
+        }
+
+        public int Fuel
+        {
+            get;
+            set;
+        }
+
         public bool AllowDefensiveOperation
         {
             get;
@@ -558,6 +570,8 @@ namespace IL2DCE
             BattleType = EBattleType.Unknown;
             MissionType = null;
             Spawn = (int)ESpawn.Default;
+            Speed = -1;
+            Fuel = -1;
             PlayerAirGroupSkill = null;
             Time = -1;
             Weather = -1;
@@ -582,10 +596,10 @@ namespace IL2DCE
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
 
-            careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(Config.Culture));
-            careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(Config.Culture));
-            careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(Config.Culture));
-            careerFile.add(SectionMain, "experience", Experience.ToString(Config.Culture));
+            careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionMain, "experience", Experience.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             careerFile.add(SectionCampaign, "date", Date.Value.Year.ToString(Config.Culture) + "-" + Date.Value.Month.ToString(Config.Culture) + "-" + Date.Value.Day.ToString(Config.Culture.NumberFormat));
             careerFile.add(SectionCampaign, "airGroup", AirGroup);
@@ -593,10 +607,10 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, "id", CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
 
-            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Config.Culture));
-            careerFile.add(SectionStat, KeyLandings, Landings.ToString(Config.Culture));
-            careerFile.add(SectionStat, KeyBails, Bails.ToString(Config.Culture));
-            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(Config.Culture));
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
             foreach (var item in KillsHistory)
             {

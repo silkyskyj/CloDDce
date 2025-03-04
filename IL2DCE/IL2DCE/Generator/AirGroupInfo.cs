@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using IL2DCE.Util;
 using maddox.game;
 
 namespace IL2DCE.Generator
@@ -73,7 +74,25 @@ namespace IL2DCE.Generator
 
     public class AirGroupInfo/* : IAirGroupInfo*/
     {
+        public const string FileInfo = "AirGroupinfo";
+
+        public const string SectionMain = "Main";
+        public const string SectionAircrafts = "Aircrafts";
+        public const string SectionAirGroupKeys = "AirGroupKeys";
+
+        public const string KeySquadronCount = "SquadronCount";
+        public const string KeyFlightCount = "FlightCount";
+        public const string KeyFlightSize = "FlightSize";
+        public const string KeyArmyIndex = "ArmyIndex";
+        public const string KeyAirForceIndex = "AirForceIndex";
+
         #region Public properties
+
+        public string Name
+        {
+            get;
+            set;
+        }
 
         public List<string> Aircrafts
         {
@@ -126,20 +145,67 @@ namespace IL2DCE.Generator
         }
 
         #endregion
+
+        public bool Read(ISectionFile file)
+        {
+            return true;
+        }
+
+        public void Write(ISectionFile file)
+        {
+            SectionFileUtil.Write(file, Name, KeySquadronCount, SquadronCount.ToString());
+            SectionFileUtil.Write(file, Name, KeyFlightCount, FlightCount.ToString());
+            SectionFileUtil.Write(file, Name, KeyFlightSize, FlightSize.ToString());
+            SectionFileUtil.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString());
+            SectionFileUtil.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString());
+            Aircrafts.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty));
+            AirGroupKeys.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), x, string.Empty));
+        }
+
+        public static AirGroupInfo Create(ISectionFile file, string section, string secAircrafts, string secAirGroupKeys)
+        {
+            if (file.exist(section) && file.exist(secAircrafts) && file.exist(secAirGroupKeys))
+            {
+                string key;
+                string value;
+
+                // Aircraft
+                List<string> aircrafts = new List<string>();
+                int lines = file.lines(secAircrafts);
+                for (int j = 0; j < lines; j++)
+                {
+                    file.get(secAircrafts, j, out key, out value);
+                    aircrafts.Add(key);
+                }
+
+                // AirGroup
+                List<string> airGroupKeys = new List<string>();
+                lines = file.lines(secAirGroupKeys);
+                for (int j = 0; j < lines; j++)
+                {
+                    file.get(secAirGroupKeys, j, out key, out value);
+                    airGroupKeys.Add(key);
+                }
+
+                return new AirGroupInfo()
+                {
+                    Name = section,
+                    Aircrafts = aircrafts,
+                    AirGroupKeys = airGroupKeys,
+                    SquadronCount = SectionFileUtil.ReadNumeric(file, section, KeySquadronCount, FileInfo),
+                    FlightCount = SectionFileUtil.ReadNumeric(file, section, KeyFlightCount, FileInfo),
+                    FlightSize = SectionFileUtil.ReadNumeric(file, section, KeyFlightSize, FileInfo),
+                    ArmyIndex = SectionFileUtil.ReadNumeric(file, section, KeyArmyIndex, FileInfo),
+                    AirForceIndex = SectionFileUtil.ReadNumeric(file, section, KeyAirForceIndex, FileInfo)
+                };
+            }
+
+            return null;
+        }
     }
 
     public class AirGroupInfos
     {
-        public const string FileInfo = "AirGroupinfo";
-        public const string SectionMain = "Main";
-        public const string SectionAircrafts = "Aircrafts";
-        public const string SectionAirGroupKeys = "AirGroupKeys";
-        public const string KeySquadronCount = "SquadronCount";
-        public const string KeyFlightCount = "FlightCount";
-        public const string KeyFlightSize = "FlightSize";
-        public const string KeyArmyIndex = "ArmyIndex";
-        public const string KeyAirForceIndex = "AirForceIndex";
-
         public static AirGroupInfos Default;
 
         public AirGroupInfo[] AirGroupInfo
@@ -153,60 +219,29 @@ namespace IL2DCE.Generator
             return new AirGroupInfos() { AirGroupInfo = CreateAirGroupInfo(file) };
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
         public static AirGroupInfo[] CreateAirGroupInfo(ISectionFile file)
         {
             List<AirGroupInfo> infos = new List<AirGroupInfo>();
 
             string key;
             string value;
-            int lines = file.lines(SectionMain);
+            int lines = file.lines(IL2DCE.Generator.AirGroupInfo.SectionMain);
+            // Debug.WriteLine("{0}, Count={1}", SectionMain, lines);
             for (int i = 0; i < lines; i++)
             {
-                file.get(SectionMain, i, out key, out value);
+                file.get(IL2DCE.Generator.AirGroupInfo.SectionMain, i, out key, out value);
                 if (!string.IsNullOrEmpty(key))
                 {
-                    string section = key;
-                    string secAircrafts = string.Format("{0}.{1}", section, SectionAircrafts);
-                    string secAirGroupKeys = string.Format("{0}.{1}", section, SectionAirGroupKeys);
-                    if (file.exist(section) && file.exist(secAircrafts) && file.exist(secAirGroupKeys))
+                    string secAircrafts = string.Format("{0}.{1}", key, IL2DCE.Generator.AirGroupInfo.SectionAircrafts);
+                    string secAirGroupKeys = string.Format("{0}.{1}", key, IL2DCE.Generator.AirGroupInfo.SectionAirGroupKeys);
+                    AirGroupInfo airGroupInfo = IL2DCE.Generator.AirGroupInfo.Create(file, key, secAircrafts, secAirGroupKeys);
+                    if (airGroupInfo != null)
                     {
-                        // Aircraft
-                        List<string> aircrafts = new List<string>();
-                        int lines2 = file.lines(secAircrafts);
-                        for (int j = 0; j < lines2; j++)
-                        {
-                            file.get(secAircrafts, j, out key, out value);
-                            aircrafts.Add(key);
-                        }
-
-                        // AirGroup
-                        List<string> airGroupKeys = new List<string>();
-                        lines2 = file.lines(secAirGroupKeys);
-                        for (int j = 0; j < lines2; j++)
-                        {
-                            file.get(secAirGroupKeys, j, out key, out value);
-                            airGroupKeys.Add(key);
-                        }
-
-                        infos.Add(new AirGroupInfo()
-                        {
-                            Aircrafts = aircrafts,
-                            AirGroupKeys = airGroupKeys,
-                            SquadronCount = ReadNumeric(file, section, KeySquadronCount),
-                            FlightCount = ReadNumeric(file, section, KeyFlightCount),
-                            FlightSize = ReadNumeric(file, section, KeyFlightSize),
-                            ArmyIndex = ReadNumeric(file, section, KeyArmyIndex),
-                            AirForceIndex = ReadNumeric(file, section, KeyAirForceIndex)
-                        });
+                        infos.Add(airGroupInfo);
                     }
                     else
                     {
-                        Debug.WriteLine("No AirGroupInfo[{0}, {1}, {2}]", section, secAircrafts, secAirGroupKeys);
+                        Debug.WriteLine("No AirGroupInfo[{0}, {1}, {2}]", key, secAircrafts, secAirGroupKeys);
                     }
                 }
             }
@@ -214,40 +249,58 @@ namespace IL2DCE.Generator
             return infos.ToArray();
         }
 
-        public static int ReadNumeric(ISectionFile file, string section, string key)
+        //public AirGroupInfo[] GetAirGroupInfos(int armyIndex)
+        //{
+        //    return AirGroupInfo.Where(x => x.ArmyIndex == armyIndex).ToArray();
+        //}
+
+        //public AirGroupInfo GetAirGroupInfo(int armyIndex, string airGroupKey)
+        //{
+        //    return AirGroupInfo.Where(x => x.ArmyIndex == armyIndex && x.AirGroupKeys.Contains(airGroupKey)).FirstOrDefault();
+        //}
+
+        public IEnumerable<AirGroupInfo> GetAirGroupInfoGroupKey(string airGroupKey, bool ignoreCase = false)
         {
-            int num = file.get(section, key, -1);
-            if (num == -1)
+            return ignoreCase ? AirGroupInfo.Where(x => x.AirGroupKeys.Any(y => string.Compare(y, airGroupKey, true, CultureInfo.InvariantCulture) == 0)) :
+                                AirGroupInfo.Where(x => x.AirGroupKeys.Contains(airGroupKey));
+        }
+
+        public IEnumerable<AirGroupInfo> GetAirGroupInfoAircraft(string aircraft, bool ignoreCase = false)
+        {
+            return ignoreCase ? AirGroupInfo.Where(x => x.Aircrafts.Any(y => string.Compare(y, aircraft, true, CultureInfo.InvariantCulture) == 0)) :
+                                AirGroupInfo.Where(x => x.Aircrafts.Contains(aircraft));
+        }
+
+        public IEnumerable<AirGroupInfo> GetAirGroupInfo(string airGroupKey, string aircraft, bool ignoreCase = false, bool addGroupKey = true)
+        {
+            var result = GetAirGroupInfoGroupKey(airGroupKey, ignoreCase);
+            if (result.Count() == 0)
             {
-                InvalidInifileFormatException(FileInfo, section, key);
+                result = GetAirGroupInfoAircraft(aircraft, ignoreCase);
+                if (addGroupKey)
+                {
+                    foreach (var item in result)
+                    {
+                        item.AirGroupKeys.Add(airGroupKey);
+                    }
+                }
             }
-            return num;
+            return result;
         }
 
-        public static void InvalidInifileFormatException(string file, string section, string key)
-        {
-            throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file, section, key));
-        }
+        //public int GetArmyIndex(string airGroupKey)
+        //{
+        //    AirGroupInfo airGroupInfo = GetAirGroupInfo(airGroupKey).FirstOrDefault();
+        //    return airGroupInfo != null ? airGroupInfo.ArmyIndex : 0;
+        //}
 
-        public AirGroupInfo[] GetAirGroupInfos(int armyIndex)
+        public void Write(ISectionFile file)
         {
-            return AirGroupInfo.Where(x => x.ArmyIndex == armyIndex).ToArray();
-        }
-
-        public AirGroupInfo GetAirGroupInfo(int armyIndex, string airGroupKey)
-        {
-            return AirGroupInfo.Where(x => x.ArmyIndex == armyIndex && x.AirGroupKeys.Contains(airGroupKey)).FirstOrDefault();
-        }
-
-        public AirGroupInfo GetAirGroupInfo(string airGroupKey)
-        {
-            return AirGroupInfo.Where(x => x.AirGroupKeys.Contains(airGroupKey)).FirstOrDefault();
-        }
-
-        public int GetArmyIndex(string airGroupKey)
-        {
-            AirGroupInfo airGroupInfo = GetAirGroupInfo(airGroupKey);
-            return airGroupInfo != null ? airGroupInfo.ArmyIndex: 0;
+            foreach (var item in AirGroupInfo)
+            {
+                SectionFileUtil.Write(file, IL2DCE.Generator.AirGroupInfo.SectionMain, item.Name, string.Empty);
+                item.Write(file);
+            }
         }
     }
 }

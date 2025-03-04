@@ -16,6 +16,7 @@
 
 
 using System.Globalization;
+using System.Text.RegularExpressions;
 using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
@@ -38,10 +39,10 @@ namespace IL2DCE.MissionObjectModel
 
         // Example: S 503 91 0.61 5.00 P 360207.22 223055.25  0 2 11.11
         // S ? ? ? ? P X Y  0 SubCount V
-        private System.Text.RegularExpressions.Regex waypointLong = new System.Text.RegularExpressions.Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
+        private Regex waypointLong = new Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
         // Example: S 503 79 0.00 -1330.00 P 354764.81 223866.00
         // S ? ? ? ? P X Y
-        private System.Text.RegularExpressions.Regex waypointShort = new System.Text.RegularExpressions.Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)$");
+        private Regex waypointShort = new Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)$");
 
         public override bool IsSubWaypoint(ISectionFile sectionFile, string id, int line)
         {
@@ -69,7 +70,7 @@ namespace IL2DCE.MissionObjectModel
 
             if (waypointLong.IsMatch(value))
             {
-                System.Text.RegularExpressions.Match match = waypointLong.Match(value);
+                Match match = waypointLong.Match(value);
 
                 if (match.Groups.Count == 10)
                 {
@@ -95,7 +96,7 @@ namespace IL2DCE.MissionObjectModel
             }
             else if (waypointShort.IsMatch(value))
             {
-                System.Text.RegularExpressions.Match match = waypointShort.Match(value);
+                Match match = waypointShort.Match(value);
 
                 if (match.Groups.Count == 7)
                 {

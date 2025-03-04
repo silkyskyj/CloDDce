@@ -26,7 +26,12 @@ namespace IL2DCE
             {
                 get
                 {
-                    return Game.Core;
+                    if (Game != null)
+                    {
+                        return Game.Core;
+                    }
+
+                    return null;
                 }
             }
 

@@ -116,7 +116,7 @@ namespace IL2DCE.Util
                     {
                         if (cls2.EndsWith(item2, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            folder = string.Format("{0}/{1}", folderBase, cls.Substring(0, cls2.Length - item2.Length - 1));
+                            folder = string.Format("{0}\\{1}", folderBase, cls.Substring(0, cls2.Length - item2.Length - 1));
                             if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls2)))
                             {
                                 return path;

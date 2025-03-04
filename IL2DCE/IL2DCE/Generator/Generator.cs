@@ -16,7 +16,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 
@@ -142,7 +144,7 @@ namespace IL2DCE.Generator
 
                 foreach (AirGroup airGroup in initialMission.AirGroups)
                 {
-                    airGroup.WriteTo(initialMissionTemplateFile, Config);
+                    airGroup.WriteTo(initialMissionTemplateFile);
                 }
 
                 foreach (GroundGroup groundGroup in initialMission.GroundGroups)
@@ -220,6 +222,10 @@ namespace IL2DCE.Generator
                     GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium1", ECountry.de, "/sleep 0/skill 2/slowfire 1", waterway.Waypoints);
                     supplyShip.WriteTo(missionTemplateFile);
                 }
+                else
+                {
+                    Debug.WriteLine("no Army Waterway[End.X:{0}, End.Y:{1}]", waterway.End.X, waterway.End.Y);
+                }
             }
 
             foreach (Waterway railway in staticTemplateFile.Railways)
@@ -245,6 +251,10 @@ namespace IL2DCE.Generator
                     GroundGroup supplyShip = new GroundGroup(id, "Train.BR56-00_c2", ECountry.de, "", railway.Waypoints);
                     supplyShip.WriteTo(missionTemplateFile);
                 }
+                else
+                {
+                    Debug.WriteLine("no Army Railway[Start.X:{0}, Start.Y:{1}, End.X:{2}, End.Y:{3}]", railway.Start.X, railway.Start.Y, railway.End.X, railway.End.Y);
+                }
             }
 
             foreach (Building depot in staticTemplateFile.Depots)
@@ -268,6 +278,10 @@ namespace IL2DCE.Generator
                     // For blue army
                     Stationary fuelTruck = new Stationary(id, "Stationary.Opel_Blitz_fuel", ECountry.de, depot.X, depot.Y, depot.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
+                }
+                else
+                {
+                    Debug.WriteLine("no Army Building[Class:{0}, Id:{1}, X:{2}, Y:{3}]", depot.Class, depot.Id, depot.X, depot.Y);
                 }
             }
 
@@ -293,6 +307,10 @@ namespace IL2DCE.Generator
                     Stationary fuelTruck = new Stationary(id, "Stationary.Bf-109E-1", ECountry.de, aircraft.X, aircraft.Y, aircraft.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
+                else
+                {
+                    Debug.WriteLine("no Army Aircraft[Class:{0}, Id{:1}, X:{2}, Y:{3}]", aircraft.Class, aircraft.Id, aircraft.X, aircraft.Y);
+                }
             }
 
             foreach (Stationary artillery in staticTemplateFile.Artilleries)
@@ -317,6 +335,10 @@ namespace IL2DCE.Generator
                     Stationary aaGun = new Stationary(id, "Artillery.4_cm_Flak_28", ECountry.de, artillery.X, artillery.Y, artillery.Direction, "/timeout 0/radius_hide 0");
                     aaGun.WriteTo(missionTemplateFile);
                 }
+                else
+                {
+                    Debug.WriteLine("no Army Artillery[Class:{0}, Id{:1}, X:{2}, Y:{3}]", artillery.Class, artillery.Id, artillery.X, artillery.Y);
+                }
             }
 
             foreach (Stationary radar in staticTemplateFile.Radar)
@@ -340,6 +362,10 @@ namespace IL2DCE.Generator
                     // For blue army
                     Stationary radarSite = new Stationary(id, "Stationary.Radar.Wotan_II", ECountry.de, radar.X, radar.Y, radar.Direction);
                     radarSite.WriteTo(missionTemplateFile);
+                }
+                else
+                {
+                    Debug.WriteLine("no Army Radar[Class:{0}, Id{:1}, X:{2}, Y:{3}]", radar.Class, radar.Id, radar.X, radar.Y);
                 }
             }
         }
@@ -407,47 +433,53 @@ namespace IL2DCE.Generator
             briefingFile.MissionDescription += "Weather: " + weatherString + "\n";
 
             // Create a air operation for the player.
-            foreach (AirGroup airGroup in GeneratorAirOperation.AvailableAirGroups)
+            AirGroup airGroup = GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
+            if (airGroup != null)
             {
-                if ((airGroup.ArmyIndex == Career.ArmyIndex) && string.Compare(airGroup.ToString(), Career.AirGroup) == 0)
+                bool result;
+                EMissionType? missionType = Career.MissionType;
+                Spawn spawn = new Spawn(Career.Spawn);
+                if (missionType == null)
                 {
-                    EMissionType? missionType = Career.MissionType;
-                    Spawn spawn = new Spawn(Career.Spawn);
-                    if (missionType == null)
+                    result = GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup, Career.PlayerAirGroupSkill, spawn);
+                }
+                else
+                {
+                    result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                                                                Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+                }
+
+                if (!result)
+                {
+                    throw new ArgumentException(string.Format("no available Player Mission[Mission:{0} AirGroup:{1}]", missionId, airGroup));
+                }
+
+                // Determine the aircraft that is controlled by the player.
+                List<string> aircraftOrder = determineAircraftOrder(airGroup);
+
+                string playerAirGroupKey = airGroup.AirGroupKey;
+                int playerSquadronIndex = airGroup.SquadronIndex;
+                if (aircraftOrder.Count > 0)
+                {
+                    string playerPosition = aircraftOrder[aircraftOrder.Count - 1];
+
+                    double factor = aircraftOrder.Count / 6;
+                    int playerPositionIndex = (int)(Math.Floor(Career.RankIndex * factor));
+                    playerPosition = aircraftOrder[aircraftOrder.Count - 1 - playerPositionIndex];
+                    string playerInfo = AirGroup.CreateSquadronString(playerAirGroupKey, playerSquadronIndex) + playerPosition;
+                    if (missionFile.exist(SectionMain, "player"))
                     {
-                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup, Career.PlayerAirGroupSkill, spawn);
+                        missionFile.set(SectionMain, MissionFile.KeyPlayer, playerInfo);
                     }
                     else
                     {
-                        GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation, 
-                                                                    Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+                        missionFile.add(SectionMain, MissionFile.KeyPlayer, playerInfo);
                     }
-
-                    // Determine the aircraft that is controlled by the player.
-                    List<string> aircraftOrder = determineAircraftOrder(airGroup);
-
-                    string playerAirGroupKey = airGroup.AirGroupKey;
-                    int playerSquadronIndex = airGroup.SquadronIndex;
-                    if (aircraftOrder.Count > 0)
-                    {
-                        string playerPosition = aircraftOrder[aircraftOrder.Count - 1];
-
-                        double factor = aircraftOrder.Count / 6;
-                        int playerPositionIndex = (int)(Math.Floor(Career.RankIndex * factor));
-
-                        playerPosition = aircraftOrder[aircraftOrder.Count - 1 - playerPositionIndex];
-
-                        if (missionFile.exist(SectionMain, "player"))
-                        {
-                            missionFile.set(SectionMain, "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
-                        }
-                        else
-                        {
-                            missionFile.add(SectionMain, "player", playerAirGroupKey + "." + playerSquadronIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + playerPosition);
-                        }
-                    }
-                    break;
                 }
+            }
+            else
+            {
+                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
             }
 
             // Add additional air operations.

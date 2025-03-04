@@ -115,26 +115,32 @@ namespace IL2DCE
                     AirGroup airGroup = itemAirGroup.Tag as AirGroup;
                     if (airGroup != null)
                     {
-                        string partsFolder = Game.gameInterface.ToFileSystemPath("$home/parts");
-                        AircraftImage aircraftImage = new AircraftImage(partsFolder);
-                        string path = aircraftImage.GetImagePath(airGroup.Class);
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            // using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                            {
-                                Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                                var decoder = new TiffBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
-                                BitmapSource source = decoder.Frames[0];
-                                FrameworkElement.imageAircraft.Source = source;
-                                FrameworkElement.borderImage.Visibility = Visibility.Visible;
-                                return;
-                            }
-                        }
+                        DisplayAircraftImage(airGroup.Class);
                     }
                 }
+            }
 
-                FrameworkElement.imageAircraft.Source = null;
-                FrameworkElement.borderImage.Visibility = Visibility.Hidden;
+            private void DisplayAircraftImage(string aircraftClass)
+            {
+                string path;
+                ;
+                if (!string.IsNullOrEmpty(aircraftClass) &&
+                    !string.IsNullOrEmpty(path = new AircraftImage(Game.gameInterface.ToFileSystemPath(Config.PartsFolder)).GetImagePath(aircraftClass)))
+                {
+                    // using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        var decoder = new TiffBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                        BitmapSource source = decoder.Frames[0];
+                        FrameworkElement.imageAircraft.Source = source;
+                        FrameworkElement.borderImage.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    FrameworkElement.imageAircraft.Source = null;
+                    FrameworkElement.borderImage.Visibility = Visibility.Hidden;
+                }
             }
 
             private void datePickerStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)

@@ -16,17 +16,17 @@
 
 using System.Globalization;
 
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE
 {
-    public sealed class CloudAltitude
+    public class Speed
     {
-        public const int Min = 500;
-        public const int Max = 1500;
-        public const int Step = 100;
+        public const int SelectMinSpeed = 240;
+        public const int SelectMaxSpeed = 560;
+        public const int SelectStepSpeed = 20;
 
-        public static string CreateDisplayString(int alt)
+        public static string CreateDisplayString(int speed)
         {
-            return alt.ToString("#####", CultureInfo.InvariantCulture.NumberFormat);
+            return speed.ToString("###", CultureInfo.InvariantCulture.NumberFormat);
         }
     }
 }

@@ -16,21 +16,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE.Generator
 {
     public class AircraftInfo
     {
+        public const string SectionMain = "Main";
+        public const string KeyPlayer = "Player";
+
         public bool IsFlyable
         {
             get
             {
-                if (_aircraftInfoFile.exist(Aircraft, "Player"))
+                if (_aircraftInfoFile.exist(Aircraft, KeyPlayer))
                 {
-                    string value = _aircraftInfoFile.get(Aircraft, "Player");
+                    string value = _aircraftInfoFile.get(Aircraft, KeyPlayer);
                     int player = int.Parse(value);
                     if (player == 0)
                     {
@@ -43,7 +50,9 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    throw new FormatException(string.Format("no Palyer info[{0}] in the file[{1}]", Aircraft, "Aircraftinfo.ini"));
+                    string error = string.Format("no Palyer info[{0}] in the file[{1}]", Aircraft, "Aircraftinfo.ini");
+                    Debug.WriteLine(error);
+                    throw new FormatException(error);
                 }
             }
         }
@@ -126,9 +135,30 @@ namespace IL2DCE.Generator
             return new AircraftLoadoutInfo(this._aircraftInfoFile, Aircraft, loadoutId);
         }
 
-        #region GetImagePath
-
-
-        #endregion
+        public void Write(ISectionFile file)
+        {
+            SectionFileUtil.Write(file, SectionMain, Aircraft, string.Empty);
+            SectionFileUtil.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString());
+            for (int i = 0; i < _aircraftInfoFile.lines(Aircraft); i++)
+            {
+                string key;
+                string value;
+                _aircraftInfoFile.get(Aircraft, i, out key, out value);
+                EMissionType missionType;
+                if (Enum.TryParse<EMissionType>(key, false, out missionType))
+                {
+                    SectionFileUtil.Write(file, Aircraft, key, value);
+                    AircraftParametersInfo aircraftParametersInfo = GetAircraftParametersInfo(missionType).FirstOrDefault();
+                    if (aircraftParametersInfo != null)
+                    {
+                        string keyLoadOut = string.Format("{0}_{1}", Aircraft, aircraftParametersInfo.LoadoutId);
+                        if (_aircraftInfoFile.exist(keyLoadOut))
+                        {
+                            SectionFileUtil.CopySection(_aircraftInfoFile, file, keyLoadOut, false);
+                        }
+                     }
+                }
+            }
+        }
     }
 }

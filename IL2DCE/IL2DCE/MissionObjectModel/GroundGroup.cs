@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using maddox.game;
 using maddox.GP;
@@ -150,8 +151,16 @@ namespace IL2DCE.MissionObjectModel
             value = value.Remove(0, Class.Length + 1);
 
             // Army
-            Country = (ECountry)Enum.Parse(typeof(ECountry), value.Substring(0, 2));
-            value = value.Remove(0, 2);
+            ECountry country;
+            if (Enum.TryParse(value.Substring(0, 2), true, out country))
+            {
+                Country = country;
+                value = value.Remove(0, 2);
+            }
+            else
+            {
+                Debug.Assert(false, "Parse Country");
+            }
 
             // Options
             Options = value.Trim();
