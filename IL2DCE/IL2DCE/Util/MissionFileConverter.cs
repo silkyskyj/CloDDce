@@ -138,6 +138,7 @@ namespace IL2DCE.Util
             ISectionFile fileAirGroup = gameInterface.SectionFileCreate();
             string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
 
+            //    3. & 4. 
             var armys = missionFile.AirGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
             foreach (var army in armys)
             {
@@ -146,22 +147,13 @@ namespace IL2DCE.Util
                 {
                     if (globalAircraftInfoFile.exist(AircraftInfo.SectionMain, airGroup.Class))
                     {
-                        //IEnumerable<AirGroupInfo> airGroupInfo = airGroupInfos.GetAirGroupInfoGroupKey(airGroup.AirGroupKey);
-                        //if (airGroupInfo.Count() == 0)
-                        //{
-                        //    airGroupInfo = airGroupInfos.GetAirGroupInfoAircraft(airGroup.Class);
-                        //    foreach (var item in airGroupInfo)
-                        //    {
-                        //        item.AirGroupKeys.Add(airGroup.AirGroupKey);
-                        //    }
-                        //}
                         if (airGroup.AirGroupInfo != null)
                         {
                             try
                             {
                                 AircraftInfo aircraftInfo = new AircraftInfo(globalAircraftInfoFile, airGroup.Class);
-                                aircraftInfo.Write(fileAircraft);
-                                airGroup.AirGroupInfo.Write(fileAirGroup);
+                                aircraftInfo.Write(fileAircraft);           //  AircraftInfo.ini
+                                airGroup.AirGroupInfo.Write(fileAirGroup, airGroup.AirGroupKey, airGroup.Class);  //  AirGroupInfo.ini
                             }
                             catch (Exception ex)
                             {
@@ -196,7 +188,7 @@ namespace IL2DCE.Util
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", MissionFile.SectionGlobalWind, "0"));
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionSplines);
             SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs, MissionFile.Country, ECountry.nn.ToString());
-            string[] keys = SectionFileUtil.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs, MissionFile.Country, ECountry.nn.ToString());
+            IEnumerable<string> keys = SectionFileUtil.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs, MissionFile.Country, ECountry.nn.ToString());
             foreach (var item in keys)
             {
                 SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.SectionRoad));
@@ -204,6 +196,12 @@ namespace IL2DCE.Util
             SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionStationary, MissionFile.Country, ECountry.nn.ToString());
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionBuildings);
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionBuildingsLinks);
+            keys = SectionFileUtil.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionAirdromes);
+            foreach (var item in keys)
+            {
+                SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyRunways));
+                SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyPoints));
+            }
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionFrontMarker);
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionTrigger);
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionAction);

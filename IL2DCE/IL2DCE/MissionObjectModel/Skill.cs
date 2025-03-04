@@ -22,7 +22,7 @@ namespace IL2DCE.MissionObjectModel
     {
         public string SkillFormat = "F2";
 
-        public enum SystemType
+        public enum ESystemType
         {
             Rookie,
             Avarage,
@@ -31,7 +31,7 @@ namespace IL2DCE.MissionObjectModel
             Count,
         }
 
-        public enum SkilType
+        public enum ESkilType
         {
             BasicFlying,
             AdvancedFlying,
@@ -44,7 +44,7 @@ namespace IL2DCE.MissionObjectModel
             Count,
         }
 
-        public static readonly float[][] SystemSkillValue = new float[(int)SystemType.Count][]
+        public static readonly float[][] SystemSkillValue = new float[(int)ESystemType.Count][]
         {
             new float [] { 0.79f, 0.26f, 0.26f, 0.16f, 0.16f, 0.26f, 0.37f, 0.26f, },    // Rookie 
             new float [] { 0.84f, 0.53f, 0.53f, 0.37f, 0.37f, 0.53f, 0.53f, 0.53f, },    // Avarage
@@ -52,12 +52,12 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 1.00f, 0.95f, 0.95f, 0.84f, 0.84f, 0.95f, 0.89f, 0.89f, },    // Ace
         };
 
-        public static Skill[] SystemSkills = new Skill[(int)SystemType.Count]
+        public static Skill[] SystemSkills = new Skill[(int)ESystemType.Count]
         {
-             new Skill(SystemType.Rookie),
-             new Skill(SystemType.Avarage),
-             new Skill(SystemType.Veteran),
-             new Skill(SystemType.Ace),
+             new Skill(ESystemType.Rookie),
+             new Skill(ESystemType.Avarage),
+             new Skill(ESystemType.Veteran),
+             new Skill(ESystemType.Ace),
         };
 
         public float[] Skills
@@ -75,21 +75,21 @@ namespace IL2DCE.MissionObjectModel
         public Skill()
         {
             Name = string.Empty;
-            Skills = new float[(int)SkilType.Count];
+            Skills = new float[(int)ESkilType.Count];
         }
 
-        public Skill(SystemType systemType)
+        public Skill(ESystemType systemType)
         {
             Name = systemType.ToString();
             Skills = SystemSkillValue[(int)systemType];
         }
 
-        public float GetSkill(SkilType type)
+        public float GetSkill(ESkilType type)
         {
             return Skills[(int)type];
         }
 
-        public void SetSkill(SkilType type, float value)
+        public void SetSkill(ESkilType type, float value)
         {
             if (value >= 0.0f && value <= 1.0f)
             {
@@ -102,14 +102,14 @@ namespace IL2DCE.MissionObjectModel
             return string.Join(" ", Skills.Select(x => x.ToString(SkillFormat, Config.Culture)));
         }
 
-        public static Skill GetSystemType(SystemType skill)
+        public static Skill GetSystemType(ESystemType skill)
         {
             return SystemSkills[(int)skill];
         }
 
-        public static Skill GetSystemType(SystemType? skill = null)
+        public static Skill GetSystemType(ESystemType? skill = null)
         {
-            return skill != null ? GetSystemType(skill.Value): GetSystemType(SystemType.Avarage);
+            return skill != null ? GetSystemType(skill.Value): GetSystemType(ESystemType.Avarage);
         }
     }
 }

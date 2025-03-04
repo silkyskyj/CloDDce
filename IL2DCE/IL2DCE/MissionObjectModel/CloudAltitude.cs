@@ -20,6 +20,9 @@ namespace IL2DCE.MissionObjectModel
 {
     public sealed class CloudAltitude
     {
+        public const int Default = -2;
+        public const int Random = -1;
+
         public const int Min = 500;
         public const int Max = 1500;
         public const int Step = 100;

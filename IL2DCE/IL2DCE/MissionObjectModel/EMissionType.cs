@@ -78,5 +78,7 @@ namespace IL2DCE.MissionObjectModel
         [Description("Follow")]
         FOLLOW,
 
+        [Description("Hunting")]
+        HUNTING,
     };
 }

@@ -58,6 +58,9 @@ namespace IL2DCE.MissionObjectModel
         public const string SectionRoad = "Road";
         public const string SectionTrigger = "Trigger";
         public const string SectionAction = "Action";
+        public const string SectionAirdromes = "Airdromes";
+        public const string KeyRunways = "Runways";
+        public const string KeyPoints = "Points";
         public const string KeyPlayer = "player";
 
         public static readonly string[] Country = new string[]

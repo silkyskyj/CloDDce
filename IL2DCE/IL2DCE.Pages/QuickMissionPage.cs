@@ -328,14 +328,12 @@ namespace IL2DCE
             {
                 if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
-
-                    UpdateArmyComboBoxInfo();
-
                     CampaignInfo campaignInfo = SelectedCampaign;
                     if (campaignInfo != null)
                     {
-
+                        CurrentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
                     }
+                    UpdateArmyComboBoxInfo(true);
 
                     if (Game.Core.Config.EnableAutoSelectComboBoxItem)
                     {
@@ -351,7 +349,7 @@ namespace IL2DCE
             {
                 if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
-                    UpdateAirForceComboBoxInfo();
+                    UpdateAirForceComboBoxInfo(true);
 
                     if (Game.Core.Config.EnableAutoSelectComboBoxItem)
                     {
@@ -710,14 +708,12 @@ namespace IL2DCE
                 comboBox.Items.Clear();
 
                 CampaignInfo campaignInfo = SelectedCampaign;
-                if (campaignInfo != null)
+                if (campaignInfo != null && CurrentMissionFile != null)
                 {
                     int armyIndex = SelectedArmyIndex;
                     int airForceIndex = SelectedAirForceIndex;
-
                     if (armyIndex != -1 && airForceIndex != -1)
                     {
-                        CurrentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
                         foreach (AirGroup airGroup in CurrentMissionFile.AirGroups.OrderBy(x => x.Class))
                         {
                             AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
@@ -728,14 +724,6 @@ namespace IL2DCE
                             }
                         }
                     }
-                    else
-                    {
-                        CurrentMissionFile = null;
-                    }
-                }
-                else
-                {
-                    CurrentMissionFile = null;
                 }
 
                 EnableSelectItem(comboBox, selected);
@@ -920,7 +908,7 @@ namespace IL2DCE
                 comboBox.Items.Clear();
 
                 comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
-                for (Skill.SystemType skill = Skill.SystemType.Rookie; skill < Skill.SystemType.Count; skill++)
+                for (Skill.ESystemType skill = Skill.ESystemType.Rookie; skill < Skill.ESystemType.Count; skill++)
                 {
                     comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.GetSystemType(skill), Content = skill.ToString() });
                 }
@@ -936,7 +924,7 @@ namespace IL2DCE
                 if (comboBox.Items.Count == 0)
                 {
                     comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
-                    for (Weather w = Weather.Clear; w <= Weather.MediumClouds; w++)
+                    for (EWeather w = EWeather.Clear; w <= EWeather.MediumClouds; w++)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = w, Content = w.ToDescription() });
                     }
@@ -1095,7 +1083,7 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayName(career.Spawn));
                 EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null ? career.PlayerAirGroupSkill.Name : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time != -1 ? MissionTime.ToString(career.Time) : string.Empty);
-                EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather != -1 ? ((Weather)career.Weather).ToDescription() : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather != -1 ? ((EWeather)career.Weather).ToDescription() : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude != -1 ? career.CloudAltitude.ToString() : string.Empty);
             }
 

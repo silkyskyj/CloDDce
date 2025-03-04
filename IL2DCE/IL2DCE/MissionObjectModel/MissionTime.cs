@@ -18,6 +18,9 @@ namespace IL2DCE.MissionObjectModel
 {
     public sealed class MissionTime
     {
+        public const double Default = -2;
+        public const double Random = -1;
+
         public const double Begin = 5.0;
         public const double End = 21.0;
 

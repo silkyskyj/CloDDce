@@ -151,15 +151,35 @@ namespace IL2DCE.Generator
             return true;
         }
 
-        public void Write(ISectionFile file)
+        public void Write(ISectionFile file, string airGroupKey = null, string aircraftClass = null)
         {
-            SectionFileUtil.Write(file, Name, KeySquadronCount, SquadronCount.ToString());
-            SectionFileUtil.Write(file, Name, KeyFlightCount, FlightCount.ToString());
-            SectionFileUtil.Write(file, Name, KeyFlightSize, FlightSize.ToString());
-            SectionFileUtil.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString());
-            SectionFileUtil.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString());
-            Aircrafts.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty));
-            AirGroupKeys.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), x, string.Empty));
+            SectionFileUtil.Write(file, Name, KeySquadronCount, SquadronCount.ToString(), false);
+            SectionFileUtil.Write(file, Name, KeyFlightCount, FlightCount.ToString(), false);
+            SectionFileUtil.Write(file, Name, KeyFlightSize, FlightSize.ToString(), false);
+            SectionFileUtil.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(), false);
+            SectionFileUtil.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(), false);
+            if (string.IsNullOrEmpty(aircraftClass))
+            {
+                Aircrafts.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty, false)); // All
+            }
+            else
+            {
+                foreach (var item in Aircrafts.Where(x => string.Compare(x, aircraftClass, true) == 0))
+                {
+                    SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), item, string.Empty, false);
+                }
+            }
+            if (string.IsNullOrEmpty(airGroupKey))
+            {
+                AirGroupKeys.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), x, string.Empty, false)); // All
+            }
+            else
+            {
+                foreach (var item in AirGroupKeys.Where(x => string.Compare(x, airGroupKey, true) == 0))
+                {
+                    SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), item, string.Empty, false);
+                }
+            }
         }
 
         public static AirGroupInfo Create(ISectionFile file, string section, string secAircrafts, string secAirGroupKeys)

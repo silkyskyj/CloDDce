@@ -18,14 +18,20 @@ using System.ComponentModel;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public enum Weather
+    public enum EWeather
     {
+        [Description("Default")]
+        Default = -2,
+
+        [Description("Random")]
+        Random = -1,
+
         [Description("Clear")]
         Clear = 0,
-        
+
         [Description("Light Clouds")]
         LightClouds = 1,
-        
+
         [Description("Medium Clouds")]
         MediumClouds = 2,
 

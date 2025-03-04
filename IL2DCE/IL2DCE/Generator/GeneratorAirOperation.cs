@@ -401,7 +401,6 @@ namespace IL2DCE.Generator
                     {
                         groundGroup = Generator.GeneratorGroundOperation.getAvailableRandomEnemyGroundGroup(airGroup, missionType);
                         stationary = Generator.GeneratorGroundOperation.getAvailableRandomEnemyStationary(airGroup, missionType);
-
                         if (groundGroup != null && stationary != null)
                         {
                             // Randomly select one of them
@@ -544,6 +543,14 @@ namespace IL2DCE.Generator
                             result = true;
                         }
                     }
+                }
+                else if (missionType == EMissionType.FOLLOW)
+                {
+
+                }
+                else if (missionType == EMissionType.HUNTING)
+                {
+
                 }
 
                 if (!result)
@@ -720,6 +727,8 @@ namespace IL2DCE.Generator
             }
         }
 
+        #region Get Available AirGroup
+
         private List<AirGroup> getAvailableOffensiveAirGroups(int opposingArmyIndex)
         {
             List<AirGroup> airGroups = new List<AirGroup>();
@@ -885,11 +894,12 @@ namespace IL2DCE.Generator
                     AirGroup defensiveAirGroup = getRandomAirGroupBasedOnDistance(airGroups, targetPosition);
                     return defensiveAirGroup;
                 }
-                //else if (airGroup.Altitude != null && airGroup.Altitude.HasValue && airGroup.TargetArea != null && airGroup.TargetArea.HasValue)
-                //{
-                //    targetPosition = new Point3d(offensiveAirGroup.TargetArea.Position.x, offensiveAirGroup.TargetArea.Position.y, 0.0);
-                //}
-
+                else if (offensiveAirGroup.Altitude != null && offensiveAirGroup.Altitude.HasValue && offensiveAirGroup.TargetArea != null && offensiveAirGroup.TargetArea.HasValue)
+                {
+                    Point3d targetPosition = new Point3d(offensiveAirGroup.TargetArea.Value.x, offensiveAirGroup.TargetArea.Value.y, 0.0);
+                    AirGroup defensiveAirGroup = getRandomAirGroupBasedOnDistance(airGroups, targetPosition);
+                    return defensiveAirGroup;
+                }
                 else
                 {
                     return null;
@@ -997,6 +1007,10 @@ namespace IL2DCE.Generator
         //        return null;
         //    }
         //}
+
+        #endregion
+
+        #region Check Mission Type 
 
         private bool isMissionTypeEscorted(EMissionType missionType)
         {
@@ -1245,5 +1259,7 @@ namespace IL2DCE.Generator
                 throw new NotImplementedException(string.Format("Invalid MissionType[{0}]", missionType.ToString()));
             }
         }
+
+        #endregion 
     }
 }

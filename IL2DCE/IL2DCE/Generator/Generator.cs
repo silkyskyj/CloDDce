@@ -309,7 +309,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    Debug.WriteLine("no Army Aircraft[Class:{0}, Id{:1}, X:{2}, Y:{3}]", aircraft.Class, aircraft.Id, aircraft.X, aircraft.Y);
+                    Debug.WriteLine("no Army Aircraft[Class:{0}, Id:{1}, X:{2}, Y:{3}]", aircraft.Class, aircraft.Id, aircraft.X, aircraft.Y);
                 }
             }
 
@@ -337,7 +337,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    Debug.WriteLine("no Army Artillery[Class:{0}, Id{:1}, X:{2}, Y:{3}]", artillery.Class, artillery.Id, artillery.X, artillery.Y);
+                    Debug.WriteLine("no Army Artillery[Class:{0}, Id:{1}, X:{2}, Y:{3}]", artillery.Class, artillery.Id, artillery.X, artillery.Y);
                 }
             }
 
@@ -365,7 +365,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    Debug.WriteLine("no Army Radar[Class:{0}, Id{:1}, X:{2}, Y:{3}]", radar.Class, radar.Id, radar.X, radar.Y);
+                    Debug.WriteLine("no Army Radar[Class:{0}, Id:{1}, X:{2}, Y:{3}]", radar.Class, radar.Id, radar.X, radar.Y);
                 }
             }
         }
@@ -451,7 +451,7 @@ namespace IL2DCE.Generator
 
                 if (!result)
                 {
-                    throw new ArgumentException(string.Format("no available Player Mission[Mission:{0} AirGroup:{1}]", missionId, airGroup));
+                    // throw new ArgumentException(string.Format("no available Player Mission[Mission:{0} AirGroup:{1}]", missionId, airGroup));
                 }
 
                 // Determine the aircraft that is controlled by the player.

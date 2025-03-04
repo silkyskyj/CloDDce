@@ -38,11 +38,14 @@ namespace IL2DCE.Util
             throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file != null ? file: string.Empty, section, key));
         }
 
-        public static void Write(ISectionFile file, string section, string key, string value)
+        public static void Write(ISectionFile file, string section, string key, string value, bool overwrite = true)
         {
             if (file.exist(section, key))
             {
-                file.set(section, key, value);
+                if (overwrite)
+                {
+                    file.set(section, key, value);
+                }
             }
             else
             {
@@ -71,6 +74,27 @@ namespace IL2DCE.Util
             return count;
         }
 
+        public static IEnumerable<string> CopySectionGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, bool overwrite = true)
+        {
+            List<string> keys = new List<string>();
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                for (int i = 0; i < fileSrc.lines(section); i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    if (!fileDest.exist(section, key) || overwrite)
+                    {
+                        fileDest.add(section, key, value);
+                    }
+                    // Debug.WriteLine("{0} {1} Key={2} Value={3}", section, i, key, value);
+                    keys.Add(key);
+                }
+            }
+            return keys;
+        }
+
         public static int CopySectionReplace(ISectionFile fileSrc, ISectionFile fileDest, string section, string [] oldValue, string newValue)
         {
             int count = 0;
@@ -92,7 +116,7 @@ namespace IL2DCE.Util
             return count;
         }
 
-        public static string [] CopySectionReplaceGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, string[] oldValue, string newValue)
+        public static IEnumerable<string> CopySectionReplaceGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, string[] oldValue, string newValue)
         {
             List<string> keys = new List<string>();
             if (fileSrc.exist(section))
@@ -110,7 +134,7 @@ namespace IL2DCE.Util
                     keys.Add(key);
                 }
             }
-            return keys.ToArray();
+            return keys;
         }
     }
 }
