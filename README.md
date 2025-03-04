@@ -9,9 +9,7 @@ Campaign Creation Instructions: https://code.google.com/archive/p/il2dce/wikis/C
 
 
 ---
-I am a programmer who runs a small software company in Japan.
-I customize this OSS as a personal hobby, separate from my main business.
-In this way, OSS can be developed by individuals as they like, while respecting copyright and rules. I would like to thank the original developer, Stefan Rothdach.
+I am a programmer who runs a small software company in Japan. Aside from my main job, I customize this OSS as a personal hobby. In this way, OSS can be developed by individuals as they like while respecting copyrights and rules. I would like to express my sincere gratitude to the original developer, Stefan Rothdach, for creating and releasing this wonderful software.
 
 ---
 IL2DCE [Forked by silkyskyj]
