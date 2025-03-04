@@ -187,7 +187,7 @@ namespace IL2DCE.Util
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionMain);
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", MissionFile.SectionGlobalWind, "0"));
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionSplines);
-            SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs, MissionFile.Country, ECountry.nn.ToString());
+            // SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs, MissionFile.Country, ECountry.nn.ToString());
             IEnumerable<string> keys = SectionFileUtil.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs, MissionFile.Country, ECountry.nn.ToString());
             foreach (var item in keys)
             {
@@ -203,8 +203,8 @@ namespace IL2DCE.Util
                 SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyPoints));
             }
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionFrontMarker);
-            SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionTrigger);
-            SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionAction);
+            // SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionTrigger);
+            // SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionAction);
 
             // 7. Create Mission initialTemplate File
             ISectionFile fileMissionInitial = gameInterface.SectionFileCreate();
