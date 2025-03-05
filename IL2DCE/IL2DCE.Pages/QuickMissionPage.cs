@@ -25,16 +25,13 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
-using IL2DCE.Pages.Input;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.game.play;
-using static IL2DCE.Pages.Controls.ProgressWindow;
 
 namespace IL2DCE
 {
@@ -70,6 +67,14 @@ namespace IL2DCE
             }
             private IGame _game;
 
+            private CampaignInfo SelectedCampaign
+            {
+                get
+                {
+                    return FrameworkElement.comboBoxSelectCampaign.SelectedItem as CampaignInfo;
+                }
+            }
+
             private int SelectedArmyIndex
             {
                 get
@@ -95,14 +100,6 @@ namespace IL2DCE
                     }
 
                     return -1;
-                }
-            }
-
-            private CampaignInfo SelectedCampaign
-            {
-                get
-                {
-                    return FrameworkElement.comboBoxSelectCampaign.SelectedItem as CampaignInfo;
                 }
             }
 

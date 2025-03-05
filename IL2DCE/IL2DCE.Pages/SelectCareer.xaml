@@ -13,10 +13,14 @@
         <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="34,808,0,0" x:Name="Back" VerticalAlignment="Top" Width="206" />
         <ListBox Height="516" HorizontalAlignment="Left" Margin="34,280,0,0" x:Name="ListCareer" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" BorderBrush="#FF707070" Background="#00000000"/>
         <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="1010,150,0,0" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="White" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
-        <Label x:Name="labelSelectCampaign" Width="300" VerticalAlignment="Top" Margin="34,135,0,0" Height="52" HorizontalAlignment="Left" FontSize="28" Foreground="#FFA0854A" Content="Campaign:"/>
-        <Controls:FilterComboBox HorizontalAlignment="Left" Margin="34,200,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="1" IsEditable="False"/>
+        <Label x:Name="labelSelectCampaign" VerticalAlignment="Top" Margin="34,135,0,0" Height="52" HorizontalAlignment="Left" FontSize="28" Foreground="#FFA0854A" Content="Campaign:" Width="150"/>
+        <Controls:FilterComboBox HorizontalAlignment="Left" Margin="204,137,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="1" IsEditable="False"/>
         <Border x:Name="borderImage" BorderBrush="#FFA0854A" BorderThickness="2" Margin="700,280,694,435" Width="258" Height="182" Background="#20F7F2F2" Opacity="1">
             <Image x:Name="imageAircraft" HorizontalAlignment="Left" Height="180"  VerticalAlignment="Top" Width="256" RenderTransformOrigin="-1.555,1.944"/>
         </Border>
+        <Label Content="Army:" Height="50" Margin="34,205,0,0" x:Name="labelSelectArmy" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" HorizontalAlignment="Left" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="204,204,0,0" x:Name="comboBoxSelectArmy" VerticalAlignment="Top" Width="160" FontSize="28" Foreground="#FFA0854A" TabIndex="2" Background="#00000000"/>
+        <Label Content="Air Force:" Height="50" Margin="378,205,0,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" HorizontalAlignment="Left" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="510,205,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="400" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="3"/>
     </Grid>
 </UserControl>

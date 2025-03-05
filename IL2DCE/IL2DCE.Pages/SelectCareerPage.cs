@@ -22,6 +22,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
+using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -30,6 +31,9 @@ namespace IL2DCE
     {
         public class SelectCareerPage : PageDefImpl
         {
+
+            #region Property
+
             private SelectCareer FrameworkElement
             {
                 get
@@ -55,16 +59,62 @@ namespace IL2DCE
                 }
             }
 
+            private int SelectedArmyIndex
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectArmy.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private int SelectedAirForceIndex
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectAirForce.SelectedItem as ComboBoxItem;
+                    if (selected != null)
+                    {
+                        return (int)selected.Tag;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private Career SelectedCareer
+            {
+                get
+                {
+                    return FrameworkElement.ListCareer.SelectedItem as Career;
+                }
+            }
+
+            #endregion
+
+            #region Variable
+
+            private bool hookComboSelectionChanged = false;
+
+            #endregion
+
             public SelectCareerPage()
                 : base("Select Career", new SelectCareer())
             {
+                FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
+                FrameworkElement.comboBoxSelectArmy.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
+                FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
+                FrameworkElement.ListCareer.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(listCampaign_SelectionChanged);
+
                 FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(bBack_Click);
                 FrameworkElement.New.Click += new System.Windows.RoutedEventHandler(bNew_Click);
                 FrameworkElement.Delete.Click += new System.Windows.RoutedEventHandler(Delete_Click);
                 FrameworkElement.Continue.Click += new System.Windows.RoutedEventHandler(bContinue_Click);
-
-                FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
-                FrameworkElement.ListCareer.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(listCampaign_SelectionChanged);
 
                 FrameworkElement.Continue.IsEnabled = false;
                 FrameworkElement.Delete.IsEnabled = false;
@@ -76,13 +126,9 @@ namespace IL2DCE
 
                 _game = play as IGame;
 
-                ComboBox comboBox = FrameworkElement.comboBoxSelectCampaign;
-                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = "[All]" });
-                foreach (CampaignInfo campaignInfo in Game.Core.CampaignInfos)
-                {
-                    comboBox.Items.Add(campaignInfo);
-                }
-                comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0: -1;
+                UpdateCampaignComboBoxInfo();
+                UpdateArmyComboBoxInfo();
+                UpdateAirForceComboBoxInfo();
 
                 ListBox listBox = FrameworkElement.ListCareer;
                 listBox.Items.Clear();
@@ -90,8 +136,8 @@ namespace IL2DCE
                 {
                     listBox.Items.Add(career);
                 }
+                // listBox.Items.Refresh();
                 listBox.SelectedIndex = FrameworkElement.ListCareer.Items.Count > 0 ? 0 : -1;
-                listBox.Items.Refresh();
             }
 
             public override void _leave(maddox.game.IGame play, object arg)
@@ -101,21 +147,7 @@ namespace IL2DCE
                 _game = null;
             }
 
-            private void comboBoxSelectCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            {
-                if (e.AddedItems.Count > 0)
-                {
-                    CampaignInfo campaignInfo = SelectedCampaign;
-                    if (campaignInfo != null)
-                    {
-                        FrameworkElement.ListCareer.Items.Filter = new Predicate<object>(ContainsCareer);
-                    }
-                    else
-                    {
-                        FrameworkElement.ListCareer.Items.Filter = null;
-                    }
-                }
-            }
+            #region Button Click
 
             private void bBack_Click(object sender, System.Windows.RoutedEventArgs e)
             {
@@ -129,8 +161,10 @@ namespace IL2DCE
 
             private void bContinue_Click(object sender, System.Windows.RoutedEventArgs e)
             {
-                if (Game.Core.CurrentCareer.CampaignInfo != null)
+                Career career = SelectedCareer;
+                if (career != null && career.CampaignInfo != null)
                 {
+                    Game.Core.CurrentCareer = career;
                     Game.Core.InitCampaign();
                     Game.gameInterface.PageChange(new BattleIntroPage(), null);
                 }
@@ -142,32 +176,60 @@ namespace IL2DCE
 
             void Delete_Click(object sender, System.Windows.RoutedEventArgs e)
             {
-                Game.Core.DeleteCareer(Game.Core.CurrentCareer);
-
-                ListBox listBox = FrameworkElement.ListCareer;
-                listBox.Items.Clear();
-                foreach (Career career in Game.Core.AvailableCareers)
+                Career career = SelectedCareer;
+                if (career != null)
                 {
-                    listBox.Items.Add(career);
+                    ListBox listBox = FrameworkElement.ListCareer;
+                    int old = listBox.SelectedIndex;
+                    listBox.Items.Remove(career);
+                    Game.Core.DeleteCareer(career);
+                    //listBox.Items.Refresh();
+                    listBox.SelectedIndex = listBox.Items.Count > 0 && old < listBox.Items.Count ? old : -1;
                 }
-                listBox.SelectedIndex = FrameworkElement.ListCareer.Items.Count > 0 ? 0 : -1;
-                listBox.Items.Refresh();
+            }
+
+            #endregion
+
+            #region ComboBox & ListBox SelectionChanged
+
+            private void comboBoxSelectCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if (e.AddedItems.Count > 0)
+                {
+
+                }
+
+                UpdateCareerList();
+                UpdateButtonStatus();
+            }
+
+            private void comboBoxSelectArmy_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
+                {
+                    UpdateAirForceComboBoxInfo();
+                }
+
+                UpdateCareerList();
+                UpdateButtonStatus();
+            }
+
+            private void comboBoxSelectAirForce_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
+                {
+                }
+
+                UpdateCareerList();
+                UpdateButtonStatus();
             }
 
             private void listCampaign_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
             {
-                if (e.AddedItems.Count > 0)
-                {
-                    Career careerSelected = e.AddedItems[0] as Career;
-                    Game.Core.CurrentCareer = careerSelected;
-                }
-
-                Career career = Game.Core.CurrentCareer;
+                Career career = SelectedCareer;
                 if (career != null && career.CampaignInfo != null)
                 {
                     CampaignInfo campaignInfo = career.CampaignInfo;
-                    FrameworkElement.Continue.IsEnabled = career.Date < campaignInfo.EndDate;
-                    FrameworkElement.Delete.IsEnabled = true;
                     FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n",
                                                                         campaignInfo.ToSummaryString(),
                                                                         career.ToCurrestStatusString(),
@@ -175,8 +237,6 @@ namespace IL2DCE
                 }
                 else if (career != null)
                 {
-                    FrameworkElement.Continue.IsEnabled = false;
-                    FrameworkElement.Delete.IsEnabled = true;
                     FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n",
                                                                         "Campaign [no file]\n",
                                                                         career.ToCurrestStatusString(),
@@ -184,20 +244,82 @@ namespace IL2DCE
                 }
                 else
                 {
-                    FrameworkElement.Continue.IsEnabled = false;
-                    FrameworkElement.Delete.IsEnabled = true;
                     FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n",
                                                                         "Campaign [no file]\n",
                                                                         "Career [no file]\n");
                 }
 
                 UpdateAircraftImage(career);
+                UpdateButtonStatus();
             }
 
-            public bool ContainsCareer(object obj)
+            #endregion
+
+            private void UpdateCampaignComboBoxInfo()
             {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectCampaign;
+                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = "[All]" });
+                foreach (CampaignInfo campaignInfo in Game.Core.CampaignInfos)
+                {
+                    comboBox.Items.Add(campaignInfo);
+                }
+                comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
+            }
+
+            private void UpdateArmyComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectArmy;
+                comboBox.Items.Add(new ComboBoxItem() { Tag = -1, Content = "[All]" });
+                for (int i = 0; i < (int)EArmy.Count; i++)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.Army[i] });
+                }
+                comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
+            }
+            private void UpdateAirForceComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectAirForce;
+                comboBox.Items.Clear();
+
+                comboBox.Items.Add(new ComboBoxItem() { Tag = -1, Content = "[All]" });
+                int armyIndex = SelectedArmyIndex;
+                if (armyIndex != -1)
+                {
+                    if (armyIndex == (int)EArmy.Red)
+                    {
+                        for (int i = 0; i < (int)AirForceRed.Count; i++)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
+                        }
+                    }
+                    else if (armyIndex == (int)EArmy.Blue)
+                    {
+                        int diff = (int)AirForceRed.Count;
+                        for (int i = 0; i < (int)AirForceBlue.Count; i++)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i + diff] });
+                        }
+                    }
+                }
+                comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
+            }
+
+            private void UpdateCareerList()
+            {
+                ListBox listBox = FrameworkElement.ListCareer;
+                listBox.Items.Filter = new Predicate<object>(ContainsCareer);
+                listBox.SelectedIndex = listBox.Items.Count > 0 ? 0 : -1;
+            }
+
+            private bool ContainsCareer(object obj)
+            {
+                CampaignInfo campaignInfo = SelectedCampaign;
+                int armyIndex = SelectedArmyIndex;
+                int airForceIndex = SelectedAirForceIndex;
                 Career career = obj as Career;
-                return (career.CampaignInfo == SelectedCampaign);
+                return ((campaignInfo == null || career.CampaignInfo == campaignInfo) &&
+                        (armyIndex == -1 || career.ArmyIndex == armyIndex) &&
+                        (airForceIndex == -1 || career.AirForceIndex == airForceIndex));
             }
 
             private void UpdateAircraftImage(Career career)
@@ -236,6 +358,13 @@ namespace IL2DCE
                     FrameworkElement.imageAircraft.Source = null;
                     FrameworkElement.borderImage.Visibility = Visibility.Hidden;
                 }
+            }
+
+            private void UpdateButtonStatus()
+            {
+                Career careea = SelectedCareer;
+                FrameworkElement.Continue.IsEnabled = careea != null && careea.CampaignInfo != null && careea.Date < careea.CampaignInfo.EndDate;
+                FrameworkElement.Delete.IsEnabled = careea != null;
             }
         }
     }

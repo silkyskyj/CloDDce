@@ -360,9 +360,7 @@ namespace IL2DCE.Util
                     return new string[] { userFolder, path.Substring(userFolder.Length) };
                 }
             }
-
             return new string[] { string.Empty, path };
         }
-
     }
 }
