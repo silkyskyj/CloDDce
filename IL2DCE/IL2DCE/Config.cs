@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Globalization;
+using System.Reflection;
 using maddox.game;
 
 namespace IL2DCE
@@ -22,7 +24,7 @@ namespace IL2DCE
     public class Config
     {
 
-        #region Define
+        #region Definition
 
         public static readonly char[] SplitSpace = new char[] { ' ' };
         public static readonly char[] SplitComma = new char[] { ',' };
@@ -61,6 +63,13 @@ namespace IL2DCE
         public const string KeyEnableFilterSelectAirGroup = "EnableFilterSelectAirGroup";
         public const string KeyEnableAutoSelectComboBoxItem = "EnableAutoSelectComboBoxItem";
 
+        public const int DefaultAdditionalAirOperations = 3;
+        public const int MaxAdditionalAirOperations = 10;
+        public const int MinAdditionalAirOperations = 1;
+        public const int DefaultAdditionalGroundOperations = 100;
+        public const int MaxAdditionalGroundOperations = 300;
+        public const int MinAdditionalGroundOperations = 10;
+
         #endregion
 
         public string CampaignsFolder
@@ -79,7 +88,7 @@ namespace IL2DCE
                 return _additionalAirOperations;
             }
         }
-        private int _additionalAirOperations = 0;
+        private int _additionalAirOperations = DefaultAdditionalAirOperations;
 
         public int AdditionalGroundOperations
         {
@@ -88,7 +97,7 @@ namespace IL2DCE
                 return _additionalGroundOperations;
             }
         }
-        private int _additionalGroundOperations = 0;
+        private int _additionalGroundOperations = DefaultAdditionalGroundOperations;
 
         public double FlightSize
         {
@@ -197,6 +206,21 @@ namespace IL2DCE
         }
 
         public static CultureInfo Culture = new CultureInfo("en-US", true);
+
+        public static Version Version
+        {
+            get;
+        }
+
+        static Config()
+        {
+            Version = Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        public static string CreateVersionString(Version targetVersion)
+        {
+            return string.Format("Version {0} [Core{1}]", targetVersion.ToString(), Version.ToString());
+        }
 
         public Config(ISectionFile confFile)
         {

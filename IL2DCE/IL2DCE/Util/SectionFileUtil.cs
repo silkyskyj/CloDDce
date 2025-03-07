@@ -95,7 +95,7 @@ namespace IL2DCE.Util
             return keys;
         }
 
-        public static int CopySectionReplace(ISectionFile fileSrc, ISectionFile fileDest, string section, string [] oldValue, string newValue)
+        public static int CopySectionReplace(ISectionFile fileSrc, ISectionFile fileDest, string section, IEnumerable<string> oldValue, string newValue)
         {
             int count = 0;
             if (fileSrc.exist(section))
@@ -115,8 +115,8 @@ namespace IL2DCE.Util
             }
             return count;
         }
-
-        public static IEnumerable<string> CopySectionReplaceGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, string[] oldValue, string newValue)
+                                                                                                                                
+        public static IEnumerable<string> CopySectionReplaceGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, IEnumerable<string> oldValue, string newValue)
         {
             List<string> keys = new List<string>();
             if (fileSrc.exist(section))

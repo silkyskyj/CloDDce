@@ -50,6 +50,8 @@ namespace IL2DCE
 
     public class Career
     {
+        #region Definition
+
         public const string KeyVersion = "Ver";
         public const string SectionMain = "Main";
         public const string SectionCampaign = "Campaign";
@@ -63,7 +65,8 @@ namespace IL2DCE
         public const string KeyKills = "Kills";
         public const string KeyKillsGround = "KillsGround";
         public const string KeyAircraft = "Aircraft";
-
+        public const string KeyAdditionalAirOperations = "AdditionalAirOperations";
+        public const string KeyAdditionalGroundOperations = "AdditionalGroundOperations";
         public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
 
@@ -144,6 +147,10 @@ namespace IL2DCE
             "Mario Rossi",
                 "",
         };
+
+        #endregion
+
+        #region Property & Variable
 
         public string PilotName
         {
@@ -279,6 +286,22 @@ namespace IL2DCE
             set;
         }
 
+        public int AdditionalAirOperations
+        {
+            get;
+            set;
+        }
+
+        public int AdditionalGroundOperations
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Status
+
         public int Takeoffs
         {
             get;
@@ -326,6 +349,8 @@ namespace IL2DCE
             get;
             set;
         }
+
+        #endregion
 
         #region Quick Mission Info
 
@@ -389,7 +414,7 @@ namespace IL2DCE
             set;
         }
 
-        public Skill PlayerAirGroupSkill
+        public Skill [] PlayerAirGroupSkill
         {
             get;
             set;
@@ -442,6 +467,9 @@ namespace IL2DCE
 
             Aircraft = string.Empty;
 
+            AdditionalAirOperations = Config.DefaultAdditionalAirOperations;
+            AdditionalGroundOperations = Config.DefaultAdditionalGroundOperations;
+
             KillsHistory = new Dictionary<DateTime, string>();
             KillsGroundHistory = new Dictionary<DateTime, string>();
 
@@ -454,7 +482,7 @@ namespace IL2DCE
             #endregion
         }
 
-        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile)
+        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile, Config config)
         {
             _pilotName = pilotName;
 
@@ -492,6 +520,9 @@ namespace IL2DCE
                 _airGroup = careerFile.get(SectionCampaign, "airGroup");
                 _missionFileName = careerFile.get(SectionCampaign, "missionFile");
                 Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
+
+                AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
+                AdditionalGroundOperations = careerFile.get(SectionCampaign, KeyAdditionalGroundOperations, config.AdditionalGroundOperations);
 
                 Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -606,6 +637,8 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, "missionFile", MissionFileName);
             careerFile.add(SectionCampaign, "id", CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
+            careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
@@ -627,7 +660,7 @@ namespace IL2DCE
         {
             int army = ArmyIndex - 1;
             int airforce = army * 3 + AirForceIndex - 1;
-            return String.Format("Current Status\n Date: {0}\n Army: {1}\n AirForce: {2}\n Rank: {3}\n AirGroup: {4}\n Aircraft: {5}\n Experience: {6}\n",
+            return String.Format(" Date: {0}\n Army: {1}\n AirForce: {2}\n Rank: {3}\n AirGroup: {4}\n Aircraft: {5}\n Experience: {6}\n",
                                     Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo),
                                     Army[army],
                                     AirForce[airforce],
@@ -655,7 +688,7 @@ namespace IL2DCE
                 }
             }
 
-            return String.Format("Total Result\n Takeoffs: {0}\n Landings: {1}\n Deaths: {2}\n Bails: {3}\n Kills[Aircraft]: {4}\n Kills[GroundUnit]: {5}\n Kills History:\n{6}\n",
+            return String.Format(" Takeoffs: {0}\n Landings: {1}\n Deaths: {2}\n Bails: {3}\n Kills[Aircraft]: {4}\n Kills[GroundUnit]: {5}\n Kills History:\n{6}\n",
                                     Takeoffs,
                                     Landings,
                                     Deaths,

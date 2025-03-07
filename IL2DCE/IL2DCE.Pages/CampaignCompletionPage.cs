@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Reflection;
 using System.Windows;
 using maddox.game.play;
 
@@ -55,9 +56,11 @@ namespace IL2DCE.Pages
             CampaignInfo campaignInfo = career.CampaignInfo;
 
             FrameworkElement.textBoxInfo.Text = campaignInfo.ToSummaryString();
-            FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n", 
+            FrameworkElement.textBoxStatus.Text = string.Format("Current Status\n{0}\nTotal Result\n{1}\n", 
                                                                 career.ToCurrestStatusString(), 
                                                                 career.ToTotalResultString());
+
+            FrameworkElement.labelVersion.Content = Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version);
         }
 
         public override void _leave(maddox.game.IGame play, object arg)

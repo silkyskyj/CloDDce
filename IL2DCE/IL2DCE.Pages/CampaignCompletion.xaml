@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IL2DCE.Pages"
-             mc:Ignorable="d" xmlns:my="clr-namespace:maddox.game.page;assembly=gamePages" xmlns:my1="clr-namespace:maddox.game.play;assembly=gamePages" Height="914" Width="1672">
-    <Grid Height="897" Width="1652" HorizontalAlignment="Left" VerticalAlignment="Top">
+             mc:Ignorable="d" xmlns:my="clr-namespace:maddox.game.page;assembly=gamePages" xmlns:my1="clr-namespace:maddox.game.play;assembly=gamePages" Height="1080" Width="1920">
+    <Grid Height="1080" Width="1920" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Label Content="Campaign Completion [IL2DCE]" Height="100" HorizontalAlignment="Left" Margin="12,12,0,0" Name="labelSelectCareer" VerticalAlignment="Top" FontSize="64" FontWeight="Bold" Foreground="#FF791313" />
-        <my1:ButtonAsMenuItem Content="Complete" Height="77" HorizontalAlignment="Left" Margin="1426,808,0,0" x:Name="Complete" VerticalAlignment="Top" Width="214" />
-        <TextBox x:Name="textBoxInfo" HorizontalAlignment="Left" Margin="52,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#FFA0854A" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
-        <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="689,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="646" Foreground="#FFA0854A" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
+        <my1:ButtonAsMenuItem Content="Complete" Height="77" HorizontalAlignment="Left" Margin="1696,993,0,0" x:Name="Complete" VerticalAlignment="Top" Width="214" RenderTransformOrigin="1.126,2.214" />
+        <TextBox x:Name="textBoxInfo" HorizontalAlignment="Left" Margin="52,150,0,0" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="820" Foreground="#B2FFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
+        <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="689,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="640" Height="820" Foreground="#B2FFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
+        <Label Content="Version ##.#.##.# [##.##.##.#]" HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="400" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
     </Grid>
 </UserControl>

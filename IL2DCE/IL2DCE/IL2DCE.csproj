@@ -35,6 +35,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MissionObjectModel\Country.cs" />
     <Compile Include="Fuel.cs" />
     <Compile Include="Generator\AircraftInfo.cs" />
     <Compile Include="Generator\AircraftLoadoutInfo.cs" />

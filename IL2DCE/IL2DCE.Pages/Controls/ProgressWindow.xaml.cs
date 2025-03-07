@@ -163,7 +163,7 @@ namespace IL2DCE.Pages.Controls
 
         private bool CancelConfirmation()
         {
-            return MessageBox.Show("Are you sure you want to cancel this process ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+            return MessageBox.Show("Are you sure you want to cancel this process ?", "Confirmation [IL2DCE]", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
         }
     }
 

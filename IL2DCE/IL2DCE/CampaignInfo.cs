@@ -18,12 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using IL2DCE.Generator;
-using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.world;
 
 namespace IL2DCE
 {
@@ -67,17 +64,17 @@ namespace IL2DCE
         }
         string _id;
 
-        /// <summary>
-        /// The name of the campaign.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
-        string name;
+        ///// <summary>
+        ///// The name of the campaign.
+        ///// </summary>
+        //public string Name
+        //{
+        //    get
+        //    {
+        //        return name;
+        //    }
+        //}
+        //string name;
 
         /// <summary>
         /// The environment template file that contains the definition of scenery objects.
@@ -171,6 +168,12 @@ namespace IL2DCE
         private ISectionFile _globalAircraftInfoFile;
         private ISectionFile _localAircraftInfoFile;
 
+        public object Data
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -183,7 +186,7 @@ namespace IL2DCE
         /// <param name="endDate"></param>
         public CampaignInfo(string name, string environmentTemplateFile, string[] staticTemplateFiles, string[] initialMissionTemplateFiles, string scriptFileName, DateTime startDate, DateTime endDate)
         {
-            this.name = name;
+            this._id = name;
             this._environmentTemplateFile = environmentTemplateFile;
             this._staticTemplateFiles = staticTemplateFiles.ToList();
             this._initialMissionTemplateFiles = initialMissionTemplateFiles.ToList();
@@ -210,7 +213,7 @@ namespace IL2DCE
 
             if (campaignFile.exist(SectionMain, KeyName))
             {
-                name = campaignFile.get(SectionMain, KeyName);
+                _id = campaignFile.get(SectionMain, KeyName);
             }
             else
             {
@@ -295,13 +298,13 @@ namespace IL2DCE
         /// <returns>The name of the campaign.</returns>
         public override string ToString()
         {
-            return Name;
+            return _id;
         }
 
         public string ToSummaryString()
         {
-            return string.Format("Campaign\n Name: {0}\n StartDate: {1}\n EndDate: {2}\n",
-                                Name,
+            return string.Format(" Name: {0}\n StartDate: {1}\n EndDate: {2}\n",
+                                _id,
                                 StartDate.ToString("d", DateTimeFormatInfo.InvariantInfo),
                                 EndDate.ToString("d", DateTimeFormatInfo.InvariantInfo));
         }
@@ -346,7 +349,7 @@ namespace IL2DCE
 
         public void Write(ISectionFile file)
         {
-            SectionFileUtil.Write(file, SectionMain, KeyName, name);
+            SectionFileUtil.Write(file, SectionMain, KeyName, _id);
             SectionFileUtil.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile);
             SectionFileUtil.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles));
             SectionFileUtil.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles));

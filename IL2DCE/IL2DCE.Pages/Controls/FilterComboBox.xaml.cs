@@ -25,58 +25,70 @@ namespace IL2DCE.Pages.Controls
     /// </summary>
     public partial class FilterComboBox : ComboBox
     {
-        private TextBox textBox;
-        private Popup popup;
+        public bool EnableFilter
+        {
+            get;
+            set;
+        }
+
+        public TextBox TextBox;
+        public Popup Popup;
 
         public FilterComboBox()
         {
             InitializeComponent();
         }
 
-        private void ComboBox_Loaded(object sender, RoutedEventArgs e)
+        protected virtual void ComboBox_Loaded(object sender, RoutedEventArgs e)
         {
-            textBox = Template.FindName("PART_EditableTextBox", this) as TextBox;
-            popup = Template.FindName("PART_Popup", this) as Popup;
+            TextBox = Template.FindName("PART_EditableTextBox", this) as TextBox;
+            Popup = Template.FindName("PART_Popup", this) as Popup;
 
-            if (textBox != null)
+            if (TextBox != null)
             {
-                textBox.TextChanged += new TextChangedEventHandler(textBox_TextChanged);
+                TextBox.TextChanged += new TextChangedEventHandler(textBox_TextChanged);
             }
         }
 
-        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        protected virtual void textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (popup != null && !popup.IsOpen && string.IsNullOrEmpty(textBox.Text))
+            if (EnableFilter)
             {
-                Items.Filter += obj =>
+                if (Popup != null && !Popup.IsOpen && string.IsNullOrEmpty(TextBox.Text))
                 {
-                    return true;
-                };
+                    Items.Filter += obj =>
+                    {
+                        return true;
+                    };
 
-                return;
-            }
-
-            Items.Filter += obj =>
-            {
-                if (obj is ComboBoxItem)
-                {
-                    return (((string)(obj as ComboBoxItem).Content).ToLower().Contains(textBox.Text.ToLower()));
+                    return;
                 }
 
-                return obj.ToString().ToLower().Contains(textBox.Text.ToLower());
-            };
+                Items.Filter += obj =>
+                {
+                    if (obj is ComboBoxItem)
+                    {
+                        return (((string)(obj as ComboBoxItem).Content).ToLower().Contains(TextBox.Text.ToLower()));
+                    }
 
-            if (popup != null)
-            {
-                popup.IsOpen = true;
+                    return obj.ToString().ToLower().Contains(TextBox.Text.ToLower());
+                };
+
+                if (Popup != null)
+                {
+                    Popup.IsOpen = true;
+                }
             }
         }
 
-        private void ComboBox_GotFocus(object sender, RoutedEventArgs e)
+        protected virtual void ComboBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (popup != null && !popup.IsOpen)
+            if (EnableFilter)
             {
-                popup.IsOpen = true;
+                if (Popup != null && !Popup.IsOpen)
+                {
+                    Popup.IsOpen = true;
+                }
             }
         }
     }

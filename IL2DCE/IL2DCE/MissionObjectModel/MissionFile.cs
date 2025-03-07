@@ -23,24 +23,6 @@ using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public enum ECountry
-    {
-        nn,
-        gb,
-        de,
-        fr,
-        pl,
-        ru,
-        rz,
-        us,
-        hu,
-        it,
-        ja,
-        fi,
-        ro,
-        sk,
-    }
-
     public class MissionFile
     {
         public const string SectionParts = "PARTS";
@@ -60,13 +42,35 @@ namespace IL2DCE.MissionObjectModel
         public const string SectionAction = "Action";
         public const string SectionAirdromes = "Airdromes";
         public const string KeyRunways = "Runways";
+        public const string KeyWeatherIndex = "WeatherIndex";
+        public const string KeyCloudsHeight = "CloudsHeight";
+        public const string KeyTime = "TIME";
         public const string KeyPoints = "Points";
         public const string KeyPlayer = "player";
 
-        public static readonly string[] Country = new string[]
-            {
-            "gb", "fr", "pl", "ru", "rz", "us", "de", "hu", "it", "ja", "fi",  "ro", "sk"
-            };
+        public const float DefaultTime = 12.0f;
+        public const int DefaulWeatherIndex = 0;
+        public const int DefaulCloudsHeight = 1000;
+
+        #region Property (& Variable)
+
+        public float Time
+        {
+            get;
+            private set;
+        }
+
+        public int WeatherIndex
+        {
+            get;
+            private set;
+        }
+
+        public int CloudsHeight
+        {
+            get;
+            private set;
+        }
 
         public IList<Waterway> Roads
         {
@@ -226,6 +230,8 @@ namespace IL2DCE.MissionObjectModel
         private List<Stationary> _redStationaries = new List<Stationary>();
         private List<Stationary> _blueStationaries = new List<Stationary>();
 
+        #endregion
+
         //private List<Point3d> _redFrontMarkers = new List<Point3d>();
         //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
         //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
@@ -275,6 +281,11 @@ namespace IL2DCE.MissionObjectModel
 
         private void load(ISectionFile file)
         {
+            // Main
+            Time = file.get(SectionMain, KeyTime, DefaultTime);
+            WeatherIndex = file.get(SectionMain, KeyWeatherIndex, DefaulWeatherIndex);
+            CloudsHeight = file.get(SectionMain, KeyCloudsHeight, DefaulCloudsHeight);
+
             // Stationary
             for (int i = 0; i < file.lines(SectionStationary); i++)
             {

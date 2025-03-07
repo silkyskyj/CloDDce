@@ -17,6 +17,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -31,6 +32,8 @@ namespace IL2DCE
     {
         public class SelectCareerPage : PageDefImpl
         {
+
+            private const string NoFileString = "[no file]";
 
             #region Property
 
@@ -115,9 +118,12 @@ namespace IL2DCE
                 FrameworkElement.New.Click += new System.Windows.RoutedEventHandler(bNew_Click);
                 FrameworkElement.Delete.Click += new System.Windows.RoutedEventHandler(Delete_Click);
                 FrameworkElement.Continue.Click += new System.Windows.RoutedEventHandler(bContinue_Click);
+                FrameworkElement.buttonFilterClear.Click += new System.Windows.RoutedEventHandler(buttonFilterClear_Click);
 
                 FrameworkElement.Continue.IsEnabled = false;
                 FrameworkElement.Delete.IsEnabled = false;
+
+                FrameworkElement.labelVersion.Content = Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version);
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -156,7 +162,8 @@ namespace IL2DCE
 
             private void bNew_Click(object sender, System.Windows.RoutedEventArgs e)
             {
-                Game.gameInterface.PageChange(new CareerIntroPage(), null);
+                Game.gameInterface.PageChange(new CareerIntroPage(), 
+                    new CareerIntroPage.PageArgs() { Army = SelectedArmyIndex, AirForce = SelectedAirForceIndex });
             }
 
             private void bContinue_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -164,6 +171,7 @@ namespace IL2DCE
                 Career career = SelectedCareer;
                 if (career != null && career.CampaignInfo != null)
                 {
+                    career.BattleType = EBattleType.Campaign;
                     Game.Core.CurrentCareer = career;
                     Game.Core.InitCampaign();
                     Game.gameInterface.PageChange(new BattleIntroPage(), null);
@@ -188,6 +196,13 @@ namespace IL2DCE
                 }
             }
 
+            private void buttonFilterClear_Click(object sender, System.Windows.RoutedEventArgs e)
+            {
+                FrameworkElement.comboBoxSelectCampaign.SelectedIndex = FrameworkElement.comboBoxSelectCampaign.Items.Count > 0 ? 0 : -1;
+                FrameworkElement.comboBoxSelectArmy.SelectedIndex = FrameworkElement.comboBoxSelectArmy.Items.Count > 0 ? 0 : -1;
+                FrameworkElement.comboBoxSelectAirForce.SelectedIndex = FrameworkElement.comboBoxSelectAirForce.Items.Count > 0 ? 0 : -1;
+            }
+
             #endregion
 
             #region ComboBox & ListBox SelectionChanged
@@ -199,7 +214,7 @@ namespace IL2DCE
 
                 }
 
-                UpdateCareerList();
+                UpdateCareerListFilter();
                 UpdateButtonStatus();
             }
 
@@ -210,7 +225,7 @@ namespace IL2DCE
                     UpdateAirForceComboBoxInfo();
                 }
 
-                UpdateCareerList();
+                UpdateCareerListFilter();
                 UpdateButtonStatus();
             }
 
@@ -220,7 +235,7 @@ namespace IL2DCE
                 {
                 }
 
-                UpdateCareerList();
+                UpdateCareerListFilter();
                 UpdateButtonStatus();
             }
 
@@ -230,23 +245,21 @@ namespace IL2DCE
                 if (career != null && career.CampaignInfo != null)
                 {
                     CampaignInfo campaignInfo = career.CampaignInfo;
-                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n",
-                                                                        campaignInfo.ToSummaryString(),
-                                                                        career.ToCurrestStatusString(),
-                                                                        career.ToTotalResultString());
+                    FrameworkElement.textBoxStatusCampaign.Text = campaignInfo.ToSummaryString();
+                    FrameworkElement.textBoxStatusCurrent.Text = career.ToCurrestStatusString();
+                    FrameworkElement.textBoxStatusTotal.Text = career.ToTotalResultString();
                 }
                 else if (career != null)
                 {
-                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n{2}\n",
-                                                                        "Campaign [no file]\n",
-                                                                        career.ToCurrestStatusString(),
-                                                                        career.ToTotalResultString());
+                    FrameworkElement.textBoxStatusCampaign.Text = NoFileString;
+                    FrameworkElement.textBoxStatusCurrent.Text = career.ToCurrestStatusString();
+                    FrameworkElement.textBoxStatusTotal.Text = career.ToTotalResultString();
                 }
                 else
                 {
-                    FrameworkElement.textBoxStatus.Text = string.Format("{0}\n{1}\n",
-                                                                        "Campaign [no file]\n",
-                                                                        "Career [no file]\n");
+                    FrameworkElement.textBoxStatusCampaign.Text = NoFileString;
+                    FrameworkElement.textBoxStatusCurrent.Text = NoFileString;
+                    FrameworkElement.textBoxStatusTotal.Text = NoFileString;
                 }
 
                 UpdateAircraftImage(career);
@@ -304,7 +317,7 @@ namespace IL2DCE
                 comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
             }
 
-            private void UpdateCareerList()
+            private void UpdateCareerListFilter()
             {
                 ListBox listBox = FrameworkElement.ListCareer;
                 listBox.Items.Filter = new Predicate<object>(ContainsCareer);

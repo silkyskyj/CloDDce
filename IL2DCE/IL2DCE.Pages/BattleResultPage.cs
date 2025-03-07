@@ -78,6 +78,10 @@ namespace IL2DCE.Pages
             {
                 Game.gameInterface.PageChange(new QuickMissionPage(), null);
             }
+            else if (career.BattleType == EBattleType.Campaign)
+            {
+                Game.gameInterface.PageChange(new SelectCareerPage(), null);
+            }
             else
             {
                 Game.gameInterface.PagePop(null);
@@ -208,7 +212,6 @@ namespace IL2DCE.Pages
                             {
                                 int armyActor;
                                 int actorType;
-                                ;
                                 if (int.TryParse(keys[(int)ActorDeadInfoKey.Army], out armyActor) && int.TryParse(keys[(int)ActorDeadInfoKey.ActorType], out actorType))
                                 {
                                     if (string.Compare(keys[(int)ActorDeadInfoKey.ActorName], playerActorName, true) != 0)
@@ -425,14 +428,14 @@ namespace IL2DCE.Pages
             }
         }
 
-        private DamagerScore[] GetPlayerDamagerScore(ArrayList listDamage)
+        private DamagerScore[] GetPlayerDamageScore(ArrayList listDamage)
         {
             return listDamage.ToArray().Where(x => x is DamagerScore && (x as DamagerScore).initiator.Player != null).ToArray() as DamagerScore[];
         }
 
         protected virtual string GetTotalPlayerStat()
         {
-            return Game.Core.CurrentCareer.ToTotalResultString();
+            return string.Format("Total Status\n{0}", Game.Core.CurrentCareer.ToTotalResultString());
         }
     }
 }

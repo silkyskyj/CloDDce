@@ -76,7 +76,11 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
-        IDictionary<int, string> Skills = new Dictionary<int, string>();
+        public IDictionary<int, string> Skills
+        {
+            get;
+            set;
+        }
 
         public int CallSign
         {
@@ -240,6 +244,12 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
+        public object Data
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Public constructors
@@ -320,7 +330,8 @@ namespace IL2DCE.MissionObjectModel
 
             // Skill
             // TODO: Multi Skill(=Different)
-            Skill = sectionFile.get(id, "Skill");
+            Skill = sectionFile.get(id, "Skill", string.Empty);
+            Skills = new Dictionary<int, string>();
             foreach (int flightIndex in Flights.Keys)
             {
                 for (int i = 0; i < Flights[flightIndex].Count; i++)
@@ -330,10 +341,23 @@ namespace IL2DCE.MissionObjectModel
                     if (sectionFile.exist(id, key))
                     {
                         string skill = sectionFile.get(id, key);
-                        Skills.Add(flightIndex * 10 + i, skill);
+                        if (!string.IsNullOrEmpty(skill))
+                        {
+                            Skills.Add(flightIndex * 10 + i, skill);
+                        }
                     }
                 }
             }
+#if DEBUG && false
+            Debug.WriteLine(string.Format("Skill[{0}]={1}", AirGroupKey, Skill));
+            if (Skills.Count > 0)
+            {
+                foreach (var item in Skills)
+                {
+                    Debug.WriteLine(string.Format("Skill{0}={1}", item.Key, item.Value));
+                }
+            }
+#endif
 
             // Id
             int flightMask = 0x0;
@@ -581,8 +605,22 @@ namespace IL2DCE.MissionObjectModel
                     sectionFile.add(Id, "SetOnPark", SetOnParked ? "1" : "0");
                 }
 
-                // TODO: Multi Skill(=Different)
-                sectionFile.add(Id, "Skill", Skill);
+
+                // Skill
+                if (Skills != null && Skills.Count > 0)
+                {
+                    // TODO: Multi Skill(=Different)
+                    foreach (var item in Skills)
+                    {
+                        int flight = item.Key / 10;
+                        string key = string.Format("Skill{0}{1}", (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat): string.Empty), (item.Key % 10));
+                        sectionFile.add(Id, key, item.Value);
+                    }
+                }
+                else
+                {
+                    sectionFile.add(Id, "Skill", Skill);
+                }
 
                 foreach (AirGroupWaypoint waypoint in _waypoints)
                 {
@@ -884,6 +922,26 @@ namespace IL2DCE.MissionObjectModel
                 if (waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF && waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                 {
                     _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.ESCORT, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(waypoint)));
+                }
+            }
+
+            createEndWaypoints(landingAirport);
+        }
+
+        public void Follow(AirGroup targetAirGroup, AiAirport landingAirport = null)
+        {
+            reset();
+            Altitude = targetAirGroup.Altitude;
+            TargetAirGroup = targetAirGroup;
+            IList<AirGroupWaypoint> targetWaypoints = targetAirGroup.Waypoints;
+
+            createStartWaypoints();
+
+            foreach (AirGroupWaypoint waypoint in targetWaypoints)
+            {
+                if (waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF && waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
+                {
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.FOLLOW, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(waypoint)));
                 }
             }
 

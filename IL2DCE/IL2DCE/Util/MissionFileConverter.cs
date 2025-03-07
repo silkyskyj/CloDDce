@@ -188,12 +188,13 @@ namespace IL2DCE.Util
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", MissionFile.SectionGlobalWind, "0"));
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionSplines);
             // SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs, MissionFile.Country, ECountry.nn.ToString());
-            IEnumerable<string> keys = SectionFileUtil.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs, MissionFile.Country, ECountry.nn.ToString());
+            IEnumerable<string> countries = Country.ToStrings();
+            IEnumerable<string> keys = SectionFileUtil.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs, countries, ECountry.nn.ToString());
             foreach (var item in keys)
             {
                 SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.SectionRoad));
             }
-            SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionStationary, MissionFile.Country, ECountry.nn.ToString());
+            SectionFileUtil.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionStationary, countries, ECountry.nn.ToString());
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionBuildings);
             SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionBuildingsLinks);
             keys = SectionFileUtil.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionAirdromes);

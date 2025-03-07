@@ -396,7 +396,7 @@ namespace IL2DCE.Generator
                 string key;
                 string value;
                 missionFile.get(SectionMain, i, out key, out value);
-                if (key == "player")
+                if (key == MissionFile.KeyPlayer)
                 {
                     missionFile.delete(SectionMain, i);
                     break;
@@ -404,14 +404,14 @@ namespace IL2DCE.Generator
             }
 
             // Add things to the template file.
-            double time = Career.Time < 0 ? Core.Random.Next(5, 21): Career.Time;
-            missionFile.set(SectionMain, "TIME", time.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            double time = Career.Time == (int)MissionTime.Random ? Core.Random.Next(5, 21): Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
+            missionFile.set(SectionMain, MissionFile.KeyTime, time.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int weatherIndex = Career.Weather < 0 ? Core.Random.Next(0, 3): (int)Career.Weather;
-            missionFile.set(SectionMain, "WeatherIndex", weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            int weatherIndex = Career.Weather == (int)EWeather.Random ? Core.Random.Next(0, 2): Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
+            missionFile.set(SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int cloudsHeight = Career.CloudAltitude < 0 ? Core.Random.Next(5, 15) * 100: Career.CloudAltitude;
-            missionFile.set(SectionMain, "CloudsHeight", (cloudsHeight).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Core.Random.Next(5, 15) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
+            missionFile.set(SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = "";
             if (weatherIndex == 0)
@@ -427,7 +427,7 @@ namespace IL2DCE.Generator
                 weatherString = "Medium clouds at " + cloudsHeight + "m";
             }
 
-            briefingFile.MissionDescription += Career.CampaignInfo.Name + "\n";
+            briefingFile.MissionDescription += Career.CampaignInfo.Id + "\n";
             briefingFile.MissionDescription += "Date: " + Career.Date.Value.ToShortDateString() + "\n";
             briefingFile.MissionDescription += "Time: " + MissionTime.ToString(time) + "\n";
             briefingFile.MissionDescription += "Weather: " + weatherString + "\n";
@@ -485,7 +485,7 @@ namespace IL2DCE.Generator
             // Add additional air operations.
             if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
             {
-                for (int i = 0; i < Config.AdditionalAirOperations; i++)
+                for (int i = 0; i < Career.AdditionalAirOperations; i++)
                 {
                     if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
                     {
@@ -499,7 +499,7 @@ namespace IL2DCE.Generator
             // Add additional ground operations.
             if (GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
             {
-                for (int i = 0; i < Config.AdditionalGroundOperations; i++)
+                for (int i = 0; i < Career.AdditionalGroundOperations; i++)
                 {
                     if (GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
                     {
@@ -511,13 +511,10 @@ namespace IL2DCE.Generator
             }
 
             // Add all stationaries.
-            if (GeneratorGroundOperation.AvailableStationaries.Count > 0)
+            for (int i = 0; i < GeneratorGroundOperation.AvailableStationaries.Count; i++)
             {
-                for (int i = 0; i < GeneratorGroundOperation.AvailableStationaries.Count; i++)
-                {
-                    Stationary stationary = GeneratorGroundOperation.AvailableStationaries[i];
-                    stationary.WriteTo(missionFile);
-                }
+                Stationary stationary = GeneratorGroundOperation.AvailableStationaries[i];
+                stationary.WriteTo(missionFile);
             }
         }
 

@@ -129,33 +129,33 @@ namespace IL2DCE
             GameIterface gameInterface = (GamePlay as IGame).gameInterface;
             string campaignsFolderPath = Config.CampaignsFolderDefault;
             this._campaignsFolderSystemPath = gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault);
-            DirectoryInfo campaignsFolder = new DirectoryInfo(_campaignsFolderSystemPath);
-            if (campaignsFolder.Exists && campaignsFolder.GetDirectories().Length > 0)
+            DirectoryInfo campaignsFolderSystemPath = new DirectoryInfo(_campaignsFolderSystemPath);
+            if (campaignsFolderSystemPath.Exists && campaignsFolderSystemPath.GetDirectories().Length > 0)
             {
                 ISectionFile globalAircraftInfoFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}", campaignsFolderPath, Config.AircraftInfoFileName));
                 ISectionFile globalAirGroupInfoFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}", campaignsFolderPath, Config.AirGroupInfoFileName));
                 AirGroupInfos.Default = AirGroupInfos.Create(globalAirGroupInfoFile);
-                foreach (DirectoryInfo campaignFolder in campaignsFolder.GetDirectories())
+                foreach (DirectoryInfo campaignFolderSystemPath in campaignsFolderSystemPath.GetDirectories())
                 {
-                    FileInfo[] fileInfo = campaignFolder.GetFiles(Config.CampaignInfoFileName);
+                    FileInfo[] fileInfo = campaignFolderSystemPath.GetFiles(Config.CampaignInfoFileName);
                     if (fileInfo.Length == 1)
                     {
-                        string campaignsFolder1 = string.Format("{0}/{1}/", campaignsFolderPath, campaignFolder.Name);
-                        ISectionFile campaignInfoFile = gameInterface.SectionFileLoad(campaignsFolder1 + Config.CampaignInfoFileName);
+                        string campaignFolder = string.Format("{0}/{1}/", campaignsFolderPath, campaignFolderSystemPath.Name);
+                        ISectionFile campaignInfoFile = gameInterface.SectionFileLoad(campaignFolder + Config.CampaignInfoFileName);
 
                         ISectionFile localAircraftInfoFile = null;
-                        if (File.Exists(gameInterface.ToFileSystemPath(campaignsFolder1 + Config.AircraftInfoFileName)))
+                        if (File.Exists(gameInterface.ToFileSystemPath(campaignFolder + Config.AircraftInfoFileName)))
                         {
-                            localAircraftInfoFile = gameInterface.SectionFileLoad(campaignsFolder1 + Config.AircraftInfoFileName);
+                            localAircraftInfoFile = gameInterface.SectionFileLoad(campaignFolder + Config.AircraftInfoFileName);
                         }
                         AirGroupInfos localAirGroupInfos = null;
-                        if (File.Exists(gameInterface.ToFileSystemPath(campaignsFolder1 + Config.AirGroupInfoFileName)))
+                        if (File.Exists(gameInterface.ToFileSystemPath(campaignFolder + Config.AirGroupInfoFileName)))
                         {
-                            ISectionFile localAirGroupInfoFile = gameInterface.SectionFileLoad(campaignsFolder1 + Config.AirGroupInfoFileName);
+                            ISectionFile localAirGroupInfoFile = gameInterface.SectionFileLoad(campaignFolder + Config.AirGroupInfoFileName);
                             localAirGroupInfos = AirGroupInfos.Create(localAirGroupInfoFile);
                         }
 
-                        CampaignInfo campaignInfo = new CampaignInfo(campaignFolder.Name, campaignsFolder1, campaignInfoFile, globalAircraftInfoFile, localAircraftInfoFile, localAirGroupInfos);
+                        CampaignInfo campaignInfo = new CampaignInfo(campaignFolderSystemPath.Name, campaignFolder, campaignInfoFile, globalAircraftInfoFile, localAircraftInfoFile, localAirGroupInfos);
                         CampaignInfos.Add(campaignInfo);
                     }
                 }
@@ -181,7 +181,7 @@ namespace IL2DCE
                         ISectionFile careerFile = gameInterface.SectionFileLoad(path);
                         try
                         {
-                            Career career = new Career(careerFolder.Name, CampaignInfos, careerFile);
+                            Career career = new Career(careerFolder.Name, CampaignInfos, careerFile, Config);
                             AvailableCareers.Add(career);
                         }
                         catch (Exception ex)

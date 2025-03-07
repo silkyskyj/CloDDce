@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -247,7 +248,7 @@ namespace IL2DCE
 
             #region Variable
 
-            private MissionFile CurrentMissionFile = null;
+            private MissionFile currentMissionFile = null;
 
             private bool hookComboSelectionChanged = false;
 
@@ -284,6 +285,8 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectTarget.Visibility = Visibility.Hidden;
                 FrameworkElement.checkBoxSelectCampaignFilter.Visibility = Visibility.Hidden;
                 FrameworkElement.checkBoxSelectAirgroupFilter.Visibility = Visibility.Hidden;
+
+                FrameworkElement.labelVersion.Content = Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version);
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -297,27 +300,16 @@ namespace IL2DCE
                     hookComboSelectionChanged = true;
                     UpdateCampaignComboBoxInfo();
                     FrameworkElement.comboBoxSelectCampaign.SelectedItem = null;
-                    UpdateNoRelatedComboBoxInfo();
                     hookComboSelectionChanged = false;
                     SelectLastInfo(Game.Core.CurrentCareer);
                 }
                 else
                 {
                     UpdateCampaignComboBoxInfo();
-                    UpdateNoRelatedComboBoxInfo();
                 }
 
                 UpdateButtonStatus();
             }
-
-            private void UpdateNoRelatedComboBoxInfo()
-            {
-                UpdateSkillComboBoxInfo();
-                UpdateTimeComboBoxInfo();
-                UpdateWeatherComboBoxInfo();
-                UpdateCloudAltitudeComboBoxInfo();
-            }
-
             public override void _leave(maddox.game.IGame play, object arg)
             {
                 base._leave(play, arg);
@@ -336,10 +328,12 @@ namespace IL2DCE
                     CampaignInfo campaignInfo = SelectedCampaign;
                     if (campaignInfo != null)
                     {
-                        CurrentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+                        currentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
                     }
                     UpdateArmyComboBoxInfo(true);
-
+                    UpdateTimeComboBoxInfo();
+                    UpdateWeatherComboBoxInfo();
+                    UpdateCloudAltitudeComboBoxInfo();
                     //if (Game.Core.Config.EnableAutoSelectComboBoxItem)
                     //{
                     //    UpdateComboBoxSelectInfoAirForce();
@@ -381,6 +375,7 @@ namespace IL2DCE
                 if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateMissionTypeComboBoxInfo();
+                    UpdateSkillComboBoxInfo();
                     UpdateFuelComboBoxInfo();
                 }
 
@@ -418,6 +413,9 @@ namespace IL2DCE
                 if (Game != null && !(bool)e.NewValue)
                 {
                     UpdateArmyComboBoxInfo(true);
+                    UpdateTimeComboBoxInfo();
+                    UpdateWeatherComboBoxInfo();
+                    UpdateCloudAltitudeComboBoxInfo();
                 }
             }
 
@@ -485,9 +483,9 @@ namespace IL2DCE
             private void buttonImportMission_Click(object sender, RoutedEventArgs e)
             {
                 if (MessageBox.Show("The system will convert and import existing mission files in the CloD folder for use in IL2DCE.\n" + 
-                    "The copyright of files coverted by this process belongs to the original author, not you, and they cannot be distributed or shared without the consent of the original author.\n" + 
-                    "\n\nDo you agree to this ?", 
-                    "Confimation", 
+                    "The copyright of files converted by this process belongs to the original author, not you, and they cannot be distributed or shared without the consent of the original author.\n" + 
+                    "\nDo you agree to this ?", 
+                    "Confimation [IL2DCE]", 
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     ProgressWindowModel model = new ProgressWindowModel();
@@ -555,7 +553,7 @@ namespace IL2DCE
                     career.Spawn = SelectedSpawn;
                     career.Fuel = SelectedFuel;
                     career.Speed = SelectedSpeed;
-                    career.PlayerAirGroupSkill = SelectedSkill;
+                    career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Rundom ? new Skill[] { SelectedSkill }: null;
                     career.Time = SelectedTime;
                     career.Weather = SelectedWeather;
                     career.CloudAltitude = SelectedCloudAltitude;
@@ -582,6 +580,11 @@ namespace IL2DCE
             }
 
             #endregion
+
+            private void comboBoxSelectSkill_ToolTipOpening(object sender, ToolTipEventArgs e)
+            {
+
+            }
 
             #endregion
 
@@ -682,9 +685,9 @@ namespace IL2DCE
                 string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string: string.Empty;
                 comboBox.Items.Clear();
 
-                if (campaignInfo != null && (!checkArmy || CurrentMissionFile != null))
+                if (campaignInfo != null && (!checkArmy || currentMissionFile != null))
                 {
-                    var armys = checkArmy ? CurrentMissionFile.AirGroups.Select(x => x.ArmyIndex).Distinct(): new int [0];
+                    var armys = checkArmy ? currentMissionFile.AirGroups.Select(x => x.ArmyIndex).Distinct(): new int [0];
                     for (int i = 0; i < (int)EArmy.Count; i++)
                     {
                         if (!checkArmy || armys.Contains(i + 1))
@@ -694,7 +697,7 @@ namespace IL2DCE
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private void UpdateAirForceComboBoxInfo(bool checkAirForce = false)
@@ -705,9 +708,9 @@ namespace IL2DCE
 
                 int armyIndex = SelectedArmyIndex;
                 CampaignInfo campaignInfo = SelectedCampaign;
-                if (campaignInfo != null && armyIndex != -1 && (!checkAirForce || CurrentMissionFile != null))
+                if (campaignInfo != null && armyIndex != -1 && (!checkAirForce || currentMissionFile != null))
                 {
-                    var airForces = checkAirForce ? CurrentMissionFile.AirGroups.Where(x => x.ArmyIndex == armyIndex).Select(x => x.AirGroupInfo.AirForceIndex).Distinct(): new int [0];
+                    var airForces = checkAirForce ? currentMissionFile.AirGroups.Where(x => x.ArmyIndex == armyIndex).Select(x => x.AirGroupInfo.AirForceIndex).Distinct(): new int [0];
                     if (armyIndex == (int)EArmy.Red)
                     {
                         for (int i = 0; i < (int)AirForceRed.Count; i++)
@@ -731,7 +734,7 @@ namespace IL2DCE
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private void UpdateRankComboBoxInfo()
@@ -778,13 +781,13 @@ namespace IL2DCE
                 comboBox.Items.Clear();
 
                 CampaignInfo campaignInfo = SelectedCampaign;
-                if (campaignInfo != null && CurrentMissionFile != null)
+                if (campaignInfo != null && currentMissionFile != null)
                 {
                     int armyIndex = SelectedArmyIndex;
                     int airForceIndex = SelectedAirForceIndex;
                     if (armyIndex != -1 && airForceIndex != -1)
                     {
-                        foreach (AirGroup airGroup in CurrentMissionFile.AirGroups.OrderBy(x => x.Class))
+                        foreach (AirGroup airGroup in currentMissionFile.AirGroups.OrderBy(x => x.Class))
                         {
                             AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
                             AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
@@ -796,7 +799,7 @@ namespace IL2DCE
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, AircraftInfo aircraftInfo = null)
@@ -816,7 +819,7 @@ namespace IL2DCE
 
                 CampaignInfo campaignInfo = SelectedCampaign;
                 AirGroup airGroup = SelectedAirGroup;
-                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null)
+                if (campaignInfo != null && currentMissionFile != null && airGroup != null)
                 {
                     comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
                     // AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
@@ -827,7 +830,7 @@ namespace IL2DCE
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private void UpdateSpawnComboBoxInfo()
@@ -839,7 +842,7 @@ namespace IL2DCE
                 defaultMissionAltitude = -1;
                 CampaignInfo campaignInfo = SelectedCampaign;
                 AirGroup airGroup = SelectedAirGroup;
-                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null)
+                if (campaignInfo != null && currentMissionFile != null && airGroup != null)
                 {
                     AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
                     EMissionType? missionType = SelectedMissionType;
@@ -869,11 +872,14 @@ namespace IL2DCE
                                                     ESpawn.Idle.ToDescription() : ((((int)way.Z) / Spawn.SelectStepAltitude) * Spawn.SelectStepAltitude).ToString(CultureInfo.InvariantCulture.NumberFormat);
                         }
 #endif
-                        defaultMissionAltitude = (int)way.Z;
+                        defaultMissionAltitude = airGroup.SetOnParked ? (int)ESpawn.Parked : 
+                                            way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF ? (int)ESpawn.Idle : (int)way.Z;
                     }
                 }
-                EnableSelectItem(comboBox, selected);
-                FrameworkElement.labelDefaultAltitude.Content = defaultMissionAltitude >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, defaultMissionAltitude): string.Empty;
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
+                FrameworkElement.labelDefaultAltitude.Content = defaultMissionAltitude >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, defaultMissionAltitude):
+                                                                defaultMissionAltitude >= (int)ESpawn.Parked && defaultMissionAltitude <= (int)ESpawn.AirStart ? 
+                                                                        string.Format(Config.Culture, MissionDefaultFormat, ((ESpawn)defaultMissionAltitude).ToDescription()) : string.Empty;
             }
 
             private void UpdateSpeedComboBoxInfo()
@@ -895,6 +901,7 @@ namespace IL2DCE
                 int spawn = SelectedSpawn;
                 if (spawn == (int)ESpawn.Parked || spawn == (int)ESpawn.Idle || ((spawn == (int)ESpawn.Default) && defaultMissionAltitude <= 0))
                 {
+                    speedMissonDefault = 0;
                     comboBox.SelectedIndex = 0;
                     comboBox.IsEnabled = false;
                 }
@@ -903,7 +910,7 @@ namespace IL2DCE
                     comboBox.IsEnabled = true;
                     CampaignInfo campaignInfo = SelectedCampaign;
                     AirGroup airGroup = SelectedAirGroup;
-                    if (campaignInfo != null && CurrentMissionFile != null && airGroup != null)
+                    if (campaignInfo != null && currentMissionFile != null && airGroup != null)
                     {
                         AirGroupWaypoint way = airGroup.Waypoints.FirstOrDefault();
                         if (way != null)
@@ -919,7 +926,7 @@ namespace IL2DCE
                             speedMissonDefault = ((int)way.V);
                         }
                     }
-                    EnableSelectItem(comboBox, selected);
+                    EnableSelectItem(comboBox, selected, currentMissionFile == null);
                 }
                 FrameworkElement.labelDefaultSpeed.Content = speedMissonDefault >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, speedMissonDefault): string.Empty;
             }
@@ -932,7 +939,7 @@ namespace IL2DCE
                 if (comboBox.Items.Count == 0)
                 {
                     comboBox.Items.Add(new ComboBoxItem() { Tag = -1, Content = DefaultString });
-                    for (int i = Fuel.SelectMinFuel; i <= Fuel.SelectMaxFuel; i += Fuel.SelectStepFuel)
+                    for (int i = Fuel.SelectMaxFuel; i >= Fuel.SelectMinFuel; i -= Fuel.SelectStepFuel)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = i, Content = Fuel.CreateDisplayString(i) });
                     }
@@ -941,7 +948,7 @@ namespace IL2DCE
                 int fuelMissionDefault = -1;
                 CampaignInfo campaignInfo = SelectedCampaign;
                 AirGroup airGroup = SelectedAirGroup;
-                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null)
+                if (campaignInfo != null && currentMissionFile != null && airGroup != null)
                 {
 
 #if false
@@ -952,8 +959,36 @@ namespace IL2DCE
 #endif
                     fuelMissionDefault = airGroup.Fuel;
                 }
-                EnableSelectItem(comboBox, selected);
                 FrameworkElement.labelDefaultFuel.Content = fuelMissionDefault >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, airGroup.Fuel) : string.Empty;
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
+            }
+
+            private void UpdateSkillComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+
+                if (comboBox.Items.Count == 0)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Default, Content = DefaultString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Rundom, Content = RandomString });
+                    for (Skill.ESystemType skill = Skill.ESystemType.Rookie; skill < Skill.ESystemType.Count; skill++)
+                    {
+                        comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.GetSystemType(skill), Content = skill.ToString() });
+                    }
+                }
+
+                string defaultString = string.Empty;
+                if (SelectedAirGroup != null)
+                {
+                    AirGroup airGroup = SelectedAirGroup;
+                    Skill skill = string.IsNullOrEmpty(airGroup.Skill) ? null : Skill.Parse(airGroup.Skill);
+                    defaultString = string.Format(Config.Culture, MissionDefaultFormat, airGroup.Skills != null && airGroup.Skills.Count > 0 ?
+                                    Skill.SkillNameMulti : skill != null ? skill.IsSystemType() ? skill.GetSystemTypeName() : Skill.SkillNameCustom : string.Empty);
+                }
+                FrameworkElement.labelDefaultSkill.Content = defaultString;
+                
+                EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
             }
 
             private void UpdateTimeComboBoxInfo()
@@ -963,29 +998,23 @@ namespace IL2DCE
 
                 if (comboBox.Items.Count == 0)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = MissionTime.Default, Content = DefaultString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = MissionTime.Random, Content = RandomString });
                     for (double d = MissionTime.Begin; d <= MissionTime.End; d += 0.5)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = d, Content = MissionTime.ToString(d) });
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
-            }
-
-            private void UpdateSkillComboBoxInfo()
-            {
-                ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
-                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
-                comboBox.Items.Clear();
-
-                comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
-                for (Skill.ESystemType skill = Skill.ESystemType.Rookie; skill < Skill.ESystemType.Count; skill++)
+                string defaultString = string.Empty;
+                if (currentMissionFile != null)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.GetSystemType(skill), Content = skill.ToString() });
+                    double time = currentMissionFile.Time;
+                    defaultString = time >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, MissionTime.ToString(time)): string.Empty;
                 }
+                FrameworkElement.labelDefaultTime.Content = defaultString;
 
-                EnableSelectItem(comboBox, selected);
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private void UpdateWeatherComboBoxInfo()
@@ -995,14 +1024,24 @@ namespace IL2DCE
 
                 if (comboBox.Items.Count == 0)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = EWeather.Default, Content = DefaultString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = EWeather.Random, Content = RandomString });
                     for (EWeather w = EWeather.Clear; w <= EWeather.MediumClouds; w++)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = w, Content = w.ToDescription() });
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
+                string defaultString = string.Empty;
+                if (currentMissionFile != null)
+                {
+                    int weather = currentMissionFile.WeatherIndex;
+                    defaultString = weather >= (int)EWeather.Clear && weather <= (int)EWeather.MediumClouds ? 
+                        string.Format(Config.Culture, MissionDefaultFormat, ((EWeather)weather).ToDescription()): string.Empty;
+                }
+                FrameworkElement.labelDefaultWeather.Content = defaultString;
+    
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private void UpdateCloudAltitudeComboBoxInfo()
@@ -1012,14 +1051,23 @@ namespace IL2DCE
 
                 if (comboBox.Items.Count == 0)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = CloudAltitude.Default, Content = DefaultString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = CloudAltitude.Random, Content = RandomString });
                     for (int alt = (int)CloudAltitude.Min; alt <= CloudAltitude.Max; alt += CloudAltitude.Step)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = alt, Content = CloudAltitude.CreateDisplayString(alt) });
                     }
                 }
 
-                EnableSelectItem(comboBox, selected);
+                string defaultString = string.Empty;
+                if (currentMissionFile != null)
+                {
+                    int alt = currentMissionFile.CloudsHeight;
+                    defaultString = alt >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, CloudAltitude.CreateDisplayString(alt)) : string.Empty;
+                }
+                FrameworkElement.labelDefaultCloudAltitude.Content = defaultString;
+
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
             private void UpdateSelectTargetComboBoxInfo()
@@ -1031,7 +1079,7 @@ namespace IL2DCE
                 CampaignInfo campaignInfo = SelectedCampaign;
                 AirGroup airGroup = SelectedAirGroup;
                 EMissionType? missionType = SelectedMissionType;
-                if (campaignInfo != null && CurrentMissionFile != null && airGroup != null && missionType != null)
+                if (campaignInfo != null && currentMissionFile != null && airGroup != null && missionType != null)
                 {
                     //AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
                     //AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
@@ -1095,9 +1143,9 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected);
             }
 
-            private void EnableSelectItem(ComboBox comboBox, string selected)
+            private void EnableSelectItem(ComboBox comboBox, string selected, bool forceDisable = false)
             {
-                if (comboBox.Items.Count > 0)
+                if (!forceDisable && comboBox.Items.Count > 0)
                 {
                     comboBox.IsEnabled = true;
                     comboBox.Text = selected;
@@ -1144,21 +1192,6 @@ namespace IL2DCE
                 }
             }
 
-            private void SelectLastInfo(Career career)
-            {
-                FrameworkElement.comboBoxSelectCampaign.SelectedItem = career.CampaignInfo;
-                EnableSelectItem(FrameworkElement.comboBoxSelectArmy, Career.Army[career.ArmyIndex - 1]);
-                EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, Career.AirForce[(career.ArmyIndex - 1) * 3 + career.AirForceIndex - 1]);
-                FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
-                EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
-                EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription() : string.Empty);
-                EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayName(career.Spawn));
-                EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null ? career.PlayerAirGroupSkill.Name : string.Empty);
-                EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time != -1 ? MissionTime.ToString(career.Time) : string.Empty);
-                EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather != -1 ? ((EWeather)career.Weather).ToDescription() : string.Empty);
-                EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude != -1 ? career.CloudAltitude.ToString() : string.Empty);
-            }
-
             private void UpdateComboBoxSelectInfoArmy()
             {
                 // Army
@@ -1173,6 +1206,21 @@ namespace IL2DCE
                         FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
                     }
                 }
+            }
+
+            private void SelectLastInfo(Career career)
+            {
+                FrameworkElement.comboBoxSelectCampaign.SelectedItem = career.CampaignInfo;
+                EnableSelectItem(FrameworkElement.comboBoxSelectArmy, Career.Army[career.ArmyIndex - 1]);
+                EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, Career.AirForce[(career.ArmyIndex - 1) * 3 + career.AirForceIndex - 1]);
+                FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
+                EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
+                EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription() : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayName(career.Spawn));
+                EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null && career.PlayerAirGroupSkill.Length > 0 ? career.PlayerAirGroupSkill[0].Name : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time >= 0 ? MissionTime.ToString(career.Time) : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather >= 0 ? ((EWeather)career.Weather).ToDescription() : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude >= 0 ? career.CloudAltitude.ToString() : string.Empty);
             }
 
             private void UpdateAircraftImage()

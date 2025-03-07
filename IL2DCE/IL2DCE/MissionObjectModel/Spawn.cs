@@ -43,7 +43,7 @@ namespace IL2DCE.MissionObjectModel
     public class Spawn
     {
         public const int SelectStartAltitude = 500;
-        public const int SelectEndAltitude = 5000;
+        public const int SelectEndAltitude = 10000;
         public const int SelectStepAltitude = 500;
 
         public ESpawn Type

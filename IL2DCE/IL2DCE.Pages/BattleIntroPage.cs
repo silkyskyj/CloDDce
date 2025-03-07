@@ -79,6 +79,10 @@ namespace IL2DCE
                 {
                     Game.gameInterface.PageChange(new QuickMissionPage(), null);
                 }
+                else if (career.BattleType == EBattleType.Campaign)
+                {
+                    Game.gameInterface.PageChange(new SelectCareerPage(), null);
+                }
                 else
                 {
                     Game.gameInterface.PagePop(null);

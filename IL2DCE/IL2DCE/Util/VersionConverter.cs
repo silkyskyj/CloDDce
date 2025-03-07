@@ -27,7 +27,7 @@ namespace IL2DCE.Util
 
         public static Version GetCurrentVersion()
         {
-            Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            Assembly assembly = Assembly.GetExecutingAssembly();
             return assembly.GetName().Version;
         }
 
