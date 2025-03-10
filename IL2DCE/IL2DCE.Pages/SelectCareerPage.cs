@@ -283,9 +283,9 @@ namespace IL2DCE
             {
                 ComboBox comboBox = FrameworkElement.comboBoxSelectArmy;
                 comboBox.Items.Add(new ComboBoxItem() { Tag = -1, Content = "[All]" });
-                for (int i = 0; i < (int)EArmy.Count; i++)
+                for (EArmy army = EArmy.Red; army <= EArmy.Blue; army++)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.Army[i] });
+                    comboBox.Items.Add(new ComboBoxItem() {Tag = (int)army, Content = army.ToString() });
                 }
                 comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
             }
@@ -298,19 +298,19 @@ namespace IL2DCE
                 int armyIndex = SelectedArmyIndex;
                 if (armyIndex != -1)
                 {
+
                     if (armyIndex == (int)EArmy.Red)
                     {
-                        for (int i = 0; i < (int)AirForceRed.Count; i++)
+                        foreach (var item in Enum.GetValues(typeof(EAirForceRed)))
                         {
-                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = (int)item, Content = ((EAirForceRed)item).ToDescription() });
                         }
                     }
                     else if (armyIndex == (int)EArmy.Blue)
                     {
-                        int diff = (int)AirForceRed.Count;
-                        for (int i = 0; i < (int)AirForceBlue.Count; i++)
+                        foreach (var item in Enum.GetValues(typeof(EAirForceBlue)))
                         {
-                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i + diff] });
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = (int)item, Content = ((EAirForceBlue)item).ToDescription() });
                         }
                     }
                 }

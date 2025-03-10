@@ -25,21 +25,6 @@ using maddox.game;
 
 namespace IL2DCE
 {
-    public enum AirForceRed
-    {
-        Raf = 1,
-        Aa = 2,
-        Usaaf = 3,
-        Count = 3,
-    };
-
-    public enum AirForceBlue
-    {
-        Lw = 1,
-        Ra = 2,
-        Count = 2,
-    };
-
     public enum EBattleType
     {
         Unknown,
@@ -69,84 +54,6 @@ namespace IL2DCE
         public const string KeyAdditionalGroundOperations = "AdditionalGroundOperations";
         public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
-
-        public const int RankMax = 5;
-
-        public static readonly string[] RafRanks = new string[] {
-            "Pilot Officer",
-            "Flying Officer",
-            "Flight Lieutenant",
-            "Squadron Leader",
-            "Wing Commander",
-            "Group Captain",
-        };
-
-        public static readonly string[] LwRanks = new string[] {
-            "Leutnant",
-            "Oberleutnant",
-            "Hauptmann",
-            "Major",
-            "Oberstleutnant",
-            "Oberst",
-        };
-
-        public static readonly string[] RaRanks = new string[] {
-            "Sottotenente",
-            "Tenente",
-            "Capitano",
-            "Maggiore",
-            "Tenente Colonnello",
-            "Colonnello",
-        };
-
-        public static readonly string[] AaRanks = new string[] {
-            "Aspirant",
-            "Lieutenant",
-            "Capitaine",
-            "Commandant",
-            "Lieutenant-Colonel",
-            "Colonel",
-        };
-
-        public static readonly string[] UsaafRanks = new string[] {
-            "Flight Officer",
-            "Lieutenant",
-            "Captain",
-            "Major",
-            "Lt. Colonel",
-            "Colonel",
-        };
-
-        public static readonly string[][] Rank = new string[][] {
-            RafRanks,
-            AaRanks,
-            UsaafRanks,
-            LwRanks,
-            RaRanks,
-        };
-
-        public static readonly string[] Army = new string[] {
-            "Red",
-            "Blue",
-        };
-
-        public static readonly string[] AirForce = new string[] {
-            "Royal Air Force",
-            "Armee de l'air",
-            "United States Army Air Forces",
-            "Luftwaffe",
-            "Regia Aeronautica",
-                 "",
-        };
-
-        public static readonly string[] PilotNameDefault = new string[] {
-            "Joe Bloggs",
-            "Jean Dupont",
-            "John Smith",
-            "Max Mustermann",
-            "Mario Rossi",
-                "",
-        };
 
         #endregion
 
@@ -199,7 +106,7 @@ namespace IL2DCE
             }
             set
             {
-                if (value <= RankMax)
+                if (value <= MissionObjectModel.Rank.RankMax)
                 {
                     _rankIndex = value;
                 }
@@ -613,14 +520,9 @@ namespace IL2DCE
 
         public override string ToString()
         {
-            int army = ArmyIndex - 1;
-            int airforce = army * 3 + AirForceIndex - 1;
-            if (airforce < Rank.GetLength(0))
-            {
-                return string.Format("{0} {1}", Rank[airforce][RankIndex], PilotName);
-            }
-
-            return PilotName;
+            return string.Format("{0} {1}",
+                AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex],
+                PilotName);
         }
 
         public void WriteTo(ISectionFile careerFile)
@@ -658,13 +560,11 @@ namespace IL2DCE
 
         public string ToCurrestStatusString()
         {
-            int army = ArmyIndex - 1;
-            int airforce = army * 3 + AirForceIndex - 1;
             return String.Format(" Date: {0}\n Army: {1}\n AirForce: {2}\n Rank: {3}\n AirGroup: {4}\n Aircraft: {5}\n Experience: {6}\n",
                                     Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo),
-                                    Army[army],
-                                    AirForce[airforce],
-                                    Rank[airforce][RankIndex],
+                                    ((EArmy)ArmyIndex).ToString(),
+                                    ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription(): ((EAirForceBlue)AirForceIndex).ToDescription(),
+                                    AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex],
                                     AirGroup,
                                     Aircraft,
                                     Experience);
@@ -696,7 +596,6 @@ namespace IL2DCE
                                     Kills.ToString(KillsFormat, Config.Culture),
                                     KillsGround.ToString(KillsFormat, Config.Culture),
                                     sb.ToString());
-
         }
     }
 }

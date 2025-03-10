@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using maddox.game;
 
 namespace IL2DCE.Util
@@ -135,6 +136,24 @@ namespace IL2DCE.Util
                 }
             }
             return keys;
+        }
+
+        public static bool IsFileWritable(string path)
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+                {
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("IsFileWritable[Error={0}][Path={1}]", ex.Message, path);
+            }
+            return false;
+            
         }
     }
 }

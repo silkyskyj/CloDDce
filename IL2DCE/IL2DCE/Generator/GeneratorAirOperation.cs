@@ -562,7 +562,8 @@ namespace IL2DCE.Generator
                     {
                         AirGroup targetAirGroup = targetAirGroups.ToArray()[Random.Next(0, targetAirGroups.Count() - 1)];
                         Point2d? targetPoint = GetTargetPoint(targetAirGroup);
-                        airGroup.Hunting(targetPoint.Value, GetTargetAltitude(targetAirGroup).Value);
+                        double? targetAltitude = GetTargetAltitude(targetAirGroup);
+                        airGroup.Hunting(targetPoint.Value, targetAltitude.Value);
                         result = true;
                     }
                 }

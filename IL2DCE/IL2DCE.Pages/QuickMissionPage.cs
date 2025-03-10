@@ -265,6 +265,7 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectArmy.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
                 FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
                 FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
+                FrameworkElement.comboBoxSelectSkill.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectSkill_SelectionChanged);
                 FrameworkElement.comboBoxSelectMissionType.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectMissionType_SelectionChanged);
                 FrameworkElement.comboBoxSpawn.SelectionChanged += new SelectionChangedEventHandler(comboBoxSpawn_SelectionChanged);
                 FrameworkElement.comboBoxSelectCampaign.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectCampaign_IsEnabledChanged);
@@ -376,11 +377,52 @@ namespace IL2DCE
                 {
                     UpdateMissionTypeComboBoxInfo();
                     UpdateSkillComboBoxInfo();
+                    UpdateSkillComboBoxSkillInfo();
                     UpdateFuelComboBoxInfo();
                 }
 
                 UpdateAircraftImage();
                 UpdateButtonStatus();
+            }
+
+            private void comboBoxSelectSkill_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                // if (e.AddedItems.Count > 0)
+                {
+                    UpdateSkillComboBoxSkillInfo();
+                }
+            }
+
+            private void UpdateSkillComboBoxSkillInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
+                ToolTip toolTip = comboBox.ToolTip as ToolTip;
+                if (toolTip == null)
+                {
+                    comboBox.ToolTip = toolTip = new ToolTip();
+                }
+                string str = string.Empty;
+                Skill skill = SelectedSkill;
+                if (skill != null)
+                {
+                    if (skill == Skill.Default)
+                    {
+                        AirGroup airGroup = SelectedAirGroup;
+                        if (airGroup != null)
+                        {
+                            str = airGroup.Skills.Count > 0 ? string.Join("\n\n", airGroup.Skills.Values.Select(x => Skill.ToDetailString(x))) : airGroup.Skill != null ? Skill.ToDetailString(airGroup.Skill) : string.Empty;
+                        }
+                    }
+                    else if (skill == Skill.Random)
+                    {
+                        str = "Randomly determined";
+                    }
+                    else
+                    {
+                        str = skill.ToDetailString();
+                    }
+                }
+                toolTip.Content = str;
             }
 
             private void comboBoxSelectMissionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -483,7 +525,8 @@ namespace IL2DCE
             private void buttonImportMission_Click(object sender, RoutedEventArgs e)
             {
                 if (MessageBox.Show("The system will convert and import existing mission files in the CloD folder for use in IL2DCE.\n" + 
-                    "The copyright of files converted by this process belongs to the original author, not you, and they cannot be distributed or shared without the consent of the original author.\n" + 
+                    "The copyright of files converted by this process belongs to the original author, not you, and they cannot be distributed or shared without the consent of the original author.\n" +
+                    "The converted files can only be used by you and on this PC.\n" + 
                     "\nDo you agree to this ?", 
                     "Confimation [IL2DCE]", 
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
@@ -493,21 +536,30 @@ namespace IL2DCE
                     window.Title = "Mission file Conversion and Import in progress ... [IL2DCE]";
                     bool? result =  window.ShowDialog();
 
-                    MissionFileConverter converter = model.Result as MissionFileConverter;
+                    object[] results = model.Result as object [];
 
                     StringBuilder sb = new StringBuilder();
                     sb.AppendFormat("{0} to Import Missions", window.IsCanceled ? "Canceled": "Completed");
                     sb.AppendLine();
                     sb.AppendLine();
-                    sb.AppendFormat("Completed files: {0}", converter.CovertedMission.Count);
+                    sb.AppendFormat("Total files: {0}", (int)results[0]);
                     sb.AppendLine();
-                    if (converter.ErrorMsg.Count > 0)
+                    sb.AppendFormat("  Completed: {0}", (int)results[1]);
+                    sb.AppendLine();
+                    if ((int)results[2] > 0)
                     {
-                        sb.AppendFormat("Error files: {0}", converter.ErrorMsg.Count);
+                        sb.AppendFormat("  Error: {0}", (int)results[2]);
                         sb.AppendLine();
-                        // sb.AppendLine(string.Join(", ", converter.ErrorMsg));
                     }
-                    MessageBox.Show(sb.ToString(), "Information [IL2DCE] Convert & Import", MessageBoxButton.OK, MessageBoxImage.Information);
+                    sb.AppendLine();
+                    sb.AppendFormat("Log File: {0}", results[3] as string);
+                    sb.AppendLine();
+                    sb.AppendLine();
+                    sb.AppendLine("Do you want to open this log file ?");
+                    if (MessageBox.Show(sb.ToString(), "Information [IL2DCE] Convert & Import", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                    {
+                        Process.Start(results[3] as string);
+                    }
 
                     Game.Core.ReadCampaignInfo();
                     Game.Core.ReadCareerInfo();
@@ -553,7 +605,7 @@ namespace IL2DCE
                     career.Spawn = SelectedSpawn;
                     career.Fuel = SelectedFuel;
                     career.Speed = SelectedSpeed;
-                    career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Rundom ? new Skill[] { SelectedSkill }: null;
+                    career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? new Skill[] { SelectedSkill }: null;
                     career.Time = SelectedTime;
                     career.Weather = SelectedWeather;
                     career.CloudAltitude = SelectedCloudAltitude;
@@ -581,12 +633,9 @@ namespace IL2DCE
 
             #endregion
 
-            private void comboBoxSelectSkill_ToolTipOpening(object sender, ToolTipEventArgs e)
-            {
-
-            }
-
             #endregion
+
+            #region Import and Convert Mission File
 
             private void BackgrowndWorkerEventHandler(object sender, BackgrowndWorkerEventArgs e)
             {
@@ -595,7 +644,6 @@ namespace IL2DCE
                 ProgressWindowModel model = args.Argument as ProgressWindowModel;
 
                 MissionFileConverter converter = new MissionFileConverter(Game.gameInterface);
-                model.Result = converter;
                 Config config = Game.Core.Config;
 
 #if DEBUG && false
@@ -603,49 +651,56 @@ namespace IL2DCE
 #else
                 string destFolder = Config.CampaignsFolderDefault;
 #endif
+                string logFileSystemPath = string.Empty;
+                int files = 0;
+                int count = 0;
+                int error = 0;
                 try
                 {
-                    IEnumerable<string> filesFileType = converter.GetFiles(config.SorceFolderFileName).OrderBy(x => x);
-                    IEnumerable<string> filesFolderType = converter.GetFiles(config.SorceFolderFolderName).OrderBy(x => x);
-                    int files = filesFileType.Count() + filesFolderType.Count();
+                    IEnumerable<string> filesFileType = converter.GetFiles(config.SorceFolderFileName).Distinct().OrderBy(x => x);
+                    IEnumerable<string> filesFolderType = converter.GetFiles(config.SorceFolderFolderName).Distinct().OrderBy(x => x);
+                    files = filesFileType.Count() + filesFolderType.Count();
 
-                    //model.Minimum = 0;
-                    //model.Maximum = files;
-                    //model.Value = 0;
-                    //model.Title = "Importing Missions ...";
-
-                    int count = 0;
-                    string name;
-                    worker.ReportProgress(-1, string.Format(CultureInfo.InvariantCulture, "{0}|{1}", 0, files));
-                    foreach (var item in filesFileType)
+                    logFileSystemPath = CreateConvertLogFilePath();
+                    using (FileStream stream = new FileStream(logFileSystemPath, FileMode.Create, FileAccess.Write, FileShare.Read))
                     {
-                        worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
-                        if (worker.CancellationPending)
+                        using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
                         {
-                            args.Cancel = true;
-                            break;
+                            bool result;
+                            string name;
+                            worker.ReportProgress(-1, string.Format(CultureInfo.InvariantCulture, "{0}|{1}", 0, files));
+                            foreach (var item in filesFileType)
+                            {
+                                worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
+                                if (worker.CancellationPending)
+                                {
+                                    args.Cancel = true;
+                                    break;
+                                }
+                                name = Path.GetFileNameWithoutExtension(item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).LastOrDefault());
+                                converter.ErrorMsg.Clear();
+                                error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0: 1;
+                                WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
+                                count++;
+                            }
+                            foreach (var item in filesFolderType)
+                            {
+                                worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
+                                if (worker.CancellationPending)
+                                {
+                                    args.Cancel = true;
+                                    break;
+                                }
+                                string[] str = item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
+                                if (str.Length >= 2)
+                                {
+                                    name = string.Format("{0}_{1}", str[str.Length - 2], Path.GetFileNameWithoutExtension(str[str.Length - 1]));
+                                    error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
+                                    WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
+                                }
+                                count++;
+                            }
                         }
-                        name = Path.GetFileNameWithoutExtension(item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).LastOrDefault());
-                        converter.ConvertSystemPath(item, name, destFolder);
-                        count++;
-                        //model.Value++;
-                    }
-                    foreach (var item in filesFolderType)
-                    {
-                        worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
-                        if (worker.CancellationPending)
-                        {
-                            args.Cancel = true;
-                            break;
-                        }
-                        string[] str = item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
-                        if (str.Length >= 2)
-                        {
-                            name = string.Format("{0}_{1}", str[str.Length - 2], Path.GetFileNameWithoutExtension(str[str.Length - 1]));
-                            converter.ConvertSystemPath(item, name, destFolder);
-                        }
-                        count++;
-                        //model.Value++;
                     }
                 }
                 catch (Exception ex)
@@ -654,13 +709,38 @@ namespace IL2DCE
                     MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Stop);
                     Game.gameInterface.LogErrorToConsole(string.Format("{0} - {1}", "QuickMissionPage.buttonImportMissi_Click", ex.Message));
                 }
-                finally
-                {
-                    ;
-                }
 
-                args.Result = converter;
+                model.Result = new object[] { files, converter.CovertedMission.Count, error, logFileSystemPath, };
             }
+
+            private void WriteConvertLog(StreamWriter writer, bool result, string name, string path, List<string> errorMsg)
+            {
+                // Result,Name(ID),FilePath,Error
+                char[] del = new char[] { '\n' };
+                const string ResultsSuccess = "Success";
+                const string ResultsFail = "Fail";
+                string error = string.Join("|", errorMsg.Select(x => x.Replace("\"", "\"\"").TrimEnd(del)));
+                writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", result ? ResultsSuccess : ResultsFail, name, path, error);
+            }
+
+            private string CreateConvertLogFilePath()
+            {
+                const int MaxErrorCount = 10;
+                string logFileSystemPath = string.Empty;
+                int i = 0;
+                do
+                {
+                    string logFilePath = string.Format("{0}/{1}", Config.UserMissionsFolder, i == 0 ? Config.ConvertLogFileName :
+                                            Path.GetFileNameWithoutExtension(Config.ConvertLogFileName) + i + Path.GetExtension(Config.ConvertLogFileName));
+                    logFileSystemPath = Game.gameInterface.ToFileSystemPath(logFilePath);
+                }
+                while (!SectionFileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
+                return logFileSystemPath;
+            }
+
+            #endregion
+
+            #region ComboBox Cotrol
 
             private void UpdateCampaignComboBoxInfo()
             {
@@ -688,11 +768,11 @@ namespace IL2DCE
                 if (campaignInfo != null && (!checkArmy || currentMissionFile != null))
                 {
                     var armys = checkArmy ? currentMissionFile.AirGroups.Select(x => x.ArmyIndex).Distinct(): new int [0];
-                    for (int i = 0; i < (int)EArmy.Count; i++)
+                    for (EArmy army = EArmy.Red; army <= EArmy.Blue; army++)
                     {
-                        if (!checkArmy || armys.Contains(i + 1))
+                        if (!checkArmy || armys.Contains((int)army))
                         {
-                            comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.Army[i] });
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = (int)army, Content = army.ToString() });
                         }
                     }
                 }
@@ -713,22 +793,21 @@ namespace IL2DCE
                     var airForces = checkAirForce ? currentMissionFile.AirGroups.Where(x => x.ArmyIndex == armyIndex).Select(x => x.AirGroupInfo.AirForceIndex).Distinct(): new int [0];
                     if (armyIndex == (int)EArmy.Red)
                     {
-                        for (int i = 0; i < (int)AirForceRed.Count; i++)
+                        foreach (var item in Enum.GetValues(typeof(EAirForceRed)))
                         {
-                            if (!checkAirForce || airForces.Contains(i + 1))
+                            if (!checkAirForce || airForces.Contains((int)item))
                             {
-                                comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
+                                comboBox.Items.Add(new ComboBoxItem() { Tag = (int)item, Content = ((EAirForceRed)item).ToDescription() });
                             }
                         }
                     }
                     else if (armyIndex == (int)EArmy.Blue)
                     {
-                        int diff = (int)AirForceRed.Count;
-                        for (int i = 0; i < (int)AirForceBlue.Count; i++)
+                        foreach (var item in Enum.GetValues(typeof(EAirForceBlue)))
                         {
-                            if (!checkAirForce || airForces.Contains(i + 1))
+                            if (!checkAirForce || airForces.Contains((int)item))
                             {
-                                comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i + diff] });
+                                comboBox.Items.Add(new ComboBoxItem() { Tag = (int)item, Content = ((EAirForceBlue)item).ToDescription() });
                             }
                         }
                     }
@@ -748,14 +827,13 @@ namespace IL2DCE
 
                 if (armyIndex != -1 && airForceIndex != -1)
                 {
-                    int airforce = (armyIndex - 1) * 3 + airForceIndex - 1;
-
-                    for (int i = 0; i <= Career.RankMax; i++)
+                    AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == armyIndex && x.AirForceIndex == airForceIndex).FirstOrDefault();
+                    for (int i = 0; i <= Rank.RankMax; i++)
                     {
                         comboBox.Items.Add(
                             new ComboBoxItem()
                             {
-                                Content = Career.Rank[airforce][i],
+                                Content = airForce.Ranks[i],
                                 Tag = i,
                             });
                     }
@@ -971,11 +1049,16 @@ namespace IL2DCE
                 if (comboBox.Items.Count == 0)
                 {
                     comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Default, Content = DefaultString });
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Rundom, Content = RandomString });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Random, Content = RandomString });
+#if false
                     for (Skill.ESystemType skill = Skill.ESystemType.Rookie; skill < Skill.ESystemType.Count; skill++)
                     {
                         comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.GetSystemType(skill), Content = skill.ToString() });
                     }
+#else
+                    Config config = Game.Core.Config;
+                    config.Skills.ForEach(x => comboBox.Items.Add(new ComboBoxItem() { Tag = x, Content = x.Name }));
+#endif
                 }
 
                 string defaultString = string.Empty;
@@ -987,7 +1070,7 @@ namespace IL2DCE
                                     Skill.SkillNameMulti : skill != null ? skill.IsSystemType() ? skill.GetSystemTypeName() : Skill.SkillNameCustom : string.Empty);
                 }
                 FrameworkElement.labelDefaultSkill.Content = defaultString;
-                
+
                 EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
             }
 
@@ -1161,12 +1244,6 @@ namespace IL2DCE
                 }
             }
 
-            private void UpdateButtonStatus()
-            {
-                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
-                                                    SelectedAirGroup != null && SelectedRank != -1;
-            }
-
             private void UpdateComboBoxSelectInfoAirForce()
             {
                 int start = FrameworkElement.comboBoxSelectAirForce.SelectedIndex;
@@ -1208,11 +1285,19 @@ namespace IL2DCE
                 }
             }
 
+#endregion
+
+            private void UpdateButtonStatus()
+            {
+                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
+                                                    SelectedAirGroup != null && SelectedRank != -1;
+            }
+
             private void SelectLastInfo(Career career)
             {
                 FrameworkElement.comboBoxSelectCampaign.SelectedItem = career.CampaignInfo;
-                EnableSelectItem(FrameworkElement.comboBoxSelectArmy, Career.Army[career.ArmyIndex - 1]);
-                EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, Career.AirForce[(career.ArmyIndex - 1) * 3 + career.AirForceIndex - 1]);
+                EnableSelectItem(FrameworkElement.comboBoxSelectArmy, ((EArmy)career.ArmyIndex).ToString());
+                EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, ((EArmy)career.ArmyIndex) == EArmy.Red ? ((EAirForceRed)career.AirForceIndex).ToDescription() : ((EAirForceBlue)career.AirForceIndex).ToDescription());
                 FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
                 EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription() : string.Empty);

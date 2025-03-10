@@ -17,6 +17,7 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 
 namespace IL2DCE
@@ -62,6 +63,8 @@ namespace IL2DCE
         public const string KeyEnableFilterSelectCampaign = "EnableFilterSelectCampaign";
         public const string KeyEnableFilterSelectAirGroup = "EnableFilterSelectAirGroup";
         public const string KeyEnableAutoSelectComboBoxItem = "EnableAutoSelectComboBoxItem";
+
+        public const string ConvertLogFileName = "Covert.log";
 
         public const int DefaultAdditionalAirOperations = 3;
         public const int MaxAdditionalAirOperations = 10;
@@ -205,6 +208,12 @@ namespace IL2DCE
             private set;
         }
 
+        public Skills Skills
+        {
+            get;
+            private set;
+        }
+
         public static CultureInfo Culture = new CultureInfo("en-US", true);
 
         public static Version Version
@@ -312,6 +321,8 @@ namespace IL2DCE
             EnableFilterSelectCampaign = confFile.get(SectionQuickMissionPage, KeyEnableFilterSelectCampaign, 0) == 1;
             EnableFilterSelectAirGroup = confFile.get(SectionQuickMissionPage, KeyEnableFilterSelectAirGroup, 0) == 1;
             EnableAutoSelectComboBoxItem = confFile.get(SectionQuickMissionPage, KeyEnableAutoSelectComboBoxItem, 0) == 1;
+
+            Skills = Skills.Default;
         }
     }
 }

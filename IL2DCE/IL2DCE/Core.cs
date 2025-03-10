@@ -236,7 +236,7 @@ namespace IL2DCE
                     }
                 }
 
-                if (career.RankIndex < Career.RankMax && career.Experience >= (career.RankIndex + 1) * 1000)
+                if (career.RankIndex < Rank.RankMax && career.Experience >= (career.RankIndex + 1) * 1000)
                 {
                     career.RankIndex += 1;
                 }

@@ -157,17 +157,17 @@ namespace IL2DCE.Util
                             }
                             catch (Exception ex)
                             {
-                                ErrorMsg.Add(string.Format("Error [{0}] AirGroup Info[{1}] MissionFile:[{2}]", ex.Message, airGroup.AirGroupKey, name));
+                                ErrorMsg.Add(string.Format("Error [{0}] AirGroup Info[{1}] MissionFile:[{2}]\n", ex.Message, airGroup.AirGroupKey, name));
                             }
                         }
                         else
                         {
-                            ErrorMsg.Add(string.Format("No AirGroup Info[{0}] MissionFile:[{1}]", airGroup.AirGroupKey, name));
+                            ErrorMsg.Add(string.Format("No AirGroup Info[{0}] MissionFile:[{1}]\n", airGroup.AirGroupKey, name));
                         }
                     }
                     else
                     {
-                        ErrorMsg.Add(string.Format("No Aircraft Info[{0}] MissionFile:[{1}]", airGroup.Class, name));
+                        ErrorMsg.Add(string.Format("No Aircraft Info[{0}] MissionFile:[{1}]\n", airGroup.Class, name));
                     }
                 }
             }
@@ -262,7 +262,7 @@ namespace IL2DCE.Util
             if (Directory.Exists(folderSystemPath))
             {
                 string nameDir = folderSystemPath.Split(Path.DirectorySeparatorChar).LastOrDefault();
-                string[] filesPath = Directory.GetFiles(folderSystemPath, "*.mis");
+                string[] filesPath = Directory.GetFiles(folderSystemPath, fileSearchPattern);
                 foreach (var filePath in filesPath)
                 {
                     string nameFile = filePath.Split(Path.DirectorySeparatorChar).LastOrDefault();
@@ -305,7 +305,7 @@ namespace IL2DCE.Util
                 string folderSystemPath = gameInterface.ToFileSystemPath(item.Trim());
                 if (Directory.Exists(folderSystemPath) && IsTargetFolderSystemPath(folderSystemPath))
                 {
-                    files += Directory.GetFiles(folderSystemPath, fileSearchPattern, SearchOption.AllDirectories).Length;
+                    files += GetFiles(folderSystemPath, fileSearchPattern, SearchOption.AllDirectories).Count();
                 }
             }
             return files;
@@ -319,7 +319,7 @@ namespace IL2DCE.Util
                 string folderSystemPath = gameInterface.ToFileSystemPath(item.Trim());
                 if (Directory.Exists(folderSystemPath) && IsTargetFolderSystemPath(folderSystemPath))
                 {
-                    files.AddRange(Directory.GetFiles(folderSystemPath, fileSearchPattern, SearchOption.AllDirectories));
+                    files.AddRange(GetFiles(folderSystemPath, fileSearchPattern, SearchOption.AllDirectories));
                 }
             }
             return files;
@@ -347,14 +347,14 @@ namespace IL2DCE.Util
             return false;
         }
 
-        public string [] SplitTargetSystemPathInfo(string path)
+        public string[] SplitTargetSystemPathInfo(string path)
         {
             if (!string.IsNullOrEmpty(path))
             {
                 path = path.Trim();
                 if (path.StartsWith(homeFolder))
                 {
-                    return new string[] { homeFolder, path.Substring(homeFolder.Length) }; 
+                    return new string[] { homeFolder, path.Substring(homeFolder.Length) };
                 }
                 if (path.StartsWith(userFolder))
                 {
@@ -362,6 +362,18 @@ namespace IL2DCE.Util
                 }
             }
             return new string[] { string.Empty, path };
+        }
+
+        public static IEnumerable<string> GetFiles(string path, string searchPattern, SearchOption searchOption)
+        {
+            string[] files = Directory.GetFiles(path, searchPattern, searchOption);
+            int idx = searchPattern.LastIndexOf(".");
+            if (idx != -1)
+            {
+                string ext = searchPattern.Substring(idx);
+                return files.Where(x => x.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase));
+            }
+             return files;
         }
     }
 }

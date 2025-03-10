@@ -15,8 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -33,6 +35,21 @@ namespace IL2DCE.MissionObjectModel
             Avarage,
             Veteran,
             Ace,
+            Count,
+        }
+
+        public enum ETweakedType
+        {
+            FighterRookie,
+            FighterAvarage,
+            FighterExperienced,
+            FighterVeteran,
+            FighterAce,
+            BomberRookie,
+            BomberAvarage,
+            BomberExperienced,
+            BomberVeteran,
+            BomberAce,
             Count,
         }
 
@@ -57,6 +74,20 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 1.00f, 0.95f, 0.95f, 0.84f, 0.84f, 0.95f, 0.89f, 0.89f, },    // Ace
         };
 
+        public static readonly float[][] TweakedSkillValue = new float[(int)ETweakedType.Count][]
+        {
+            new float [] { 0.30f, 0.11f, 0.78f, 0.40f, 0.64f, 0.85f, 0.85f, 0.21f, },    // Rookie 
+            new float [] { 0.32f, 0.12f, 0.87f, 0.60f, 0.74f, 0.90f, 0.90f, 0.31f, },    // Avarage
+            new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
+            new float [] { 0.52f, 0.13f, 0.89f, 0.70f, 0.74f, 0.95f, 0.92f, 0.31f, },    // Experienced
+            new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
+            new float [] { 0.30f, 0.11f, 0.78f, 0.20f, 0.74f, 0.85f, 0.90f, 0.88f, },    // Rookie 
+            new float [] { 0.32f, 0.12f, 0.87f, 0.25f, 0.74f, 0.90f, 0.95f, 0.91f, },    // Avarage
+            new float [] { 0.52f, 0.13f, 0.89f, 0.28f, 0.74f, 0.92f, 0.95f, 0.91f, },    // Experienced
+            new float [] { 0.73f, 0.14f, 0.92f, 0.30f, 0.74f, 0.95f, 0.95f, 0.95f, },    // Veteran
+            new float [] { 0.93f, 0.15f, 0.96f, 0.35f, 0.74f, 1.00f, 1.00f, 0.97f, },    // Ace
+        };
+
         public static readonly Skill[] SystemSkills = new Skill[(int)ESystemType.Count]
         {
              new Skill(ESystemType.Rookie),
@@ -65,8 +96,22 @@ namespace IL2DCE.MissionObjectModel
              new Skill(ESystemType.Ace),
         };
 
+        public static readonly Skill[] TweakedSkills = new Skill[(int)ETweakedType.Count]
+        {
+             new Skill(ETweakedType.FighterRookie),
+             new Skill(ETweakedType.FighterAvarage),
+             new Skill(ETweakedType.FighterExperienced),
+             new Skill(ETweakedType.FighterVeteran),
+             new Skill(ETweakedType.FighterAce),
+             new Skill(ETweakedType.BomberRookie),
+             new Skill(ETweakedType.BomberAvarage),
+             new Skill(ETweakedType.BomberExperienced),
+             new Skill(ETweakedType.BomberVeteran),
+             new Skill(ETweakedType.BomberAce),
+        };
+
         public static readonly Skill Default = new Skill();
-        public static readonly Skill Rundom = new Skill();
+        public static readonly Skill Random = new Skill();
 
         public float[] Skills
         {
@@ -86,15 +131,21 @@ namespace IL2DCE.MissionObjectModel
             Skills = new float[(int)ESkilType.Count];
         }
 
-        public Skill(ESystemType systemType)
+        public Skill(ESystemType type)
         {
-            Name = systemType.ToString();
-            Skills = SystemSkillValue[(int)systemType];
+            Name = type.ToString();
+            Skills = SystemSkillValue[(int)type];
+        }
+
+        public Skill(ETweakedType type)
+        {
+            Name = type.ToString();
+            Skills = TweakedSkillValue[(int)type];
         }
 
         public Skill(float[] skills, string name = null)
         {
-            Name = name != null ? name: string.Empty;
+            Name = name != null ? name : string.Empty;
             if (skills != null && skills.Length >= (int)ESkilType.Count)
             {
                 Skills = skills;
@@ -130,7 +181,7 @@ namespace IL2DCE.MissionObjectModel
 
         public Skill GetSystemType()
         {
-            if (Skills != null && Skills.Length == (int)ESkilType.Count)
+            if (Skills != null && Skills.Length >= (int)ESkilType.Count)
             {
                 return SystemSkills.Where(x => x.Skills.Except(Skills).Count() == 0).FirstOrDefault();
             }
@@ -141,6 +192,41 @@ namespace IL2DCE.MissionObjectModel
         public override string ToString()
         {
             return string.Join(" ", Skills.Select(x => x.ToString(SkillFormat, Config.Culture)));
+        }
+
+        public string ToDetailString()
+        {
+            if (Skills != null && Skills.Length >= (int)ESkilType.Count)
+            {
+                StringBuilder sb = new StringBuilder();
+                // var types = Enum.GetNames(typeof(ESkilType));
+                for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
+                {
+                    sb.AppendFormat("{0} {1}", type.ToString(), Skills[(int)type].ToString(SkillFormat, Config.Culture));
+                    sb.AppendLine();
+                }
+                return sb.ToString();
+            }
+            return string.Empty;
+        }
+
+        public static string ToDetailString(string skill)
+        {
+            if (!string.IsNullOrEmpty(skill))
+            {
+                string[] str = skill.Split(SplitChar);
+                if (str.Length >= (int)ESkilType.Count)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
+                    {
+                        sb.AppendFormat("{0} {1}", type.ToString(), str[(int)type]);
+                        sb.AppendLine();
+                    }
+                    return sb.ToString();
+                }
+            }
+            return string.Empty;
         }
 
         public static Skill GetSystemType(ESystemType skill)
@@ -165,7 +251,6 @@ namespace IL2DCE.MissionObjectModel
 
         public static string GetSystemTypeName(float[] skills)
         {
-
             Skill skill = GetSystemType(skills);
             return skill != null ? skill.Name : string.Empty;
         }
@@ -216,6 +301,29 @@ namespace IL2DCE.MissionObjectModel
             }
             skill = null;
             return false;
+        }
+    }
+
+    public class Skills : List<Skill>
+    {
+        public static readonly Skills Default;
+
+        static Skills()
+        {
+            Default = CreateDefault();
+        }
+
+        public Skills()
+        {
+
+        }
+
+        public static Skills CreateDefault()
+        {
+            Skills skills = new Skills();
+            skills.AddRange(Skill.SystemSkills);
+            skills.AddRange(Skill.TweakedSkills);
+            return skills;
         }
     }
 }

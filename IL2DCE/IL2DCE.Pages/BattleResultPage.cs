@@ -22,6 +22,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using IL2DCE.Generator;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.play;
 using maddox.game.world;
@@ -356,8 +357,8 @@ namespace IL2DCE.Pages
                                     game.BattleSuccess.ToString(),
                                     exp,                       // Before 
                                     exp2,                      // Add Now
-                                    rank < Career.RankMax ? ((rank + 1) * 1000).ToString():  " - ",       // Next Rank
-                                    rank < Career.RankMax && (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty); // Rank Up
+                                    rank < Rank.RankMax ? ((rank + 1) * 1000).ToString():  " - ",       // Next Rank
+                                    rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty); // Rank Up
         }
 
         protected virtual string GetPlayerStat()

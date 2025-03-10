@@ -467,33 +467,41 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private void createInbetweenWaypoints(Point3d a, Point3d b)
+        private void createInbetweenWaypoints(Point3d from, Point3d to, bool plusRandomValue = false)
         {
-            Point3d p1 = new Point3d(a.x + 0.25 * (b.x - a.x), a.y + 0.25 * (b.y - a.y), a.z + 1.00 * (b.z - a.z));
-            Point3d p2 = new Point3d(a.x + 0.50 * (b.x - a.x), a.y + 0.50 * (b.y - a.y), a.z + 1.00 * (b.z - a.z));
-            Point3d p3 = new Point3d(a.x + 0.75 * (b.x - a.x), a.y + 0.75 * (b.y - a.y), a.z + 1.00 * (b.z - a.z));
+            double mpX = (to.x - from.x);
+            double mpY = (to.y - from.y);
+            double mpZ = (to.z - from.z);
+            if (plusRandomValue)
+            {
+                mpX *= Random.Default.Next(90, 110) / 100.0;
+                mpY *= Random.Default.Next(90, 110) / 100.0;
+            }
+            Point3d p1 = new Point3d(from.x + 0.25 * mpX, from.y + 0.25 * mpY, from.z + 1.00 * mpZ);
+            Point3d p2 = new Point3d(from.x + 0.50 * mpX, from.y + 0.50 * mpY, from.z + 1.00 * mpZ);
+            Point3d p3 = new Point3d(from.x + 0.75 * mpX, from.y + 0.75 * mpY, from.z + 1.00 * mpZ);
 
             _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p1, AirGroupWaypoint.DefaultNormaflyV));
             _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p2, AirGroupWaypoint.DefaultNormaflyV));
             _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p3, AirGroupWaypoint.DefaultNormaflyV));
         }
 
-        private void createStartInbetweenPoints(Point3d target)
+        private void createStartInbetweenPoints(Point3d target, bool plusRandomValue = false)
         {
-            createInbetweenWaypoints(Position, target);
+            createInbetweenWaypoints(Position, target, plusRandomValue);
         }
 
-        private void createEndInbetweenPoints(Point3d target, AiAirport landingAirport = null)
+        private void createEndInbetweenPoints(Point3d target, AiAirport landingAirport = null, bool plusRandomValue = false)
         {
             if (landingAirport != null)
             {
                 Point3d point = new Point3d(landingAirport.Pos().x, landingAirport.Pos().y, target.z);
-                createInbetweenWaypoints(target, point);
+                createInbetweenWaypoints(target, point, plusRandomValue);
             }
             else
             {
                 Point3d point = new Point3d(Position.x, Position.y, target.z);
-                createInbetweenWaypoints(target, point);
+                createInbetweenWaypoints(target, point, plusRandomValue);
             }
         }
 
@@ -711,11 +719,11 @@ namespace IL2DCE.MissionObjectModel
             createStartWaypoints();
 
             Point3d p = new Point3d(targetArea.x, targetArea.y, altitude);
-            createStartInbetweenPoints(p);
+            createStartInbetweenPoints(p, true);
 
             _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.HUNTING, targetArea.x, targetArea.y, altitude, AirGroupWaypoint.DefaultFlyV));
 
-            createEndInbetweenPoints(p, landingAirport);
+            createEndInbetweenPoints(p, landingAirport, true);
             createEndWaypoints(landingAirport);
         }
 

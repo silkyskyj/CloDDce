@@ -35,6 +35,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MissionObjectModel\AirForce.cs" />
+    <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
     <Compile Include="Fuel.cs" />
     <Compile Include="Generator\AircraftInfo.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Generator\Generator.cs" />
+    <Compile Include="MissionObjectModel\Rank.cs" />
     <Compile Include="MissionObjectModel\SilkySkyCloDFile.cs" />
     <Compile Include="MissionObjectModel\CloudAltitude.cs" />
     <Compile Include="MissionObjectModel\DistanceComparer.cs" />

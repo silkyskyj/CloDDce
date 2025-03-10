@@ -211,6 +211,8 @@ namespace IL2DCE.Pages
             FrameworkElement.textBoxPilotName.TextChanged += new TextChangedEventHandler(textBoxPilotName_TextChanged);
             FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
             FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
+            FrameworkElement.comboBoxSelectAdditionalAirOperations.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAdditionalAirOperations_SelectionChanged);
+            FrameworkElement.comboBoxSelectAdditionalGroundOperations.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAdditionalGroundOperations_SelectionChanged);
 
             FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
             FrameworkElement.datePickerStart.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerStart_SelectedDateChanged);
@@ -312,6 +314,16 @@ namespace IL2DCE.Pages
             UpdateButtonStatus();
         }
 
+        private void comboBoxSelectAdditionalAirOperations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateButtonStatus();
+        }
+
+        private void comboBoxSelectAdditionalGroundOperations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateButtonStatus();
+        }
+
         private void comboBoxSelectAdditionalGroundOperations_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             FrameworkElement.comboBoxSelectAdditionalGroundOperations.TextBox.TextChanged += new TextChangedEventHandler(comboBoxSelectAdditionalGroundOperations_TextChanged);
@@ -408,9 +420,9 @@ namespace IL2DCE.Pages
         private void UpdateArmyComboBoxInfo(int armyIndex = -1)
         {
             ComboBox comboBox = FrameworkElement.comboBoxSelectArmy;
-            for (int i = 0; i < (int)EArmy.Count; i++)
+            for (EArmy army = EArmy.Red; army <= EArmy.Blue; army++)
             {
-                comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.Army[i] });
+                comboBox.Items.Add(new ComboBoxItem() { Tag = (int)army, Content = army.ToString() });
             }
             if (armyIndex == -1)
             {
@@ -432,17 +444,16 @@ namespace IL2DCE.Pages
             {
                 if (armyIndex == (int)EArmy.Red)
                 {
-                    for (int i = 0; i < (int)AirForceRed.Count; i++)
+                    foreach (var item in Enum.GetValues(typeof(EAirForceRed)))
                     {
-                        comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i] });
+                        comboBox.Items.Add(new ComboBoxItem() { Tag = (int)item, Content = ((EAirForceRed)item).ToDescription() });
                     }
                 }
                 else if (armyIndex == (int)EArmy.Blue)
                 {
-                    int diff = (int)AirForceRed.Count;
-                    for (int i = 0; i < (int)AirForceBlue.Count; i++)
+                    foreach (var item in Enum.GetValues(typeof(EAirForceBlue)))
                     {
-                        comboBox.Items.Add(new ComboBoxItem() { Tag = i + 1, Content = Career.AirForce[i + diff] });
+                        comboBox.Items.Add(new ComboBoxItem() { Tag = (int)item, Content = ((EAirForceBlue)item).ToDescription() });
                     }
                 }
             }
@@ -462,8 +473,8 @@ namespace IL2DCE.Pages
             int airForceIndex = SelectedAirForceIndex;
             if (armyIndex != -1 && airForceIndex != -1)
             {
-                int airforce = (armyIndex - 1) * 3 + airForceIndex - 1;
-                FrameworkElement.textBoxPilotName.Text = Career.PilotNameDefault[airforce];
+                AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == armyIndex && x.AirForceIndex == airForceIndex).FirstOrDefault();
+                FrameworkElement.textBoxPilotName.Text = airForce.PilotNameDefault;
             }
             else
             {
@@ -482,14 +493,13 @@ namespace IL2DCE.Pages
 
             if (armyIndex != -1 && airForceIndex != -1)
             {
-                int airforce = (armyIndex - 1) * 3 + airForceIndex - 1;
-
-                for (int i = 0; i <= Career.RankMax; i++)
+                AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == armyIndex && x.AirForceIndex == airForceIndex).FirstOrDefault();
+                for (int i = 0; i <= Rank.RankMax; i++)
                 {
                     comboBox.Items.Add(
                         new ComboBoxItem()
                         {
-                            Content = Career.Rank[airforce][i],
+                            Content = airForce.Ranks[i],
                             Tag = i,
                         });
                 }
