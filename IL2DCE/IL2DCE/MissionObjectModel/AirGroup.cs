@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using IL2DCE.Generator;
 using maddox.game;
 using maddox.game.world;
@@ -70,18 +71,6 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public string Skill
-        {
-            get;
-            set;
-        }
-
-        public IDictionary<int, string> Skills
-        {
-            get;
-            set;
-        }
-
         public int CallSign
         {
             get
@@ -118,6 +107,42 @@ namespace IL2DCE.MissionObjectModel
             }
         }
         private IList<string> _detonator = new List<string>();
+
+        public string Skill
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<int, string> Skills
+        {
+            get;
+            set;
+        }
+
+        public string Aging
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<int, string> Skin
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<int, string> MarkingsOn
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<int, string> BandColor
+        {
+            get;
+            set;
+        }
 
         public Point3d Position
         {
@@ -238,6 +263,14 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public string DisplayDetailName
+        {
+            get
+            {
+                return string.Format("{0} ({1})", DisplayName, AircraftInfo.CreateDisplayName(Class));
+            }
+        }
+
         public Spawn Spawn
         {
             get;
@@ -272,7 +305,7 @@ namespace IL2DCE.MissionObjectModel
             // Flight
             for (int i = 0; i < FlightCount; i++)
             {
-                string key = "Flight" + i.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                string key = MissionFile.KeyFlight + i.ToString(CultureInfo.InvariantCulture.NumberFormat);
                 if (sectionFile.exist(id, key))
                 {
                     string acNumberLine = sectionFile.get(id, key);
@@ -290,19 +323,19 @@ namespace IL2DCE.MissionObjectModel
             }
 
             // Class
-            Class = sectionFile.get(id, "Class");
+            Class = sectionFile.get(id, MissionFile.KeyClass);
 
             // Formation
-            Formation = sectionFile.get(id, "Formation", string.Empty);
+            Formation = sectionFile.get(id, MissionFile.KeyFormation, string.Empty);
 
             // CallSign
-            int.TryParse(sectionFile.get(id, "CallSign", "0"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _callSign);
+            int.TryParse(sectionFile.get(id, MissionFile.KeyCallSign, "0"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _callSign);
 
             // Fuel
-            int.TryParse(sectionFile.get(id, "Fuel", "100"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _fuel);
+            int.TryParse(sectionFile.get(id, MissionFile.KeyFuel, "100"), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _fuel);
 
             // Weapons
-            string weaponsLine = sectionFile.get(id, "Weapons");
+            string weaponsLine = sectionFile.get(id, MissionFile.KeyWeapons);
             string[] weaponsList = weaponsLine.Split(new char[] { ' ' });
             if (weaponsList != null && weaponsList.Length > 0)
             {
@@ -319,7 +352,7 @@ namespace IL2DCE.MissionObjectModel
                 string key;
                 string value;
                 sectionFile.get(id, i, out key, out value);
-                if (key == "Detonator")
+                if (key == MissionFile.KeyDetonator)
                 {
                     _detonator.Add(value);
                 }
@@ -330,24 +363,25 @@ namespace IL2DCE.MissionObjectModel
 
             // Skill
             // TODO: Multi Skill(=Different)
-            Skill = sectionFile.get(id, "Skill", string.Empty);
-            Skills = new Dictionary<int, string>();
-            foreach (int flightIndex in Flights.Keys)
-            {
-                for (int i = 0; i < Flights[flightIndex].Count; i++)
-                {
-                    string key = string.Format("Skill{0}{1}",
-                        flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                    if (sectionFile.exist(id, key))
-                    {
-                        string skill = sectionFile.get(id, key);
-                        if (!string.IsNullOrEmpty(skill))
-                        {
-                            Skills.Add(flightIndex * 10 + i, skill);
-                        }
-                    }
-                }
-            }
+            Skill = sectionFile.get(id, MissionFile.KeySkill, string.Empty);
+            Skills = ReadFligthTypeValue(sectionFile, id, Flights, MissionFile.KeySkill);
+            //    new Dictionary<int, string>();
+            //foreach (int flightIndex in Flights.Keys)
+            //{
+            //    for (int i = 0; i < Flights[flightIndex].Count; i++)
+            //    {
+            //        string key = string.Format("{0}{1}{2}", MissionFile.KeySkill,
+            //            flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            //        if (sectionFile.exist(id, key))
+            //        {
+            //            string skill = sectionFile.get(id, key);
+            //            if (!string.IsNullOrEmpty(skill))
+            //            {
+            //                Skills.Add(flightIndex * 10 + i, skill);
+            //            }
+            //        }
+            //    }
+            //}
 #if DEBUG && false
             Debug.WriteLine(string.Format("Skill[{0}]={1}", AirGroupKey, Skill));
             if (Skills.Count > 0)
@@ -358,6 +392,69 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 #endif
+
+            // Aging
+            Aging = sectionFile.get(id, MissionFile.KeyAging, string.Empty);
+
+            // Skin
+            Skin = ReadFligthTypeValue(sectionFile, id, Flights, MissionFile.KeySkin);
+            //Skin = new Dictionary<int, string>();
+            //foreach (int flightIndex in Flights.Keys)
+            //{
+            //    for (int i = 0; i < Flights[flightIndex].Count; i++)
+            //    {
+            //        string key = string.Format("{0}{1}{2}", MissionFile.KeySkin,
+            //            flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            //        if (sectionFile.exist(id, key))
+            //        {
+            //            string skin = sectionFile.get(id, key);
+            //            if (!string.IsNullOrEmpty(skin))
+            //            {
+            //                Skin.Add(flightIndex * 10 + i, skin);
+            //            }
+            //        }
+            //    }
+            //}
+
+            // MarkingsOn
+            MarkingsOn = ReadFligthTypeValue(sectionFile, id, Flights, MissionFile.KeyMarkingsOn);
+            //MarkingsOn = new Dictionary<int, string>();
+            //foreach (int flightIndex in Flights.Keys)
+            //{
+            //    for (int i = 0; i < Flights[flightIndex].Count; i++)
+            //    {
+            //        string key = string.Format("{0}{1}{2}", MissionFile.KeyMarkingsOn,
+            //            flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            //        if (sectionFile.exist(id, key))
+            //        {
+            //            string markingsOn = sectionFile.get(id, key);
+            //            if (!string.IsNullOrEmpty(markingsOn))
+            //            {
+            //                MarkingsOn.Add(flightIndex * 10 + i, markingsOn);
+            //            }
+            //        }
+            //    }
+            //}
+
+            // BandColor
+            BandColor = ReadFligthTypeValue(sectionFile, id, Flights, MissionFile.KeyBandColor);
+            //BandColor = new Dictionary<int, string>();
+            //foreach (int flightIndex in Flights.Keys)
+            //{
+            //    for (int i = 0; i < Flights[flightIndex].Count; i++)
+            //    {
+            //        string key = string.Format("{0}{1}{2}", MissionFile.KeyBandColor,
+            //            flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            //        if (sectionFile.exist(id, key))
+            //        {
+            //            string bandColor = sectionFile.get(id, key);
+            //            if (!string.IsNullOrEmpty(bandColor))
+            //            {
+            //                BandColor.Add(flightIndex * 10 + i, bandColor);
+            //            }
+            //        }
+            //    }
+            //}
 
             // Id
             int flightMask = 0x0;
@@ -372,7 +469,7 @@ namespace IL2DCE.MissionObjectModel
             Id = ToString() + flightMask.ToString("X");
 
             // Waypoints            
-            for (int i = 0; i < sectionFile.lines(Id + "_Way"); i++)
+            for (int i = 0; i < sectionFile.lines(Id + MissionFile.SectionWay); i++)
             {
                 AirGroupWaypoint waypoint = new AirGroupWaypoint(sectionFile, Id, i);
                 _waypoints.Add(waypoint);
@@ -391,7 +488,7 @@ namespace IL2DCE.MissionObjectModel
             }
 
             // SetOnPark
-            SetOnParked = string.Compare(sectionFile.get(id, "SetOnPark", "0"), "1") == 0;
+            SetOnParked = string.Compare(sectionFile.get(id, MissionFile.KeySetOnPark, "0"), "1") == 0;
 
             Optimize();
         }
@@ -399,6 +496,93 @@ namespace IL2DCE.MissionObjectModel
         #endregion
 
         #region Private methods
+
+        private Dictionary<int, string> ReadFligthTypeValue(ISectionFile sectionFile, string id, IDictionary<int, IList<string>> flights, string keyInfo)
+        {
+            Dictionary<int, string> dic = new Dictionary<int, string>();
+            foreach (int flightIndex in flights.Keys)
+            {
+                for (int i = 0; i < flights[flightIndex].Count; i++)
+                {
+                    string key = string.Format("{0}{1}{2}", keyInfo,
+                        flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                    if (sectionFile.exist(id, key))
+                    {
+                        string value = sectionFile.get(id, key);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            dic.Add(flightIndex * 10 + i, value);
+                        }
+                    }
+                }
+            }
+            return dic;
+        }
+
+        private void WriteFlightTypeValue(ISectionFile sectionFile, string id, IDictionary<int, string> dic, string keyInfo)
+        {
+            foreach (var item in dic)
+            {
+                int flight = item.Key / 10;
+                string key = string.Format("{0}{1}{2}", keyInfo,
+                    (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
+                sectionFile.add(id, key, item.Value);
+            }
+        }
+
+        private IDictionary<int, string> UpdateFlightTypeValue(IDictionary<int, IList<string>> flights, IDictionary<int, string> dic)
+        {
+            Dictionary<int, string> dicNew = new Dictionary<int, string>();
+            string value = string.Empty;
+            foreach (int flightIndex in flights.Keys)
+            {
+                for (int i = 0; i < flights[flightIndex].Count; i++)
+                {
+                    int key = flightIndex * 10 + i;
+                    if (dic.ContainsKey(key))
+                    {
+                        value = dic[key];
+                    }
+                    else if (string.IsNullOrEmpty(value))
+                    {
+                        Debug.Assert(false);
+                    }
+                    else
+                    {
+                        // Use previous value
+                    }
+                    dicNew.Add(key, value);
+                }
+            }
+            return dicNew;
+        }
+
+        private void UpdateFlightTypeValue()
+        {
+            // Skills
+            if (Skills.Count > 0)
+            {
+                Skills = UpdateFlightTypeValue(Flights, Skills);
+            }
+
+            // Skin 
+            if (Skin.Count > 0)
+            {
+                Skin = UpdateFlightTypeValue(Flights, Skin);
+            }
+
+            // MarkingsOn
+            if (MarkingsOn.Count > 0)
+            {
+                MarkingsOn = UpdateFlightTypeValue(Flights, MarkingsOn);
+            }
+
+            // BandColor
+            if (BandColor.Count > 0)
+            {
+                BandColor = UpdateFlightTypeValue(Flights, BandColor);
+            }
+        }
 
         private double distanceBetween(AirGroupWaypoint start, AirGroupWaypoint end)
         {
@@ -549,50 +733,124 @@ namespace IL2DCE.MissionObjectModel
         {
             if (_waypoints.Count > 0)
             {
-                sectionFile.add("AirGroups", Id, "");
+                // Section AirGroup
+                sectionFile.add(MissionFile.SectionAirGroups, Id, string.Empty);
 
+                // Flight
                 foreach (int flightIndex in Flights.Keys)
                 {
                     if (Flights[flightIndex].Count > 0)
                     {
-                        string acNumberLine = "";
+                        string acNumberLine = string.Empty;
                         foreach (string acNumber in Flights[flightIndex])
                         {
                             acNumberLine += acNumber + " ";
                         }
-                        sectionFile.add(Id, "Flight" + flightIndex, acNumberLine.TrimEnd());
+                        sectionFile.add(Id, MissionFile.KeyFlight + flightIndex, acNumberLine.TrimEnd());
                     }
                 }
 
-                sectionFile.add(Id, "Class", Class);
-                sectionFile.add(Id, "Formation", Formation);
-                sectionFile.add(Id, "CallSign", CallSign.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                sectionFile.add(Id, "Fuel", Fuel.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                sectionFile.add(Id, MissionFile.KeyClass, Class);
+                sectionFile.add(Id, MissionFile.KeyFormation, Formation);
+                sectionFile.add(Id, MissionFile.KeyCallSign, CallSign.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                sectionFile.add(Id, MissionFile.KeyFuel, Fuel.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
+                // Weapons
                 if (Weapons != null && Weapons.Length > 0)
                 {
-                    string weaponsLine = "";
+                    string weaponsLine = string.Empty;
                     foreach (int weapon in Weapons)
                     {
                         weaponsLine += weapon.ToString(CultureInfo.InvariantCulture.NumberFormat) + " ";
                     }
-                    sectionFile.add(Id, "Weapons", weaponsLine.TrimEnd());
+                    sectionFile.add(Id, MissionFile.KeyWeapons, weaponsLine.TrimEnd());
                 }
 
                 if (Detonator != null && Detonator.Count > 0)
                 {
                     foreach (string detonator in Detonator)
                     {
-                        sectionFile.add(Id, "Detonator", detonator);
+                        sectionFile.add(Id, MissionFile.KeyDetonator, detonator);
                     }
                 }
 
+                // Update FlightCount & FlightSize 
+                UpdateFlightTypeValue();
+
+                // Skill
+                if (Skills != null && Skills.Count > 0)
+                {
+                    //// TODO: Multi Skill(=Different)
+                    //foreach (var item in Skills)
+                    //{
+                    //    int flight = item.Key / 10;
+                    //    string key = string.Format("{0}{1}{2}", MissionFile.KeySkill,
+                    //        (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
+                    //    sectionFile.add(Id, key, item.Value);
+                    //}
+                    WriteFlightTypeValue(sectionFile, Id, Skills, MissionFile.KeySkill);
+                }
+                else if (!string.IsNullOrEmpty(Skill))
+                {
+                    sectionFile.add(Id, MissionFile.KeySkill, Skill);
+                }
+                else
+                {
+                    Debug.Assert(false);
+                }
+
+                // Aging
+                if (!string.IsNullOrEmpty(Aging))
+                {
+                    sectionFile.add(Id, MissionFile.KeyAging, Aging);
+                }
+
+                // Skin
+                if (Skin != null && Skin.Count > 0)
+                {
+                    //foreach (var item in Skin)
+                    //{
+                    //    int flight = item.Key / 10;
+                    //    string key = string.Format("{0}{1}{2}", MissionFile.KeySkin,
+                    //        (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
+                    //    sectionFile.add(Id, key, item.Value);
+                    //}
+                    WriteFlightTypeValue(sectionFile, Id, Skin, MissionFile.KeySkin);
+                }
+
+                // MarkingsOn 
+                if (MarkingsOn != null && MarkingsOn.Count > 0)
+                {
+                    //foreach (var item in MarkingsOn)
+                    //{
+                    //    int flight = item.Key / 10;
+                    //    string key = string.Format("{0}{1}{2}", MissionFile.KeyMarkingsOn,
+                    //        (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
+                    //    sectionFile.add(Id, key, item.Value);
+                    //}
+                    WriteFlightTypeValue(sectionFile, Id, MarkingsOn, MissionFile.KeyMarkingsOn);
+                }
+
+                // BandColor
+                if (BandColor != null && BandColor.Count > 0)
+                {
+                    //foreach (var item in BandColor)
+                    //{
+                    //    int flight = item.Key / 10;
+                    //    string key = string.Format("{0}{1}{2}", MissionFile.KeyBandColor,
+                    //        (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
+                    //    sectionFile.add(Id, key, item.Value);
+                    //}
+                    WriteFlightTypeValue(sectionFile, Id, BandColor, MissionFile.KeyBandColor);
+                }
+
+                // Spawn (SetOnPark/Idle/Scramble)
                 if (Spawn != null)
                 {
                     switch (Spawn.Type)
                     {
                         case ESpawn.Parked:
-                            sectionFile.add(Id, "SetOnPark", "1");
+                            sectionFile.add(Id, MissionFile.KeySetOnPark, "1");
                             break;
                         case ESpawn.Idle:
                             sectionFile.add(Id, "Idle", "1");
@@ -610,43 +868,26 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
-                    sectionFile.add(Id, "SetOnPark", SetOnParked ? "1" : "0");
-                }
-
-
-                // Skill
-                if (Skills != null && Skills.Count > 0)
-                {
-                    // TODO: Multi Skill(=Different)
-                    foreach (var item in Skills)
-                    {
-                        int flight = item.Key / 10;
-                        string key = string.Format("Skill{0}{1}", (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat): string.Empty), (item.Key % 10));
-                        sectionFile.add(Id, key, item.Value);
-                    }
-                }
-                else
-                {
-                    sectionFile.add(Id, "Skill", Skill);
+                    sectionFile.add(Id, MissionFile.KeySetOnPark, SetOnParked ? "1" : "0");
                 }
 
                 foreach (AirGroupWaypoint waypoint in _waypoints)
                 {
                     if (waypoint.Target == null)
                     {
-                        sectionFile.add(Id + "_Way",
+                        sectionFile.add(Id + MissionFile.SectionWay,
                                         waypoint.Type.ToString(),
                                         waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat));
                     }
                     else
                     {
-                        sectionFile.add(Id + "_Way",
+                        sectionFile.add(Id + MissionFile.SectionWay,
                                         waypoint.Type.ToString(),
                                         waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Target);
                     }
                 }
 
-                sectionFile.add(Id, "Briefing", this.Id);
+                sectionFile.add(Id, MissionFile.KeyBriefing, this.Id);
             }
         }
 

@@ -184,9 +184,6 @@ namespace IL2DCE.Generator
 
         private void getRandomFlightSize(AirGroup airGroup, EMissionType missionType)
         {
-            airGroup.Flights.Clear();
-            int aircraftNumber = 1;
-
             AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
             int flightCount = (int)Math.Ceiling(airGroupInfo.FlightCount * this.Config.FlightCount);
             int flightSize = (int)Math.Ceiling(airGroupInfo.FlightSize * this.Config.FlightSize);
@@ -211,6 +208,8 @@ namespace IL2DCE.Generator
                 }
             }
 
+            airGroup.Flights.Clear();
+            int aircraftNumber = 1;
             for (int i = 0; i < flightCount; i++)
             {
                 List<string> aircraftNumbers = new List<string>();
@@ -384,16 +383,14 @@ namespace IL2DCE.Generator
                 airGroup.TraceLoadoutInfo();
 
                 AirGroup escortAirGroup = forcedEscortAirGroup;
-                if (isMissionTypeEscorted(missionType))
+                if (escortAirGroup == null && isMissionTypeEscorted(missionType))
                 {
-                    if (escortAirGroup == null)
-                    {
-                        escortAirGroup = getAvailableRandomEscortAirGroup(airGroup);
-                    }
+                    escortAirGroup = getAvailableRandomEscortAirGroup(airGroup);
                 }
 
                 if (missionType == EMissionType.RECON || missionType == EMissionType.MARITIME_RECON)
                 {
+#if false
                     GroundGroup groundGroup = forcedTargetGroundGroup;
                     Stationary stationary = forcedTargetStationary;
                     if (groundGroup == null && stationary == null)
@@ -403,8 +400,7 @@ namespace IL2DCE.Generator
                         if (groundGroup != null && stationary != null)
                         {
                             // Randomly select one of them
-                            int type = Random.Next(2);
-                            if (type == 0)
+                            if (Random.Next(2) == 0)
                             {
                                 stationary = null;
                             }
@@ -427,12 +423,16 @@ namespace IL2DCE.Generator
                         airGroup.Recon(stationary, altitude, escortAirGroup);
                         result = true;
                     }
+#else
+                    result = CreateAirOperationRecon(sectionFile, airGroup, missionType, aircraftParametersInfo, forcedTargetGroundGroup, forcedTargetStationary, escortAirGroup);
+#endif
                 }
                 else if (missionType == EMissionType.ATTACK_ARTILLERY
                     || missionType == EMissionType.ATTACK_RADAR
                     || missionType == EMissionType.ATTACK_AIRCRAFT
                     || missionType == EMissionType.ATTACK_DEPOT)
                 {
+#if false
                     Stationary stationary = forcedTargetStationary;
                     if (stationary == null)
                     {
@@ -445,6 +445,9 @@ namespace IL2DCE.Generator
 
                     airGroup.GroundAttack(stationary, altitude, escortAirGroup);
                     result = true;
+#else               
+                    result = CreateAirOperationAttackArtillery(airGroup, missionType, aircraftParametersInfo, forcedTargetStationary, escortAirGroup);
+#endif
                 }
                 else if (missionType == EMissionType.ATTACK_ARMOR ||
                     missionType == EMissionType.ATTACK_VEHICLE ||
@@ -453,6 +456,7 @@ namespace IL2DCE.Generator
                     missionType == EMissionType.ARMED_RECON ||
                     missionType == EMissionType.ARMED_MARITIME_RECON)
                 {
+#if false
                     GroundGroup groundGroup = forcedTargetGroundGroup;
                     Stationary stationary = forcedTargetStationary;
                     if (groundGroup == null && stationary == null)
@@ -487,9 +491,13 @@ namespace IL2DCE.Generator
                         airGroup.GroundAttack(stationary, altitude, escortAirGroup);
                         result = true;
                     }
+#else
+                    result = CreateAirOperationAttackArmor(sectionFile, airGroup, missionType, aircraftParametersInfo, forcedTargetGroundGroup, forcedTargetStationary, escortAirGroup);
+#endif
                 }
                 else if (missionType == EMissionType.INTERCEPT)
                 {
+#if false
                     GroundGroup targetGroundGroup;
                     Stationary targetStationary;
                     EMissionType offensiveMissionType;
@@ -500,9 +508,13 @@ namespace IL2DCE.Generator
                         airGroup.Intercept(offensiveAirGroup);
                         result = true;
                     }
+#else
+                    result = CreateAirOperationIntercept(sectionFile, briefingFile, airGroup);
+#endif
                 }
                 else if (missionType == EMissionType.ESCORT)
                 {
+#if false
                     AirGroup escortedAirGroup = getAvailableRandomEscortedAirGroup(airGroup);
                     if (escortedAirGroup != null)
                     {
@@ -526,9 +538,13 @@ namespace IL2DCE.Generator
                             result = true;
                         }
                     }
+#else
+                    result = CreateAirOperationEscort(sectionFile, briefingFile, airGroup);
+#endif
                 }
                 else if (missionType == EMissionType.COVER)
                 {
+#if false
                     GroundGroup targetGroundGroup;
                     Stationary targetStationary;
                     EMissionType offensiveMissionType;
@@ -542,9 +558,13 @@ namespace IL2DCE.Generator
                             result = true;
                         }
                     }
+#else
+                    result = CreateAirOperationCover(sectionFile, briefingFile, airGroup);
+#endif
                 }
                 else if (missionType == EMissionType.FOLLOW)
                 {
+#if false
                     var friendlyAirGroups = AvailableAirGroups.Where(x => x.ArmyIndex == airGroup.ArmyIndex && x != airGroup);
                     var targetAirGroups = friendlyAirGroups.Where(x => GetTargetPoint(x) != null);
                     if (targetAirGroups.Count() > 0)
@@ -553,9 +573,13 @@ namespace IL2DCE.Generator
                         airGroup.Follow(targetAirGroup);
                         result = true;
                     }
+#else
+                    result = CreateAirOperationFollow(airGroup);
+#endif
                 }
                 else if (missionType == EMissionType.HUNTING)
                 {
+#if false
                     var enemyAirGroups = AvailableAirGroups.Where(x => x.ArmyIndex != airGroup.ArmyIndex);
                     var targetAirGroups = enemyAirGroups.Where(x => GetTargetPoint(x) != null && GetTargetAltitude(x) != null);
                     if (targetAirGroups.Count() > 0)
@@ -566,6 +590,9 @@ namespace IL2DCE.Generator
                         airGroup.Hunting(targetPoint.Value, targetAltitude.Value);
                         result = true;
                     }
+#else
+                    result = CreateAirOperationHunting(airGroup);
+#endif
                 }
 
                 if (!result)
@@ -632,8 +659,10 @@ namespace IL2DCE.Generator
                 Generator.GeneratorBriefing.CreateBriefing(briefingFile, airGroup, missionType, escortAirGroup);
                 airGroup.WriteTo(sectionFile);
 
+                // create relational operation 1 [Friendly group Operation] 
                 if (forcedEscortAirGroup == null && escortAirGroup != null)
                 {
+#if false
                     // TODO: Consider calling CreateAirOperation with a forcedEscortedAirGroup.
                     AvailableAirGroups.Remove(escortAirGroup);
                     jamRunway(escortAirGroup);
@@ -649,63 +678,68 @@ namespace IL2DCE.Generator
                     escortAirGroup.Skill = getRandomSkill(EMissionType.ESCORT);
                     Generator.GeneratorBriefing.CreateBriefing(briefingFile, escortAirGroup, EMissionType.ESCORT, null);
                     escortAirGroup.WriteTo(sectionFile);
+#else
+                    CreateAirOperationEscorted(sectionFile, briefingFile, escortAirGroup, airGroup);
+#endif
                 }
 
-                if (isMissionTypeOffensive(missionType))
+                // create relational operation 2 [Enemy group Operation]
+                if (isMissionTypeOffensive(missionType) && allowDefensiveOperation)
                 {
-                    if (allowDefensiveOperation)
+#if false
+                    AirGroup defensiveAirGroup = getAvailableRandomDefensiveAirGroup(airGroup);
+                    if (defensiveAirGroup != null)
                     {
-                        AirGroup defensiveAirGroup = getAvailableRandomDefensiveAirGroup(airGroup);
-                        if (defensiveAirGroup != null)
+                        AvailableAirGroups.Remove(defensiveAirGroup);
+                        jamRunway(defensiveAirGroup);
+
+                        List<EMissionType> availableDefensiveMissionTypes = new List<EMissionType>();
+                        IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class).MissionTypes;
+                        foreach (EMissionType targetMissionType in missionTypes)
                         {
-                            AvailableAirGroups.Remove(defensiveAirGroup);
-                            jamRunway(defensiveAirGroup);
-
-                            List<EMissionType> availableDefensiveMissionTypes = new List<EMissionType>();
-                            IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class).MissionTypes;
-                            foreach (EMissionType targetMissionType in missionTypes)
+                            // "isMissionTypeAvailable" checks if there is any air group available for 
+                            // a offensive mission. As the air group for the offensive mission is already 
+                            // determined, the defensive mission type is always available.
+                            if (/*isMissionTypeAvailable(defensiveAirGroup, targetMissionType) &&*/ isMissionTypeDefensive(targetMissionType))
                             {
-                                // "isMissionTypeAvailable" checks if there is any air group available for 
-                                // a offensive mission. As the air group for the offensive mission is already 
-                                // determined, the defensive mission type is always available.
-                                if (/*isMissionTypeAvailable(defensiveAirGroup, targetMissionType) &&*/ isMissionTypeDefensive(targetMissionType))
-                                {
-                                    availableDefensiveMissionTypes.Add(targetMissionType);
-                                }
-                            }
-
-                            if (availableDefensiveMissionTypes.Count > 0)
-                            {
-                                int defensiveMissionTypeIndex = Random.Next(availableDefensiveMissionTypes.Count);
-                                EMissionType randomDefensiveMissionType = availableDefensiveMissionTypes[defensiveMissionTypeIndex];
-
-                                // TODO: Consider calling CreateAirOperation with a forcedOffensiveAirGroup to remove duplicated code.
-
-                                aircraftInfo = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class);
-                                aircraftParametersInfo = getAvailableRandomAircratParametersInfo(aircraftInfo, randomDefensiveMissionType);
-                                aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
-                                defensiveAirGroup.Weapons = aircraftLoadoutInfo.Weapons;
-                                defensiveAirGroup.TraceLoadoutInfo();
-
-                                if (randomDefensiveMissionType == EMissionType.INTERCEPT)
-                                {
-                                    defensiveAirGroup.Intercept(airGroup);
-                                }
-                                else if (randomDefensiveMissionType == EMissionType.COVER)
-                                {
-                                    if (airGroup.Altitude.HasValue && (airGroup.TargetGroundGroup != null || airGroup.TargetStationary != null))
-                                    {
-                                        defensiveAirGroup.Cover(airGroup, airGroup.Altitude.Value);
-                                    }
-                                }
-
-                                getRandomFlightSize(defensiveAirGroup, randomDefensiveMissionType);
-                                defensiveAirGroup.Skill = getRandomSkill(randomDefensiveMissionType);
-                                Generator.GeneratorBriefing.CreateBriefing(briefingFile, defensiveAirGroup, randomDefensiveMissionType, null);
-                                defensiveAirGroup.WriteTo(sectionFile);
+                                availableDefensiveMissionTypes.Add(targetMissionType);
                             }
                         }
+
+                        if (availableDefensiveMissionTypes.Count > 0)
+                        {
+                            int defensiveMissionTypeIndex = Random.Next(availableDefensiveMissionTypes.Count);
+                            EMissionType randomDefensiveMissionType = availableDefensiveMissionTypes[defensiveMissionTypeIndex];
+
+                            // TODO: Consider calling CreateAirOperation with a forcedOffensiveAirGroup to remove duplicated code.
+
+                            aircraftInfo = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class);
+                            aircraftParametersInfo = getAvailableRandomAircratParametersInfo(aircraftInfo, randomDefensiveMissionType);
+                            aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
+                            defensiveAirGroup.Weapons = aircraftLoadoutInfo.Weapons;
+                            defensiveAirGroup.TraceLoadoutInfo();
+
+                            if (randomDefensiveMissionType == EMissionType.INTERCEPT)
+                            {
+                                defensiveAirGroup.Intercept(airGroup);
+                            }
+                            else if (randomDefensiveMissionType == EMissionType.COVER)
+                            {
+                                if (airGroup.Altitude.HasValue && (airGroup.TargetGroundGroup != null || airGroup.TargetStationary != null))
+                                {
+                                    defensiveAirGroup.Cover(airGroup, airGroup.Altitude.Value);
+                                }
+                            }
+
+                            getRandomFlightSize(defensiveAirGroup, randomDefensiveMissionType);
+                            defensiveAirGroup.Skill = getRandomSkill(randomDefensiveMissionType);
+                            Generator.GeneratorBriefing.CreateBriefing(briefingFile, defensiveAirGroup, randomDefensiveMissionType, null);
+                            defensiveAirGroup.WriteTo(sectionFile);
+                        }
                     }
+#else
+                    result = CreateAirOperationDefensiv(sectionFile, briefingFile, airGroup);
+#endif
                 }
             }
             else
@@ -716,6 +750,273 @@ namespace IL2DCE.Generator
             return result;
         }
 
+        private bool CreateAirOperationRecon(ISectionFile sectionFile, AirGroup airGroup, EMissionType missionType, AircraftParametersInfo aircraftParametersInfo, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, AirGroup escortAirGroup)
+        {
+            bool result = false;
+            GroundGroup groundGroup = forcedTargetGroundGroup;
+            Stationary stationary = forcedTargetStationary;
+            if (groundGroup == null && stationary == null)
+            {
+                groundGroup = Generator.GeneratorGroundOperation.getAvailableRandomEnemyGroundGroup(airGroup, missionType);
+                stationary = Generator.GeneratorGroundOperation.getAvailableRandomEnemyStationary(airGroup, missionType);
+                if (groundGroup != null && stationary != null)
+                {
+                    // Randomly select one of them
+                    if (Random.Next(2) == 0)
+                    {
+                        stationary = null;
+                    }
+                    else
+                    {
+                        groundGroup = null;
+                    }
+                }
+            }
+
+            double altitude = getRandomAltitude(aircraftParametersInfo);
+            if (groundGroup != null)
+            {
+                Generator.GeneratorGroundOperation.CreateRandomGroundOperation(sectionFile, groundGroup);
+                airGroup.Recon(groundGroup, altitude, escortAirGroup);
+                result = true;
+            }
+            else if (stationary != null)
+            {
+                airGroup.Recon(stationary, altitude, escortAirGroup);
+                result = true;
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationAttackArtillery(AirGroup airGroup, EMissionType missionType, AircraftParametersInfo aircraftParametersInfo, Stationary forcedTargetStationary, AirGroup escortAirGroup)
+        {
+            bool result = false;
+            Stationary stationary = forcedTargetStationary;
+            if (stationary == null)
+            {
+                stationary = Generator.GeneratorGroundOperation.getAvailableRandomEnemyStationary(airGroup, missionType);
+            }
+            // No need to generate a random ground operation for the stationary as the stationary objects are always generated
+            // into the file.
+            //Generator.GeneratorGroundOperation.CreateRandomGroundOperation(sectionFile, stationary);
+            double altitude = getRandomAltitude(aircraftParametersInfo);
+
+            airGroup.GroundAttack(stationary, altitude, escortAirGroup);
+            result = true;
+            return result;
+        }
+
+        private bool CreateAirOperationAttackArmor(ISectionFile sectionFile, AirGroup airGroup, EMissionType missionType, AircraftParametersInfo aircraftParametersInfo, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, AirGroup escortAirGroup)
+        {
+            bool result = false;
+            GroundGroup groundGroup = forcedTargetGroundGroup;
+            Stationary stationary = forcedTargetStationary;
+            if (groundGroup == null && stationary == null)
+            {
+                groundGroup = Generator.GeneratorGroundOperation.getAvailableRandomEnemyGroundGroup(airGroup, missionType);
+                stationary = Generator.GeneratorGroundOperation.getAvailableRandomEnemyStationary(airGroup, missionType);
+
+                if (groundGroup != null && stationary != null)
+                {
+                    // Randomly select one of them
+                    int type = Random.Next(2);
+                    if (type == 0)
+                    {
+                        stationary = null;
+                    }
+                    else
+                    {
+                        groundGroup = null;
+                    }
+                }
+            }
+
+            double altitude = getRandomAltitude(aircraftParametersInfo);
+            if (groundGroup != null)
+            {
+                Generator.GeneratorGroundOperation.CreateRandomGroundOperation(sectionFile, groundGroup);
+                airGroup.GroundAttack(groundGroup, altitude, escortAirGroup);
+                result = true;
+            }
+            else if (stationary != null)
+            {
+                airGroup.GroundAttack(stationary, altitude, escortAirGroup);
+                result = true;
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationIntercept(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup)
+        {
+            bool result = false;
+            GroundGroup targetGroundGroup;
+            Stationary targetStationary;
+            EMissionType offensiveMissionType;
+            AirGroup offensiveAirGroup = getAvailableRandomOffensiveAirGroup(airGroup, out offensiveMissionType, out targetGroundGroup, out targetStationary);
+            if (offensiveAirGroup != null)
+            {
+                CreateAirOperation(sectionFile, briefingFile, offensiveAirGroup, offensiveMissionType, false, null, targetGroundGroup, targetStationary);
+                airGroup.Intercept(offensiveAirGroup);
+                result = true;
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationEscort(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup)
+        {
+            bool result = false;
+            AirGroup escortedAirGroup = getAvailableRandomEscortedAirGroup(airGroup);
+            if (escortedAirGroup != null)
+            {
+                List<EMissionType> availableEscortedMissionTypes = new List<EMissionType>();
+                IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(escortedAirGroup.Class).MissionTypes;
+                foreach (EMissionType targetMissionType in missionTypes)
+                {
+                    if (isMissionTypeAvailable(escortedAirGroup, targetMissionType) && isMissionTypeEscorted(targetMissionType))
+                    {
+                        availableEscortedMissionTypes.Add(targetMissionType);
+                    }
+                }
+
+                if (availableEscortedMissionTypes.Count > 0)
+                {
+                    int escortedMissionTypeIndex = Random.Next(availableEscortedMissionTypes.Count);
+                    EMissionType randomEscortedMissionType = availableEscortedMissionTypes[escortedMissionTypeIndex];
+                    CreateAirOperation(sectionFile, briefingFile, escortedAirGroup, randomEscortedMissionType, true, airGroup, null, null);
+
+                    airGroup.Escort(escortedAirGroup);
+                    result = true;
+                }
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationEscorted(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, AirGroup airGroupEscorted)
+        {
+            bool result = false;
+            // TODO: Consider calling CreateAirOperation with a forcedEscortedAirGroup.
+            AvailableAirGroups.Remove(airGroup);
+            jamRunway(airGroup);
+
+            AircraftInfo aircraftInfo = CampaignInfo.GetAircraftInfo(airGroup.Class);
+            AircraftParametersInfo aircraftParametersInfo = getAvailableRandomAircratParametersInfo(aircraftInfo, EMissionType.ESCORT);
+            AircraftLoadoutInfo aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
+            airGroup.Weapons = aircraftLoadoutInfo.Weapons;
+
+            airGroup.Escort(airGroupEscorted);
+
+            getRandomFlightSize(airGroup, EMissionType.ESCORT);
+            airGroup.Skill = getRandomSkill(EMissionType.ESCORT);
+            Generator.GeneratorBriefing.CreateBriefing(briefingFile, airGroup, EMissionType.ESCORT, null);
+            airGroup.WriteTo(sectionFile);
+            return result;
+        }
+
+        private bool CreateAirOperationCover(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup)
+        {
+            bool result = false;
+            GroundGroup targetGroundGroup;
+            Stationary targetStationary;
+            EMissionType offensiveMissionType;
+            AirGroup offensiveAirGroup = getAvailableRandomOffensiveAirGroup(airGroup, out offensiveMissionType, out targetGroundGroup, out targetStationary);
+            if (offensiveAirGroup != null)
+            {
+                CreateAirOperation(sectionFile, briefingFile, offensiveAirGroup, offensiveMissionType, false, null, targetGroundGroup, targetStationary);
+                if (offensiveAirGroup.Altitude.HasValue && (offensiveAirGroup.TargetGroundGroup != null || offensiveAirGroup.TargetStationary != null))
+                {
+                    airGroup.Cover(offensiveAirGroup, offensiveAirGroup.Altitude.Value);
+                    result = true;
+                }
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationFollow(AirGroup airGroup)
+        {
+            bool result = false;
+            var friendlyAirGroups = AvailableAirGroups.Where(x => x.ArmyIndex == airGroup.ArmyIndex && x != airGroup);
+            var targetAirGroups = friendlyAirGroups.Where(x => GetTargetPoint(x) != null);
+            if (targetAirGroups.Count() > 0)
+            {
+                AirGroup targetAirGroup = targetAirGroups.ToArray()[Random.Next(0, targetAirGroups.Count() - 1)];
+                airGroup.Follow(targetAirGroup);
+                result = true;
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationHunting(AirGroup airGroup)
+        {
+            bool result = false;
+            var enemyAirGroups = AvailableAirGroups.Where(x => x.ArmyIndex != airGroup.ArmyIndex);
+            var targetAirGroups = enemyAirGroups.Where(x => GetTargetPoint(x) != null && GetTargetAltitude(x) != null);
+            if (targetAirGroups.Count() > 0)
+            {
+                AirGroup targetAirGroup = targetAirGroups.ToArray()[Random.Next(0, targetAirGroups.Count() - 1)];
+                Point2d? targetPoint = GetTargetPoint(targetAirGroup);
+                double? targetAltitude = GetTargetAltitude(targetAirGroup);
+                airGroup.Hunting(targetPoint.Value, targetAltitude.Value);
+                result = true;
+            }
+            return result;
+        }
+
+        private bool CreateAirOperationDefensiv(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup)
+        {
+            bool result = false;
+            AirGroup defensiveAirGroup = getAvailableRandomDefensiveAirGroup(airGroup);
+            if (defensiveAirGroup != null)
+            {
+                AvailableAirGroups.Remove(defensiveAirGroup);
+                jamRunway(defensiveAirGroup);
+
+                List<EMissionType> availableDefensiveMissionTypes = new List<EMissionType>();
+                IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class).MissionTypes;
+                foreach (EMissionType targetMissionType in missionTypes)
+                {
+                    // "isMissionTypeAvailable" checks if there is any air group available for 
+                    // a offensive mission. As the air group for the offensive mission is already 
+                    // determined, the defensive mission type is always available.
+                    if (/*isMissionTypeAvailable(defensiveAirGroup, targetMissionType) &&*/ isMissionTypeDefensive(targetMissionType))
+                    {
+                        availableDefensiveMissionTypes.Add(targetMissionType);
+                    }
+                }
+
+                if (availableDefensiveMissionTypes.Count > 0)
+                {
+                    int defensiveMissionTypeIndex = Random.Next(availableDefensiveMissionTypes.Count);
+                    EMissionType randomDefensiveMissionType = availableDefensiveMissionTypes[defensiveMissionTypeIndex];
+
+                    // TODO: Consider calling CreateAirOperation with a forcedOffensiveAirGroup to remove duplicated code.
+
+                    AircraftInfo aircraftInfo = CampaignInfo.GetAircraftInfo(defensiveAirGroup.Class);
+                    AircraftParametersInfo aircraftParametersInfo = getAvailableRandomAircratParametersInfo(aircraftInfo, randomDefensiveMissionType);
+                    AircraftLoadoutInfo aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
+                    defensiveAirGroup.Weapons = aircraftLoadoutInfo.Weapons;
+                    defensiveAirGroup.TraceLoadoutInfo();
+
+                    if (randomDefensiveMissionType == EMissionType.INTERCEPT)
+                    {
+                        defensiveAirGroup.Intercept(airGroup);
+                    }
+                    else if (randomDefensiveMissionType == EMissionType.COVER)
+                    {
+                        if (airGroup.Altitude.HasValue && (airGroup.TargetGroundGroup != null || airGroup.TargetStationary != null))
+                        {
+                            defensiveAirGroup.Cover(airGroup, airGroup.Altitude.Value);
+                        }
+                    }
+
+                    getRandomFlightSize(defensiveAirGroup, randomDefensiveMissionType);
+                    defensiveAirGroup.Skill = getRandomSkill(randomDefensiveMissionType);
+                    Generator.GeneratorBriefing.CreateBriefing(briefingFile, defensiveAirGroup, randomDefensiveMissionType, null);
+                    defensiveAirGroup.WriteTo(sectionFile);
+                    result = true;
+                }
+            }
+            return result;
+        }
         private Point2d? GetTargetPoint(AirGroup airGroup)
         {
             if (airGroup.TargetArea != null && airGroup.TargetArea.HasValue)
@@ -1049,12 +1350,12 @@ namespace IL2DCE.Generator
             }
         }
 
-        private AirGroup getAvailableRandomEscortAirGroup(AirGroup escortedAirUnit)
+        private AirGroup getAvailableRandomEscortAirGroup(AirGroup escortedAirGroup)
         {
             List<AirGroup> airGroups = new List<AirGroup>();
             foreach (AirGroup airGroup in AvailableAirGroups)
             {
-                if (airGroup.ArmyIndex == escortedAirUnit.ArmyIndex)
+                if (airGroup.ArmyIndex == escortedAirGroup.ArmyIndex)
                 {
                     if (CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes.Contains(EMissionType.ESCORT))
                     {
@@ -1065,7 +1366,7 @@ namespace IL2DCE.Generator
 
             if (airGroups.Count > 0)
             {
-                AirGroup escortAirGroup = getRandomAirGroupBasedOnDistance(airGroups, escortedAirUnit);
+                AirGroup escortAirGroup = getRandomAirGroupBasedOnDistance(airGroups, escortedAirGroup);
 
                 return escortAirGroup;
             }

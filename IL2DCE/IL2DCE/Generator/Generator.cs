@@ -384,7 +384,7 @@ namespace IL2DCE.Generator
             briefingFile = new BriefingFile();
 
             briefingFile.MissionName = missionId;
-            briefingFile.MissionDescription = "";
+            briefingFile.MissionDescription = string.Empty;
 
             // Delete things from the template file.
 
@@ -413,24 +413,27 @@ namespace IL2DCE.Generator
             int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Core.Random.Next(5, 15) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
             missionFile.set(SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            string weatherString = "";
+            string weatherString = string.Empty;
             if (weatherIndex == 0)
             {
                 weatherString = "Clear";
             }
             else if (weatherIndex == 1)
             {
-                weatherString = "Light clouds at " + cloudsHeight + "m";
+                weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Light clouds at {0}m", cloudsHeight);
             }
             else if (weatherIndex == 2)
             {
-                weatherString = "Medium clouds at " + cloudsHeight + "m";
+                weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Medium clouds at {0}m", cloudsHeight);
             }
 
-            briefingFile.MissionDescription += Career.CampaignInfo.Id + "\n";
-            briefingFile.MissionDescription += "Date: " + Career.Date.Value.ToShortDateString() + "\n";
-            briefingFile.MissionDescription += "Time: " + MissionTime.ToString(time) + "\n";
-            briefingFile.MissionDescription += "Weather: " + weatherString + "\n";
+            //briefingFile.MissionDescription += Career.CampaignInfo.Id + "\n";
+            //briefingFile.MissionDescription += "Date: " + Career.Date.Value.ToShortDateString() + "\n";
+            //briefingFile.MissionDescription += "Time: " + MissionTime.ToString(time) + "\n";
+            //briefingFile.MissionDescription += "Weather: " + weatherString;
+
+            briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
+                                                                Career.CampaignInfo.Id, Career.Date.Value.ToShortDateString(), MissionTime.ToString(time), weatherString);
 
             // Create a air operation for the player.
             AirGroup airGroup = GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();

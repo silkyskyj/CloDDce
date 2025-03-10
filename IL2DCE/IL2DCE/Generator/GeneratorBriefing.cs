@@ -51,9 +51,13 @@ namespace IL2DCE.Generator
             briefingFile.Name[airGroup.Id] = airGroup.Id;
             briefingFile.Description[airGroup.Id] = new BriefingFile.Text();
 
-            briefingFile.Description[airGroup.Id].Sections.Add("descriptionSection", briefingFile.MissionDescription);
+            briefingFile.Description[airGroup.Id].Sections.Add("descriptionSection", string.Format("{0}\n\n{1}", airGroup.DisplayDetailName, briefingFile.MissionDescription));
 
-            string mainSection = missionType.ToString();
+            string mainSection = missionType.ToString(); 
+            if (airGroup.TargetAirGroup != null && (missionType == EMissionType.ESCORT || missionType == EMissionType.FOLLOW))
+            {
+                mainSection += string.Format("\n  [ {0} ]", airGroup.TargetAirGroup.DisplayDetailName);
+            }
             briefingFile.Description[airGroup.Id].Sections.Add("mainSection", mainSection);
 
             if (airGroup.Altitude != null && airGroup.Altitude.HasValue)
@@ -86,15 +90,7 @@ namespace IL2DCE.Generator
 
             if (airGroup.EscortAirGroup != null)
             {
-                briefingFile.Description[airGroup.Id].Sections.Add("escortSection", "Escorted by: " + escortAirGroup.Id);
-            }
-
-            if (airGroup.TargetAirGroup != null)
-            {
-                if (missionType == EMissionType.ESCORT)
-                {
-                    briefingFile.Description[airGroup.Id].Sections.Add("escortSection", "Escort: " + airGroup.TargetAirGroup.Id);
-                }
+                briefingFile.Description[airGroup.Id].Sections.Add("escortSection", "Escorted by: " + escortAirGroup.DisplayDetailName);
             }
         }
     }

@@ -25,6 +25,8 @@ namespace IL2DCE.MissionObjectModel
 {
     public class MissionFile
     {
+        #region Definition
+
         public const string SectionParts = "PARTS";
         public const string SectionMain = "MAIN";
         public const string SectionGlobalWind = "GlobalWind";
@@ -41,16 +43,33 @@ namespace IL2DCE.MissionObjectModel
         public const string SectionTrigger = "Trigger";
         public const string SectionAction = "Action";
         public const string SectionAirdromes = "Airdromes";
+        public const string SectionWay = "_Way";
         public const string KeyRunways = "Runways";
         public const string KeyWeatherIndex = "WeatherIndex";
         public const string KeyCloudsHeight = "CloudsHeight";
         public const string KeyTime = "TIME";
         public const string KeyPoints = "Points";
         public const string KeyPlayer = "player";
+        public const string KeyFlight = "Flight";
+        public const string KeyClass = "Class";
+        public const string KeyFormation = "Formation";
+        public const string KeyCallSign = "CallSign";
+        public const string KeyFuel = "Fuel";
+        public const string KeyWeapons = "Weapons";
+        public const string KeyDetonator = "Detonator";
+        public const string KeySetOnPark = "SetOnPark";
+        public const string KeySkill = "Skill";
+        public const string KeyAging = "Aging";
+        public const string KeySkin = "Skin";
+        public const string KeyMarkingsOn = "MarkingsOn";
+        public const string KeyBandColor = "BandColor";
+        public const string KeyBriefing = "Briefing";
 
         public const float DefaultTime = 12.0f;
         public const int DefaulWeatherIndex = 0;
         public const int DefaulCloudsHeight = 1000;
+
+        #endregion
 
         #region Property (& Variable)
 
