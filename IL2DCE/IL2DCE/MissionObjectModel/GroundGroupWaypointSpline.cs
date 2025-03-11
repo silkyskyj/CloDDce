@@ -28,21 +28,71 @@ namespace IL2DCE.MissionObjectModel
 
         public string S
         {
-            get
-            {
-                return _s;
-            }
+            get;
+            private set;
         }
-        private string _s;
 
         #endregion
 
         // Example: S 503 91 0.61 5.00 P 360207.22 223055.25  0 2 11.11
         // S ? ? ? ? P X Y  0 SubCount V
-        private Regex waypointLong = new Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
+        private static readonly Regex waypointLong = new Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
         // Example: S 503 79 0.00 -1330.00 P 354764.81 223866.00
         // S ? ? ? ? P X Y
-        private Regex waypointShort = new Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)$");
+        private static readonly Regex waypointShort = new Regex(@"^([0-9]+) ([0-9]+) ([0-9]+[.0-9]*) ([-+]?[0-9]+[.0-9]*) P ([0-9]+[.0-9]*) ([0-9]+[.0-9]*)$");
+
+        #region Public constructors
+
+        public GroundGroupWaypointSpline(double x, double y, double? v, string s)
+        {
+            X = x;
+            Y = y;
+            V = v;
+            S = s;
+        }
+
+        #endregion
+
+        public static GroundGroupWaypointSpline Create(ISectionFile sectionFile, string id, int line)
+        {
+            string key;
+            string value;
+            sectionFile.get(id + "_Road", line, out key, out value);
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+            {
+                if (waypointLong.IsMatch(value))
+                {
+                    Match match = waypointLong.Match(value);
+                    if (match.Groups.Count == 10)
+                    {
+                        double x;
+                        double y;
+                        double v;
+                        if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) && 
+                            double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) && 
+                            double.TryParse(match.Groups[9].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
+                        {
+                            return new GroundGroupWaypointSpline(x, y, v, match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value); 
+                        }
+                    }
+                }
+                else if (waypointShort.IsMatch(value))
+                {
+                    Match match = waypointShort.Match(value);
+                    if (match.Groups.Count == 7)
+                    {
+                        double x;
+                        double y;
+                        if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
+                            double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
+                        {
+                            return new GroundGroupWaypointSpline(x, y, null, match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
 
         public override bool IsSubWaypoint(ISectionFile sectionFile, string id, int line)
         {
@@ -60,62 +110,5 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        #region Public constructors
-
-        public GroundGroupWaypointSpline(ISectionFile sectionFile, string id, int line)
-        {
-            string key;
-            string value;
-            sectionFile.get(id + "_Road", line, out key, out value);
-
-            if (waypointLong.IsMatch(value))
-            {
-                Match match = waypointLong.Match(value);
-
-                if (match.Groups.Count == 10)
-                {
-                    _s = match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value;
-
-                    double x;
-                    if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
-                    {
-                        X = x;
-                    }
-                    double y;
-                    if (double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
-                    {
-                        Y = y;
-                    }
-
-                    double v;
-                    if (double.TryParse(match.Groups[9].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
-                    {
-                        V = v;
-                    }
-                }
-            }
-            else if (waypointShort.IsMatch(value))
-            {
-                Match match = waypointShort.Match(value);
-
-                if (match.Groups.Count == 7)
-                {
-                    _s = match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value;
-
-                    double x;
-                    if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
-                    {
-                        X = x;
-                    }
-                    double y;
-                    if (double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
-                    {
-                        Y = y;
-                    }
-                }
-            }
-        }
-
-        #endregion
     }
 }

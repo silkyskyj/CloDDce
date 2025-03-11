@@ -16,12 +16,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game;
-using maddox.game.play;
 
 namespace IL2DCE
 {
@@ -94,6 +96,9 @@ namespace IL2DCE
             set;
         }
 
+        private static StreamWriter writerLog;
+        private static object writerLogObject = new object();
+
         private string _debugFolderSystemPath;
         private string _careersFolderSystemPath;
         private string _campaignsFolderSystemPath;
@@ -101,6 +106,10 @@ namespace IL2DCE
         public Core(IGame game)
             : this(game, new Random())
         {
+            if (writerLog == null)
+            {
+                writerLog = new StreamWriter(new FileStream(CreatetLogFilePath(), FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+            }
         }
 
         public Core(IGame game, IRandom random)
@@ -186,13 +195,13 @@ namespace IL2DCE
                         }
                         catch (Exception ex)
                         {
-                            gameInterface.LogErrorToConsole("Error: read & parse Career file [{0}] {1}", path, ex.Message);
+                            string message = string.Format("Error: read & parse Career file [{0}] {1} {2}", path, ex.Message, ex.StackTrace);
+                            WriteLog(message);
                         }
                     }
                 }
             }
         }
-
 
         public void ResetCampaign(IGame game)
         {
@@ -205,7 +214,7 @@ namespace IL2DCE
         public CampaignStatus AdvanceCampaign(IGame game)
         {
             CampaignStatus result;
-            Generator.Generator generator = new Generator.Generator(this);
+            Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, CurrentCareer);
 
             Career career = CurrentCareer;
             CampaignInfo campaignInfo = career.CampaignInfo;
@@ -331,7 +340,7 @@ namespace IL2DCE
 
         public void CreateQuickMission(IGame game, Career career)
         {
-            Generator.Generator generator = new Generator.Generator(this);
+            Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, CurrentCareer);
 
             CampaignInfo campaignInfo = career.CampaignInfo;
 
@@ -435,8 +444,33 @@ namespace IL2DCE
                 }
                 catch (Exception ex)
                 {
-                    (GamePlay as IGame).gameInterface.LogErrorToConsole("Error: delete folder [{0}] {1}", item, ex.Message);
+                    string message = string.Format("Error: delete folder [{0}] {1} {2}", item, ex.Message, ex.StackTrace);
+                    WriteLog(message);
                 }
+            }
+        }
+
+        private string CreatetLogFilePath()
+        {
+            const int MaxErrorCount = 10;
+            string logFileSystemPath = string.Empty;
+            int i = 0;
+            do
+            {
+                string logFilePath = string.Format("{0}/{1}", Config.UserMissionsFolder, i == 0 ? Config.LogFileName :
+                                        Path.GetFileNameWithoutExtension(Config.ConvertLogFileName) + i + Path.GetExtension(Config.ConvertLogFileName));
+                logFileSystemPath = (GamePlay as IGame).gameInterface.ToFileSystemPath(logFilePath);
+            }
+            while (!SectionFileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
+            return logFileSystemPath;
+        }
+
+        public static void WriteLog(string message)
+        {
+            Debug.WriteLine(message);
+            lock (writerLogObject)
+            {
+                writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff", Config.Culture), message.Replace("\"", "\"\"").Replace("\n", "|"));
             }
         }
     }

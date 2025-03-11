@@ -21,7 +21,7 @@ using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public abstract class GroundGroupWaypoint
+    public abstract class GroundGroupWaypoint : GroupWaypoint
     {
         public abstract bool IsSubWaypoint(ISectionFile sectionFile, string id, int line);
 
@@ -41,18 +41,6 @@ namespace IL2DCE.MissionObjectModel
             {
                 return new Point2d(X, Y);
             }
-        }
-
-        public double X
-        {
-            get;
-            set;
-        }
-
-        public double Y
-        {
-            get;
-            set;
         }
 
         public double? V

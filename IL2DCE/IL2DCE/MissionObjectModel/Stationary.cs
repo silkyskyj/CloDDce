@@ -34,13 +34,13 @@ namespace IL2DCE.MissionObjectModel
 
     public class Stationary
     {
-        private List<string> _depots = new List<string>
+        private static readonly List<string> _depots = new List<string>
         {
             "Stationary.Morris_CS8_tank",
             "Stationary.Opel_Blitz_fuel",
         };
 
-        private List<string> _aircrafts = new List<string>
+        private static readonly List<string> _aircrafts = new List<string>
         {
             "Stationary.AnsonMkI",
             "Stationary.BeaufighterMkIF",
@@ -270,11 +270,11 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                if (Country == ECountry.gb || Country == ECountry.fr || Country == ECountry.us || Country == ECountry.ru || Country == ECountry.rz)
+                if (Country == ECountry.gb || Country == ECountry.fr || Country == ECountry.us || Country == ECountry.ru || Country == ECountry.rz || Country == ECountry.pl)
                 {
                     return (int)EArmy.Red;
                 }
-                else if (Country == ECountry.de || Country == ECountry.it || Country == ECountry.ja || Country == ECountry.ro || Country == ECountry.fi)
+                else if (Country == ECountry.de || Country == ECountry.it || Country == ECountry.ja || Country == ECountry.ro || Country == ECountry.fi || Country == ECountry.hu)
                 {
                     return (int)EArmy.Blue;
                 }
@@ -289,6 +289,14 @@ namespace IL2DCE.MissionObjectModel
         {
             get;
             set;
+        }
+
+        public string DisplayName
+        {
+            get
+            {
+                return Class.Replace(".", " ");
+            }
         }
 
         public Stationary(ISectionFile sectionFile, string id)
@@ -317,6 +325,17 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)
+        {
+            _id = id;
+            X = x;
+            Y = y;
+            Direction = direction;
+            Class = @class;
+            Country = country;
+            Options = options;
+        }
+
         private ECountry ParseCountry(string str)
         {
             if (!string.IsNullOrWhiteSpace(str))
@@ -326,7 +345,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     return country;
                 }
-                string [] strs = str.Split("_-.".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                string[] strs = str.Split("_-.".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 if (strs.Length >= 1)
                 {
                     if (Enum.TryParse(strs[0], true, out country))
@@ -337,17 +356,6 @@ namespace IL2DCE.MissionObjectModel
             }
             Debug.Assert(false, "Parse Country");
             return ECountry.nn;
-        }
-
-        public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)
-        {
-            _id = id;
-            X = x;
-            Y = y;
-            Direction = direction;
-            Class = @class;
-            Country = country;
-            Options = options;
         }
 
         public void WriteTo(ISectionFile sectionFile)

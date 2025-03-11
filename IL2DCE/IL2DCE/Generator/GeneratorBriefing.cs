@@ -15,35 +15,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using IL2DCE.MissionObjectModel;
+using maddox.game;
 
 namespace IL2DCE.Generator
 {
     class GeneratorBriefing
     {
-        private Generator Generator
+        private IGamePlay GamePlay
         {
             get;
             set;
         }
 
-        private Core Core
+        public GeneratorBriefing(IGamePlay gamePlay)
         {
-            get;
-            set;
-        }
-
-        public GeneratorBriefing(Core core, Generator generator)
-        {
-            Core = core;
-            Generator = generator;
-        }
-
-        private IRandom Random
-        {
-            get
-            {
-                return Core.Random;
-            }
+            GamePlay = gamePlay;
         }
 
         public void CreateBriefing(BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, AirGroup escortAirGroup)
@@ -53,10 +39,15 @@ namespace IL2DCE.Generator
 
             briefingFile.Description[airGroup.Id].Sections.Add("descriptionSection", string.Format("{0}\n\n{1}", airGroup.DisplayDetailName, briefingFile.MissionDescription));
 
-            string mainSection = missionType.ToString(); 
+            string mainSection = missionType.ToString();
             if (airGroup.TargetAirGroup != null && (missionType == EMissionType.ESCORT || missionType == EMissionType.FOLLOW))
             {
                 mainSection += string.Format("\n  [ {0} ]", airGroup.TargetAirGroup.DisplayDetailName);
+            }
+            else if ((airGroup.TargetGroundGroup != null || airGroup.TargetStationary != null) && missionType == EMissionType.COVER)
+            {
+                mainSection += string.Format("\n  [ {0} ]", 
+                    airGroup.TargetGroundGroup != null ? airGroup.TargetGroundGroup.DisplayName: airGroup.TargetStationary != null ? airGroup.TargetStationary.DisplayName: string.Empty);
             }
             briefingFile.Description[airGroup.Id].Sections.Add("mainSection", mainSection);
 
@@ -76,16 +67,16 @@ namespace IL2DCE.Generator
                 {
                     if (waypoint.Type == AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY)
                     {
-                        waypointSection += i + ". " + Core.GamePlay.gpSectorName(waypoint.X, waypoint.Y) + "\n";
+                        waypointSection += i + ". " + GamePlay.gpSectorName(waypoint.X, waypoint.Y) + "\n";
                     }
                     else
                     {
-                        waypointSection += i + ". " + Core.GamePlay.gpSectorName(waypoint.X, waypoint.Y) + " " + waypoint.Type.ToString() + "\n";
+                        waypointSection += i + ". " + GamePlay.gpSectorName(waypoint.X, waypoint.Y) + " " + waypoint.Type.ToString() + "\n";
                     }
                     i++;
                 }
 
-                briefingFile.Description[airGroup.Id].Sections.Add("waypointSection", waypointSection);
+                briefingFile.Description[airGroup.Id].Sections.Add("waypointSection", waypointSection.TrimEnd("\n".ToCharArray()));
             }
 
             if (airGroup.EscortAirGroup != null)

@@ -16,7 +16,7 @@
 
 using System.Globalization;
 
-namespace IL2DCE
+namespace IL2DCE.MissionObjectModel
 {
     public class Fuel
     {

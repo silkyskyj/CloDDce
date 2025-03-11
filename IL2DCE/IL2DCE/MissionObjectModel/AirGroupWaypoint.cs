@@ -23,7 +23,7 @@ using maddox.GP;
 namespace IL2DCE.MissionObjectModel
 {
 
-    public class AirGroupWaypoint
+    public class AirGroupWaypoint : GroupWaypoint
     {
         # region Public enums
 
@@ -69,12 +69,6 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        // X
-        public double X;
-
-        // Y
-        public double Y;
-
         // Altitude
         public double Z;
 
@@ -111,29 +105,36 @@ namespace IL2DCE.MissionObjectModel
             Target = target;
         }
 
-        public AirGroupWaypoint(ISectionFile sectionFile, string id, int line)
+        public static AirGroupWaypoint Create(ISectionFile sectionFile, string id, int line)
         {
             string key;
             string value;
             sectionFile.get(id + "_Way", line, out key, out value);
-
-            string[] valueList = value.Split(new char[] { ' ' });
-            if (valueList != null && valueList.Length >= 4)
+            AirGroupWaypointTypes type;
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value) && Enum.TryParse(key, true, out type))
             {
-                AirGroupWaypointTypes type;
-                if (Enum.TryParse(key, true, out type))
+                string[] valueList = value.Split(new char[] { ' ' });
+                if (valueList.Length >= 4)
                 {
-                    Type = type;
-                    double.TryParse(valueList[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
-                    double.TryParse(valueList[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
-                    double.TryParse(valueList[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Z);
-                    double.TryParse(valueList[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out V);
-                }
-                else
-                {
-                    Debug.Assert(false, "Parse AirGroupWaypointType");
+                    double dX;
+                    double dY;
+                    double dZ;
+                    double dV;
+                    if (double.TryParse(valueList[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dX) &&
+                        double.TryParse(valueList[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dY) &&
+                        double.TryParse(valueList[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dZ) &&
+                        double.TryParse(valueList[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dV))
+                    {
+                        return new AirGroupWaypoint(type, dX, dY, dZ, dV);
+                    }
+                    else
+                    {
+                        Debug.Assert(false, "Parse AirGroupWaypointType");
+                    }
                 }
             }
+
+            return null;
         }
 
         #endregion

@@ -150,7 +150,8 @@ namespace IL2DCE.Util
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("IsFileWritable[Error={0}][Path={1}]", ex.Message, path);
+                string message = string.Format("IsFileWritable[Error={0}][Path={1}]", ex.Message, path);
+                Core.WriteLog(message);
             }
             return false;
             

@@ -38,7 +38,7 @@
     <Compile Include="MissionObjectModel\AirForce.cs" />
     <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
-    <Compile Include="Fuel.cs" />
+    <Compile Include="MissionObjectModel\Fuel.cs" />
     <Compile Include="Generator\AircraftInfo.cs" />
     <Compile Include="Generator\AircraftLoadoutInfo.cs" />
     <Compile Include="Generator\AircraftParametersInfo.cs" />
@@ -55,6 +55,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Generator\Generator.cs" />
+    <Compile Include="MissionObjectModel\GroupWaypoint.cs" />
     <Compile Include="MissionObjectModel\Rank.cs" />
     <Compile Include="MissionObjectModel\SilkySkyCloDFile.cs" />
     <Compile Include="MissionObjectModel\CloudAltitude.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="MissionObjectModel\Waterway.cs" />
     <Compile Include="MissionObjectModel\MissionFile.cs" />
     <Compile Include="Random.cs" />
-    <Compile Include="Speed.cs" />
+    <Compile Include="MissionObjectModel\Speed.cs" />
     <Compile Include="Util\AircraftImage.cs" />
     <Compile Include="Util\MissionFileConverter.cs" />
     <Compile Include="Util\SectionFileUtil.cs" />

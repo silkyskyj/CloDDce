@@ -54,7 +54,8 @@ namespace IL2DCE
                         string missionFileName = Game.Core.CurrentCareer.MissionFileName;
                         if (missionFileName != null)
                         {
-                            Game.gameInterface.PagePush(Game.gameInterface.PageGet("SingleMissGame"), "mission " + missionFileName);
+                            PageInterface page = Game.gameInterface.PageGet("SingleMissGame");
+                            Game.gameInterface.PagePush(page, "mission " + missionFileName);
                         }
                     }
                     else

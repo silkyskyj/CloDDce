@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
@@ -48,11 +48,61 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public Waterway(ISectionFile sectionFile, string id)
+        public Waterway(List<GroundGroupWaypoint> waypoints)
+        {
+            _waypoints = waypoints;
+        }
+
+        //public Waterway(ISectionFile sectionFile, string id)
+        //{
+        //    // Waypoints
+        //    GroundGroupWaypoint lastWaypoint = null;
+        //    for (int i = 0; i < sectionFile.lines(id + "_Road"); i++)
+        //    {
+        //        string key;
+        //        string value;
+        //        sectionFile.get(id + "_Road", i, out key, out value);
+
+        //        GroundGroupWaypoint waypoint = null;
+        //        if (!key.Contains("S"))
+        //        {
+        //            waypoint = GroundGroupWaypointLine.Create(sectionFile, id, i);
+        //        }
+        //        else if (key.Contains("S"))
+        //        {
+        //            waypoint = GroundGroupWaypointSpline.Create(sectionFile, id, i);
+        //        }
+
+        //        if (waypoint != null)
+        //        {
+        //            // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
+        //            if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < sectionFile.lines(id + "_Road") - 1)
+        //            {
+        //                if (lastWaypoint != null)
+        //                {
+        //                    lastWaypoint.SubWaypoints.Add(waypoint);
+        //                }
+        //                else
+        //                {
+        //                    throw new FormatException(string.Format("no last Waterway Waypoint[{0}]", id));
+        //                }
+        //            }
+        //            else
+        //            {
+        //                Waypoints.Add(waypoint);
+        //                lastWaypoint = waypoint;
+        //            }
+        //        }
+        //    }
+        //}
+
+        public static Waterway Create(ISectionFile sectionFile, string id)
         {
             // Waypoints
+            List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
             GroundGroupWaypoint lastWaypoint = null;
-            for (int i = 0; i < sectionFile.lines(id + "_Road"); i++)
+            int lines = sectionFile.lines(id + "_Road");
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;
@@ -61,31 +111,42 @@ namespace IL2DCE.MissionObjectModel
                 GroundGroupWaypoint waypoint = null;
                 if (!key.Contains("S"))
                 {
-                    waypoint = new GroundGroupWaypointLine(sectionFile, id, i);
+                    waypoint = GroundGroupWaypointLine.Create(sectionFile, id, i);
                 }
                 else if (key.Contains("S"))
                 {
-                    waypoint = new GroundGroupWaypointSpline(sectionFile, id, i);
+                    waypoint = GroundGroupWaypointSpline.Create(sectionFile, id, i);
                 }
 
-                // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
-                if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < sectionFile.lines(id + "_Road") - 1)
+                if (waypoint != null)
                 {
-                    if (lastWaypoint != null)
+                    // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
+                    if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < lines - 1)
                     {
-                        lastWaypoint.SubWaypoints.Add(waypoint);
+                        if (lastWaypoint != null)
+                        {
+                            lastWaypoint.SubWaypoints.Add(waypoint);
+                        }
+                        else
+                        {
+                            // throw new FormatException(string.Format("no last Waterway Waypoint[{0}]", id));
+                            // Debug.Assert(false, string.Format("no last Waterway Waypoint[{0}]", id));
+                        }
                     }
                     else
                     {
-                        throw new FormatException(string.Format("no last Waterway Waypoint[{0}]", id));
+                        waypoints.Add(waypoint);
+                        lastWaypoint = waypoint;
                     }
                 }
-                else
-                {
-                    Waypoints.Add(waypoint);
-                    lastWaypoint = waypoint;
-                }
             }
+
+            if (waypoints.Count > 0)
+            {
+                return new Waterway(waypoints);
+            }
+
+            return null;
         }
     }
 }

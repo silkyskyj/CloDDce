@@ -32,8 +32,6 @@ namespace IL2DCE.Generator
     /// </remarks>
     class Generator
     {
-        private const string SectionMain = "MAIN";
-
         internal GeneratorAirOperation GeneratorAirOperation
         {
             get;
@@ -54,49 +52,34 @@ namespace IL2DCE.Generator
 
         internal IRandom Random
         {
-            get
-            {
-                return _core.Random;
-            }
+            get;
+            set;
         }
-
-        internal Core Core
-        {
-            get
-            {
-                return _core;
-            }
-        }
-        private Core _core;
 
         private IGamePlay GamePlay
         {
-            get
-            {
-                return _core.GamePlay;
-            }
+            get;
+            set;
         }
 
         private Config Config
         {
-            get
-            {
-                return _core.Config;
-            }
-
+            get;
+            set;
         }
 
         private Career Career
         {
-            get
-            {
-                return _core.CurrentCareer;
-            }
+            get;
+            set;
         }
 
-        public Generator(Core core)
+        public Generator(IGamePlay gamePlay, IRandom random, Config config, Career career)
         {
-            _core = core;
+            GamePlay = gamePlay;
+            Random = random;
+            Config = config;
+            Career = career;
         }
 
         public void GenerateInitialMissionTempalte(IEnumerable<string> initialMissionTemplateFiles, out ISectionFile initialMissionTemplateFile, AirGroupInfos airGroupInfos = null)
@@ -374,9 +357,9 @@ namespace IL2DCE.Generator
         {
             MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName), Career.CampaignInfo.AirGroupInfos);
 
-            GeneratorAirOperation = new GeneratorAirOperation(this, Career.CampaignInfo, missionTemplateFile, Core.GamePlay, Core.Config);
-            GeneratorGroundOperation = new GeneratorGroundOperation(this, Career.CampaignInfo, missionTemplateFile, Core.GamePlay, Core.Config);
-            GeneratorBriefing = new GeneratorBriefing(Core, this);
+            GeneratorGroundOperation = new GeneratorGroundOperation(Random, Career.CampaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries, GamePlay, Config);
+            GeneratorBriefing = new GeneratorBriefing(GamePlay);
+            GeneratorAirOperation = new GeneratorAirOperation(GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups, GamePlay, Config, Random);
 
             // Load the environment template file for the generated mission.
 
@@ -390,28 +373,28 @@ namespace IL2DCE.Generator
 
             // It is not necessary to delete air groups and ground groups from the missionFile as it 
             // is based on the environment template. If there is anything in it (air groups, ...) it is intentional.
-            for (int i = 0; i < missionFile.lines(SectionMain); i++)
+            for (int i = 0; i < missionFile.lines(MissionFile.SectionMain); i++)
             {
                 // Delete player from the template file.
                 string key;
                 string value;
-                missionFile.get(SectionMain, i, out key, out value);
+                missionFile.get(MissionFile.SectionMain, i, out key, out value);
                 if (key == MissionFile.KeyPlayer)
                 {
-                    missionFile.delete(SectionMain, i);
+                    missionFile.delete(MissionFile.SectionMain, i);
                     break;
                 }
             }
 
             // Add things to the template file.
-            double time = Career.Time == (int)MissionTime.Random ? Core.Random.Next(5, 21): Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
-            missionFile.set(SectionMain, MissionFile.KeyTime, time.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            double time = Career.Time == (int)MissionTime.Random ? Random.Next(5, 21): Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
+            missionFile.set(MissionFile.SectionMain, MissionFile.KeyTime, time.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int weatherIndex = Career.Weather == (int)EWeather.Random ? Core.Random.Next(0, 2): Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
-            missionFile.set(SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            int weatherIndex = Career.Weather == (int)EWeather.Random ? Random.Next(0, 2): Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
+            missionFile.set(MissionFile.SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Core.Random.Next(5, 15) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
-            missionFile.set(SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Random.Next(5, 15) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
+            missionFile.set(MissionFile.SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = string.Empty;
             if (weatherIndex == 0)
@@ -435,66 +418,71 @@ namespace IL2DCE.Generator
             briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
                                                                 Career.CampaignInfo.Id, Career.Date.Value.ToShortDateString(), MissionTime.ToString(time), weatherString);
 
+            // List<AirGroup> assignedOperationAirGroups = new List<AirGroup>();
+
             // Create a air operation for the player.
             AirGroup airGroup = GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
-            if (airGroup != null)
+            if (airGroup == null)
             {
-                bool result;
-                EMissionType? missionType = Career.MissionType;
-                Spawn spawn = new Spawn(Career.Spawn);
+                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
+            }
+
+            EMissionType? missionType = Career.MissionType;
+            Spawn spawn = new Spawn(Career.Spawn);
+            if (missionType == null)
+            {
+                missionType = GeneratorAirOperation.GetRandomMissionType(airGroup);
                 if (missionType == null)
                 {
-                    result = GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, airGroup, Career.PlayerAirGroupSkill, spawn);
+                    throw new NotImplementedException(string.Format("No Available Mission. AirGroup[{0}]", airGroup.DisplayDetailName));
+                }
+            }
+
+            bool result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                                                        Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+
+            if (!result)
+            {
+                // throw new ArgumentException(string.Format("no available Player Mission[Mission:{0} AirGroup:{1}]", missionId, airGroup));
+            }
+
+            // Determine the aircraft that is controlled by the player.
+            List<string> aircraftOrder = determineAircraftOrder(airGroup);
+
+            string playerAirGroupKey = airGroup.AirGroupKey;
+            int playerSquadronIndex = airGroup.SquadronIndex;
+            if (aircraftOrder.Count > 0)
+            {
+                string playerPosition = aircraftOrder[aircraftOrder.Count - 1];
+
+                double factor = aircraftOrder.Count / 6;
+                int playerPositionIndex = (int)(Math.Floor(Career.RankIndex * factor));
+                playerPosition = aircraftOrder[aircraftOrder.Count - 1 - playerPositionIndex];
+                string playerInfo = AirGroup.CreateSquadronString(playerAirGroupKey, playerSquadronIndex) + playerPosition;
+                if (missionFile.exist(MissionFile.SectionMain, MissionFile.KeyPlayer))
+                {
+                    missionFile.set(MissionFile.SectionMain, MissionFile.KeyPlayer, playerInfo);
                 }
                 else
                 {
-                    result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                                Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+                    missionFile.add(MissionFile.SectionMain, MissionFile.KeyPlayer, playerInfo);
                 }
-
-                if (!result)
-                {
-                    // throw new ArgumentException(string.Format("no available Player Mission[Mission:{0} AirGroup:{1}]", missionId, airGroup));
-                }
-
-                // Determine the aircraft that is controlled by the player.
-                List<string> aircraftOrder = determineAircraftOrder(airGroup);
-
-                string playerAirGroupKey = airGroup.AirGroupKey;
-                int playerSquadronIndex = airGroup.SquadronIndex;
-                if (aircraftOrder.Count > 0)
-                {
-                    string playerPosition = aircraftOrder[aircraftOrder.Count - 1];
-
-                    double factor = aircraftOrder.Count / 6;
-                    int playerPositionIndex = (int)(Math.Floor(Career.RankIndex * factor));
-                    playerPosition = aircraftOrder[aircraftOrder.Count - 1 - playerPositionIndex];
-                    string playerInfo = AirGroup.CreateSquadronString(playerAirGroupKey, playerSquadronIndex) + playerPosition;
-                    if (missionFile.exist(SectionMain, "player"))
-                    {
-                        missionFile.set(SectionMain, MissionFile.KeyPlayer, playerInfo);
-                    }
-                    else
-                    {
-                        missionFile.add(SectionMain, MissionFile.KeyPlayer, playerInfo);
-                    }
-                }
-            }
-            else
-            {
-                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
             }
 
             // Add additional air operations.
             if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
             {
-                for (int i = 0; i < Career.AdditionalAirOperations; i++)
+                int i = 0;
+                while (i < Career.AdditionalAirOperations && GeneratorAirOperation.AvailableAirGroups.Count > 0)
                 {
                     if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
                     {
-                        int randomAirGroupIndex = Core.Random.Next(GeneratorAirOperation.AvailableAirGroups.Count);
+                        int randomAirGroupIndex = Random.Next(GeneratorAirOperation.AvailableAirGroups.Count);
                         AirGroup randomAirGroup = GeneratorAirOperation.AvailableAirGroups[randomAirGroupIndex];
-                        GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup);
+                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup))
+                        {
+                            i++;
+                        }
                     }
                 }
             }
@@ -502,21 +490,21 @@ namespace IL2DCE.Generator
             // Add additional ground operations.
             if (GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
             {
-                for (int i = 0; i < Career.AdditionalGroundOperations; i++)
+                int i = 0;
+                while (i < Career.AdditionalGroundOperations && GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
                 {
-                    if (GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
+                    int randomGroundGroupIndex = Random.Next(GeneratorGroundOperation.AvailableGroundGroups.Count);
+                    GroundGroup randomGroundGroup = GeneratorGroundOperation.AvailableGroundGroups[randomGroundGroupIndex];
+                    if (GeneratorGroundOperation.CreateRandomGroundOperation(missionFile, randomGroundGroup))
                     {
-                        int randomGroundGroupIndex = Core.Random.Next(GeneratorGroundOperation.AvailableGroundGroups.Count);
-                        GroundGroup randomGroundGroup = GeneratorGroundOperation.AvailableGroundGroups[randomGroundGroupIndex];
-                        GeneratorGroundOperation.CreateRandomGroundOperation(missionFile, randomGroundGroup);
+                        i++;
                     }
                 }
             }
 
             // Add all stationaries.
-            for (int i = 0; i < GeneratorGroundOperation.AvailableStationaries.Count; i++)
+            foreach (Stationary stationary in GeneratorGroundOperation.AvailableStationaries)
             {
-                Stationary stationary = GeneratorGroundOperation.AvailableStationaries[i];
                 stationary.WriteTo(missionFile);
             }
         }

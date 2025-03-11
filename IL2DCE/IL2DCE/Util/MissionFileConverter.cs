@@ -147,27 +147,34 @@ namespace IL2DCE.Util
                 {
                     if (globalAircraftInfoFile.exist(AircraftInfo.SectionMain, airGroup.Class))
                     {
+                        string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
                         if (airGroup.AirGroupInfo != null)
                         {
                             try
                             {
                                 AircraftInfo aircraftInfo = new AircraftInfo(globalAircraftInfoFile, airGroup.Class);
                                 aircraftInfo.Write(fileAircraft);           //  AircraftInfo.ini
-                                airGroup.AirGroupInfo.Write(fileAirGroup, airGroup.AirGroupKey, airGroup.Class);  //  AirGroupInfo.ini
+                                airGroup.AirGroupInfo.Write(fileAirGroup, airGoupKey, airGroup.Class);  //  AirGroupInfo.ini
                             }
                             catch (Exception ex)
                             {
-                                ErrorMsg.Add(string.Format("Error [{0}] AirGroup Info[{1}] MissionFile:[{2}]\n", ex.Message, airGroup.AirGroupKey, name));
+                                string message = string.Format("Error [{0}] AirGroup Info[{1}] MissionFile:[{2}]\n", ex.Message, airGoupKey, name);
+                                Core.WriteLog(message);
+                                ErrorMsg.Add(message);
                             }
                         }
                         else
                         {
-                            ErrorMsg.Add(string.Format("No AirGroup Info[{0}] MissionFile:[{1}]\n", airGroup.AirGroupKey, name));
+                            string message = string.Format("No AirGroup Info[{0}] MissionFile:[{1}]\n", airGoupKey, name);
+                            ErrorMsg.Add(message);
+                            Core.WriteLog(message);
                         }
                     }
                     else
                     {
-                        ErrorMsg.Add(string.Format("No Aircraft Info[{0}] MissionFile:[{1}]\n", airGroup.Class, name));
+                        string message = string.Format("No Aircraft Info[{0}] MissionFile:[{1}]\n", airGroup.Class, name);
+                        ErrorMsg.Add(message);
+                        Core.WriteLog(message);
                     }
                 }
             }

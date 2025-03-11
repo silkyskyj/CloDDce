@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -408,8 +409,9 @@ namespace IL2DCE.Pages
             }
             catch (Exception ex)
             {
+                string message = string.Format("{0} - {1} {2}", "CareerIntroPage.Start_Click", ex.Message, ex.StackTrace);
+                Core.WriteLog(message);
                 MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Error);
-                Game.gameInterface.LogErrorToConsole(string.Format("{0} - {1}", "CareerIntroPage.Start_Click", ex.Message));
             }
         }
 

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using IL2DCE.Generator;
 using maddox.game;
 using maddox.GP;
 
@@ -99,17 +100,17 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                if (Country == ECountry.gb)
+                if (Country == ECountry.gb || Country == ECountry.fr || Country == ECountry.us || Country == ECountry.ru || Country == ECountry.rz || Country == ECountry.pl)
                 {
-                    return 1;
+                    return (int)EArmy.Red;
                 }
-                else if (Country == ECountry.de)
+                else if (Country == ECountry.de || Country == ECountry.it || Country == ECountry.ja || Country == ECountry.ro || Country == ECountry.fi || Country == ECountry.hu)
                 {
-                    return 2;
+                    return (int)EArmy.Blue;
                 }
                 else
                 {
-                    return 0;
+                    return (int)EArmy.None;
                 }
             }
         }
@@ -129,6 +130,14 @@ namespace IL2DCE.MissionObjectModel
         }
         private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
 
+        public string DisplayName
+        {
+            get
+            {
+                return Class.Replace(".", " ");
+            }
+        }
+
         public GroundGroup(string id, string @class, ECountry country, string options, List<GroundGroupWaypoint> waypoints)
         {
             _id = id;
@@ -140,67 +149,144 @@ namespace IL2DCE.MissionObjectModel
             Waypoints.AddRange(waypoints);
         }
 
-        public GroundGroup(ISectionFile sectionFile, string id)
+        public static GroundGroup Create(ISectionFile sectionFile, string id)
         {
-            _id = id;
+            // _id = id;
 
-            string value = sectionFile.get("Chiefs", id);
-
-            // Class
-            Class = value.Substring(0, value.IndexOf(" "));
-            value = value.Remove(0, Class.Length + 1);
-
-            // Army
-            ECountry country;
-            if (Enum.TryParse(value.Substring(0, 2), true, out country))
+            string value = sectionFile.get("Chiefs", id, string.Empty);
+            if (!string.IsNullOrEmpty(value))
             {
-                Country = country;
-                value = value.Remove(0, 2);
-            }
-            else
-            {
-                Debug.Assert(false, "Parse Country");
-            }
+                // Class
+                string @class = value.Substring(0, value.IndexOf(" "));
+                value = value.Remove(0, @class.Length + 1);
 
-            // Options
-            Options = value.Trim();
-
-            // Waypoints
-            GroundGroupWaypoint lastWaypoint = null;
-            for (int i = 0; i < sectionFile.lines(id + "_Road"); i++)
-            {
-                string key;
-                sectionFile.get(id + "_Road", i, out key, out value);
-
-                GroundGroupWaypoint waypoint = null;
-                if (!key.Contains("S"))
+                // Army
+                ECountry country;
+                if (Enum.TryParse(value.Substring(0, 2), true, out country))
                 {
-                    waypoint = new GroundGroupWaypointLine(sectionFile, id, i);
-                }
-                else if (key.Contains("S"))
-                {
-                    waypoint = new GroundGroupWaypointSpline(sectionFile, id, i);
-                }
+                    // Country = country;
+                    value = value.Remove(0, 2);
 
-                // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
-                if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < sectionFile.lines(id + "_Road") - 1)
-                {
-                    if (lastWaypoint != null)
+                    // Options
+                    string options = value.Trim();
+
+                    // Waypoints
+                    List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
+                    GroundGroupWaypoint lastWaypoint = null;
+                    int lines = sectionFile.lines(id + "_Road");
+                    for (int i = 0; i < lines; i++)
                     {
-                        lastWaypoint.SubWaypoints.Add(waypoint);
+                        string key;
+                        sectionFile.get(id + "_Road", i, out key, out value);
+
+                        GroundGroupWaypoint waypoint = null;
+                        if (!key.Contains("S"))
+                        {
+                            waypoint = GroundGroupWaypointLine.Create(sectionFile, id, i);
+                        }
+                        else if (key.Contains("S"))
+                        {
+                            waypoint = GroundGroupWaypointSpline.Create(sectionFile, id, i);
+                        }
+
+                        if (waypoint != null)
+                        {
+                            // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
+                            if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < lines - 1)
+                            {
+                                if (lastWaypoint != null)
+                                {
+                                    lastWaypoint.SubWaypoints.Add(waypoint);
+                                }
+                                else
+                                {
+                                    // Debug.Assert(false, string.Format("no GroundGroup sub Waypoint[{0}]", id));
+                                    // throw new FormatException(string.Format("no GroundGroup sub Waypoint[{0}]", id));
+                                }
+                            }
+                            else
+                            {
+                                waypoints.Add(waypoint);
+                                lastWaypoint = waypoint;
+                            }
+                        }
                     }
-                    else
+
+                    if (waypoints.Count > 0)
                     {
-                        throw new FormatException(string.Format("no GroundGroup sub Waypoint[{0}]", id));
+                        return new GroundGroup(id, @class, country, options, waypoints);
                     }
                 }
-                else
-                {
-                    Waypoints.Add(waypoint);
-                    lastWaypoint = waypoint;
-                }
+
             }
+
+            return null;
         }
+
+        //public GroundGroup(ISectionFile sectionFile, string id)
+        //{
+        //    _id = id;
+
+        //    string value = sectionFile.get("Chiefs", id);
+
+        //     Class
+        //    Class = value.Substring(0, value.IndexOf(" "));
+        //    value = value.Remove(0, Class.Length + 1);
+
+        //     Army
+        //    ECountry country;
+        //    if (Enum.TryParse(value.Substring(0, 2), true, out country))
+        //    {
+        //        Country = country;
+        //        value = value.Remove(0, 2);
+        //    }
+        //    else
+        //    {
+        //        Debug.Assert(false, "Parse Country");
+        //    }
+
+        //     Options
+        //    Options = value.Trim();
+
+        //     Waypoints
+        //    GroundGroupWaypoint lastWaypoint = null;
+        //    for (int i = 0; i < sectionFile.lines(id + "_Road"); i++)
+        //    {
+        //        string key;
+        //        sectionFile.get(id + "_Road", i, out key, out value);
+
+        //        GroundGroupWaypoint waypoint = null;
+        //        if (!key.Contains("S"))
+        //        {
+        //            waypoint = GroundGroupWaypointLine.Create(sectionFile, id, i);
+        //        }
+        //        else if (key.Contains("S"))
+        //        {
+        //            waypoint = GroundGroupWaypointSpline.Create(sectionFile, id, i);
+        //        }
+
+        //        if (waypoint != null)
+        //        {
+        //             Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
+        //            if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < sectionFile.lines(id + "_Road") - 1)
+        //            {
+        //                if (lastWaypoint != null)
+        //                {
+        //                    lastWaypoint.SubWaypoints.Add(waypoint);
+        //                }
+        //                else
+        //                {
+        //                    throw new FormatException(string.Format("no GroundGroup sub Waypoint[{0}]", id));
+        //                }
+        //            }
+        //            else
+        //            {
+        //                Waypoints.Add(waypoint);
+        //                lastWaypoint = waypoint;
+        //            }
+        //        }
+        //    }
+        //}
 
         public void WriteTo(ISectionFile sectionFile)
         {
@@ -249,5 +335,5 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
         }
-   }
+     }
 }

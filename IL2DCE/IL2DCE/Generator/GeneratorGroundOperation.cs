@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.GP;
@@ -25,7 +26,7 @@ namespace IL2DCE.Generator
 {
     class GeneratorGroundOperation
     {
-        private Generator Generator
+        private IGamePlay GamePlay
         {
             get;
             set;
@@ -33,33 +34,23 @@ namespace IL2DCE.Generator
 
         private IRandom Random
         {
-            get
-            {
-                return Generator.Random;
-            }
-        }
-
-        public IList<GroundGroup> AvailableGroundGroups = new List<GroundGroup>();
-
-        public IList<Stationary> AvailableStationaries = new List<Stationary>();
-
-        private MissionFile MissionTemplate
-        {
             get;
             set;
         }
 
-        private IGamePlay GamePlay
-        {
-            get;
-            set;
-        }
+        public List<GroundGroup> AvailableGroundGroups = new List<GroundGroup>();
 
-        private Config Config
-        {
-            get;
-            set;
+        public List<Stationary> AvailableStationaries = new List<Stationary>();
 
+        public GeneratorGroundOperation(IRandom random, CampaignInfo campaignInfo, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IGamePlay gamePlay, Config config)
+        {
+            Random = random;
+            GamePlay = gamePlay;
+
+            AvailableGroundGroups.Clear();
+            AvailableStationaries.Clear();
+            AvailableGroundGroups.AddRange(groundGroups);
+            AvailableStationaries.AddRange(stationaries);
         }
 
         public GroundGroup getRandomTargetBasedOnRange(List<GroundGroup> availableGroundGroups, AirGroup offensiveAirGroup)
@@ -107,7 +98,7 @@ namespace IL2DCE.Generator
             }
             else if (availableGroundGroups.Count == 1)
             {
-                selectedGroundGroup = availableGroundGroups[0];
+                selectedGroundGroup = availableGroundGroups.First();
             }
 
             return selectedGroundGroup;
@@ -158,31 +149,10 @@ namespace IL2DCE.Generator
             }
             else if (availableStationaries.Count == 1)
             {
-                selectedStationary = availableStationaries[0];
+                selectedStationary = availableStationaries.First();
             }
 
             return selectedStationary;
-        }
-
-        public GeneratorGroundOperation(Generator generator, CampaignInfo campaignInfo, MissionFile missionTemplate, IGamePlay gamePlay, Config config)
-        {
-            Generator = generator;
-            GamePlay = gamePlay;
-            MissionTemplate = missionTemplate;
-            Config = config;
-
-            AvailableGroundGroups.Clear();
-            AvailableStationaries.Clear();
-
-            foreach (GroundGroup groundGroup in MissionTemplate.GroundGroups)
-            {
-                AvailableGroundGroups.Add(groundGroup);
-            }
-
-            foreach (Stationary stationary in MissionTemplate.Stationaries)
-            {
-                AvailableStationaries.Add(stationary);
-            }
         }
 
         private void findPath(GroundGroup groundGroup, Point2d start, Point2d end)
@@ -289,24 +259,24 @@ namespace IL2DCE.Generator
             }
         }
 
-        public void CreateRandomGroundOperation(ISectionFile missionFile, GroundGroup groundGroup)
+        public bool CreateRandomGroundOperation(ISectionFile missionFile, GroundGroup groundGroup)
         {
+            bool result = false;
             AvailableGroundGroups.Remove(groundGroup);
 
             if (groundGroup.Type == EGroundGroupType.Ship)
             {
                 // Ships already have the correct waypoint from the mission template. Only remove some waypoints to make the position more random, but leave at least 2 waypoints.
                 groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
-
                 groundGroup.WriteTo(missionFile);
-
                 generateColumnFormation(missionFile, groundGroup, 3);
+                result = true;
             }
             else if (groundGroup.Type == EGroundGroupType.Train)
             {
                 groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
-
                 groundGroup.WriteTo(missionFile);
+                result = true;
             }
             else
             {
@@ -365,6 +335,7 @@ namespace IL2DCE.Generator
                 //    }
                 //}
             }
+            return result;
         }
 
         private static void generateColumnFormation(ISectionFile missionFile, GroundGroup groundGroup, int columnSize)
@@ -590,7 +561,6 @@ namespace IL2DCE.Generator
         #endregion
 
         #region Stationary
-
 
         public List<Stationary> getAvailableEnemyStationaries(int armyIndex)
         {

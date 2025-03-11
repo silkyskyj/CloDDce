@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" xmlns:my="clr-namespace:maddox.game.page;assembly=gamePages" xmlns:my1="clr-namespace:maddox.game.play;assembly=gamePages" xmlns:Controls="clr-namespace:IL2DCE.Pages.Controls" Height="1080" Width="1920">
     <Grid Height="1080" Width="1920" HorizontalAlignment="Left" VerticalAlignment="Top">
-        <Label Content="Quick Mission [IL2DCE]" HorizontalAlignment="Left" Margin="12,12,0,0" x:Name="labelQuickMission" VerticalAlignment="Top" FontSize="64" FontWeight="Bold" Foreground="#FF791313" Height="100" />
+        <Label Content="Dynamic Quick Mission [IL2DCE]" HorizontalAlignment="Left" Margin="12,12,0,0" x:Name="labelQuickMission" VerticalAlignment="Top" FontSize="64" FontWeight="Bold" Foreground="#FF791313" Height="100" />
 
         <Label Content="Select Campaign:" Height="50" Margin="34,150,0,0" x:Name="labelSelectCampaign" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" HorizontalAlignment="Left" Width="300" />
         <Controls:FilterComboBox HorizontalAlignment="Left" Margin="34,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="1" IsTabStop="True" IsEditable="False"/>

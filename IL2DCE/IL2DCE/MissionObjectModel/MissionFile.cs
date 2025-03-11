@@ -50,6 +50,7 @@ namespace IL2DCE.MissionObjectModel
         public const string KeyTime = "TIME";
         public const string KeyPoints = "Points";
         public const string KeyPlayer = "player";
+        public const string KeyVirtualAirGroupKey = "VirtualAirGroupKey";
         public const string KeyFlight = "Flight";
         public const string KeyClass = "Class";
         public const string KeyFormation = "Formation";
@@ -400,7 +401,8 @@ namespace IL2DCE.MissionObjectModel
                 file.get(SectionAirGroups, i, out key, out value);
 
                 AirGroup airGroup = new AirGroup(file, key);
-                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGroup.AirGroupKey, airGroup.Class, false);
+                string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
+                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGoupKey, airGroup.Class, false);
                 if (airGroupInfo.Count() > 0)
                 {
                     AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
@@ -420,7 +422,7 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
-                    Debug.WriteLine("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGroup.AirGroupKey, airGroup.Class, "AirGroupInfo.ini");
+                    Debug.WriteLine("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGoupKey, airGroup.Class, "AirGroupInfo.ini");
                     Debug.Assert(false);
                 }
             }
@@ -432,30 +434,35 @@ namespace IL2DCE.MissionObjectModel
                 string value;
                 file.get(SectionChiefs, i, out key, out value);
 
-                GroundGroup groundGroup = new GroundGroup(file, key);
-
-                if (groundGroup.Army == (int)EArmy.Red)
+                GroundGroup groundGroup = GroundGroup.Create(file, key);
+                if (groundGroup != null && groundGroup.Army != 0)
                 {
-                    _redGroundGroups.Add(groundGroup);
-                }
-                else if (groundGroup.Army == (int)EArmy.Blue)
-                {
-                    _blueGroundGroups.Add(groundGroup);
+                    if (groundGroup.Army == (int)EArmy.Red)
+                    {
+                        _redGroundGroups.Add(groundGroup);
+                    }
+                    else if (groundGroup.Army == (int)EArmy.Blue)
+                    {
+                        _blueGroundGroups.Add(groundGroup);
+                    }
                 }
                 else
                 {
-                    Waterway road = new Waterway(file, key);
-                    if (value.StartsWith("Vehicle") || value.StartsWith("Armor"))
+                    Waterway road = Waterway.Create(file, key);
+                    if (road != null)
                     {
-                        _roads.Add(road);
-                    }
-                    else if (value.StartsWith("Ship"))
-                    {
-                        _waterways.Add(road);
-                    }
-                    else if (value.StartsWith("Train"))
-                    {
-                        _railways.Add(road);
+                        if (value.StartsWith("Vehicle") || value.StartsWith("Armor"))
+                        {
+                            _roads.Add(road);
+                        }
+                        else if (value.StartsWith("Ship"))
+                        {
+                            _waterways.Add(road);
+                        }
+                        else if (value.StartsWith("Train"))
+                        {
+                            _railways.Add(road);
+                        }
                     }
                 }
             }

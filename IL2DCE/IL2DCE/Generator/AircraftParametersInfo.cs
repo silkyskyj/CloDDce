@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using maddox.game.world;
 
 namespace IL2DCE.Generator
 {

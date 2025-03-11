@@ -16,9 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-
 using maddox.game;
-using maddox.game.world;
 
 namespace IL2DCE.Generator
 {

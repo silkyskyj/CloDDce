@@ -64,6 +64,7 @@ namespace IL2DCE
         public const string KeyEnableFilterSelectAirGroup = "EnableFilterSelectAirGroup";
         public const string KeyEnableAutoSelectComboBoxItem = "EnableAutoSelectComboBoxItem";
 
+        public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Covert.log";
 
         public const int DefaultAdditionalAirOperations = 3;

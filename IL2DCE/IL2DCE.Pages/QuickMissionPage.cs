@@ -621,8 +621,9 @@ namespace IL2DCE
                 }
                 catch (Exception ex)
                 {
+                    string message = string.Format("{0} - {1} {2}", "QuickMissionPage.Start_Click", ex.Message, ex.StackTrace);
+                    Core.WriteLog(message);
                     MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Error);
-                    gameInterface.LogErrorToConsole(string.Format("{0} - {1}", "QuickMissionPage.Start_Click", ex.Message));
                 }
             }
 
@@ -705,9 +706,9 @@ namespace IL2DCE
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("{0}, {1}, {2}, {3}", ex.Message, ex.Source, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
+                    string message = string.Format("{0} - {1} {2} {3}", "QuickMissionPage.buttonImportMissi_Click", ex.Message, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
+                    Core.WriteLog(message);
                     MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Stop);
-                    Game.gameInterface.LogErrorToConsole(string.Format("{0} - {1}", "QuickMissionPage.buttonImportMissi_Click", ex.Message));
                 }
 
                 model.Result = new object[] { files, converter.CovertedMission.Count, error, logFileSystemPath, };

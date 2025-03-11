@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using maddox.game;
@@ -36,26 +37,10 @@ namespace IL2DCE.MissionObjectModel
 
         // Example: 321223.63 175654.06 38.40  0 2 6.67
         // X, Y, Z, ?, SubCount+2, V
-        private Regex waypointLong = new Regex(@"^([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
+        private static readonly Regex waypointLong = new Regex(@"^([0-9]+[.0-9]*) ([0-9]+[.0-9]*)  ([0-9]+) ([0-9]+) ([0-9]+[.0-9]*)$");
         // Example: 321714.44 175710.25 38.40
         // X, Y, Z
-        private Regex waypointShort = new Regex(@"^([0-9]+[.0-9]*) ([0-9]+[.0-9]*)$");
-
-        public override bool IsSubWaypoint(ISectionFile sectionFile, string id, int line)
-        {
-            string key;
-            string value;
-            sectionFile.get(id + "_Road", line, out key, out value);
-
-            if (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        private static readonly Regex waypointShort = new Regex(@"^([0-9]+[.0-9]*) ([0-9]+[.0-9]*)$");
 
         #region Public constructors
 
@@ -75,66 +60,67 @@ namespace IL2DCE.MissionObjectModel
             V = v;
         }
 
-        public GroundGroupWaypointLine(ISectionFile sectionFile, string id, int line)
+        public static GroundGroupWaypointLine Create(ISectionFile sectionFile, string id, int line)
+        {
+            string key;
+            string value;
+            sectionFile.get(id + "_Road", line, out key, out value);
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+            {
+                if (waypointLong.IsMatch(value))
+                {
+                    Match match = waypointLong.Match(value);
+                    if (match.Groups.Count == 6)
+                    {
+                        double x;
+                        double y;
+                        double z;
+                        double v;
+                        if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
+                            double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
+                            double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z) &&
+                            double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
+                        {
+                            return new GroundGroupWaypointLine(x, y, z, v);
+                        }
+                    }
+                }
+                else if (waypointShort.IsMatch(value))
+                {
+                    Match match = waypointShort.Match(value);
+                    if (match.Groups.Count == 3)
+                    {
+                        double x;
+                        double y;
+                        double z;
+                        if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
+                            double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
+                            double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z))
+                        {
+                            return new GroundGroupWaypointLine(x, y, z, null);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        #endregion
+
+        public override bool IsSubWaypoint(ISectionFile sectionFile, string id, int line)
         {
             string key;
             string value;
             sectionFile.get(id + "_Road", line, out key, out value);
 
-            if (waypointLong.IsMatch(value))
+            if (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value))
             {
-                Match match = waypointLong.Match(value);
-
-                if (match.Groups.Count == 6)
-                {
-                    double x;
-                    if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
-                    {
-                        X = x;
-                    }
-                    double y;
-                    if (double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
-                    {
-                        Y = y;
-                    }
-                    double z;
-                    if (double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z))
-                    {
-                        Z = z;
-                    }
-                    double v;
-                    if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
-                    {
-                        V = v;
-                    }
-                }
+                return true;
             }
-            else if (waypointShort.IsMatch(value))
+            else
             {
-                Match match = waypointShort.Match(value);
-
-                if (match.Groups.Count == 3)
-                {
-                    double x;
-                    if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x))
-                    {
-                        X = x;
-                    }
-                    double y;
-                    if (double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
-                    {
-                        Y = y;
-                    }
-                    double z;
-                    if (double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z))
-                    {
-                        Z = z;
-                    }
-                    V = null;
-                }
+                return false;
             }
         }
-
-        #endregion
     }
 }
