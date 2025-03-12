@@ -23,7 +23,6 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
-using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -32,7 +31,6 @@ namespace IL2DCE
     {
         public class SelectCareerPage : PageDefImpl
         {
-
             private const string NoFileString = "[no file]";
 
             #region Property

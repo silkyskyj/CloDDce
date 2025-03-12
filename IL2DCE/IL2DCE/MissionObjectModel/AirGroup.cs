@@ -34,6 +34,18 @@ namespace IL2DCE.MissionObjectModel
 
         #region Public properties
 
+        public string Id
+        {
+            get;
+            private set;
+        }
+
+        public int ArmyIndex
+        {
+            get;
+            private set;
+        }
+
         public string AirGroupKey
         {
             get;
@@ -190,18 +202,6 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
-        public string Id
-        {
-            get;
-            private set;
-        }
-
-        public int ArmyIndex
-        {
-            get;
-            private set;
-        }
-
         public AirGroupInfo AirGroupInfo
         {
             get;
@@ -264,7 +264,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                string airGoupKey = string.IsNullOrEmpty(VirtualAirGroupKey) ? AirGroupKey : VirtualAirGroupKey;
+                string airGoupKey = string.IsNullOrEmpty(VirtualAirGroupKey) ? CreateDisplayName(AirGroupKey) : VirtualAirGroupKey;
                 return string.Format("{0}.{1}", airGoupKey, _squadronIndex.ToString(SquadronFormat, CultureInfo.InvariantCulture.NumberFormat));
             }
         }
@@ -358,7 +358,8 @@ namespace IL2DCE.MissionObjectModel
             }
 
             // Detonator
-            for (int i = 0; i < sectionFile.lines(id); i++)
+            int lines = sectionFile.lines(id);
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;
@@ -412,7 +413,8 @@ namespace IL2DCE.MissionObjectModel
             Id = ToString() + flightMask.ToString("X");
 
             // Waypoints            
-            for (int i = 0; i < sectionFile.lines(Id + MissionFile.SectionWay); i++)
+            lines = sectionFile.lines(Id + MissionFile.SectionWay);
+            for (int i = 0; i < lines; i++)
             {
                 AirGroupWaypoint waypoint = AirGroupWaypoint.Create(sectionFile, Id, i);
                 if (waypoint != null)
@@ -1244,7 +1246,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void SetFuel(int fuel)
         {
-            if (speed != -1)
+            if (fuel != -1)
             {
                 _fuel = fuel;
             }

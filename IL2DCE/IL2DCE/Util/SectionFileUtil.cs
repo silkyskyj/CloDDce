@@ -61,7 +61,8 @@ namespace IL2DCE.Util
             {
                 string key;
                 string value;
-                for (int i = 0;i < fileSrc.lines(section); i++)
+                int lines = fileSrc.lines(section);
+                for (int i = 0;i < lines; i++)
                 {
                     fileSrc.get(section, i, out key, out value);
                     if (!fileDest.exist(section, key) || overwrite)
@@ -82,7 +83,8 @@ namespace IL2DCE.Util
             {
                 string key;
                 string value;
-                for (int i = 0; i < fileSrc.lines(section); i++)
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
                 {
                     fileSrc.get(section, i, out key, out value);
                     if (!fileDest.exist(section, key) || overwrite)
@@ -103,7 +105,8 @@ namespace IL2DCE.Util
             {
                 string key;
                 string value;
-                for (int i = 0; i < fileSrc.lines(section); i++)
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
                 {
                     fileSrc.get(section, i, out key, out value);
                     foreach (var item in oldValue)
@@ -124,7 +127,8 @@ namespace IL2DCE.Util
             {
                 string key;
                 string value;
-                for (int i = 0; i < fileSrc.lines(section); i++)
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
                 {
                     fileSrc.get(section, i, out key, out value);
                     foreach (var item in oldValue)

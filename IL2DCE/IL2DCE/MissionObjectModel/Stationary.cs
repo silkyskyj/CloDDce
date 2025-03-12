@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,12 @@ namespace IL2DCE.MissionObjectModel
         Aircraft,
         Artillery,
         Depot,
+        Ship,
+        Ammo,
+        Weapons,
+        Car,
+        ConstCar,
+        Environment,
         Unknown,
     }
 
@@ -37,7 +43,9 @@ namespace IL2DCE.MissionObjectModel
         private static readonly List<string> _depots = new List<string>
         {
             "Stationary.Morris_CS8_tank",
+            "Stationary.Morris_CS8",
             "Stationary.Opel_Blitz_fuel",
+            "Stationary.Opel_Blitz_cargo",
         };
 
         private static readonly List<string> _aircrafts = new List<string>
@@ -259,6 +267,32 @@ namespace IL2DCE.MissionObjectModel
                     else if (_depots.Contains(Class))
                     {
                         return EStationaryType.Depot;
+                    }
+                    else if (Class.StartsWith("Ship"))
+                    {
+                        return EStationaryType.Ship;
+                    }
+                    else if (Class.StartsWith("Stationary.Ammo"))
+                    {
+                        return EStationaryType.Ammo;
+                    }
+                    else if (Class.StartsWith("Stationary.Weapons"))
+                    {
+                        return EStationaryType.Weapons;
+                    }
+                    else if (Class.StartsWith("Stationary.Opel") || Class.StartsWith("Stationary.Ford") || Class.StartsWith("Stationary.BMW") || 
+                            Class.StartsWith("Stationary.Renault") || Class.StartsWith("Stationary.Krupp") ||Class.StartsWith("Stationary.MG") || 
+                            Class.StartsWith("Stationary.Austin") || Class.StartsWith("Stationary.Morris") || Class.StartsWith("Stationary.Bedford"))
+                    {
+                        return EStationaryType.Car;
+                    }
+                    else if (Class.StartsWith("Stationary.Unic") || Class.StartsWith("Stationary.Kubelwagen")) 
+                    {
+                        return EStationaryType.ConstCar;
+                    }
+                    else if (Class.StartsWith("Stationary.Environment"))
+                    {
+                        return EStationaryType.Environment;
                     }
                 }
 

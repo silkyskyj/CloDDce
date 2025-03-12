@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -632,13 +632,23 @@ namespace IL2DCE.Generator
 
         public Stationary getAvailableRandomEnemyStationary(AirGroup airGroup, EMissionType missionType)
         {
-            if (missionType == EMissionType.ATTACK_AIRCRAFT)
+            if (missionType == EMissionType.ARMED_MARITIME_RECON || missionType == EMissionType.MARITIME_RECON
+                || missionType == EMissionType.ATTACK_SHIP)
+            {
+                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Ship });
+            }
+            else if (missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
+            {
+                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery, 
+                    EStationaryType.Ammo, EStationaryType.Weapons, EStationaryType.Aircraft, EStationaryType.Radar, EStationaryType.Depot, });
+            }
+            else if (missionType == EMissionType.ATTACK_AIRCRAFT)
             {
                 return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Aircraft });
             }
             else if (missionType == EMissionType.ATTACK_ARTILLERY)
             {
-                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery });
+                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery, EStationaryType.Ammo });
             }
             else if (missionType == EMissionType.ATTACK_RADAR)
             {

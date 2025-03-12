@@ -80,5 +80,8 @@ namespace IL2DCE.MissionObjectModel
 
         [Description("Hunting")]
         HUNTING,
+
+        [Description("Transfer")]
+        TRANSFER,
     };
 }

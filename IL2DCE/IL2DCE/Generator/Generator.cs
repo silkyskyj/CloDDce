@@ -21,6 +21,7 @@ using System.Globalization;
 using System.Linq;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE.Generator
 {
@@ -99,7 +100,8 @@ namespace IL2DCE.Generator
                 if (initialMissionTemplateFile.exist("AirGroups"))
                 {
                     // Delete all air groups from the template file.
-                    for (int i = 0; i < initialMissionTemplateFile.lines("AirGroups"); i++)
+                    int lines = initialMissionTemplateFile.lines("AirGroups");
+                    for (int i = 0; i < lines; i++)
                     {
                         string key;
                         string value;
@@ -113,7 +115,8 @@ namespace IL2DCE.Generator
                 if (initialMissionTemplateFile.exist("Chiefs"))
                 {
                     // Delete all ground groups from the template file.
-                    for (int i = 0; i < initialMissionTemplateFile.lines("Chiefs"); i++)
+                    int lines = initialMissionTemplateFile.lines("Chiefs");
+                    for (int i = 0; i < lines; i++)
                     {
                         string key;
                         string value;
@@ -158,7 +161,8 @@ namespace IL2DCE.Generator
             if (missionTemplateFile.exist("Chiefs"))
             {
                 // Delete all ground groups from the template file.
-                for (int i = 0; i < missionTemplateFile.lines("Chiefs"); i++)
+                int lines = missionTemplateFile.lines("Chiefs");
+                for (int i = 0; i < lines; i++)
                 {
                     string key;
                     string value;
@@ -373,7 +377,8 @@ namespace IL2DCE.Generator
 
             // It is not necessary to delete air groups and ground groups from the missionFile as it 
             // is based on the environment template. If there is anything in it (air groups, ...) it is intentional.
-            for (int i = 0; i < missionFile.lines(MissionFile.SectionMain); i++)
+            int lines = missionFile.lines(MissionFile.SectionMain);
+            for (int i = 0; i < lines; i++)
             {
                 // Delete player from the template file.
                 string key;
@@ -429,21 +434,32 @@ namespace IL2DCE.Generator
 
             EMissionType? missionType = Career.MissionType;
             Spawn spawn = new Spawn(Career.Spawn);
+            bool result = false;
             if (missionType == null)
             {
-                missionType = GeneratorAirOperation.GetRandomMissionType(airGroup);
-                if (missionType == null)
+                List<EMissionType> availableMissionTypes = GeneratorAirOperation.GetAvailableMissionTypes(airGroup).ToList();
+                while (availableMissionTypes.Count > 0)
                 {
-                    throw new NotImplementedException(string.Format("No Available Mission. AirGroup[{0}]", airGroup.DisplayDetailName));
+                    int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
+                    missionType = availableMissionTypes[randomMissionTypeIndex];
+                    if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn))
+                    {
+                        result = true;
+                        break;
+                    }
+                    availableMissionTypes.RemoveAt(randomMissionTypeIndex);
                 }
             }
-
-            bool result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                        Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+            else
+            {
+                result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+            }
 
             if (!result)
             {
-                // throw new ArgumentException(string.Format("no available Player Mission[Mission:{0} AirGroup:{1}]", missionId, airGroup));
+                throw new ArgumentException(string.Format("no available Player Mission[{0}] AirGroup[{1}]", missionId, airGroup.DisplayDetailName));
             }
 
             // Determine the aircraft that is controlled by the player.
@@ -507,6 +523,32 @@ namespace IL2DCE.Generator
             {
                 stationary.WriteTo(missionFile);
             }
+
+            string gpDictionaryFilePath = GamePlay.gpDictionaryFilePath;
+            int[] gpArmies = GamePlay.gpArmies();
+            foreach (var item in gpArmies)
+            {
+                string gpArmyName = GamePlay.gpArmyName(item);
+            }
+            AiAirGroup[] aiAirGroupRed = GamePlay.gpAirGroups((int)EArmy.Red);
+            AiAirGroup[] aiAirGroupBlue = GamePlay.gpAirGroups((int)EArmy.Blue);
+            AiAirport[] aiAirport = GamePlay.gpAirports();
+            foreach (var item in aiAirport)
+            {
+                Debug.WriteLine("aiAirport Name={0}, Army={1}, Type={2}, ParkCountAll={3}, ParkCountFree={4},", item.Name(), item.Army(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
+                AiActor[] queueTakeoff = item.QueueTakeoff();
+            }
+
+            AiBirthPlace[] aiBirthPlace = GamePlay.gpBirthPlaces();
+            AiGroundGroup[] aiGroundGroupRed = GamePlay.gpGroundGroups((int)EArmy.Red);
+            AiGroundGroup[] aiGroundGroupBlue = GamePlay.gpGroundGroups((int)EArmy.Blue);
+            GroundStationary[] groundStationary = GamePlay.gpGroundStationarys();
+            foreach (var item in groundStationary)
+            {
+
+            }
+
+            IGame iGame = GamePlay as IGame;
         }
 
         private static List<string> determineAircraftOrder(AirGroup airGroup)

@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -307,7 +307,8 @@ namespace IL2DCE.MissionObjectModel
             CloudsHeight = file.get(SectionMain, KeyCloudsHeight, DefaulCloudsHeight);
 
             // Stationary
-            for (int i = 0; i < file.lines(SectionStationary); i++)
+            int lines = file.lines(SectionStationary);
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;
@@ -340,7 +341,8 @@ namespace IL2DCE.MissionObjectModel
             }
 
             // Buildings
-            for (int i = 0; i < file.lines(SectionBuildings); i++)
+            lines = file.lines(SectionBuildings);
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;
@@ -394,7 +396,8 @@ namespace IL2DCE.MissionObjectModel
             //}
 
             // AirGroups
-            for (int i = 0; i < file.lines(SectionAirGroups); i++)
+            lines = file.lines(SectionAirGroups);
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;
@@ -428,7 +431,8 @@ namespace IL2DCE.MissionObjectModel
             }
 
             // Chiefs
-            for (int i = 0; i < file.lines(SectionChiefs); i++)
+            lines = file.lines(SectionChiefs);
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;

@@ -33,8 +33,8 @@
         <Label Content="Select Mission Type:" Height="50" HorizontalAlignment="Left" Margin="700,290,0,0" x:Name="labelSelectMissionType" VerticalAlignment="Top" Width="397" FontSize="28" Foreground="#B2FFFFFF" />
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,354,0,0" x:Name="comboBoxSelectMissionType" VerticalAlignment="Top" Width="400" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="7"/>
 
-        <Label Content="Select Target:" Height="52" HorizontalAlignment="Left" Margin="701,734,0,0" x:Name="labelSelectMissionTarget" VerticalAlignment="Top" Width="199" FontSize="28" Foreground="#B2FFFFFF" />
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,796,0,0" x:Name="comboBoxSelectTarget" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="8"/>
+        <Label Content="Select Target:" Height="52" HorizontalAlignment="Left" Margin="34,734,0,0" x:Name="labelSelectMissionTarget" VerticalAlignment="Top" Width="199" FontSize="28" Foreground="#B2FFFFFF" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,796,0,0" x:Name="comboBoxSelectTarget" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="8"/>
 
         <Label Content="Spawn:" HorizontalAlignment="Left" Margin="700,430,0,0" x:Name="labelSpawn" VerticalAlignment="Top" Width="138" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
         <ComboBox Height="50" Margin="700,494,0,0" x:Name="comboBoxSpawn" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" Background="#00000000" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Width="120" TabIndex="8"/>
@@ -71,5 +71,10 @@
         <Label x:Name="labelDefaultCloudAltitude" Content="Mission Default: 1000" Margin="1144,690,0,0" VerticalAlignment="Top" Foreground="#B2FFFFFF" HorizontalAlignment="Left" Width="148"/>
         <Label Content="Version ##.#.##.# [##.##.##.#]" HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="400" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
         <Label x:Name="labelDefaultSkill" Content="Mission Default: Custom" Margin="1465,260,0,0" VerticalAlignment="Top" Foreground="#B2FFFFFF" HorizontalAlignment="Left" Width="160"/>
+        <Label Content="Max Additional Operations:" HorizontalAlignment="Left" Margin="700,800,0,0" x:Name="labelSelectAdditionalOperation" VerticalAlignment="Top" Width="431" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
+        <Label Content="Air" HorizontalAlignment="Left" Margin="700,865,0,0" x:Name="labelSelectAdditionalOperationAirGroup" VerticalAlignment="Top" Width="50" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
+        <Label Content="Ground" HorizontalAlignment="Left" Margin="886,865,0,0" x:Name="labelSelectAdditionalOperationGroundGroup" VerticalAlignment="Top" Width="106" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="758,865,0,0" x:Name="comboBoxSelectAdditionalAirOperations" VerticalAlignment="Top" Width="65" FontSize="28" Foreground="#FFA0854A" Background="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+        <Controls:FilterComboBox Height="50" HorizontalAlignment="Left" Margin="1000,865,0,0" x:Name="comboBoxSelectAdditionalGroundOperations" VerticalAlignment="Top" Width="80" FontSize="28" Foreground="#FFA0854A" Background="#00000000" IsEditable="True" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" />
     </Grid>
 </UserControl>

@@ -24,6 +24,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
+using maddox.game.page;
 using maddox.game.play;
 using maddox.game.world;
 
@@ -409,7 +410,7 @@ namespace IL2DCE.Pages
             }
             catch (Exception ex)
             {
-                string message = string.Format("{0} - {1} {2}", "CareerIntroPage.Start_Click", ex.Message, ex.StackTrace);
+                string message = string.Format("{0} - {1} {2} {3} {4}", "CareerIntroPage.Start_Click", ex.Message, campaign.Name, airGroup.DisplayDetailName, ex.StackTrace);
                 Core.WriteLog(message);
                 MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Error);
             }

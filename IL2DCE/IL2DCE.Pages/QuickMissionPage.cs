@@ -244,6 +244,45 @@ namespace IL2DCE
                 }
             }
 
+            private int SelectedAdditionalAirOperationsComboBox
+            {
+                get
+                {
+                    int? selected = FrameworkElement.comboBoxSelectAdditionalAirOperations.SelectedItem as int?;
+                    if (selected != null)
+                    {
+                        return selected.Value;
+                    }
+
+                    return -1;
+                }
+            }
+
+            private int SelectedAdditionalGroundOperationsComboBox
+            {
+                get
+                {
+                    int? selected = FrameworkElement.comboBoxSelectAdditionalGroundOperations.SelectedItem as int?;
+                    if (selected != null)
+                    {
+                        return selected.Value;
+                    }
+                    else
+                    {
+                        string text = FrameworkElement.comboBoxSelectAdditionalGroundOperations.Text;
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            int num;
+                            if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out num))
+                            {
+                                return num;
+                            }
+                        }
+                    }
+                    return -1;
+                }
+            }
+
             #endregion 
 
             #region Variable
@@ -273,7 +312,10 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectAirForce.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectAirForce_IsEnabledChanged);
                 FrameworkElement.comboBoxSelectAirGroup.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectAirGroup_IsEnabledChanged);
                 FrameworkElement.comboBoxSelectMissionType.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectMissionType_IsEnabledChanged);
-                FrameworkElement.comboBoxSpawn.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSpawn_IsEnabledChanged); 
+                FrameworkElement.comboBoxSelectAdditionalAirOperations.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAdditionalAirOperations_SelectionChanged);
+                FrameworkElement.comboBoxSelectAdditionalGroundOperations.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAdditionalGroundOperations_SelectionChanged);
+                FrameworkElement.comboBoxSelectAdditionalGroundOperations.Loaded += new RoutedEventHandler(comboBoxSelectAdditionalGroundOperations_Loaded);
+                FrameworkElement.comboBoxSpawn.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSpawn_IsEnabledChanged);
 
                 FrameworkElement.checkBoxSelectCampaignFilter.Checked += new RoutedEventHandler(checkBoxSelectCampaignFilter_CheckedChange);
                 FrameworkElement.checkBoxSelectCampaignFilter.Unchecked += new RoutedEventHandler(checkBoxSelectCampaignFilter_CheckedChange);
@@ -302,11 +344,15 @@ namespace IL2DCE
                     UpdateCampaignComboBoxInfo();
                     FrameworkElement.comboBoxSelectCampaign.SelectedItem = null;
                     hookComboSelectionChanged = false;
+                    UpdateSelectedAdditionalAirOperationsComboBox();
+                    UpdateSelectedAdditionalGroundOperationsComboBox();
                     SelectLastInfo(Game.Core.CurrentCareer);
                 }
                 else
                 {
                     UpdateCampaignComboBoxInfo();
+                    UpdateSelectedAdditionalAirOperationsComboBox();
+                    UpdateSelectedAdditionalGroundOperationsComboBox();
                 }
 
                 UpdateButtonStatus();
@@ -446,6 +492,16 @@ namespace IL2DCE
                 UpdateButtonStatus();
             }
 
+            private void comboBoxSelectAdditionalAirOperations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                UpdateButtonStatus();
+            }
+
+            private void comboBoxSelectAdditionalGroundOperations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                UpdateButtonStatus();
+            }
+
             #endregion
 
             #region ComboBox IsEnabledChanged
@@ -505,6 +561,19 @@ namespace IL2DCE
             }
 
             #endregion
+
+            private void comboBoxSelectAdditionalGroundOperations_Loaded(object sender, System.Windows.RoutedEventArgs e)
+            {
+                FrameworkElement.comboBoxSelectAdditionalGroundOperations.TextBox.TextChanged += new TextChangedEventHandler(comboBoxSelectAdditionalGroundOperations_TextChanged);
+            }
+
+            protected virtual void comboBoxSelectAdditionalGroundOperations_TextChanged(object sender, TextChangedEventArgs e)
+            {
+                if (Game != null)
+                {
+                    UpdateButtonStatus();
+                }
+            }
 
             #region CheckBox CheckedChange
 
@@ -611,6 +680,8 @@ namespace IL2DCE
                     career.CloudAltitude = SelectedCloudAltitude;
                     career.PlayerAirGroup = airGroup;
                     career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
+                    career.AdditionalAirOperations = SelectedAdditionalAirOperationsComboBox;
+                    career.AdditionalGroundOperations = SelectedAdditionalGroundOperationsComboBox;
 
                     Game.Core.CurrentCareer = career;
 
@@ -621,7 +692,7 @@ namespace IL2DCE
                 }
                 catch (Exception ex)
                 {
-                    string message = string.Format("{0} - {1} {2}", "QuickMissionPage.Start_Click", ex.Message, ex.StackTrace);
+                    string message = string.Format("{0} - {1} {2} {3} {4}", "QuickMissionPage.Start_Click", ex.Message, campaignInfo.Name, airGroup.DisplayDetailName, ex.StackTrace);
                     Core.WriteLog(message);
                     MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -1227,6 +1298,26 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected);
             }
 
+            private void UpdateSelectedAdditionalAirOperationsComboBox()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectAdditionalAirOperations;
+                foreach (var item in Enumerable.Range(Config.MinAdditionalAirOperations, Config.MaxAdditionalAirOperations))
+                {
+                    comboBox.Items.Add(item);
+                }
+                comboBox.SelectedItem = Config.DefaultAdditionalAirOperations;
+            }
+
+            private void UpdateSelectedAdditionalGroundOperationsComboBox()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectAdditionalGroundOperations;
+                for (int i = Config.MinAdditionalGroundOperations; i <= Config.MaxAdditionalGroundOperations; i += 10)
+                {
+                    comboBox.Items.Add(i);
+                }
+                comboBox.SelectedItem = Config.DefaultAdditionalGroundOperations;
+            }
+
             private void EnableSelectItem(ComboBox comboBox, string selected, bool forceDisable = false)
             {
                 if (!forceDisable && comboBox.Items.Count > 0)
@@ -1290,8 +1381,10 @@ namespace IL2DCE
 
             private void UpdateButtonStatus()
             {
-                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
-                                                    SelectedAirGroup != null && SelectedRank != -1;
+                int addGroundOpe = SelectedAdditionalGroundOperationsComboBox;
+                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null && 
+                                                    SelectedAirGroup != null && SelectedRank != -1 &&
+                                                    addGroundOpe >= Config.MinAdditionalGroundOperations && addGroundOpe <= Config.MaxAdditionalGroundOperations;
             }
 
             private void SelectLastInfo(Career career)
@@ -1307,6 +1400,8 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time >= 0 ? MissionTime.ToString(career.Time) : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather >= 0 ? ((EWeather)career.Weather).ToDescription() : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude >= 0 ? career.CloudAltitude.ToString() : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectAdditionalAirOperations, career.AdditionalAirOperations >= 0 ? career.AdditionalAirOperations.ToString(): string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectAdditionalGroundOperations, career.AdditionalGroundOperations >= 0 ? career.AdditionalGroundOperations.ToString() : string.Empty);
             }
 
             private void UpdateAircraftImage()

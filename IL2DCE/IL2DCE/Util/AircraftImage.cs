@@ -15,13 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace IL2DCE.Util
 {
     public class AircraftImage
     {
-        private static readonly string[] endIs = { "late", "late_trop", "Derated", "AltoQuota", "trop", "Trop_Derated", "100oct", "NF", "Heartbreaker", "Torpedo", "Torpedo_trop", };
+        private static readonly string[] endIs = { "late_trop", "Trop_Derated", "Torpedo_trop", "Derated", "AltoQuota", "late", "trop", "100oct", "NF", "Heartbreaker", "Torpedo", "t", };
+        private static readonly string[] enddel = { "late_trop", "late", "trop", "t", };
+        // private static readonly string[] endReplace = { "late_trop", "t", };
         private static readonly string[] middleIs = { "Mk" };
 
         private const string defaultPart = "bob";
@@ -89,6 +94,15 @@ namespace IL2DCE.Util
                 }
             }
 
+            IEnumerable<string> dirs = FindFolder(folderBase, cls);
+            foreach (var item in dirs)
+            {
+                if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(item, cls)))
+                {
+                    return path;
+                }
+            }
+
             foreach (var item in endIs)
             {
                 if (cls.EndsWith(item, StringComparison.InvariantCultureIgnoreCase))
@@ -126,7 +140,39 @@ namespace IL2DCE.Util
                 }
             }
 
+            foreach (var item in enddel)
+            {
+                if (cls.EndsWith(item, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    folder = string.Format("{0}\\{1}", folderBase, cls.Substring(0, cls.Length - item.Length - 1));
+                    if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
+                    {
+                        return path;
+                    }
+                }
+            }
+
+            //for (idx = 0; idx < endReplace.Length / 2; idx += 2)
+            //{
+            //    if (cls.EndsWith(endReplace[idx], StringComparison.InvariantCultureIgnoreCase))
+            //    {
+            //        folder = string.Format("{0}\\{1}{2}", folderBase, cls.Substring(0, cls.Length - endReplace[idx].Length), endReplace[idx + 1]);
+            //        if (!string.IsNullOrEmpty(path = GetImagePathfromFolder(folder, cls)))
+            //        {
+            //            return path;
+            //        }
+            //    }
+            //}
+
             return string.Empty;
+        }
+
+        private IEnumerable<string> FindFolder(string folderBase, string aircraftClass)
+        {
+            const string replace = "[-_]";
+            string[] dirs = Directory.GetDirectories(folderBase);
+            string cls = Regex.Replace(aircraftClass, replace, string.Empty);
+            return dirs.Where(x => string.Compare(Regex.Replace(x.Split(Path.DirectorySeparatorChar).LastOrDefault(), replace, string.Empty), cls, false) == 0);
         }
 
         private string GetImagePathfromFolder(string folder, string aircraftClass)
@@ -157,6 +203,18 @@ namespace IL2DCE.Util
                 {
                     return path;
                 }
+            }
+
+            path = string.Format("{0}\\{1}", folder, fileTrop);
+            if (File.Exists(path))
+            {
+                return path;
+            }
+
+            path = string.Format("{0}\\{1}", folder, fileTropLate);
+            if (File.Exists(path))
+            {
+                return path;
             }
 
             return string.Empty;

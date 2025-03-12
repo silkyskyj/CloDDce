@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -54,7 +54,7 @@ namespace IL2DCE.Generator
             {
                 this.loadoutId = parameters[0];
             }
-            else if (parameters != null && parameters.Length == 3)
+            else if (parameters != null && parameters.Length >= 3)
             {
                 this.loadoutId = parameters[0];
                 minAltitude = double.Parse(parameters[1]);

@@ -28,6 +28,8 @@ namespace IL2DCE.Util
     public class MissionFileConverter
     {
         public const string DefaultFileSearchPettern = "*.mis";
+        public const string ErrorFormatSectionOrKey = "no avialable Section or Key[{0}]";
+        public const string ErrorFormatNotNnough = "not enough info[{0}]";
 
         private GameIterface gameInterface;
         private ISectionFile globalAircraftInfoFile;
@@ -139,7 +141,16 @@ namespace IL2DCE.Util
             string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
 
             //    3. & 4. 
+            if (missionFile.AirGroups.Count < 2)
+            {
+                ErrorMsg.Add(string.Format(ErrorFormatNotNnough, MissionFile.SectionAirGroups));
+            }
+
             var armys = missionFile.AirGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
+            if (armys.Count() < 2)
+            {
+                ErrorMsg.Add(string.Format(ErrorFormatNotNnough, "Army"));
+            }
             foreach (var army in armys)
             {
                 var airGroups = missionFile.AirGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
@@ -183,8 +194,14 @@ namespace IL2DCE.Util
             ISectionFile fileMissionEnvironment = gameInterface.SectionFileCreate();
             string fileNameMissionEnvironment = string.Format("{0}_Environment.mis", fileName);
             string filePathMissionEnvironment = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionEnvironment);
-            SectionFileUtil.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionParts);
-            SectionFileUtil.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionMain);
+            if (SectionFileUtil.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionParts) == 0)
+            {
+                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionParts));
+            }
+            if (SectionFileUtil.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionMain) == 0)
+            {
+                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionMain));
+            }
 
             // 6. Create Mission staticTemplate File
             ISectionFile fileMissionStatic = gameInterface.SectionFileCreate();
@@ -210,7 +227,10 @@ namespace IL2DCE.Util
                 SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyRunways));
                 SectionFileUtil.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyPoints));
             }
-            SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionFrontMarker);
+            if (SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionFrontMarker) == 0)
+            {
+                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionFrontMarker));
+            }
             // SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionTrigger);
             // SectionFileUtil.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionAction);
 
@@ -240,23 +260,26 @@ namespace IL2DCE.Util
                 new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, new System.DateTime(1940, 07, 10), new System.DateTime(1940, 8, 11));
             campaignInfo.Write(fileCampaign);
 
-            // 10. Create Mission Folder (Mission Filename without Extension)
-            string missionFolderSystemPath = string.Format("{0}\\{1}", outputBasetFolderrSystemPath, fileName);
-            if (!Directory.Exists(missionFolderSystemPath))
+            if (ErrorMsg.Count == 0)
             {
-                Directory.CreateDirectory(missionFolderSystemPath);
+                // 10. Create Mission Folder (Mission Filename without Extension)
+                string missionFolderSystemPath = string.Format("{0}\\{1}", outputBasetFolderrSystemPath, fileName);
+                if (!Directory.Exists(missionFolderSystemPath))
+                {
+                    Directory.CreateDirectory(missionFolderSystemPath);
+                }
+
+                // 11. Save All Files
+                fileAircraft.save(filePathAircraft);
+                fileAirGroup.save(filePathAirGroup);
+                fileMissionEnvironment.save(filePathMissionEnvironment);
+                fileMissionStatic.save(filePathMissionStatic);
+                fileMissionInitial.save(filePathMissionInitial);
+                File.Copy(filePathScriptSystemPathSrc, filePathScriptSystemPathDst, true);
+                fileCampaign.save(filePathCampaign);
+
+                CovertedMission.Add(name);
             }
-
-            // 11. Save All Files
-            fileAircraft.save(filePathAircraft);
-            fileAirGroup.save(filePathAirGroup);
-            fileMissionEnvironment.save(filePathMissionEnvironment);
-            fileMissionStatic.save(filePathMissionStatic);
-            fileMissionInitial.save(filePathMissionInitial);
-            File.Copy(filePathScriptSystemPathSrc, filePathScriptSystemPathDst, true);
-            fileCampaign.save(filePathCampaign);
-
-            CovertedMission.Add(name);
 
             return ErrorMsg.Count == 0;
         }

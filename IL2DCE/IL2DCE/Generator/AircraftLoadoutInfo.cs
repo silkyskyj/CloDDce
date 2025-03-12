@@ -1,5 +1,5 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover
-// Copyright (C) 2016 Stefan Rothdach
+﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,45 +16,50 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using maddox.game;
 
 namespace IL2DCE.Generator
 {
     public class AircraftLoadoutInfo
     {
+        private const string KeyWeapons = "Weapons";
+        private const string KeyDetonator = "Detonator";
+
         public int[] Weapons
         {
-            get
-            {
-                return this.weapons;
-            }
+            get;
+            private set;
         }
-        private int[] weapons = null;
 
         public List<string> Detonator
         {
-            get
-            {
-                return this.detonator;
-            }
+            get;
+            private set;
         }
-        private List<string> detonator = new List<string>();
+
+        public AircraftLoadoutInfo(int[] weapons, List<string> detonator)
+        {
+            Weapons = weapons;
+            Detonator = detonator;
+        }
 
         public AircraftLoadoutInfo(ISectionFile aircraftInfoFile, string aircraft, string loadoutId)
         {
-            if (aircraftInfoFile.exist(aircraft + "_" + loadoutId))
+            string section = string.Format("{0}_{1}", aircraft, loadoutId);
+            if (aircraftInfoFile.exist(section))
             {
-                if (aircraftInfoFile.exist(aircraft + "_" + loadoutId, "Weapons"))
+                if (aircraftInfoFile.exist(section, KeyWeapons))
                 {
                     // Weapons
-                    string weaponsLine = aircraftInfoFile.get(aircraft + "_" + loadoutId, "Weapons");
+                    string weaponsLine = aircraftInfoFile.get(section, KeyWeapons);
                     string[] weaponsList = weaponsLine.Split(new char[] { ' ' });
-                    if (weaponsList != null && weaponsList.Length > 0)
+                    if (weaponsList.Length > 0)
                     {
-                        this.weapons = new int[weaponsList.Length];
+                        Weapons = new int[weaponsList.Length];
                         for (int i = 0; i < weaponsList.Length; i++)
                         {
-                            this.weapons[i] = int.Parse(weaponsList[i]);
+                            Weapons[i] = int.Parse(weaponsList[i]);
                         }
                     }
                 }
@@ -63,14 +68,16 @@ namespace IL2DCE.Generator
                     throw new FormatException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}.Weapons]", aircraft, loadoutId));
                 }
 
-                for (int i = 0; i < aircraftInfoFile.lines(aircraft + "_" + loadoutId); i++)
+                Detonator = new List<string>();
+                int lines = aircraftInfoFile.lines(section);
+                for (int i = 0; i < lines; i++)
                 {
                     string key;
                     string value;
-                    aircraftInfoFile.get(aircraft + "_" + loadoutId, i, out key, out value);
-                    if (key == "Detonator")
+                    aircraftInfoFile.get(section, i, out key, out value);
+                    if (string.Compare(key, KeyDetonator, true) == 0)
                     {
-                        this.detonator.Add(value);
+                        Detonator.Add(value);
                     }
                 }
             }
@@ -78,6 +85,41 @@ namespace IL2DCE.Generator
             {
                 throw new ArgumentException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}]", aircraft, loadoutId));
             }
+        }
+
+        public static AircraftLoadoutInfo Create(ISectionFile aircraftInfoFile, string aircraft, string loadoutId)
+        {
+            string section = string.Format("{0}_{1}", aircraft, loadoutId);
+            if (aircraftInfoFile.exist(section))
+            {
+                if (aircraftInfoFile.exist(section, KeyWeapons))
+                {
+                    // Weapons
+                    string weaponsLine = aircraftInfoFile.get(section, KeyWeapons);
+                    string[] weaponsList = weaponsLine.Split(new char[] { ' ' });
+                    if (weaponsList.Length > 0)
+                    {
+                        int weapon;
+                        int[] weapons = weaponsList.Where(x => int.TryParse(x, out weapon)).Select(x => int.Parse(x)).ToArray();
+
+                        string key;
+                        string value;
+                        List<string> detonator = new List<string>();
+                        int lines = aircraftInfoFile.lines(section);
+                        for (int i = 0; i < lines; i++)
+                        {
+                            aircraftInfoFile.get(section, i, out key, out value);
+                            if (string.Compare(key, KeyDetonator, true) == 0)
+                            {
+                                detonator.Add(value);
+                            }
+                        }
+
+                        return new AircraftLoadoutInfo(weapons, detonator);
+                    }
+                }
+            }
+            return null;
         }
     }
 }

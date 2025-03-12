@@ -36,15 +36,8 @@ namespace IL2DCE.Generator
                 if (_aircraftInfoFile.exist(Aircraft, KeyPlayer))
                 {
                     string value = _aircraftInfoFile.get(Aircraft, KeyPlayer);
-                    int player = int.Parse(value);
-                    if (player == 0)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    int player;
+                    return int.TryParse(value, out player) && player != 0;
                 }
                 else
                 {
@@ -60,7 +53,8 @@ namespace IL2DCE.Generator
             get
             {
                 IList<EMissionType> missionTypes = new List<EMissionType>();
-                for (int i = 0; i < _aircraftInfoFile.lines(Aircraft); i++)
+                int lines = _aircraftInfoFile.lines(Aircraft);
+                for (int i = 0; i < lines; i++)
                 {
                     string key;
                     string value;
@@ -130,14 +124,15 @@ namespace IL2DCE.Generator
 
         public AircraftLoadoutInfo GetAircraftLoadoutInfo(string loadoutId)
         {
-            return new AircraftLoadoutInfo(this._aircraftInfoFile, Aircraft, loadoutId);
+            return new AircraftLoadoutInfo(_aircraftInfoFile, Aircraft, loadoutId);
         }
 
         public void Write(ISectionFile file)
         {
             SectionFileUtil.Write(file, SectionMain, Aircraft, string.Empty);
             SectionFileUtil.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString());
-            for (int i = 0; i < _aircraftInfoFile.lines(Aircraft); i++)
+            int lines = _aircraftInfoFile.lines(Aircraft);
+            for (int i = 0; i < lines; i++)
             {
                 string key;
                 string value;
@@ -146,15 +141,15 @@ namespace IL2DCE.Generator
                 if (Enum.TryParse<EMissionType>(key, false, out missionType))
                 {
                     SectionFileUtil.Write(file, Aircraft, key, value);
-                    AircraftParametersInfo aircraftParametersInfo = GetAircraftParametersInfo(missionType).FirstOrDefault();
-                    if (aircraftParametersInfo != null)
+                    IList<AircraftParametersInfo> aircraftParametersInfos = GetAircraftParametersInfo(missionType);
+                    foreach (var item in aircraftParametersInfos)
                     {
-                        string keyLoadOut = string.Format("{0}_{1}", Aircraft, aircraftParametersInfo.LoadoutId);
+                        string keyLoadOut = string.Format("{0}_{1}", Aircraft, item.LoadoutId);
                         if (_aircraftInfoFile.exist(keyLoadOut))
                         {
                             SectionFileUtil.CopySection(_aircraftInfoFile, file, keyLoadOut, false);
                         }
-                     }
+                    }
                 }
             }
         }
