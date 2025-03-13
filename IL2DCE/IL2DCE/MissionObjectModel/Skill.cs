@@ -74,26 +74,29 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 1.00f, 0.95f, 0.95f, 0.84f, 0.84f, 0.95f, 0.89f, 0.89f, },    // Ace
         };
 
-        public static readonly float[][] TweakedSkillValue = new float[(int)ETweakedType.Count][]
-        {
-            new float [] { 0.30f, 0.11f, 0.78f, 0.40f, 0.64f, 0.85f, 0.85f, 0.21f, },    // Rookie 
-            new float [] { 0.32f, 0.12f, 0.87f, 0.60f, 0.74f, 0.90f, 0.90f, 0.31f, },    // Avarage
-            new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
-            new float [] { 0.52f, 0.13f, 0.89f, 0.70f, 0.74f, 0.95f, 0.92f, 0.31f, },    // Experienced
-            new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
-            new float [] { 0.30f, 0.11f, 0.78f, 0.20f, 0.74f, 0.85f, 0.90f, 0.88f, },    // Rookie 
-            new float [] { 0.32f, 0.12f, 0.87f, 0.25f, 0.74f, 0.90f, 0.95f, 0.91f, },    // Avarage
-            new float [] { 0.52f, 0.13f, 0.89f, 0.28f, 0.74f, 0.92f, 0.95f, 0.91f, },    // Experienced
-            new float [] { 0.73f, 0.14f, 0.92f, 0.30f, 0.74f, 0.95f, 0.95f, 0.95f, },    // Veteran
-            new float [] { 0.93f, 0.15f, 0.96f, 0.35f, 0.74f, 1.00f, 1.00f, 0.97f, },    // Ace
-        };
-
         public static readonly Skill[] SystemSkills = new Skill[(int)ESystemType.Count]
         {
              new Skill(ESystemType.Rookie),
              new Skill(ESystemType.Avarage),
              new Skill(ESystemType.Veteran),
              new Skill(ESystemType.Ace),
+        };
+
+        /// <summary>
+        /// Tweaked AI settings http://bobgamehub.blogspot.de/2012/03/ai-settings-in-cliffs-of-dover.html
+        /// </summary>
+        public static readonly float[][] TweakedSkillValue = new float[(int)ETweakedType.Count][]
+        {
+            new float [] { 0.30f, 0.11f, 0.78f, 0.40f, 0.64f, 0.85f, 0.85f, 0.21f, },    // Rookie      (Fighter)
+            new float [] { 0.32f, 0.12f, 0.87f, 0.60f, 0.74f, 0.90f, 0.90f, 0.31f, },    // Avarage
+            new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
+            new float [] { 0.52f, 0.13f, 0.89f, 0.70f, 0.74f, 0.95f, 0.92f, 0.31f, },    // Experienced
+            new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
+            new float [] { 0.30f, 0.11f, 0.78f, 0.20f, 0.74f, 0.85f, 0.90f, 0.88f, },    // Rookie      (Bomber)
+            new float [] { 0.32f, 0.12f, 0.87f, 0.25f, 0.74f, 0.90f, 0.95f, 0.91f, },    // Avarage
+            new float [] { 0.52f, 0.13f, 0.89f, 0.28f, 0.74f, 0.92f, 0.95f, 0.91f, },    // Experienced
+            new float [] { 0.73f, 0.14f, 0.92f, 0.30f, 0.74f, 0.95f, 0.95f, 0.95f, },    // Veteran
+            new float [] { 0.93f, 0.15f, 0.96f, 0.35f, 0.74f, 1.00f, 1.00f, 0.97f, },    // Ace
         };
 
         public static readonly Skill[] TweakedSkills = new Skill[(int)ETweakedType.Count]

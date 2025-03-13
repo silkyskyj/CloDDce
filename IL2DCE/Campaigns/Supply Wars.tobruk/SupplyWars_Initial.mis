@@ -47,7 +47,7 @@
   CallSign 26
   Fuel 41
   Weapons 1 1 1 1 1 1 3 1 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [tobruk:Tobruk_LW_KG77_III.11_Way]
   TAKEOFF 306617.19 160679.80 0 0
   NORMFLY 304956.81 161692.73 500.00 300.00
@@ -59,7 +59,7 @@
   BombSpacing 20
   Fuel 100
   Weapons 1 1 1 2
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [BoB_LW_KG30_I.12_Way]
   TAKEOFF 311506.01 190335.16 0 0
   NORMFLY 310858.46 190477.16 500.00 300.00
@@ -71,7 +71,7 @@
   BombSpacing 20
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [BoB_LW_LG1_IV.11_Way]
   TAKEOFF 284952.34 182653.07 0 0
   NORMFLY 284665.54 182720.19 500.00 300.00
@@ -82,7 +82,7 @@
   CallSign 28
   Fuel 100
   Weapons 1 1 1 0
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_LW_ZG76_III.11_Way]
   TAKEOFF 287228.58 202004.77 0 0
   NORMFLY 285564.88 202657.70 500.00 300.00
@@ -94,7 +94,7 @@
   BombSpacing 20
   Fuel 81
   Weapons 1 1 1 2
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [tobruk:Tobruk_RA_30St_87_Gruppo_192Sq.01_Way]
   TAKEOFF 285016.54 140003.28 0 0
   NORMFLY 283832.57 140567.99 500.00 300.00
@@ -105,7 +105,7 @@
   CallSign 31
   Fuel 46
   Weapons 1 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [tobruk:Tobruk_RA_4St_9Gruppo_96Sq.01_Way]
   TAKEOFF 272592.10 200207.55 0 0
   NORMFLY 272313.32 200876.76 500.00 300.00
@@ -116,7 +116,7 @@
   CallSign 25
   Fuel 100
   Weapons 1 1 1 0
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [BoB_LW_ZG26_I.21_Way]
   TAKEOFF 296448.85 217378.61 0 0
   NORMFLY 295766.75 217722.56 500.00 300.00
@@ -127,7 +127,7 @@
   CallSign 26
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [BoB_RAF_B_88Sqn.01_Way]
   TAKEOFF 212228.41 262804.11 0 0
   NORMFLY 213580.68 262393.19 500.00 300.00
@@ -138,7 +138,7 @@
   CallSign 20
   Fuel 100
   Weapons 1 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [BoB_RAF_F_501Sqn_Late.01_Way]
   TAKEOFF 234443.68 248432.17 0 0
   NORMFLY 234840.31 248178.42 500.00 300.00
@@ -151,7 +151,7 @@
   Fuel 75
   Weapons 1 0
   Belt  MainBelt 0
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_RAF_F_94Sqn.01_Way]
   TAKEOFF 251005.45 261067.85 0 0
   NORMFLY 251661.69 260044.81 500.00 300.00
@@ -163,7 +163,7 @@
   BombSpacing 20
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [BoB_RAF_B_35Sqn.01_Way]
   TAKEOFF 180340.90 264786.57 0 0
   NORMFLY 180395.30 264586.56 500.00 300.00
@@ -175,7 +175,7 @@
   BombSpacing 20
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
 [BoB_RAF_B_15Sqn.01_Way]
   TAKEOFF 201036.45 282772.94 0 0
   NORMFLY 202810.60 278687.18 500.00 300.00
@@ -186,7 +186,7 @@
   CallSign 16
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [BoB_RAF_B_10Sqn.01_Way]
   TAKEOFF 188311.98 257775.35 0 0
   NORMFLY 188336.27 257536.61 500.00 300.00
@@ -197,7 +197,7 @@
   CallSign 16
   Fuel 100
   Weapons 1 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_USAAF_F_66Sqn.01_Way]
   TAKEOFF 225172.18 228849.61 0 0
   NORMFLY 225208.92 228717.69 500.00 300.00
@@ -208,7 +208,7 @@
   CallSign 6
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [BoB_RAF_F_41Sqn_Late.01_Way]
   TAKEOFF 248182.81 258990.88 0 0
   NORMFLY 249102.47 258613.58 500.00 300.00
@@ -219,7 +219,7 @@
   CallSign 10
   Fuel 58
   Weapons 1 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Channel_AA_GCI3_SPA88.01_Way]
   TAKEOFF 235014.14 232546.46 0 0
   NORMFLY 235243.79 232379.75 500.00 300.00
@@ -230,7 +230,7 @@
   CallSign 17
   Fuel 100
   Weapons 1
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_USAAF_F_64Sqn.02_Way]
   TAKEOFF 221853.43 221257.84 0 0
   NORMFLY 222688.59 221808.37 500.00 300.00
@@ -242,7 +242,7 @@
   BombSpacing 20
   Fuel 50
   Weapons 1 1 0 0
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_LW_JG53_10.01_Way]
   TAKEOFF 277026.38 209365.22 0 0
   NORMFLY 276928.44 209513.70 500.00 300.00
@@ -254,7 +254,7 @@
   BombSpacing 20
   Fuel 73
   Weapons 1 1 0
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_LW_JG27_II.21_Way]
   TAKEOFF 291217.61 216385.80 0 0
   NORMFLY 290954.77 216381.26 500.00 300.00
@@ -265,7 +265,7 @@
   CallSign 22
   Fuel 100
   Weapons 1 1 0
-  Skill 0.8 0.6 0.5 0.5 0.5 0.5 0.6 0.5
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
 [tobruk:Tobruk_LW_ZG1_III.02_Way]
   TAKEOFF 278152.49 182086.15 0 0
   NORMFLY 277878.69 182177.42 500.00 300.00
@@ -276,7 +276,7 @@
   CallSign 26
   Fuel 100
   Weapons 1 1
-  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
   Aging 0
 [tobruk:Tobruk_RAF_F_80Sqn.01_Way]
   TAKEOFF 181044.90 249249.83 0 0
