@@ -38,6 +38,7 @@
     <Compile Include="MissionObjectModel\AirForce.cs" />
     <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
+    <Compile Include="MissionObjectModel\EBattleType.cs" />
     <Compile Include="MissionObjectModel\Fuel.cs" />
     <Compile Include="Generator\AircraftInfo.cs" />
     <Compile Include="Generator\AircraftLoadoutInfo.cs" />
@@ -81,6 +82,8 @@
     <Compile Include="Random.cs" />
     <Compile Include="MissionObjectModel\Speed.cs" />
     <Compile Include="Util\AircraftImage.cs" />
+    <Compile Include="Util\Collection.cs" />
+    <Compile Include="Util\MapUtil.cs" />
     <Compile Include="Util\MissionFileConverter.cs" />
     <Compile Include="Util\SectionFileUtil.cs" />
     <Compile Include="Util\VersionConverter.cs" />

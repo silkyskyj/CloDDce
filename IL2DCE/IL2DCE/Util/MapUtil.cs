@@ -14,20 +14,37 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
+using IL2DCE.MissionObjectModel;
+using maddox.GP;
+using XLAND;
 
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE.Util
 {
-    public static class EnumExtensions
+
+    public class MapUtil
     {
-        public static string ToDescription(this Enum value)
+        public static void Inflate(ref wRECTF rect, float value)
         {
-            FieldInfo field = value.GetType().GetField(value.ToString());
-            object attr = field.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
-            return attr != null ? (attr as DescriptionAttribute).Description : value.ToString();
+            rect.x1 -= value;
+            rect.x2 += value;
+            rect.y1 -= value;
+            rect.y2 += value;
         }
+
+        public static void InflateRate(ref wRECTF rect, float rate)
+        {
+            float w = (rect.x2 - rect.x1 + 1) * (rate - 1) / 2;
+            float h = (rect.y2 - rect.y1 + 1) * (rate - 1) / 2;
+            rect.x1 -= w;
+            rect.x2 += w;
+            rect.y1 -= h;
+            rect.y2 += h;
+        }
+
+        public static bool IsInRange(ref wRECTF rect, ref Point3d point)
+        {
+            return point.x >= rect.x1 && point.x <= rect.x2 && point.y >= rect.y1 && point.y <= rect.y2;
+        }
+
     }
 }

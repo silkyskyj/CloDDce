@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows;
+using IL2DCE.MissionObjectModel;
 using maddox.game.page;
 using maddox.game.play;
 

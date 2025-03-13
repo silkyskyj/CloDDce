@@ -27,7 +27,7 @@ namespace IL2DCE.MissionObjectModel
         Aa = 2,
         [Description("United States Army Air Forces")]
         Usaaf = 3,
-        [Description("Union of Soviet Socialist Republics")]
+        [Description("Soviet Air Force")]
         Ru = 4,
         [Description("Polish Air Force")]
         Pl = 5,
@@ -41,31 +41,15 @@ namespace IL2DCE.MissionObjectModel
         Lw = 1,
         [Description("Regia Aeronautica")]
         Ra = 2,
-        [Description("Hungary")]
+        [Description("Hungarian Air Force")]
         Hu = 3,
-        [Description("Romania")]
+        [Description("Romanian Air Force")]
         Ro = 4,
-        [Description("Finland")]
+        [Description("Finnish Air Force")]
         Fi = 5,
-        [Description("Slovakia")]
+        [Description("Slovak Air Force")]
         Sv = 6,
     };
-
-    //public enum EAirForce
-    //{
-    //    None = -1,
-    //    [Description("Royal Air Force")]
-    //    Raf = 0,
-    //    [Description("Armee de l'air")]
-    //    Aa = 1,
-    //    [Description("United States Army Air Forces")]
-    //    Usaaf = 2,
-    //    [Description("Luftwaffe")]
-    //    Lw = 3,
-    //    [Description("Regia Aeronautica")]
-    //    Ra = 4,
-    //    Count,
-    //};
 
     public class AirForce
     {

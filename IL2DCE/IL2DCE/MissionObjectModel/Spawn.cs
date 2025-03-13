@@ -40,6 +40,13 @@ namespace IL2DCE.MissionObjectModel
         Default = -1,
     }
 
+    public enum ESpawnRandom
+    {
+        Player = 0,
+        Friendly = 1,
+        Enemy = 2,
+    }
+
     public class Spawn
     {
         public const int SelectStartAltitude = 500;

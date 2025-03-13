@@ -25,14 +25,6 @@ using maddox.game;
 
 namespace IL2DCE
 {
-    public enum EBattleType
-    {
-        Unknown,
-        Campaign,
-        QuickMission,
-        Count,
-    };
-
     public class Career
     {
         #region Definition
@@ -52,6 +44,10 @@ namespace IL2DCE
         public const string KeyAircraft = "Aircraft";
         public const string KeyAdditionalAirOperations = "AdditionalAirOperations";
         public const string KeyAdditionalGroundOperations = "AdditionalGroundOperations";
+        public const string KeyAirGroupDislplay = "AirGroupDisplay";
+        public const string KeySpawnRandomPlayer = "SpawnRandomPlayer";
+        public const string KeySpawnRandomFriendly = "SpawnRandomFriendly";
+        public const string KeySpawnRandomEnemy = "SpawnRandomEnemy";
         public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
 
@@ -200,6 +196,30 @@ namespace IL2DCE
         }
 
         public int AdditionalGroundOperations
+        {
+            get;
+            set;
+        }
+
+        public string AirGroupDisplay
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomPlayer
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomFriendly
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomEnemy
         {
             get;
             set;
@@ -371,11 +391,15 @@ namespace IL2DCE
             _date = null;
             _airGroup = null;
             _missionFileName = null;
+            AirGroupDisplay = null;
 
             Aircraft = string.Empty;
 
             AdditionalAirOperations = Config.DefaultAdditionalAirOperations;
             AdditionalGroundOperations = Config.DefaultAdditionalGroundOperations;
+            SpawnRandomPlayer = false;
+            SpawnRandomFriendly = false;
+            SpawnRandomEnemy = true;
 
             KillsHistory = new Dictionary<DateTime, string>();
             KillsGroundHistory = new Dictionary<DateTime, string>();
@@ -430,6 +454,10 @@ namespace IL2DCE
 
                 AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
                 AdditionalGroundOperations = careerFile.get(SectionCampaign, KeyAdditionalGroundOperations, config.AdditionalGroundOperations);
+                AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
+                SpawnRandomPlayer = careerFile.get(SectionCampaign, KeySpawnRandomPlayer, false);
+                SpawnRandomFriendly = careerFile.get(SectionCampaign, KeySpawnRandomFriendly, false);
+                SpawnRandomEnemy = careerFile.get(SectionCampaign, KeySpawnRandomEnemy, true);
 
                 Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -541,6 +569,10 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay?? string.Empty);
+            careerFile.add(SectionCampaign, KeySpawnRandomPlayer, SpawnRandomPlayer ? "1": "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomFriendly, SpawnRandomFriendly ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomEnemy, SpawnRandomEnemy ? "1" : "0");
 
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
@@ -565,7 +597,7 @@ namespace IL2DCE
                                     ((EArmy)ArmyIndex).ToString(),
                                     ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription(): ((EAirForceBlue)AirForceIndex).ToDescription(),
                                     AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex],
-                                    AirGroup,
+                                    string.IsNullOrEmpty(AirGroupDisplay) ? AirGroup: AirGroupDisplay,
                                     Aircraft,
                                     Experience);
         }

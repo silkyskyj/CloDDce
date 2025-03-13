@@ -14,20 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-
 namespace IL2DCE.MissionObjectModel
 {
-    public static class EnumExtensions
+    public enum EBattleType
     {
-        public static string ToDescription(this Enum value)
-        {
-            FieldInfo field = value.GetType().GetField(value.ToString());
-            object attr = field.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
-            return attr != null ? (attr as DescriptionAttribute).Description : value.ToString();
-        }
-    }
+        Unknown,
+        Campaign,
+        QuickMission,
+        Count,
+    };
 }

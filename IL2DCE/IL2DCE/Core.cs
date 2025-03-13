@@ -106,16 +106,17 @@ namespace IL2DCE
         public Core(IGame game)
             : this(game, new Random())
         {
-            if (writerLog == null)
-            {
-                writerLog = new StreamWriter(new FileStream(CreatetLogFilePath(), FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-            }
         }
 
         public Core(IGame game, IRandom random)
         {
             _gamePlay = game;
             _random = random;
+
+            if (writerLog == null)
+            {
+                writerLog = new StreamWriter(new FileStream(CreatetLogFilePath(), FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+            }
 
             GameIterface gameInterface = game.gameInterface;
 

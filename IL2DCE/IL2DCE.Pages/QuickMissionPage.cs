@@ -283,6 +283,48 @@ namespace IL2DCE
                 }
             }
 
+            private bool SelectedSpawnRandomPlayer
+            {
+                get
+                {
+                    bool? isCheckd = FrameworkElement.checkBoxSpawnRandomPlayer.IsChecked;
+                    if (isCheckd != null)
+                    {
+                        return isCheckd.Value;
+                    }
+
+                    return false;
+                }
+            }
+
+            private bool SelectedSpawnRandomFriendly
+            {
+                get
+                {
+                    bool? isCheckd = FrameworkElement.checkBoxSpawnRandomFriendly.IsChecked;
+                    if (isCheckd != null)
+                    {
+                        return isCheckd.Value;
+                    }
+
+                    return false;
+                }
+            }
+
+            private bool SelectedSpawnRandomEnemy
+            {
+                get
+                {
+                    bool? isCheckd = FrameworkElement.checkBoxSpawnRandomEnemy.IsChecked;
+                    if (isCheckd != null)
+                    {
+                        return isCheckd.Value;
+                    }
+
+                    return false;
+                }
+            }
+
             #endregion 
 
             #region Variable
@@ -670,6 +712,7 @@ namespace IL2DCE
                     career.BattleType = EBattleType.QuickMission;
                     career.CampaignInfo = campaignInfo;
                     career.AirGroup = airGroup.ToString();
+                    career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                     career.MissionType = SelectedMissionType;
                     career.Spawn = SelectedSpawn;
                     career.Fuel = SelectedFuel;
@@ -682,6 +725,9 @@ namespace IL2DCE
                     career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
                     career.AdditionalAirOperations = SelectedAdditionalAirOperationsComboBox;
                     career.AdditionalGroundOperations = SelectedAdditionalGroundOperationsComboBox;
+                    career.SpawnRandomPlayer = SelectedSpawnRandomPlayer;
+                    career.SpawnRandomFriendly = SelectedSpawnRandomFriendly;
+                    career.SpawnRandomEnemy = SelectedSpawnRandomEnemy;
 
                     Game.Core.CurrentCareer = career;
 
@@ -1402,6 +1448,9 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude >= 0 ? career.CloudAltitude.ToString() : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectAdditionalAirOperations, career.AdditionalAirOperations >= 0 ? career.AdditionalAirOperations.ToString(): string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectAdditionalGroundOperations, career.AdditionalGroundOperations >= 0 ? career.AdditionalGroundOperations.ToString() : string.Empty);
+                FrameworkElement.checkBoxSpawnRandomPlayer.IsChecked = career.SpawnRandomPlayer;
+                FrameworkElement.checkBoxSpawnRandomFriendly.IsChecked = career.SpawnRandomFriendly;
+                FrameworkElement.checkBoxSpawnRandomEnemy.IsChecked = career.SpawnRandomEnemy;
             }
 
             private void UpdateAircraftImage()

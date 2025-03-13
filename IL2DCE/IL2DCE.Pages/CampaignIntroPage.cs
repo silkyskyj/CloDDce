@@ -179,6 +179,7 @@ namespace IL2DCE
                 AirGroup airGroup = (AirGroup)item.Tag;
                 Career career = Game.Core.CurrentCareer;
                 career.AirGroup = airGroup.ToString();
+                career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 CampaignInfo campaignInfo = career.CampaignInfo;
                 AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
                 career.Aircraft = aircraftInfo.DisplayName;

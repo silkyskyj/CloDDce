@@ -42,10 +42,10 @@ namespace IL2DCE.Generator
 
         public List<Stationary> AvailableStationaries = new List<Stationary>();
 
-        public GeneratorGroundOperation(IRandom random, CampaignInfo campaignInfo, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IGamePlay gamePlay, Config config)
+        public GeneratorGroundOperation(IGamePlay gamePlay, Config config, IRandom random, CampaignInfo campaignInfo, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries)
         {
-            Random = random;
             GamePlay = gamePlay;
+            Random = random;
 
             AvailableGroundGroups.Clear();
             AvailableStationaries.Clear();

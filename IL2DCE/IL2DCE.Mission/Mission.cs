@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -125,6 +126,31 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.OnBattleStarted()");
                 base.OnBattleStarted();
+#if DEBUG
+                string gpDictionaryFilePath = GamePlay.gpDictionaryFilePath;
+                AiAirGroup[] aiAirGroupRed = GamePlay.gpAirGroups((int)EArmy.Red);
+                AiAirGroup[] aiAirGroupBlue = GamePlay.gpAirGroups((int)EArmy.Blue);
+                AiAirport[] aiAirport = GamePlay.gpAirports();
+                Point3d point;
+                foreach (var item in aiAirport)
+                {
+                    point = item.Pos();
+                    Debug.WriteLine("aiAirport Army={0}, Pos=({1:F2},{2:F2},{3:F2}) Name={4}, Type={5}, ParkCountAll={6}, ParkCountFree={7},",
+                        item.Army(), point.x, point.y, point.z, item.Name(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
+                    AiActor[] queueTakeoff = item.QueueTakeoff();
+                    if (queueTakeoff != null && queueTakeoff.Length > 0)
+                    {
+                        foreach (var item1 in queueTakeoff)
+                        {
+                            Debug.WriteLine("queueTakeoff: {0}", item1.Name());
+                        }
+                    }
+                }
+                AiBirthPlace[] aiBirthPlace = GamePlay.gpBirthPlaces();
+                AiGroundGroup[] aiGroundGroupRed = GamePlay.gpGroundGroups((int)EArmy.Red);
+                AiGroundGroup[] aiGroundGroupBlue = GamePlay.gpGroundGroups((int)EArmy.Blue);
+                GroundStationary[] groundStationary = GamePlay.gpGroundStationarys();
+#endif
             }
 
             public override void OnBattleStoped()
@@ -178,8 +204,8 @@ namespace IL2DCE
                     }
                     else if (actor is AiGroundActor)
                     {
-                        AiGroundActor aiGroundActor = actor as AiGroundActor;
-                        Debug.WriteLine("AiAIChief: InternalTypeName={0}, Name={1}, Type={2}", aiGroundActor.InternalTypeName(), aiGroundActor.Name(), aiGroundActor.Type());
+                        // AiGroundActor aiGroundActor = actor as AiGroundActor;
+                        // Debug.WriteLine("AiAIChief: InternalTypeName={0}, Name={1}, Type={2}", aiGroundActor.InternalTypeName(), aiGroundActor.Name(), aiGroundActor.Type());
                     }
                     else if (actor is AiGroup)
                     {

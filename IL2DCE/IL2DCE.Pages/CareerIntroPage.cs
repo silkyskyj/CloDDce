@@ -194,6 +194,48 @@ namespace IL2DCE.Pages
             }
         }
 
+        private bool SelectedSpawnRandomPlayer
+        {
+            get
+            {
+                bool? isCheckd = FrameworkElement.checkBoxSpawnRandomPlayer.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
+        private bool SelectedSpawnRandomFriendly
+        {
+            get
+            {
+                bool? isCheckd = FrameworkElement.checkBoxSpawnRandomFriendly.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
+        private bool SelectedSpawnRandomEnemy
+        {
+            get
+            {
+                bool? isCheckd = FrameworkElement.checkBoxSpawnRandomEnemy.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
         #endregion
 
         #region Variable
@@ -396,17 +438,20 @@ namespace IL2DCE.Pages
                 Game.Core.CurrentCareer = career;
                 career.CampaignInfo = campaign;
                 career.AirGroup = airGroup.ToString();
+                career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
                 career.Aircraft = aircraftInfo.DisplayName;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
                 career.AdditionalAirOperations = SelectedAdditionalAirOperationsComboBox;
                 career.AdditionalGroundOperations = SelectedAdditionalGroundOperationsComboBox;
+                career.SpawnRandomPlayer = SelectedSpawnRandomPlayer;
+                career.SpawnRandomFriendly = SelectedSpawnRandomFriendly;
+                career.SpawnRandomEnemy = SelectedSpawnRandomEnemy;
 
                 Game.Core.ResetCampaign(Game);
 
                 Game.gameInterface.PageChange(new BattleIntroPage(), null);
-
             }
             catch (Exception ex)
             {

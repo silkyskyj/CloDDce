@@ -14,20 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
 
-namespace IL2DCE.MissionObjectModel
+using System.Collections.Generic;
+using System;
+
+namespace IL2DCE.Util
 {
-    public static class EnumExtensions
+    public class Collection
     {
-        public static string ToDescription(this Enum value)
+        public static List<List<T>> SplitList<T>(List<T> locations, int numberOfChunks)
         {
-            FieldInfo field = value.GetType().GetField(value.ToString());
-            object attr = field.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
-            return attr != null ? (attr as DescriptionAttribute).Description : value.ToString();
+            List<List<T>> result = new List<List<T>>();
+            for (int i = 0; i < locations.Count; i += numberOfChunks)
+            {
+                result.Add(locations.GetRange(i, Math.Min(numberOfChunks, locations.Count - i)));
+            }
+            return result;
         }
     }
 }

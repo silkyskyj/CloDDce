@@ -19,9 +19,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.world;
+using maddox.GP;
 
 namespace IL2DCE.Generator
 {
@@ -361,9 +363,9 @@ namespace IL2DCE.Generator
         {
             MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName), Career.CampaignInfo.AirGroupInfos);
 
-            GeneratorGroundOperation = new GeneratorGroundOperation(Random, Career.CampaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries, GamePlay, Config);
+            GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Config, Random, Career.CampaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries);
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
-            GeneratorAirOperation = new GeneratorAirOperation(GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups, GamePlay, Config, Random);
+            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups);
 
             // Load the environment template file for the generated mission.
 
@@ -442,7 +444,7 @@ namespace IL2DCE.Generator
                 {
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     missionType = availableMissionTypes[randomMissionTypeIndex];
-                    if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                    if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, Career.SpawnRandomPlayer, missionType.Value, Career.AllowDefensiveOperation,
                                                             Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn))
                     {
                         result = true;
@@ -453,7 +455,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, Career.SpawnRandomPlayer, missionType.Value, Career.AllowDefensiveOperation,
                                                             Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
             }
 
@@ -495,7 +497,8 @@ namespace IL2DCE.Generator
                     {
                         int randomAirGroupIndex = Random.Next(GeneratorAirOperation.AvailableAirGroups.Count);
                         AirGroup randomAirGroup = GeneratorAirOperation.AvailableAirGroups[randomAirGroupIndex];
-                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup))
+                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, 
+                                randomAirGroup.ArmyIndex == airGroup.ArmyIndex ? Career.SpawnRandomFriendly: Career.SpawnRandomEnemy))
                         {
                             i++;
                         }
@@ -523,32 +526,16 @@ namespace IL2DCE.Generator
             {
                 stationary.WriteTo(missionFile);
             }
-
-            string gpDictionaryFilePath = GamePlay.gpDictionaryFilePath;
-            int[] gpArmies = GamePlay.gpArmies();
-            foreach (var item in gpArmies)
+#if DEBUG
+            foreach (var item in missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == airGroup.ArmyIndex))
             {
-                string gpArmyName = GamePlay.gpArmyName(item);
+                AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
+                if (way != null)
+                {
+                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}", item.DisplayDetailName, way.X, way.Y, way.Z, way.V);
+                }
             }
-            AiAirGroup[] aiAirGroupRed = GamePlay.gpAirGroups((int)EArmy.Red);
-            AiAirGroup[] aiAirGroupBlue = GamePlay.gpAirGroups((int)EArmy.Blue);
-            AiAirport[] aiAirport = GamePlay.gpAirports();
-            foreach (var item in aiAirport)
-            {
-                Debug.WriteLine("aiAirport Name={0}, Army={1}, Type={2}, ParkCountAll={3}, ParkCountFree={4},", item.Name(), item.Army(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
-                AiActor[] queueTakeoff = item.QueueTakeoff();
-            }
-
-            AiBirthPlace[] aiBirthPlace = GamePlay.gpBirthPlaces();
-            AiGroundGroup[] aiGroundGroupRed = GamePlay.gpGroundGroups((int)EArmy.Red);
-            AiGroundGroup[] aiGroundGroupBlue = GamePlay.gpGroundGroups((int)EArmy.Blue);
-            GroundStationary[] groundStationary = GamePlay.gpGroundStationarys();
-            foreach (var item in groundStationary)
-            {
-
-            }
-
-            IGame iGame = GamePlay as IGame;
+#endif
         }
 
         private static List<string> determineAircraftOrder(AirGroup airGroup)

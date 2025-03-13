@@ -822,7 +822,7 @@ namespace IL2DCE.MissionObjectModel
         public void Transfer(double altitude, AiAirport landingAirport = null)
         {
             reset();
-            this.Altitude = altitude;
+            Altitude = altitude;
 
             createStartWaypoints();
 
