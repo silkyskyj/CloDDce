@@ -17,17 +17,32 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
 
 namespace IL2DCE.Generator
 {
+    public enum EAircraftType
+    {
+        Unknown = 0,
+        Fighter = 1,            // = no gunner seat
+        FighterSub = 2,      // = gunner seat
+        FighterBomber = 3,      // = no gunner seat
+        FighterBomberSub = 4,   // = gunner seat
+        Bomber = 5,             // = no gunner seat
+        BomberSub = 6,          // = gunner seat 
+        Other = 7,              // = no gunner seat
+        OtherSub = 8,           // = gunner seat 
+        Count,
+    }
+
     public class AircraftInfo
     {
         public const string SectionMain = "Main";
         public const string KeyPlayer = "Player";
+        public const string KeyType = "Type";
+        public const string KeyImage = "Image";
 
         public bool IsFlyable
         {
@@ -81,6 +96,27 @@ namespace IL2DCE.Generator
             get
             {
                 return CreateDisplayName(Aircraft);
+            }
+        }
+
+        public string ImageFolderName
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
+        public EAircraftType AircraftType
+        {
+            get
+            {
+                int value = _aircraftInfoFile.get(Aircraft, KeyPlayer, 0);
+                if (value > (int)EAircraftType.Unknown && value < (int)EAircraftType.Count)
+                {
+                    return (EAircraftType)value;
+                }
+                return EAircraftType.Unknown;
             }
         }
 

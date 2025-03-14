@@ -16,9 +16,11 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
+using static System.Collections.Specialized.BitVector32;
 
 namespace IL2DCE
 {
@@ -57,6 +59,7 @@ namespace IL2DCE
         public const string SectionCore = "Core";
         public const string SectionMissionFileConverter = "MissionFileConverter";
         public const string SectionQuickMissionPage = "QuickMissionPage";
+        public const string SectionSkill = "Skill";
 
         public const string KeySorceFolderFileName = "SorceFolderFileName";
         public const string KeySorceFolderFolderName = "SorceFolderFolderName";
@@ -324,6 +327,35 @@ namespace IL2DCE
             EnableAutoSelectComboBoxItem = confFile.get(SectionQuickMissionPage, KeyEnableAutoSelectComboBoxItem, 0) == 1;
 
             Skills = Skills.Default;
+            if (confFile.exist(SectionSkill))
+            {
+                string key;
+                string value;
+                int lines = confFile.lines(SectionSkill);
+                for (int i = 0; i < lines; i++)
+                {
+                    confFile.get(SectionSkill, i, out key, out value);
+                    System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value != null ? value: string.Empty);
+                    // if you need delete default defined skill, please write no value key in ini file.
+                    var delSkills = this.Skills.Where(x => string.Compare(x.Name, key, true) == 0);
+                    if (delSkills.Count() > 0)
+                    {
+                        foreach (var item in delSkills)
+                        {
+                            this.Skills.Remove(item);
+                        }
+                    }
+                    else
+                    {
+                        Skill skill;
+                        if (Skill.TryParse(value, out skill))
+                        {
+                            skill.Name = key;
+                            Skills.Add(skill);
+                        }
+                    }
+                }
+            }
         }
     }
 }

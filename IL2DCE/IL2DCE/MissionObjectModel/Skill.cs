@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -50,6 +51,11 @@ namespace IL2DCE.MissionObjectModel
             BomberExperienced,
             BomberVeteran,
             BomberAce,
+            FighterBomberRookie,
+            FighterBomberAvarage,
+            FighterBomberExperienced,
+            FighterBomberVeteran,
+            FighterBomberAce,
             Count,
         }
 
@@ -92,11 +98,18 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
             new float [] { 0.52f, 0.13f, 0.89f, 0.70f, 0.74f, 0.95f, 0.92f, 0.31f, },    // Experienced
             new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
+
             new float [] { 0.30f, 0.11f, 0.78f, 0.20f, 0.74f, 0.85f, 0.90f, 0.88f, },    // Rookie      (Bomber)
             new float [] { 0.32f, 0.12f, 0.87f, 0.25f, 0.74f, 0.90f, 0.95f, 0.91f, },    // Avarage
             new float [] { 0.52f, 0.13f, 0.89f, 0.28f, 0.74f, 0.92f, 0.95f, 0.91f, },    // Experienced
             new float [] { 0.73f, 0.14f, 0.92f, 0.30f, 0.74f, 0.95f, 0.95f, 0.95f, },    // Veteran
             new float [] { 0.93f, 0.15f, 0.96f, 0.35f, 0.74f, 1.00f, 1.00f, 0.97f, },    // Ace
+
+            new float [] { 0.30f, 0.11f, 0.78f, 0.40f, 0.64f, 0.85f, 0.85f, 0.21f, },    // Rookie      (FighterBomber)
+            new float [] { 0.32f, 0.12f, 0.87f, 0.60f, 0.74f, 0.90f, 0.90f, 0.31f, },    // Avarage
+            new float [] { 0.52f, 0.13f, 0.89f, 0.70f, 0.74f, 0.95f, 0.92f, 0.31f, },    // Experienced
+            new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
+            new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
         };
 
         public static readonly Skill[] TweakedSkills = new Skill[(int)ETweakedType.Count]
@@ -111,6 +124,11 @@ namespace IL2DCE.MissionObjectModel
              new Skill(ETweakedType.BomberExperienced),
              new Skill(ETweakedType.BomberVeteran),
              new Skill(ETweakedType.BomberAce),
+             new Skill(ETweakedType.FighterBomberRookie),
+             new Skill(ETweakedType.FighterBomberAvarage),
+             new Skill(ETweakedType.FighterBomberExperienced),
+             new Skill(ETweakedType.FighterBomberVeteran),
+             new Skill(ETweakedType.FighterBomberAce),
         };
 
         public static readonly Skill Default = new Skill();
@@ -172,32 +190,12 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public bool IsSystemType()
-        {
-            return IsSystemType(Skills);
-        }
-
-        public string GetSystemTypeName()
-        {
-            return GetSystemTypeName(Skills);
-        }
-
-        public Skill GetSystemType()
-        {
-            if (Skills != null && Skills.Length >= (int)ESkilType.Count)
-            {
-                return SystemSkills.Where(x => x.Skills.Except(Skills).Count() == 0).FirstOrDefault();
-            }
-
-            return null;
-        }
-
         public override string ToString()
         {
             return string.Join(" ", Skills.Select(x => x.ToString(SkillFormat, Config.Culture)));
         }
 
-        public string ToDetailString()
+        public string ToDetailString(char splitCharLabelValue = ' ')
         {
             if (Skills != null && Skills.Length >= (int)ESkilType.Count)
             {
@@ -205,7 +203,7 @@ namespace IL2DCE.MissionObjectModel
                 // var types = Enum.GetNames(typeof(ESkilType));
                 for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    sb.AppendFormat("{0} {1}", type.ToString(), Skills[(int)type].ToString(SkillFormat, Config.Culture));
+                    sb.AppendFormat("{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, Skills[(int)type].ToString(SkillFormat, Config.Culture));
                     sb.AppendLine();
                 }
                 return sb.ToString();
@@ -213,7 +211,7 @@ namespace IL2DCE.MissionObjectModel
             return string.Empty;
         }
 
-        public static string ToDetailString(string skill)
+        public static string ToDetailString(string skill, char splitCharLabelValue = ' ')
         {
             if (!string.IsNullOrEmpty(skill))
             {
@@ -223,7 +221,7 @@ namespace IL2DCE.MissionObjectModel
                     StringBuilder sb = new StringBuilder();
                     for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                     {
-                        sb.AppendFormat("{0} {1}", type.ToString(), str[(int)type]);
+                        sb.AppendFormat("{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, str[(int)type]);
                         sb.AppendLine();
                     }
                     return sb.ToString();
@@ -232,9 +230,46 @@ namespace IL2DCE.MissionObjectModel
             return string.Empty;
         }
 
+#if false
+
+        public bool IsSystemType()
+        {
+            return IsSystemType(Skills);
+        }
+
+        public static bool IsSystemType(float[] skills)
+        {
+            if (skills != null && skills.Length == (int)ESkilType.Count)
+            {
+                return SystemSkills.Any(x => EqualsValue(x.Skills, skills));
+            }
+
+            return false;
+        }
+
+        public Skill GetSystemType()
+        {
+            if (Skills != null && Skills.Length >= (int)ESkilType.Count)
+            {
+                return SystemSkills.Where(x => EqualsValue(x.Skills, Skills)).FirstOrDefault();
+            }
+
+            return null;
+        }
+
         public static Skill GetSystemType(ESystemType skill)
         {
             return SystemSkills[(int)skill];
+        }
+
+        public static Skill GetSystemType(float[] skills)
+        {
+            if (skills != null && skills.Length == (int)ESkilType.Count)
+            {
+                return SystemSkills.Where(x => EqualsValue(x.Skills, skills)).FirstOrDefault();
+            }
+
+            return null;
         }
 
         public static Skill GetSystemType(ESystemType? skill = null)
@@ -242,14 +277,9 @@ namespace IL2DCE.MissionObjectModel
             return skill != null ? GetSystemType(skill.Value) : GetSystemType(ESystemType.Avarage);
         }
 
-        public static bool IsSystemType(float[] skills)
+        public string GetSystemTypeName()
         {
-            if (skills != null && skills.Length == (int)ESkilType.Count)
-            {
-                return SystemSkills.Any(x => x.Skills.Except(skills).Count() == 0);
-            }
-
-            return false;
+            return GetSystemTypeName(Skills);
         }
 
         public static string GetSystemTypeName(float[] skills)
@@ -258,14 +288,122 @@ namespace IL2DCE.MissionObjectModel
             return skill != null ? skill.Name : string.Empty;
         }
 
-        public static Skill GetSystemType(float[] skills)
+        public bool IsTweakedType()
+        {
+            return IsTweakedType(Skills);
+        }
+
+        public static bool IsTweakedType(float[] skills)
         {
             if (skills != null && skills.Length == (int)ESkilType.Count)
             {
-                return SystemSkills.Where(x => x.Skills.Except(skills).Count() == 0).FirstOrDefault();
+                return TweakedSkills.Any(x => EqualsValue(x.Skills, skills));
+            }
+
+            return false;
+        }
+
+        public Skill GetTweakedType()
+        {
+            if (Skills != null && Skills.Length >= (int)ESkilType.Count)
+            {
+                return TweakedSkills.Where(x => EqualsValue(x.Skills, Skills)).FirstOrDefault();
             }
 
             return null;
+        }
+
+        public static Skill GetTweakedType(ETweakedType skill)
+        {
+            return TweakedSkills[(int)skill];
+        }
+
+        public static Skill GetTweakedType(float[] skills)
+        {
+            if (skills != null && skills.Length == (int)ESkilType.Count)
+            {
+                return TweakedSkills.Where(x => EqualsValue(x.Skills, skills)).FirstOrDefault();
+            }
+
+            return null;
+        }
+
+        public static Skill GetTweakedType(ETweakedType? skill = null)
+        {
+            return skill != null ? GetTweakedType(skill.Value) : GetTweakedType(ETweakedType.FighterAvarage);
+        }
+
+        public string GetTweakedTypeName()
+        {
+            return GetTweakedTypeName(Skills);
+        }
+
+        public static string GetTweakedTypeName(float[] skills)
+        {
+            Skill skill = GetTweakedType(skills);
+            return skill != null ? skill.Name : string.Empty;
+        }
+
+#endif
+
+        public bool IsTyped()
+        {
+            return IsTyped(Skills);
+        }
+
+        public static bool IsTyped(float[] skills)
+        {
+            if (skills != null && skills.Length == (int)ESkilType.Count)
+            {
+                return SystemSkills.Any(x => EqualsValue(x.Skills, skills)) || TweakedSkills.Any(x => EqualsValue(x.Skills, skills));
+            }
+            return false;
+        }
+
+        public Skill GetTyped()
+        {
+            if (Skills != null && Skills.Length >= (int)ESkilType.Count)
+            {
+                Skill skill = SystemSkills.Where(x => EqualsValue(x.Skills, Skills)).FirstOrDefault();
+                if (skill == null)
+                {
+                    skill = TweakedSkills.Where(x => EqualsValue(x.Skills, Skills)).FirstOrDefault();
+                }
+                return skill;
+            }
+
+            return null;
+        }
+
+        public static Skill GetTyped(float[] skills)
+        {
+            if (skills != null && skills.Length == (int)ESkilType.Count)
+            {
+                Skill skill = SystemSkills.Where(x => EqualsValue(x.Skills, skills)).FirstOrDefault();
+                if (skill == null)
+                {
+                    skill = TweakedSkills.Where(x => EqualsValue(x.Skills, skills)).FirstOrDefault();
+                }
+                return skill;
+            }
+
+            return null;
+        }
+
+        public static Skill GetDefaultTyped()
+        {
+            return TweakedSkills[(int)ETweakedType.BomberAvarage]; 
+        }
+
+        public string GetTypedName()
+        {
+            return GetTypedName(Skills);
+        }
+
+        public static string GetTypedName(float[] skills)
+        {
+            Skill skill = GetTyped(skills);
+            return skill != null ? skill.Name : string.Empty;
         }
 
         public static Skill Parse(string skillString)
@@ -305,6 +443,90 @@ namespace IL2DCE.MissionObjectModel
             skill = null;
             return false;
         }
+
+#if false
+        public static bool operator ==(Skill a, Skill b)
+        {
+            return Equals(a, b);
+        }
+
+        public static bool operator !=(Skill a, Skill b)
+        {
+            return !Equals(a, b);
+        }
+#endif
+
+        public static bool Equals(Skill a, Skill b)
+        {
+            if (!EqualsValue(a, b))
+            {
+                return false;
+            }
+
+            if (a.Name != b.Name)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool EqualsValue(Skill a, Skill b)
+        {
+            if ((object)a == b)
+            {
+                return true;
+            }
+
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            if (a.Skills.Length != b.Skills.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < a.Skills.Length; i++)
+            {
+                if (a.Skills[i] != b.Skills[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool EqualsValue(float [] a, float[] b)
+        {
+            if ((object)a == b)
+            {
+                return true;
+            }
+
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            if (a.Length != b.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
     }
 
     public class Skills : List<Skill>

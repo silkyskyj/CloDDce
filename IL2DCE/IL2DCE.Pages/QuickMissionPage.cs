@@ -488,13 +488,14 @@ namespace IL2DCE
                 if (toolTip == null)
                 {
                     comboBox.ToolTip = toolTip = new ToolTip();
+                    toolTip.FontFamily = new System.Windows.Media.FontFamily("Consolas");
                 }
                 string str = string.Empty;
                 Skill skill = SelectedSkill;
                 if (skill != null)
                 {
                     if (skill == Skill.Default)
-                    {
+                    {     
                         AirGroup airGroup = SelectedAirGroup;
                         if (airGroup != null)
                         {
@@ -1004,7 +1005,8 @@ namespace IL2DCE
                 {
                     aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
                 }
-                return string.Format("{0} ({1})", airGroup.DisplayName, aircraftInfo.DisplayName);
+                // return string.Format("{0} ({1})", airGroup.DisplayName, aircraftInfo.DisplayName);
+                return string.Format("{0} ({1}){2}", airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]" : string.Empty);
             }
 
             private void UpdateMissionTypeComboBoxInfo()
@@ -1185,7 +1187,7 @@ namespace IL2DCE
                     AirGroup airGroup = SelectedAirGroup;
                     Skill skill = string.IsNullOrEmpty(airGroup.Skill) ? null : Skill.Parse(airGroup.Skill);
                     defaultString = string.Format(Config.Culture, MissionDefaultFormat, airGroup.Skills != null && airGroup.Skills.Count > 0 ?
-                                    Skill.SkillNameMulti : skill != null ? skill.IsSystemType() ? skill.GetSystemTypeName() : Skill.SkillNameCustom : string.Empty);
+                                    Skill.SkillNameMulti : skill != null ? skill.IsTyped() ? skill.GetTypedName() : Skill.SkillNameCustom : string.Empty);
                 }
                 FrameworkElement.labelDefaultSkill.Content = defaultString;
 

@@ -429,7 +429,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     Airstart = false;
                 }
-                else if (_waypoints[0].Type == AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY)
+                else if (_waypoints[0].Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                 {
                     Airstart = true;
                 }
@@ -1263,7 +1263,7 @@ namespace IL2DCE.MissionObjectModel
             // TODO: Multi Skill(=Different)
             if (string.IsNullOrEmpty(Skill))
             {
-                Skill = MissionObjectModel.Skill.GetSystemType().ToString();
+                Skill = MissionObjectModel.Skill.GetDefaultTyped().ToString();
             }
 
             if (string.IsNullOrEmpty(Formation))

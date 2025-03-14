@@ -25,12 +25,13 @@ using maddox.game;
 using maddox.game.world;
 using maddox.GP;
 using XLAND;
+using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.Generator
 {
     class GeneratorAirOperation
     {
-        #region difinition
+        #region definition
 
         private const float SpawnRangeInflateRate = 1.33f;
         private const int SpawnMaxDifDistanceAirstart = 1000;
@@ -211,11 +212,41 @@ namespace IL2DCE.Generator
             }
         }
 
-        private string getRandomSkill(EMissionType missionType)
+        private string getTweakedSkill(EAircraftType aircraftType, int level)
+        {
+            if (aircraftType == EAircraftType.Fighter)
+            {
+                // Fighter
+                return Skill.TweakedSkills[level].ToString();
+            }
+            else if (aircraftType == EAircraftType.FighterBomber || aircraftType == EAircraftType.Bomber)
+            {
+                // Fighter Bomber
+                return Skill.TweakedSkills[(int)ETweakedType.FighterBomberRookie + level].ToString();
+            }
+            else if (aircraftType == EAircraftType.BomberSub || aircraftType == EAircraftType.FighterSub || 
+                aircraftType == EAircraftType.FighterBomberSub || aircraftType == EAircraftType.OtherSub)
+            {
+                // Bomber
+                return Skill.TweakedSkills[(int)ETweakedType.BomberRookie + level].ToString();
+            }
+
+            // return Skill.TweakedSkills[level].ToString();
+            return Skill.TweakedSkills[(int)ETweakedType.BomberRookie + level].ToString();
+        }
+
+        private string getRandomSkill(EMissionType missionType, EAircraftType type)
         {
             int randomLevel = Random.Next(0, 4);
 
             return getTweakedSkill(missionType, randomLevel);
+        }
+
+        private string getRandomSkill(EAircraftType aircraftType)
+        {
+            int randomLevel = Random.Next(0, 4);
+
+            return getTweakedSkill(aircraftType, randomLevel);
         }
 
         private void getRandomFlightSize(AirGroup airGroup, EMissionType missionType)
@@ -512,7 +543,7 @@ namespace IL2DCE.Generator
                     getRandomFlightSize(airGroup, missionType);
 
                     // Skill
-                    SetSkill(airGroup, missionType, skill);
+                    SetSkill(airGroup, aircraftInfo.AircraftType, skill);
 
                     // Spawn
                     airGroup.SetOnParked = Config.SpawnParked;
@@ -726,7 +757,7 @@ namespace IL2DCE.Generator
             airGroup.Escort(airGroupEscorted);
 
             getRandomFlightSize(airGroup, EMissionType.ESCORT);
-            airGroup.Skill = getRandomSkill(EMissionType.ESCORT);
+            airGroup.Skill = getRandomSkill(aircraftInfo.AircraftType);
             GeneratorBriefing.CreateBriefing(briefingFile, airGroup, EMissionType.ESCORT, null);
             airGroup.WriteTo(sectionFile);
             return result;
@@ -860,7 +891,7 @@ namespace IL2DCE.Generator
                     }
 
                     getRandomFlightSize(defensiveAirGroup, randomDefensiveMissionType);
-                    defensiveAirGroup.Skill = getRandomSkill(randomDefensiveMissionType);
+                    defensiveAirGroup.Skill = getRandomSkill(aircraftInfo.AircraftType);
                     GeneratorBriefing.CreateBriefing(briefingFile, defensiveAirGroup, randomDefensiveMissionType, null);
                     defensiveAirGroup.WriteTo(sectionFile);
                     result = true;
@@ -1502,7 +1533,7 @@ namespace IL2DCE.Generator
             }
         }
 
-        private void SetSkill(AirGroup airGroup, EMissionType missionType, Skill[] skill)
+        private void SetSkill(AirGroup airGroup, EAircraftType aircraftType, Skill[] skill)
         {
             if (skill != null)
             {
@@ -1534,7 +1565,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                airGroup.Skill = getRandomSkill(missionType);
+                airGroup.Skill = getRandomSkill(aircraftType);
                 airGroup.Skills.Clear();
             }
         }
@@ -1639,7 +1670,7 @@ namespace IL2DCE.Generator
                     way.X = point.x = Random.Next((int)range.x1, (int)range.x2);
                     way.Y = point.y = Random.Next((int)range.y1, (int)range.y2);
                     airGroup.Position = point;
-                    Debug.WriteLine(string.Format(" => AirGroup Pos Changed={0}", airGroup.Position.ToString()));
+                    Debug.WriteLine(string.Format(" => Pos Changed={0}", airGroup.Position.ToString()));
                 }
                 else
                 {
@@ -1650,7 +1681,7 @@ namespace IL2DCE.Generator
                     {
                         pointAirport = x.Pos();
                         return GamePlay.gpFrontArmy(pointAirport.x, pointAirport.y) == airGroup.ArmyIndex &&
-                                x.ParkCountFree() > SpawnNeedParkCountFree && MapUtil.IsInRange(ref range, ref pointAirport) && 
+                                /*x.ParkCountFree() > SpawnNeedParkCountFree && */MapUtil.IsInRange(ref range, ref pointAirport) && 
                                 !posAirGroups.Any(y => y.distance(ref pointAirport) < SpawnMaxDifDistanceAirport);
                     });
                     if (aiAirports.Count() > 0)
@@ -1663,7 +1694,7 @@ namespace IL2DCE.Generator
                         way.X = point.x = pointAirport.x;
                         way.Y = point.y = pointAirport.y;
                         airGroup.Position = point;
-                        Debug.WriteLine(string.Format(" => AirGroup Pos Changed={0}", airGroup.Position.ToString()));
+                        Debug.WriteLine(string.Format(" => Pos Changed={0}", airGroup.Position.ToString()));
                     }
                 }
             }
