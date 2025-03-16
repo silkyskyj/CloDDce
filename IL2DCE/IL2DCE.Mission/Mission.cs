@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -106,27 +107,59 @@ namespace IL2DCE
                 return base.GetBattleLengthTicks();
             }
 
-            public override void OnTickGame()
-            {
-                base.OnTickGame();
-            }
-
-            public override void OnTickReal()
-            {
-                base.OnTickReal();
-            }
-
-            public override void OnBattleInit()
-            {
-                Debug.WriteLine("Mission.OnBattleInit()");
-                base.OnBattleInit();
-            }
-
-            public override void OnBattleStarted()
-            {
-                Debug.WriteLine("Mission.OnBattleStarted()");
-                base.OnBattleStarted();
 #if DEBUG
+            private DateTime TraceLatest = DateTime.Now;
+
+            private void TraceAirGroupInfo()
+            {
+                Debug.WriteLine(DateTime.Now);
+                AirGroups.ForEach(x =>
+                {
+                    Debug.WriteLine("AiAirGroup: ID={0}, Name={1}, NOf={2}, Init={3}, Died={4}, Way=[{5}/{6}], Task{7}, Idle={8}, Pos={9}",
+                        x.ID(), x.Name(), x.NOfAirc, x.InitNOfAirc, x.DiedAircrafts, x.GetCurrentWayPoint(), x.GetWay().Length,  x.getTask().ToString(), x.Idle, x.Pos().ToString());
+                    //AiWayPoint[] airGroupWay = x.GetWay();
+                    //foreach (AiAirWayPoint item in airGroupWay)
+                    //{
+                    //    Debug.WriteLine("AiAirGroup: Action={0}, P=({1},{2},{3}) V={4}, Target={5}",
+                    //        item.Action.ToString(), item.P.x, item.P.y, item.P.z, item.Speed, item.Target != null ? item.Target.Name() : string.Empty);
+                    //}
+                    AiAircraft aiAircraft = x.GetItems().FirstOrDefault() as AiAircraft;
+                    Regiment regiment = aiAircraft.Regiment();
+                    Debug.WriteLine("   aiAircraft:InternalTypeName={0}, AircraftType={1}, name={2}, gruppeNumber={3}, Army={4}, IsKilled={5}, IsAlive={6}, IsTaskComplete={7}",
+                        aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), regiment.gruppeNumber(), aiAircraft.Army(), aiAircraft.IsKilled(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
+
+                    AiAirGroup[] enemies = x.enemies();
+                    if (enemies != null && enemies.Length > 0)
+                    {
+                        AiAirGroup enemy = enemies.FirstOrDefault();
+                        aiAircraft = enemy.GetItems().FirstOrDefault() as AiAircraft;
+                        regiment = aiAircraft.Regiment();
+                        Point3d enemyPos = enemy.Pos();
+                        Debug.WriteLine("   Enemies: Count={0}, ID={1}, InternalTypeName={2}, AircraftType={3}, name={4}, Pos={5}, Distance={6}",
+                            enemies.Length, x.ID(), aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), enemyPos.ToString(), x.Pos().distance(ref enemyPos));
+                    }
+
+                    //foreach (var item in items)
+                    //{
+                    //        if (item is AiAircraft)
+                    //        {
+                    //            AiAircraft aiAircraft = item as AiAircraft;
+                    //            Regiment regiment = aiAircraft.Regiment();
+                    //            Debug.WriteLine("aiAircraft:InternalTypeName={0}, AircraftType={1}, name={2}, gruppeNumber={3}, Army={4}, IsKilled={5}, IsAlive={6}, IsTaskComplete={7}",
+                    //                aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), regiment.gruppeNumber(), aiAircraft.Army(), aiAircraft.IsKilled(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
+                    //        }
+                    //        else
+                    //        {
+
+                    //        }
+                    //    }
+                    //}
+                }
+                );
+            }
+
+            private void TraceGameInfo()
+            {
                 string gpDictionaryFilePath = GamePlay.gpDictionaryFilePath;
                 AiAirGroup[] aiAirGroupRed = GamePlay.gpAirGroups((int)EArmy.Red);
                 AiAirGroup[] aiAirGroupBlue = GamePlay.gpAirGroups((int)EArmy.Blue);
@@ -150,6 +183,39 @@ namespace IL2DCE
                 AiGroundGroup[] aiGroundGroupRed = GamePlay.gpGroundGroups((int)EArmy.Red);
                 AiGroundGroup[] aiGroundGroupBlue = GamePlay.gpGroundGroups((int)EArmy.Blue);
                 GroundStationary[] groundStationary = GamePlay.gpGroundStationarys();
+            }
+#endif
+
+            public override void OnTickGame()
+            {
+                base.OnTickGame();
+#if DEBUG
+                if ((DateTime.Now - TraceLatest).TotalSeconds > 60)
+                {
+                    TraceAirGroupInfo();
+                    // TraceGameInfo();
+                    TraceLatest = DateTime.Now;
+                }
+#endif
+            }
+
+            public override void OnTickReal()
+            {
+                base.OnTickReal();
+            }
+
+            public override void OnBattleInit()
+            {
+                Debug.WriteLine("Mission.OnBattleInit()");
+                base.OnBattleInit();
+            }
+
+            public override void OnBattleStarted()
+            {
+                Debug.WriteLine("Mission.OnBattleStarted()");
+                base.OnBattleStarted();
+#if DEBUG
+                TraceGameInfo();
 #endif
             }
 

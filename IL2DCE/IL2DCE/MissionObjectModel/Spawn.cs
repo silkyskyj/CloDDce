@@ -40,11 +40,36 @@ namespace IL2DCE.MissionObjectModel
         Default = -1,
     }
 
-    public enum ESpawnRandom
+    public enum ESpawnRandomLocation
     {
         Player = 0,
         Friendly = 1,
         Enemy = 2,
+    }
+
+    public class SpawnLocation
+    {
+        public bool IsRandomizePlayer
+        {
+            get;
+            set;
+        }
+
+        public bool IsRandomizeFliendly
+        {
+            get;
+            set;
+        }
+
+        public bool IsRandomizeEnemy
+        {
+            get;
+            set;
+        }
+
+        public SpawnLocation()
+        {
+        }
     }
 
     public class Spawn

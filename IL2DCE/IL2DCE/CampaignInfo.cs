@@ -331,23 +331,6 @@ namespace IL2DCE
             }
         }
 
-        //public AirGroupInfo GetAirGroupInfo(string airGroupKey)
-        //{
-        //    AirGroupInfo airGroupInfo = null;
-        //    if (_localAirGroupInfos != null && (airGroupInfo = _localAirGroupInfos.GetAirGroupInfo(airGroupKey)) != null)
-        //    {
-        //        return airGroupInfo;
-        //    }
-        //    else if ((airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey)) != null)
-        //    {
-        //        return airGroupInfo;
-        //    }
-        //    else
-        //    {
-        //        throw new ArgumentException(string.Format("no AirGroup[{0}] info in the file[{1}]", airGroupKey, "AirGroupinfo.ini"));
-        //    }
-        //}
-
         public void Write(ISectionFile file)
         {
             SectionFileUtil.Write(file, SectionMain, KeyName, name);

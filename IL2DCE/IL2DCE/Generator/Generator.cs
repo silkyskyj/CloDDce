@@ -414,11 +414,6 @@ namespace IL2DCE.Generator
                 weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Medium clouds at {0}m", cloudsHeight);
             }
 
-            //briefingFile.MissionDescription += Career.CampaignInfo.Id + "\n";
-            //briefingFile.MissionDescription += "Date: " + Career.Date.Value.ToShortDateString() + "\n";
-            //briefingFile.MissionDescription += "Time: " + MissionTime.ToString(time) + "\n";
-            //briefingFile.MissionDescription += "Weather: " + weatherString;
-
             briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
                                                                 Career.CampaignInfo.Id, Career.Date.Value.ToShortDateString(), MissionTime.ToString(time), weatherString);
 
@@ -429,7 +424,9 @@ namespace IL2DCE.Generator
                 throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
             }
 
+            GeneratorAirOperation.AirGroupPlayer = airGroup;
             EMissionType? missionType = Career.MissionType;
+            SpawnLocation spawnLocation = new SpawnLocation() { IsRandomizePlayer = Career.SpawnRandomPlayer, IsRandomizeFliendly = Career.SpawnRandomFriendly, IsRandomizeEnemy = Career.SpawnRandomEnemy };
             Spawn spawn = new Spawn(Career.Spawn);
             bool result = false;
             if (missionType == null)
@@ -439,8 +436,8 @@ namespace IL2DCE.Generator
                 {
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     missionType = availableMissionTypes[randomMissionTypeIndex];
-                    if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, Career.SpawnRandomPlayer, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn))
+                    if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawnLocation, Career.PlayerAirGroupSkill, spawn))
                     {
                         result = true;
                         break;
@@ -450,8 +447,8 @@ namespace IL2DCE.Generator
             }
             else
             {
-                result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, Career.SpawnRandomPlayer, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, Career.PlayerAirGroupSkill, spawn);
+                result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
+                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawnLocation, Career.PlayerAirGroupSkill, spawn);
             }
 
             if (!result)
@@ -492,8 +489,7 @@ namespace IL2DCE.Generator
                     {
                         int randomAirGroupIndex = Random.Next(GeneratorAirOperation.AvailableAirGroups.Count);
                         AirGroup randomAirGroup = GeneratorAirOperation.AvailableAirGroups[randomAirGroupIndex];
-                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, 
-                                randomAirGroup.ArmyIndex == airGroup.ArmyIndex ? Career.SpawnRandomFriendly: Career.SpawnRandomEnemy))
+                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, spawnLocation, null))
                         {
                             i++;
                         }
