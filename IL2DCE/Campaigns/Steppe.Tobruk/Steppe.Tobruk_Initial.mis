@@ -1,0 +1,468 @@
+[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$Online_Cobra_(8x8)
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 8500 73420 73420 10000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[AirGroups]
+  BoB_RAF_B_218Sqn.01
+  BoB_RAF_B_35Sqn.02
+  gb02.08
+  BoB_RAF_B_40Sqn.11
+  BoB_RAF_B_44Sqn.12
+  BoB_RAF_F_29Sqn_Late.04
+  BoB_RAF_F_303_PL_Late.11
+  BoB_RAF_F_310_CZ_Late.12
+  BoB_RAF_F_87Sqn_Late.02
+  BoB_RAF_F_92Sqn_Late.01
+  tobruk:Channel_AA_GCI3_SPA69.01
+  tobruk:Tobruk_USAAF_F_64Sqn.04
+  tobruk:Tobruk_USAAF_F_65Sqn.02
+  gb01_Late.01
+  g01.02
+  BoB_LW_JG26_I.12
+  g01.14
+  BoB_LW_JG3_I.21
+  g01.21
+  g01.34
+  BoB_LW_KG26_Stab.02
+  g03.04
+  BoB_LW_KG3_Stab.01
+  g03.11
+  g02.02
+  BoB_LW_KuFlGr_706.01
+  BoB_LW_LG2_I.01
+  BoB_RA_56St_20Gruppo_353Sq.01
+[BoB_RAF_B_218Sqn.01]
+  Flight0 1
+  Class Aircraft.WellingtonMkIc
+  Formation LINEABREAST
+  CallSign 16
+  Fuel 27
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_B_218Sqn.01
+[BoB_RAF_B_218Sqn.01_Way]
+  NORMFLY 70507.44 67864.11 3000.00 300.00
+  NORMFLY 65459.42 64959.58 500.00 300.00
+[BoB_RAF_B_35Sqn.02]
+  Flight1 11
+  Class tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
+  Formation LINEABREAST
+  CallSign 10
+  Fuel 62
+  Weapons 1 1 1 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_B_35Sqn.02
+[BoB_RAF_B_35Sqn.02_Way]
+  TAKEOFF 67515.16 69828.07 0 0
+  NORMFLY 67549.68 67338.66 500 300
+[gb02.08]
+  VirtualAirGroupKey Czechoslovak_Bomber_01
+  Flight3 31
+  Class Aircraft.WellingtonMkIc
+  Formation LINEABREAST
+  CallSign 23
+  Fuel 26
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  Skin30 TFS Desert Welli Generic.jpg
+  BandColor30 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn30 0
+  Briefing gb02.08
+[gb02.08_Way]
+  TAKEOFF 67680.31 13970.13 0 0
+  NORMFLY 67737.87 16574.7 500 300
+[BoB_RAF_B_40Sqn.11]
+  Flight0 1
+  Class Aircraft.BlenheimMkIV
+  Formation LINEABREAST
+  CallSign 28
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_B_40Sqn.11
+[BoB_RAF_B_40Sqn.11_Way]
+  NORMFLY 68465.91 11675.18 2000.00 300.00
+  NORMFLY 60846.33 17415.40 2000.00 300.00
+[BoB_RAF_B_44Sqn.12]
+  Flight1 11
+  Class Aircraft.BlenheimMkIV
+  Formation LINEABREAST
+  CallSign 1
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_B_44Sqn.12
+[BoB_RAF_B_44Sqn.12_Way]
+  NORMFLY 65469.94 10504.75 2000.00 300.00
+  NORMFLY 62279.66 14636.63 500.00 300.00
+[BoB_RAF_F_29Sqn_Late.04]
+  Flight2 21
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 10
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_F_29Sqn_Late.04
+[BoB_RAF_F_29Sqn_Late.04_Way]
+  NORMFLY 67119.70 71707.01 2000.00 300.00
+  NORMFLY 61647.71 68382.94 500.00 300.00
+[BoB_RAF_F_303_PL_Late.11]
+  Flight0 1
+  Class Aircraft.HurricaneMkI
+  Formation FINGERFOUR
+  CallSign 35
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_F_303_PL_Late.11
+[BoB_RAF_F_303_PL_Late.11_Way]
+  NORMFLY 70094.47 63624.10 2000.00 300.00
+  NORMFLY 63695.98 55093.67 500.00 300.00
+[BoB_RAF_F_310_CZ_Late.12]
+  Flight1 11
+  Class tobruk:Aircraft.HurricaneMkIIb
+  Formation FINGERFOUR
+  CallSign 18
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_F_310_CZ_Late.12
+[BoB_RAF_F_310_CZ_Late.12_Way]
+  NORMFLY 68094.25 41552.57 2500.00 300.00
+  NORMFLY 61524.01 37798.14 500.00 300.00
+[BoB_RAF_F_87Sqn_Late.02]
+  Flight1 11
+  Class tobruk:Aircraft.SpitfireMkVb
+  Formation FINGERFOUR
+  CallSign 12
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_F_87Sqn_Late.02
+[BoB_RAF_F_87Sqn_Late.02_Way]
+  TAKEOFF 53051.36 53226.32 0 0
+  NORMFLY 51514.85 51632.15 500 300
+[BoB_RAF_F_92Sqn_Late.01]
+  Flight0 1
+  Class tobruk:Aircraft.SpitfireMkIIb
+  Formation FINGERFOUR
+  CallSign 14
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RAF_F_92Sqn_Late.01
+[BoB_RAF_F_92Sqn_Late.01_Way]
+  TAKEOFF 53481.48 33875.90 0 0
+  NORMFLY 52333.18 32538.93 500.00 300.00
+[tobruk:Channel_AA_GCI3_SPA69.01]
+  Flight0 1
+  Class tobruk:Aircraft.D520_Serie1
+  Formation VIC3
+  CallSign 10
+  Fuel 50
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing tobruk:Channel_AA_GCI3_SPA69.01
+[tobruk:Channel_AA_GCI3_SPA69.01_Way]
+  NORMFLY 61865.32 48080.07 3000.00 300.00
+  NORMFLY 46719.63 43685.69 500.00 300.00
+[tobruk:Tobruk_USAAF_F_64Sqn.04]
+  Flight2 21
+  Class tobruk:Aircraft.MartletMkIII
+  Formation FINGERFOUR
+  CallSign 29
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing tobruk:Tobruk_USAAF_F_64Sqn.04
+[tobruk:Tobruk_USAAF_F_64Sqn.04_Way]
+  NORMFLY 67328.71 24872.47 2000.00 300.00
+  NORMFLY 60544.00 33789.68 500.00 300.00
+[tobruk:Tobruk_USAAF_F_65Sqn.02]
+  Flight1 11
+  Class tobruk:Aircraft.TomahawkMkII
+  Formation FINGERFOUR
+  CallSign 4
+  Fuel 100
+  Weapons 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing tobruk:Tobruk_USAAF_F_65Sqn.02
+[tobruk:Tobruk_USAAF_F_65Sqn.02_Way]
+  NORMFLY 54100.21 44167.97 2500.00 300.00
+  NORMFLY 44202.46 39333.97 500.00 300.00
+[gb01_Late.01]
+  VirtualAirGroupKey USSR_Fighter_01
+   Flight0 1
+  Class tobruk:Aircraft.KittyhawkMkIA
+  Formation FINGERFOUR
+  CallSign 26
+  Fuel 64
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Skin0 TFS Kittyhawk default a075TomahawkCoRivetsl.jpg
+  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  Aging 0
+  MarkingsOn0 0
+  SetOnPark 0
+  Briefing gb01_Late.01
+[gb01_Late.01_Way]
+  NORMFLY 71010.06 13805.65 2500.00 300.00
+  NORMFLY 63713.53 17249.75 500.00 300.00
+[g01.02]
+  VirtualAirGroupKey Romania_Fighter_01
+  Flight1 11
+  Class tobruk:Aircraft.Bf-109F-2
+  Formation FINGERFOUR
+  CallSign 19
+  Fuel 25
+  Weapons 1 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn10 0
+  SetOnPark 0
+  Briefing g01.02
+[g01.02_Way]
+  TAKEOFF 39709.01 20273.63 0 0
+  NORMFLY 40997.09 21656.53 500 300
+[BoB_LW_JG26_I.12]
+  Flight1 11
+  Class Aircraft.Bf-110C-4
+  Formation FINGERFOUR
+  CallSign 20
+  Fuel 100
+  Weapons 1 1 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_LW_JG26_I.12
+[BoB_LW_JG26_I.12_Way]
+  NORMFLY 30849.28 11475.97 2500.00 300.00
+  NORMFLY 35115.42 17533.75 500.00 300.00
+[g01.14]
+  VirtualAirGroupKey Finland_Fighter_01
+  Flight2 21
+  Class Aircraft.G50
+  Formation FINGERFOUR
+  CallSign 6
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  BandColor20 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn20 0
+  SetOnPark 0
+  Briefing g01.14
+[g01.14_Way]
+  NORMFLY 10116.24 19837.64 2000.00 300.00
+  NORMFLY 16685.99 27132.70 500.00 300.00
+[BoB_LW_JG3_I.21]
+  Flight0 1
+  Class tobruk:Aircraft.Bf-109F-1
+  Formation FINGERFOUR
+  CallSign 33
+  Fuel 100
+  Weapons 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_LW_JG3_I.21
+[BoB_LW_JG3_I.21_Way]
+  NORMFLY 10453.04 41298.64 3000.00 300.00
+  NORMFLY 17152.00 50216.35 500.00 300.00
+[g01.21]
+  VirtualAirGroupKey Hungary_Fighter_01
+  Flight0 1
+  Class Aircraft.Bf-109E-4
+  Formation FINGERFOUR
+  CallSign 25
+  Fuel 100
+  Weapons 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  Aging 0
+  MarkingsOn0 0
+  SetOnPark 0
+  Briefing g01.21
+[g01.21_Way]
+  NORMFLY 11782.32 56868.78 3000.00 300.00
+  NORMFLY 20740.33 62414.26 500.00 300.00
+[g01.34]
+  VirtualAirGroupKey Slovakia_Fighter_01
+  Flight2 21
+  Class tobruk:Aircraft.Bf-109E-7
+  Formation FINGERFOUR
+  CallSign 34
+  Fuel 22
+  Weapons 1 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  BandColor20 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn20 0
+  SetOnPark 0
+  Briefing g01.34
+[g01.34_Way]
+  NORMFLY 20522.67 19111.90 2000.00 300.00
+  NORMFLY 24704.00 30247.90 500.00 300.00
+[BoB_LW_KG26_Stab.02]
+  Flight1 11
+  Class tobruk:Aircraft.Ju-88A-5
+  Formation VIC3
+  CallSign 36
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_LW_KG26_Stab.02
+[BoB_LW_KG26_Stab.02_Way]
+  NORMFLY 19165.49 10785.75 2500.00 300.00
+  NORMFLY 22163.18 15119.38 500.00 300.00
+[g03.04]
+  VirtualAirGroupKey Romania_Bomber_01
+  Flight2 21
+  Class Aircraft.Ju-87B-2
+  Formation VIC3
+  CallSign 1
+  Fuel 100
+  Weapons 1 1 1 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  BandColor20 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn20 0
+  SetOnPark 0
+  Briefing g03.04
+[g03.04_Way]
+  NORMFLY 11224.20 10873.74 2500.00 300.00
+  NORMFLY 12980.14 15569.45 500.00 300.00
+[BoB_LW_KG3_Stab.01]
+  Flight0 1
+  Class Aircraft.He-111P-2
+  Formation VIC3
+  CallSign 31
+  Fuel 35
+  Weapons 1 1 1 1 1 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_LW_KG3_Stab.01
+[BoB_LW_KG3_Stab.01_Way]
+  TAKEOFF 15318.03 12813.94 0 0
+  NORMFLY 15358.76 16059.16 500 300
+[g03.11]
+  VirtualAirGroupKey Hungary_Bomber_01
+  Flight0 1
+  Class Aircraft.Ju-87B-2
+  Formation VIC3
+  CallSign 30
+  Fuel 100
+  Weapons 1 1 1 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn0 0
+  SetOnPark 0
+  Briefing g03.11
+[g03.11_Way]
+  NORMFLY 15047.78 54801.50 2500.00 300.00
+  NORMFLY 42056.24 69009.12 2500.00 300.00
+  NORMFLY 42056.24 69009.12 2500.00 300.00
+  NORMFLY 42056.24 69009.12 2500.00 300.00
+  NORMFLY 41289.26 68369.96 2500.00 300.00
+  NORMFLY 41289.26 68369.96 2500.00 300.00
+  NORMFLY 41289.26 68369.96 2500.00 300.00
+  NORMFLY 17471.70 63454.09 500.00 300.00
+[g02.02]
+  VirtualAirGroupKey Finland_Bomber_01
+  Flight1 11
+  Class tobruk:Aircraft.Ju-88A-5
+  Formation VIC3
+  CallSign 11
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
+  MarkingsOn10 0
+  SetOnPark 0
+  Briefing g02.02
+[g02.02_Way]
+  NORMFLY 12185.23 65128.80 3000.00 300.00
+  NORMFLY 16296.29 66660.74 500.00 300.00
+[BoB_LW_KuFlGr_706.01]
+  Flight0 1
+  Class tobruk:Aircraft.He-111H-6
+  Formation VIC3
+  CallSign 25
+  Fuel 38
+  Weapons 1 1 1 1 1 1 1 1 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_LW_KuFlGr_706.01
+[BoB_LW_KuFlGr_706.01_Way]
+  TAKEOFF 13425.36 67285.29 0 0
+  NORMFLY 15669.65 66164.63 500 300
+[BoB_LW_LG2_I.01]
+  Flight0 1
+  Class tobruk:Aircraft.Bf-109F-4
+  Formation FINGERFOUR
+  CallSign 25
+  Fuel 27
+  Weapons 1 1 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_LW_LG2_I.01
+[BoB_LW_LG2_I.01_Way]
+  TAKEOFF 28714.09 55563.57 0 0
+  NORMFLY 30450.62 54069.41 500 300
+[BoB_RA_56St_20Gruppo_353Sq.01]
+  Flight0 1
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+  Formation VIC3
+  CallSign 3
+  Fuel 75
+  Weapons 1 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing BoB_RA_56St_20Gruppo_353Sq.01
+[BoB_RA_56St_20Gruppo_353Sq.01_Way]
+  NORMFLY 10881.22 34726.66 2500.00 300.00
+  NORMFLY 16555.71 42022.70 500.00 300.00

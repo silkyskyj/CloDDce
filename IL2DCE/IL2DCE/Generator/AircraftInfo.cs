@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
@@ -166,7 +167,8 @@ namespace IL2DCE.Generator
         public void Write(ISectionFile file)
         {
             SectionFileUtil.Write(file, SectionMain, Aircraft, string.Empty);
-            SectionFileUtil.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString());
+            SectionFileUtil.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            SectionFileUtil.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(CultureInfo.InvariantCulture.NumberFormat));
             int lines = _aircraftInfoFile.lines(Aircraft);
             for (int i = 0; i < lines; i++)
             {

@@ -153,11 +153,12 @@ namespace IL2DCE.Generator
 
         public void Write(ISectionFile file, string airGroupKey = null, string aircraftClass = null)
         {
-            SectionFileUtil.Write(file, Name, KeySquadronCount, SquadronCount.ToString(), false);
-            SectionFileUtil.Write(file, Name, KeyFlightCount, FlightCount.ToString(), false);
-            SectionFileUtil.Write(file, Name, KeyFlightSize, FlightSize.ToString(), false);
-            SectionFileUtil.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(), false);
-            SectionFileUtil.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(), false);
+            SectionFileUtil.Write(file, SectionMain, Name, string.Empty);
+            SectionFileUtil.Write(file, Name, KeySquadronCount, SquadronCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SectionFileUtil.Write(file, Name, KeyFlightCount, FlightCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SectionFileUtil.Write(file, Name, KeyFlightSize, FlightSize.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SectionFileUtil.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SectionFileUtil.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             if (string.IsNullOrEmpty(aircraftClass))
             {
                 Aircrafts.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty, false)); // All
@@ -281,46 +282,49 @@ namespace IL2DCE.Generator
 
         public IEnumerable<AirGroupInfo> GetAirGroupInfoGroupKey(string airGroupKey, bool ignoreCase = false)
         {
-            return ignoreCase ? AirGroupInfo.Where(x => x.AirGroupKeys.Any(y => string.Compare(y, airGroupKey, true, CultureInfo.InvariantCulture) == 0)) :
+            return ignoreCase ? AirGroupInfo.Where(x => x.AirGroupKeys.Any(y => string.Compare(y, airGroupKey, ignoreCase, CultureInfo.InvariantCulture) == 0)) :
                                 AirGroupInfo.Where(x => x.AirGroupKeys.Contains(airGroupKey));
         }
 
         public IEnumerable<AirGroupInfo> GetAirGroupInfoAircraft(string aircraft, bool ignoreCase = false)
         {
-            return ignoreCase ? AirGroupInfo.Where(x => x.Aircrafts.Any(y => string.Compare(y, aircraft, true, CultureInfo.InvariantCulture) == 0)) :
+            return ignoreCase ? AirGroupInfo.Where(x => x.Aircrafts.Any(y => string.Compare(y, aircraft, ignoreCase, CultureInfo.InvariantCulture) == 0)) :
                                 AirGroupInfo.Where(x => x.Aircrafts.Contains(aircraft));
         }
 
-        public IEnumerable<AirGroupInfo> GetAirGroupInfo(string airGroupKey, string aircraft, bool ignoreCase = false, bool addGroupKey = true)
+        public IEnumerable<AirGroupInfo> GetAirGroupInfo(string airGroupKey, string aircraft, bool ignoreCase = false, bool addAircraftKey = true, bool addGroupKey = true)
         {
-            var result = GetAirGroupInfoGroupKey(airGroupKey, ignoreCase);
-            if (result.Count() == 0)
+            var airGroups = GetAirGroupInfoGroupKey(airGroupKey, ignoreCase);
+            if (airGroups.Any())
             {
-                result = GetAirGroupInfoAircraft(aircraft, ignoreCase);
+                var result = airGroups.Where(x => x.Aircrafts.Any(y => string.Compare(y, aircraft, ignoreCase, CultureInfo.InvariantCulture) == 0));
+                if (result.Any())
+                {
+                    airGroups = result;
+                }
+                else
+                {
+                    if (addAircraftKey)
+                    {
+                        foreach (var item in airGroups)
+                        {
+                            item.Aircrafts.Add(aircraft);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                airGroups = GetAirGroupInfoAircraft(aircraft, ignoreCase);
                 if (addGroupKey)
                 {
-                    foreach (var item in result)
+                    foreach (var item in airGroups)
                     {
                         item.AirGroupKeys.Add(airGroupKey);
                     }
                 }
             }
-            return result;
-        }
-
-        //public int GetArmyIndex(string airGroupKey)
-        //{
-        //    AirGroupInfo airGroupInfo = GetAirGroupInfo(airGroupKey).FirstOrDefault();
-        //    return airGroupInfo != null ? airGroupInfo.ArmyIndex : 0;
-        //}
-
-        public void Write(ISectionFile file)
-        {
-            foreach (var item in AirGroupInfo)
-            {
-                SectionFileUtil.Write(file, IL2DCE.Generator.AirGroupInfo.SectionMain, item.Name, string.Empty);
-                item.Write(file);
-            }
+            return airGroups;
         }
     }
 }

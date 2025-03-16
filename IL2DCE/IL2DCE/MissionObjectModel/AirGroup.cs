@@ -1272,6 +1272,33 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public void UpdateStartPoint(ref Point3d point, AirGroupWaypoint.AirGroupWaypointTypes? type = null)
+        {
+            AirGroupWaypoint way = _waypoints.FirstOrDefault();
+            if (way != null)
+            {
+                way.X = point.x;
+                way.Y = point.y;
+                way.Z = point.z;
+                Position = point;
+                Altitude = point.z;
+                if (type != null)
+                {
+                    way.Type = type.Value;
+                    if (way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF)
+                    {
+                        Airstart = false;
+                        speed = way.V = AirGroupWaypoint.DefaultTakeoffV;
+                    }
+                    else if (speed == AirGroupWaypoint.DefaultTakeoffV)
+                    {
+                        Airstart = true;
+                        speed = way.V = AirGroupWaypoint.DefaultNormaflyV;
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Debug methods

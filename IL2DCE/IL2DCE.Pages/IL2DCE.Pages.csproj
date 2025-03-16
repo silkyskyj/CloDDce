@@ -55,7 +55,6 @@
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Input\Command.cs" />
-    <Compile Include="PlaneLoadoutPage.cs" />
     <Compile Include="QuickMissionPage.cs" />
     <Compile Include="QuickMission.xaml.cs">
       <DependentUpon>QuickMission.xaml</DependentUpon>

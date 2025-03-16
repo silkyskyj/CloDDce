@@ -357,7 +357,7 @@ namespace IL2DCE.Pages
                                     game.BattleSuccess.ToString(),
                                     exp,                       // Before 
                                     exp2,                      // Add Now
-                                    rank < Rank.RankMax ? ((rank + 1) * 1000).ToString():  " - ",       // Next Rank
+                                    rank < Rank.RankMax ? ((rank + 1) * 1000).ToString(CultureInfo.InvariantCulture.NumberFormat):  " - ",       // Next Rank
                                     rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty); // Rank Up
         }
 

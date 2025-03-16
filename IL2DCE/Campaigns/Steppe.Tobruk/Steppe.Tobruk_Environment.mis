@@ -1,0 +1,13 @@
+[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$Online_Cobra_(8x8)
+  DespawnAfterLandingTimeout 600
+  BattleArea 8500 8500 73420 73420 10000
+  TIME 10.0000002421439
+  WeatherIndex 1
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10

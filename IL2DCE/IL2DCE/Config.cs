@@ -20,7 +20,6 @@ using System.Linq;
 using System.Reflection;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
-using static System.Collections.Specialized.BitVector32;
 
 namespace IL2DCE
 {
@@ -219,6 +218,7 @@ namespace IL2DCE
         }
 
         public static CultureInfo Culture = new CultureInfo("en-US", true);
+        public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
 
         public static Version Version
         {
@@ -326,7 +326,7 @@ namespace IL2DCE
             EnableFilterSelectAirGroup = confFile.get(SectionQuickMissionPage, KeyEnableFilterSelectAirGroup, 0) == 1;
             EnableAutoSelectComboBoxItem = confFile.get(SectionQuickMissionPage, KeyEnableAutoSelectComboBoxItem, 0) == 1;
 
-            Skills = Skills.Default;
+            Skills = Skills.CreateDefault();
             if (confFile.exist(SectionSkill))
             {
                 string key;
@@ -338,7 +338,7 @@ namespace IL2DCE
                     System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value != null ? value: string.Empty);
                     // if you need delete default defined skill, please write no value key in ini file.
                     var delSkills = this.Skills.Where(x => string.Compare(x.Name, key, true) == 0);
-                    if (delSkills.Count() > 0)
+                    if (delSkills.Any())
                     {
                         foreach (var item in delSkills)
                         {

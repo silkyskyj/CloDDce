@@ -406,7 +406,7 @@ namespace IL2DCE.MissionObjectModel
                 AirGroup airGroup = new AirGroup(file, key);
                 string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
                 IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGoupKey, airGroup.Class, false);
-                if (airGroupInfo.Count() > 0)
+                if (airGroupInfo.Any())
                 {
                     AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
                     airGroup.SetAirGroupInfo(airGroupInfoTarget);
@@ -475,11 +475,11 @@ namespace IL2DCE.MissionObjectModel
         private IEnumerable<AirGroupInfo> GetAirGroupInfo(string airGroupKey, string aircraft, bool ignoreCase)
         {
             IEnumerable<AirGroupInfo> airGroupInfo;
-            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Count() > 0)
+            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Any())
             {
                 return airGroupInfo;
             }
-            else if (AirGroupInfos.Default != null && (airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Count() > 0)
+            else if (AirGroupInfos.Default != null && (airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Any())
             {
                 return airGroupInfo;
             }

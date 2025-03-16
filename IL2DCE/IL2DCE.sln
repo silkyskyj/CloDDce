@@ -86,6 +86,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Isles of Doom.Tobruk", "Isl
 		Campaigns\Isles of Doom.Tobruk\MissionSingle.cs = Campaigns\Isles of Doom.Tobruk\MissionSingle.cs
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Steppe.Tobruk", "Steppe.Tobruk", "{F004BA31-3ED5-4669-90DE-CCBF5A31A90A}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Steppe.Tobruk\AircraftInfo.ini = Campaigns\Steppe.Tobruk\AircraftInfo.ini
+		Campaigns\Steppe.Tobruk\AirGroupInfo.ini = Campaigns\Steppe.Tobruk\AirGroupInfo.ini
+		Campaigns\Steppe.Tobruk\CampaignInfo.ini = Campaigns\Steppe.Tobruk\CampaignInfo.ini
+		Campaigns\Steppe.Tobruk\MissionSingle.cs = Campaigns\Steppe.Tobruk\MissionSingle.cs
+		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Environment.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Environment.mis
+		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis
+		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Static.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Static.mis
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -121,6 +132,7 @@ Global
 		{197175B4-BD2C-4289-9C47-CB4660DBF7B2} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{AE78E049-6049-43C3-A593-36D58E50EE47} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{F004BA31-3ED5-4669-90DE-CCBF5A31A90A} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60E924F7-66B7-4DA3-884D-0E0FA7339A19}

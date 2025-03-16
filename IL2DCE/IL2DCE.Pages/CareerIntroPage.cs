@@ -15,18 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
-using maddox.game.page;
 using maddox.game.play;
-using maddox.game.world;
 
 namespace IL2DCE.Pages
 {
@@ -316,6 +312,7 @@ namespace IL2DCE.Pages
 
             UpdateTextBoxPilotName();
             UpdateCampaignComboBoxFilter();
+            UpdateAirGroupComboBoxInfo();
             UpdateButtonStatus();
         }
 

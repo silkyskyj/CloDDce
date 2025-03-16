@@ -745,11 +745,6 @@ namespace IL2DCE
                 }
             }
 
-            private void Loadout_Click(object sender, RoutedEventArgs e)
-            {
-                Game.gameInterface.PagePush(new PlaneLoadoutPage(), SelectedAirGroup.Class);
-            }
-
             #endregion
 
             #endregion
@@ -814,6 +809,7 @@ namespace IL2DCE
                                 if (str.Length >= 2)
                                 {
                                     name = string.Format("{0}_{1}", str[str.Length - 2], Path.GetFileNameWithoutExtension(str[str.Length - 1]));
+                                    converter.ErrorMsg.Clear();
                                     error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
                                     WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
                                 }
@@ -1372,7 +1368,7 @@ namespace IL2DCE
                 {
                     comboBox.IsEnabled = true;
                     comboBox.Text = selected;
-                    if (comboBox.SelectedIndex == -1)
+                    if (!comboBox.IsEditable && comboBox.SelectedIndex == -1)
                     {
                         comboBox.SelectedIndex = 0;
                     }
@@ -1444,6 +1440,8 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
                 EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription() : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayName(career.Spawn));
+                EnableSelectItem(FrameworkElement.comboBoxSpeed, career.Speed.ToString());
+                EnableSelectItem(FrameworkElement.comboBoxFuel, career.Fuel.ToString());
                 EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null && career.PlayerAirGroupSkill.Length > 0 ? career.PlayerAirGroupSkill[0].Name : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time >= 0 ? MissionTime.ToString(career.Time) : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather >= 0 ? ((EWeather)career.Weather).ToDescription() : string.Empty);

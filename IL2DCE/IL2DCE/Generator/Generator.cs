@@ -422,8 +422,6 @@ namespace IL2DCE.Generator
             briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
                                                                 Career.CampaignInfo.Id, Career.Date.Value.ToShortDateString(), MissionTime.ToString(time), weatherString);
 
-            // List<AirGroup> assignedOperationAirGroups = new List<AirGroup>();
-
             // Create a air operation for the player.
             AirGroup airGroup = GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
             if (airGroup == null)
@@ -523,13 +521,23 @@ namespace IL2DCE.Generator
             {
                 stationary.WriteTo(missionFile);
             }
+
 #if DEBUG
-            foreach (var item in missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == airGroup.ArmyIndex))
+            
+            foreach (var item in GeneratorAirOperation.AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex == airGroup.ArmyIndex).OrderBy(x => x.Position.x))
             {
                 AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
                 if (way != null)
                 {
-                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}", item.DisplayDetailName, way.X, way.Y, way.Z, way.V);
+                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked);
+                }
+            }
+            foreach (var item in GeneratorAirOperation.AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex != airGroup.ArmyIndex).OrderBy(x => x.Position.x))
+            {
+                AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
+                if (way != null)
+                {
+                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked);
                 }
             }
 #endif
