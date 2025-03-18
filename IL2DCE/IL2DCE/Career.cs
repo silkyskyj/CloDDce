@@ -45,9 +45,15 @@ namespace IL2DCE
         public const string KeyAdditionalAirOperations = "AdditionalAirOperations";
         public const string KeyAdditionalGroundOperations = "AdditionalGroundOperations";
         public const string KeyAirGroupDislplay = "AirGroupDisplay";
-        public const string KeySpawnRandomPlayer = "SpawnRandomPlayer";
-        public const string KeySpawnRandomFriendly = "SpawnRandomFriendly";
-        public const string KeySpawnRandomEnemy = "SpawnRandomEnemy";
+        public const string KeySpawnRandomLocationPlayer = "SpawnRandomLocationPlayer";
+        public const string KeySpawnRandomLocationFriendly = "SpawnRandomLocationFriendly";
+        public const string KeySpawnRandomLocationEnemy = "SpawnRandomLocationEnemy";
+        public const string KeySpawnRandomTimeFriendly = "SpawnRandomTimeFriendly";
+        public const string KeySpawnRandomTimeEnemy = "SpawnRandomTimeEnemy";
+        public const string KeySpawnRandomTimeBeginSec = "SpawnRandomTimeBeginSec";
+        public const string KeySpawnRandomTimeEndSec = "SpawnRandomTimeEndSec";
+        public const string KeySpawnRandomAltitudeFriendly = "SpawnRandomAltitudeFriendly";
+        public const string KeySpawnRandomAltitudeEnemy = "SpawnRandomAltitudeEnemy";
         public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
 
@@ -207,19 +213,55 @@ namespace IL2DCE
             set;
         }
 
-        public bool SpawnRandomPlayer
+        public bool SpawnRandomLocationPlayer
         {
             get;
             set;
         }
 
-        public bool SpawnRandomFriendly
+        public bool SpawnRandomLocationFriendly
         {
             get;
             set;
         }
 
-        public bool SpawnRandomEnemy
+        public bool SpawnRandomLocationEnemy
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomAltitudeFriendly
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomAltitudeEnemy
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomTimeFriendly
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnRandomTimeEnemy
+        {
+            get;
+            set;
+        }
+
+        public int SpawnRandomTimeBeginSec
+        {
+            get;
+            set;
+        }
+
+        public int SpawnRandomTimeEndSec
         {
             get;
             set;
@@ -323,6 +365,18 @@ namespace IL2DCE
             set;
         }
 
+        public AirGroup EscoredtAirGroup
+        {
+            get;
+            set;
+        }
+
+        public AirGroup OffensiveAirGroup
+        {
+            get;
+            set;
+        }
+
         public GroundGroup TargetGroundGroup
         {
             get;
@@ -397,9 +451,15 @@ namespace IL2DCE
 
             AdditionalAirOperations = Config.DefaultAdditionalAirOperations;
             AdditionalGroundOperations = Config.DefaultAdditionalGroundOperations;
-            SpawnRandomPlayer = false;
-            SpawnRandomFriendly = false;
-            SpawnRandomEnemy = true;
+            SpawnRandomLocationPlayer = false;
+            SpawnRandomLocationFriendly = false;
+            SpawnRandomLocationEnemy = true;
+            SpawnRandomAltitudeFriendly = false;
+            SpawnRandomAltitudeEnemy = true;
+            SpawnRandomTimeFriendly = false;
+            SpawnRandomTimeEnemy = true;
+            SpawnRandomTimeBeginSec = MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec;
+            SpawnRandomTimeEndSec = MissionObjectModel.Spawn.SpawnTime.DefaultEndSec;
 
             KillsHistory = new Dictionary<DateTime, string>();
             KillsGroundHistory = new Dictionary<DateTime, string>();
@@ -455,9 +515,15 @@ namespace IL2DCE
                 AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
                 AdditionalGroundOperations = careerFile.get(SectionCampaign, KeyAdditionalGroundOperations, config.AdditionalGroundOperations);
                 AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
-                SpawnRandomPlayer = careerFile.get(SectionCampaign, KeySpawnRandomPlayer, false);
-                SpawnRandomFriendly = careerFile.get(SectionCampaign, KeySpawnRandomFriendly, false);
-                SpawnRandomEnemy = careerFile.get(SectionCampaign, KeySpawnRandomEnemy, true);
+                SpawnRandomLocationPlayer = careerFile.get(SectionCampaign, KeySpawnRandomLocationPlayer, false);
+                SpawnRandomLocationFriendly = careerFile.get(SectionCampaign, KeySpawnRandomLocationFriendly, false);
+                SpawnRandomLocationEnemy = careerFile.get(SectionCampaign, KeySpawnRandomLocationEnemy, true);
+                SpawnRandomAltitudeFriendly = careerFile.get(SectionCampaign, KeySpawnRandomAltitudeFriendly, false);
+                SpawnRandomAltitudeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomAltitudeEnemy, true);
+                SpawnRandomTimeFriendly = careerFile.get(SectionCampaign, KeySpawnRandomTimeFriendly, false);
+                SpawnRandomTimeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomTimeEnemy, true);
+                SpawnRandomTimeBeginSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeBeginSec, MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec);
+                SpawnRandomTimeEndSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeEndSec, MissionObjectModel.Spawn.SpawnTime.DefaultEndSec);
 
                 Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -570,9 +636,15 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay?? string.Empty);
-            careerFile.add(SectionCampaign, KeySpawnRandomPlayer, SpawnRandomPlayer ? "1": "0");
-            careerFile.add(SectionCampaign, KeySpawnRandomFriendly, SpawnRandomFriendly ? "1" : "0");
-            careerFile.add(SectionCampaign, KeySpawnRandomEnemy, SpawnRandomEnemy ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomLocationPlayer, SpawnRandomLocationPlayer ? "1": "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomLocationFriendly, SpawnRandomLocationFriendly ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomLocationEnemy, SpawnRandomLocationEnemy ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomAltitudeFriendly, SpawnRandomAltitudeFriendly ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomAltitudeEnemy, SpawnRandomAltitudeEnemy ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomTimeFriendly, SpawnRandomTimeFriendly ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomTimeEnemy, SpawnRandomTimeEnemy ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnRandomTimeBeginSec, SpawnRandomTimeBeginSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionCampaign, KeySpawnRandomTimeEndSec, SpawnRandomTimeEndSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));

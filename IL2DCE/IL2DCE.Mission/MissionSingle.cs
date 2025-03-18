@@ -51,6 +51,7 @@ namespace IL2DCE
 
             public override void OnSingleBattleSuccess(bool success)
             {
+                base.OnSingleBattleSuccess(success);
                 if (Game != null)
                 {
                     if (success == true)

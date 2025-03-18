@@ -115,8 +115,10 @@ namespace IL2DCE
                 Debug.WriteLine(DateTime.Now);
                 AirGroups.ForEach(x =>
                 {
-                    Debug.WriteLine("AiAirGroup: ID={0}, Name={1}, NOf={2}, Init={3}, Died={4}, Way=[{5}/{6}], Task{7}, Idle={8}, Pos={9}",
-                        x.ID(), x.Name(), x.NOfAirc, x.InitNOfAirc, x.DiedAircrafts, x.GetCurrentWayPoint(), x.GetWay().Length,  x.getTask().ToString(), x.Idle, x.Pos().ToString());
+                    if (x.IsValid() && x.IsAlive())
+                    {
+                        Debug.WriteLine("AiAirGroup: ID={0}, Name={1}, NOf={2}, Init={3}, Died={4}, IsValid={5}, IsAlive={6}, Way=[{7}/{8}], Task{9}, Idle={10}, Pos={11}",
+                            x.ID(), x.Name(), x.NOfAirc, x.InitNOfAirc, x.DiedAircrafts, x.IsValid(), x.IsAlive(), x.GetCurrentWayPoint(), x.GetWay().Length, x.getTask().ToString(), x.Idle, x.Pos().ToString());
                     //AiWayPoint[] airGroupWay = x.GetWay();
                     //foreach (AiAirWayPoint item in airGroupWay)
                     //{
@@ -139,21 +141,22 @@ namespace IL2DCE
                             enemies.Length, x.ID(), aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), enemyPos.ToString(), x.Pos().distance(ref enemyPos));
                     }
 
-                    //foreach (var item in items)
-                    //{
-                    //        if (item is AiAircraft)
-                    //        {
-                    //            AiAircraft aiAircraft = item as AiAircraft;
-                    //            Regiment regiment = aiAircraft.Regiment();
-                    //            Debug.WriteLine("aiAircraft:InternalTypeName={0}, AircraftType={1}, name={2}, gruppeNumber={3}, Army={4}, IsKilled={5}, IsAlive={6}, IsTaskComplete={7}",
-                    //                aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), regiment.gruppeNumber(), aiAircraft.Army(), aiAircraft.IsKilled(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
-                    //        }
-                    //        else
-                    //        {
+                        //foreach (var item in items)
+                        //{
+                        //        if (item is AiAircraft)
+                        //        {
+                        //            AiAircraft aiAircraft = item as AiAircraft;
+                        //            Regiment regiment = aiAircraft.Regiment();
+                        //            Debug.WriteLine("aiAircraft:InternalTypeName={0}, AircraftType={1}, name={2}, gruppeNumber={3}, Army={4}, IsKilled={5}, IsAlive={6}, IsTaskComplete={7}",
+                        //                aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), regiment.gruppeNumber(), aiAircraft.Army(), aiAircraft.IsKilled(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
+                        //        }
+                        //        else
+                        //        {
 
-                    //        }
-                    //    }
-                    //}
+                        //        }
+                        //    }
+                        //}
+                    }
                 }
                 );
             }
@@ -168,14 +171,14 @@ namespace IL2DCE
                 foreach (var item in aiAirport)
                 {
                     point = item.Pos();
-                    Debug.WriteLine("aiAirport Army={0}, Pos=({1:F2},{2:F2},{3:F2}) Name={4}, Type={5}, ParkCountAll={6}, ParkCountFree={7},",
-                        item.Army(), point.x, point.y, point.z, item.Name(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
                     AiActor[] queueTakeoff = item.QueueTakeoff();
                     if (queueTakeoff != null && queueTakeoff.Length > 0)
                     {
+                        Debug.WriteLine("aiAirport Army={0}, Pos=({1:F2},{2:F2},{3:F2}) Name={4}, Type={5}, ParkCountAll={6}, ParkCountFree={7},",
+                            item.Army(), point.x, point.y, point.z, item.Name(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
                         foreach (var item1 in queueTakeoff)
                         {
-                            Debug.WriteLine("queueTakeoff: {0}", item1.Name());
+                            Debug.WriteLine(string.Format("queueTakeoff: {0}", item1.Name()));
                         }
                     }
                 }
@@ -192,7 +195,7 @@ namespace IL2DCE
 #if DEBUG
                 if ((DateTime.Now - TraceLatest).TotalSeconds > 60)
                 {
-                    TraceAirGroupInfo();
+                    // TraceAirGroupInfo();
                     // TraceGameInfo();
                     TraceLatest = DateTime.Now;
                 }
@@ -227,13 +230,13 @@ namespace IL2DCE
 
             public override void OnMissionLoaded(int missionNumber)
             {
-                Debug.WriteLine("Mission.OnMissionLoaded({0})", missionNumber);
+                Debug.WriteLine(string.Format("Mission.OnMissionLoaded({0})", missionNumber));
                 base.OnMissionLoaded(missionNumber);
             }
 
             public override void OnPlayerConnected(Player player)
             {
-                Debug.WriteLine("Mission.OnPlayerConnected({0}", player.Name());
+                Debug.WriteLine(string.Format("Mission.OnPlayerConnected({0}", player.Name()));
                 base.OnPlayerConnected(player);
             }
 
@@ -260,12 +263,12 @@ namespace IL2DCE
 
                     if (actor is AiAircraft)
                     {
-                        Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                         AiAircraft aiAircraft = actor as AiAircraft;
-                        Debug.WriteLine("aiAircraft: TypedName={0}, Type={1}, InternalTypeName={2}, VariantName={3}, AircraftType={4}",
+                        Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
+                        Debug.WriteLine("  aiAircraft: TypedName={0}, Type={1}, InternalTypeName={2}, VariantName={3}, AircraftType={4}",
                             aiAircraft.TypedName(), aiAircraft.Type(), aiAircraft.InternalTypeName(), aiAircraft.VariantName(), aiAircraft.Type());
                         Regiment regiment = aiAircraft.Regiment();
-                        Debug.WriteLine("Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
+                        Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
                             regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
                     }
                     else if (actor is AiGroundActor)
@@ -279,15 +282,16 @@ namespace IL2DCE
                         {
                             Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                             AiAirGroup airGroup = actor as AiAirGroup;
-                            Debug.WriteLine("AiAirGroup: {0}, {1}, {2}", airGroup.ID(), airGroup.Name(), airGroup.GetCurrentWayPoint());
+                            Debug.WriteLine("  AiAirGroup: ID={0}, Name={1}, NOf={2}, Init={3}, Died={4}, IsValid={5}, IsAlive={6}, Way=[{7}/{8}], Task{9}, Idle={10}, Pos={11}",
+                                airGroup.ID(), airGroup.Name(), airGroup.NOfAirc, airGroup.InitNOfAirc, airGroup.DiedAircrafts, airGroup.IsValid(), airGroup.IsAlive(), airGroup.GetCurrentWayPoint(), airGroup.GetWay().Length, airGroup.getTask().ToString(), airGroup.Idle, airGroup.Pos().ToString());
                             AiWayPoint[] airGroupWay = airGroup.GetWay();
                             foreach (AiAirWayPoint item in airGroupWay)
                             {
-                                Debug.WriteLine("AiAirGroup: Action={0}, P=({1},{2},{3}) V={4}, Target={5}", 
+                                Debug.WriteLine("  AiAirGroup: Action={0}, P=({1},{2},{3}) V={4}, Target={5}", 
                                     item.Action.ToString(), item.P.x, item.P.y, item.P.z, item.Speed, item.Target != null ? item.Target.Name(): string.Empty);
                             }
                             AiAirGroupTask task = airGroup.getTask();
-                            Debug.WriteLine("AiAirGroupTask: {0}", task.ToString());
+                            Debug.WriteLine(string.Format("  AiAirGroupTask: {0}", task.ToString()));
 
                             AirGroups.Add(airGroup);
                         }
@@ -303,7 +307,8 @@ namespace IL2DCE
                     else if (actor is AiPerson)
                     {
                         AiPerson aiPerson = actor as AiPerson;
-                        Debug.WriteLine("AiPerson: Id={0}, Name={1}, Health={2}", aiPerson.Id, aiPerson.Name(), aiPerson.Health);
+                        Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
+                        Debug.WriteLine("  AiPerson: Id={0}, Name={1}, Health={2}", aiPerson.Id, aiPerson.Name(), aiPerson.Health);
                     }
                 }
 #endif
@@ -314,6 +319,25 @@ namespace IL2DCE
                 Debug.WriteLine("Mission.OnActorDestroyed({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6})", missionNumber, shortName, actor.Name(),
                     actor is AiAircraft ? "Aircraft": actor is AiGroundActor ? "AiGroundActor": string.Empty, actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete());
                 base.OnActorDestroyed(missionNumber, shortName, actor);
+#if DEBUG
+                if (actor is AiAircraft)
+                {
+                    AiAircraft aiAircraft = actor as AiAircraft;
+                    Debug.WriteLine("Mission.OnActorDestroyed({0}, {1}, {2})", missionNumber, shortName, actor.Name());
+                    Debug.WriteLine("  aiAircraft: TypedName={0}, Type={1}, InternalTypeName={2}, VariantName={3}, AircraftType={4}",
+                        aiAircraft.TypedName(), aiAircraft.Type(), aiAircraft.InternalTypeName(), aiAircraft.VariantName(), aiAircraft.Type());
+                    Regiment regiment = aiAircraft.Regiment();
+                    Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
+                        regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
+                }
+                else if (actor is AiAirGroup)
+                {
+                    AiAirGroup airGroup = actor as AiAirGroup;
+                    Debug.WriteLine("  AiAirGroup: ID={0}, Name={1}, NOf={2}, Init={3}, Died={4}, IsValid={5}, IsAlive={6}, Way=[{7}/{8}], Task{9}, Idle={10}, Pos={11}",
+                        airGroup.ID(), airGroup.Name(), airGroup.NOfAirc, airGroup.InitNOfAirc, airGroup.DiedAircrafts, airGroup.IsValid(), airGroup.IsAlive(), airGroup.GetCurrentWayPoint(), airGroup.GetWay().Length, airGroup.getTask().ToString(), airGroup.Idle, airGroup.Pos().ToString());
+                    AiWayPoint[] airGroupWay = airGroup.GetWay();
+                }
+#endif
             }
 
             public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
@@ -360,6 +384,18 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.OnTrigger({0}, {1}, {2})", missionNumber, shortName, active);
                 base.OnTrigger(missionNumber, shortName, active);
+
+                AiAction action = GamePlay.gpGetAction(ActorName.Full(missionNumber, shortName));
+                if (action != null)
+                {
+                    action.Do();
+                }
+
+                AiTrigger trigger = GamePlay.gpGetTrigger(shortName);
+                if (trigger != null)
+                {
+                    trigger.Enable = false;
+                }
             }
 
             public override void OnAircraftDamaged(int missionNumber, string shortName, AiAircraft aircraft, AiDamageInitiator initiator, NamedDamageTypes damageType)
@@ -465,17 +501,19 @@ namespace IL2DCE
 
             public override void OnAiAirNewEnemy(AiAirEnemyElement element, int army)
             {
+                Debug.WriteLine("Mission.OnAiAirNewEnemy(army={0}, agID={1}, state={2})", element.army, element.agID, element.state);
                 base.OnAiAirNewEnemy(element, army);
             }
 
             public override void OnSingleBattleSuccess(bool success)
             {
-                Debug.WriteLine("Mission.OnSingleBattleSuccess({0})", success);
+                Debug.WriteLine(string.Format("Mission.OnSingleBattleSuccess({0})", success));
                 base.OnSingleBattleSuccess(success);
             }
 
             public override void OnOrderMissionMenuSelected(Player player, int ID, int menuItemIndex)
             {
+                Debug.WriteLine("Mission.OnOrderMissionMenuSelected(Name={0}, ID={1}, Menu={2})", player.Name(), ID, menuItemIndex);
                 base.OnOrderMissionMenuSelected(player, ID, menuItemIndex);
             }
 

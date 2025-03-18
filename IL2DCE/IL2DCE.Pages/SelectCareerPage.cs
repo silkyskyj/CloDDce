@@ -120,8 +120,6 @@ namespace IL2DCE
 
                 FrameworkElement.Continue.IsEnabled = false;
                 FrameworkElement.Delete.IsEnabled = false;
-
-                FrameworkElement.labelVersion.Content = Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version);
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -346,29 +344,7 @@ namespace IL2DCE
                     airGroup = null;
                 }
 
-                DisplayAircraftImage(airGroup != null ? airGroup.Class : string.Empty);
-            }
-
-            private void DisplayAircraftImage(string aircraftClass)
-            {
-                string path;;
-                if (!string.IsNullOrEmpty(aircraftClass) && 
-                    !string.IsNullOrEmpty(path = new AircraftImage(Game.gameInterface.ToFileSystemPath(Config.PartsFolder)).GetImagePath(aircraftClass)))
-                {
-                    // using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                        var decoder = new TiffBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
-                        BitmapSource source = decoder.Frames[0];
-                        FrameworkElement.imageAircraft.Source = source;
-                        FrameworkElement.borderImage.Visibility = Visibility.Visible;
-                    }
-                }
-                else
-                {
-                    FrameworkElement.imageAircraft.Source = null;
-                    FrameworkElement.borderImage.Visibility = Visibility.Hidden;
-                }
+                FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
             }
 
             private void UpdateButtonStatus()

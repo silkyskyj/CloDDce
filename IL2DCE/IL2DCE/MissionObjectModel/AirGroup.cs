@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using IL2DCE.Generator;
+using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -191,6 +192,12 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public bool SetOnParked
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnFromScript
         {
             get;
             set;
@@ -438,221 +445,10 @@ namespace IL2DCE.MissionObjectModel
             // SetOnPark
             SetOnParked = string.Compare(sectionFile.get(id, MissionFile.KeySetOnPark, "0"), "1") == 0;
 
+            // SpawnFromScript
+            SpawnFromScript = string.Compare(sectionFile.get(id, MissionFile.KeySpawnFromScript, "0"), "1") == 0;
+
             Optimize();
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private Dictionary<int, string> ReadFligthTypeValue(ISectionFile sectionFile, string id, IDictionary<int, IList<string>> flights, string keyInfo)
-        {
-            Dictionary<int, string> dic = new Dictionary<int, string>();
-            foreach (int flightIndex in flights.Keys)
-            {
-                for (int i = 0; i < flights[flightIndex].Count; i++)
-                {
-                    string key = string.Format("{0}{1}{2}", keyInfo,
-                        flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                    if (sectionFile.exist(id, key))
-                    {
-                        string value = sectionFile.get(id, key);
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            dic.Add(flightIndex * 10 + i, value);
-                        }
-                    }
-                }
-            }
-            return dic;
-        }
-
-        private void WriteFlightTypeValue(ISectionFile sectionFile, string id, IDictionary<int, string> dic, string keyInfo)
-        {
-            foreach (var item in dic)
-            {
-                int flight = item.Key / 10;
-                string key = string.Format("{0}{1}{2}", keyInfo,
-                    (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
-                sectionFile.add(id, key, item.Value);
-            }
-        }
-
-        private IDictionary<int, string> UpdateFlightTypeValue(IDictionary<int, IList<string>> flights, IDictionary<int, string> dic)
-        {
-            Dictionary<int, string> dicNew = new Dictionary<int, string>();
-            string value = string.Empty;
-            foreach (int flightIndex in flights.Keys)
-            {
-                for (int i = 0; i < flights[flightIndex].Count; i++)
-                {
-                    int key = flightIndex * 10 + i;
-                    if (dic.ContainsKey(key))
-                    {
-                        value = dic[key];
-                    }
-                    else if (string.IsNullOrEmpty(value))
-                    {
-                        // Debug.Assert(false);
-                    }
-                    else
-                    {
-                        // Use previous value
-                    }
-                    dicNew.Add(key, value);
-                }
-            }
-            return dicNew;
-        }
-
-        private void UpdateFlightTypeValue()
-        {
-            // Skills
-            if (Skills.Count > 0)
-            {
-                Skills = UpdateFlightTypeValue(Flights, Skills);
-            }
-
-            // Skin 
-            if (Skin.Count > 0)
-            {
-                Skin = UpdateFlightTypeValue(Flights, Skin);
-            }
-
-            // MarkingsOn
-            if (MarkingsOn.Count > 0)
-            {
-                MarkingsOn = UpdateFlightTypeValue(Flights, MarkingsOn);
-            }
-
-            // BandColor
-            if (BandColor.Count > 0)
-            {
-                BandColor = UpdateFlightTypeValue(Flights, BandColor);
-            }
-        }
-
-        private double distanceBetween(AirGroupWaypoint start, AirGroupWaypoint end)
-        {
-            double distanceStart = distanceTo(start);
-            double distanceEnd = distanceTo(end);
-            return distanceEnd - distanceStart;
-        }
-
-        private double distanceTo(AirGroupWaypoint waypoint)
-        {
-            double distance = 0.0;
-            AirGroupWaypoint previousWaypoint = null;
-            if (_waypoints.Contains(waypoint))
-            {
-                foreach (AirGroupWaypoint wp in _waypoints)
-                {
-                    if (previousWaypoint == null)
-                    {
-                        distance = 0.0;
-                    }
-                    else
-                    {
-                        Point3d p = wp.Position;
-                        distance += previousWaypoint.Position.distance(ref p);
-                    }
-                    previousWaypoint = wp;
-
-                    if (wp == waypoint)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return distance;
-        }
-
-        private void createStartWaypoints()
-        {
-            if (!Airstart)
-            {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, Position, AirGroupWaypoint.DefaultTakeoffV));
-            }
-            else
-            {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, Position, Speed));
-            }
-        }
-
-        private void createEndWaypoints(AiAirport landingAirport = null)
-        {
-            if (landingAirport != null)
-            {
-                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, landingAirport.Pos(), AirGroupWaypoint.DefaultLandingV));
-            }
-            else
-            {
-                if (!Airstart)
-                {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, Position, AirGroupWaypoint.DefaultLandingV));
-                }
-                else
-                {
-                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, Position, Speed));
-                }
-            }
-        }
-
-        private void createInbetweenWaypoints(Point3d from, Point3d to, bool plusRandomValue = false)
-        {
-            double mpX = (to.x - from.x);
-            double mpY = (to.y - from.y);
-            double mpZ = (to.z - from.z);
-            if (plusRandomValue)
-            {
-                mpX *= Random.Default.Next(90, 110) / 100.0;
-                mpY *= Random.Default.Next(90, 110) / 100.0;
-            }
-            Point3d p1 = new Point3d(from.x + 0.25 * mpX, from.y + 0.25 * mpY, from.z + 1.00 * mpZ);
-            Point3d p2 = new Point3d(from.x + 0.50 * mpX, from.y + 0.50 * mpY, from.z + 1.00 * mpZ);
-            Point3d p3 = new Point3d(from.x + 0.75 * mpX, from.y + 0.75 * mpY, from.z + 1.00 * mpZ);
-
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p1, AirGroupWaypoint.DefaultNormaflyV));
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p2, AirGroupWaypoint.DefaultNormaflyV));
-            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p3, AirGroupWaypoint.DefaultNormaflyV));
-        }
-
-        private void createStartInbetweenPoints(Point3d target, bool plusRandomValue = false)
-        {
-            createInbetweenWaypoints(Position, target, plusRandomValue);
-        }
-
-        private void createEndInbetweenPoints(Point3d target, AiAirport landingAirport = null, bool plusRandomValue = false)
-        {
-            if (landingAirport != null)
-            {
-                Point3d point = new Point3d(landingAirport.Pos().x, landingAirport.Pos().y, target.z);
-                createInbetweenWaypoints(target, point, plusRandomValue);
-            }
-            else
-            {
-                Point3d point = new Point3d(Position.x, Position.y, target.z);
-                createInbetweenWaypoints(target, point, plusRandomValue);
-            }
-        }
-
-        private Point3d? calculateRendevouzPoint(AirGroup escortAirGroup)
-        {
-            var altitude = Altitude.Value;
-            return new Point3d(Position.x + 0.33 * (escortAirGroup.Position.x - Position.x), Position.y + 0.33 * (escortAirGroup.Position.y - Position.y), altitude);
-        }
-
-        private void reset()
-        {
-            _waypoints.Clear();
-
-            this.Altitude = null;
-            this.EscortAirGroup = null;
-            this.TargetAirGroup = null;
-            this.TargetGroundGroup = null;
-            this.TargetStationary = null;
-            this.TargetArea = null;
         }
 
         #endregion
@@ -770,7 +566,7 @@ namespace IL2DCE.MissionObjectModel
                     WriteFlightTypeValue(sectionFile, Id, BandColor, MissionFile.KeyBandColor);
                 }
 
-                // Spawn (SetOnPark/Idle/Scramble)
+                // Spawn (SetOnPark/Idle/Scramble/SpawnFromScript)
                 if (Spawn != null)
                 {
                     switch (Spawn.Type)
@@ -791,12 +587,24 @@ namespace IL2DCE.MissionObjectModel
                             //    sectionFile.add(Id, "Scramble", "0");
                             //    break;
                     }
+
+                    if (Spawn.Time.IsDelay)
+                    {
+                        string action = string.Format("Spawn_{0}", Id);
+                        sectionFile.add(Id, MissionFile.KeySpawnFromScript, "1");
+                        sectionFile.add(MissionFile.SectionTrigger, action, string.Format("{0} {1}", MissionFile.ValueTTime, Spawn.Time.Value.ToString(CultureInfo.InvariantCulture.NumberFormat)));
+                        sectionFile.add(MissionFile.SectionAction, action, string.Format("{0} {1} {2}", MissionFile.ValueASpawnGroup, "1", Id));
+                    }
                 }
-                else
+                // else
                 {
-                    sectionFile.add(Id, MissionFile.KeySetOnPark, SetOnParked ? "1" : "0");
+                    if (SetOnParked)
+                    {
+                        sectionFile.add(Id, MissionFile.KeySetOnPark, "1");
+                    }
                 }
 
+                // Waypoint
                 foreach (AirGroupWaypoint waypoint in _waypoints)
                 {
                     if (waypoint.Target == null)
@@ -813,6 +621,7 @@ namespace IL2DCE.MissionObjectModel
                     }
                 }
 
+                // Briefing
                 sectionFile.add(Id, MissionFile.KeyBriefing, this.Id);
             }
         }
@@ -1212,7 +1021,7 @@ namespace IL2DCE.MissionObjectModel
                     ESpawn type = spawn.Type;
                     if (type == ESpawn.Random)
                     {
-                        type = new Spawn((int)ESpawn.Random).Type;
+                        type = Spawn.CreateRandomSpawnType();
                     }
                     AirGroupWaypoint wayNew;
                     switch (type)
@@ -1230,8 +1039,15 @@ namespace IL2DCE.MissionObjectModel
                             break;
                     }
                     Waypoints[0] = wayNew;
+                    Position = new Point3d(_waypoints[0].X, _waypoints[0].Y, _waypoints[0].Z);
+                    speed = _waypoints[0].V;
 
                     // TODO: Update after Waypoint Z(Altitude) value
+                }
+
+                if (spawn.Time.IsDelay)
+                {
+
                 }
             }
         }
@@ -1285,18 +1101,242 @@ namespace IL2DCE.MissionObjectModel
                 if (type != null)
                 {
                     way.Type = type.Value;
-                    if (way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF)
+                    if (way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF || way.Type == AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                     {
                         Airstart = false;
                         speed = way.V = AirGroupWaypoint.DefaultTakeoffV;
                     }
+#if false
                     else if (speed == AirGroupWaypoint.DefaultTakeoffV)
                     {
                         Airstart = true;
                         speed = way.V = AirGroupWaypoint.DefaultNormaflyV;
                     }
+#endif
+                    else
+                    {
+                        Airstart = true;
+                        if (speed == AirGroupWaypoint.DefaultTakeoffV || way.V == AirGroupWaypoint.DefaultTakeoffV)
+                        {
+                            speed = way.V = AirGroupWaypoint.DefaultNormaflyV;
+                        }
+                    }
                 }
             }
+        }
+
+#endregion
+
+        #region Private methods
+
+        private Dictionary<int, string> ReadFligthTypeValue(ISectionFile sectionFile, string id, IDictionary<int, IList<string>> flights, string keyInfo)
+        {
+            Dictionary<int, string> dic = new Dictionary<int, string>();
+            foreach (int flightIndex in flights.Keys)
+            {
+                for (int i = 0; i < flights[flightIndex].Count; i++)
+                {
+                    string key = string.Format("{0}{1}{2}", keyInfo,
+                        flightIndex > 0 ? flightIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty, i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                    if (sectionFile.exist(id, key))
+                    {
+                        string value = sectionFile.get(id, key);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            dic.Add(flightIndex * 10 + i, value);
+                        }
+                    }
+                }
+            }
+            return dic;
+        }
+
+        private void WriteFlightTypeValue(ISectionFile sectionFile, string id, IDictionary<int, string> dic, string keyInfo)
+        {
+            foreach (var item in dic)
+            {
+                int flight = item.Key / 10;
+                string key = string.Format("{0}{1}{2}", keyInfo,
+                    (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
+                sectionFile.add(id, key, item.Value);
+            }
+        }
+
+        private IDictionary<int, string> UpdateFlightTypeValue(IDictionary<int, IList<string>> flights, IDictionary<int, string> dic)
+        {
+            Dictionary<int, string> dicNew = new Dictionary<int, string>();
+            string value = string.Empty;
+            foreach (int flightIndex in flights.Keys)
+            {
+                for (int i = 0; i < flights[flightIndex].Count; i++)
+                {
+                    int key = flightIndex * 10 + i;
+                    if (dic.ContainsKey(key))
+                    {
+                        value = dic[key];
+                    }
+                    else if (string.IsNullOrEmpty(value))
+                    {
+                        // Debug.Assert(false);
+                    }
+                    else
+                    {
+                        // Use previous value
+                    }
+                    dicNew.Add(key, value);
+                }
+            }
+            return dicNew;
+        }
+
+        private void UpdateFlightTypeValue()
+        {
+            // Skills
+            if (Skills.Count > 0)
+            {
+                Skills = UpdateFlightTypeValue(Flights, Skills);
+            }
+
+            // Skin 
+            if (Skin.Count > 0)
+            {
+                Skin = UpdateFlightTypeValue(Flights, Skin);
+            }
+
+            // MarkingsOn
+            if (MarkingsOn.Count > 0)
+            {
+                MarkingsOn = UpdateFlightTypeValue(Flights, MarkingsOn);
+            }
+
+            // BandColor
+            if (BandColor.Count > 0)
+            {
+                BandColor = UpdateFlightTypeValue(Flights, BandColor);
+            }
+        }
+
+        private double distanceBetween(AirGroupWaypoint start, AirGroupWaypoint end)
+        {
+            double distanceStart = distanceTo(start);
+            double distanceEnd = distanceTo(end);
+            return distanceEnd - distanceStart;
+        }
+
+        private double distanceTo(AirGroupWaypoint waypoint)
+        {
+            double distance = 0.0;
+            AirGroupWaypoint previousWaypoint = null;
+            if (_waypoints.Contains(waypoint))
+            {
+                foreach (AirGroupWaypoint wp in _waypoints)
+                {
+                    if (previousWaypoint == null)
+                    {
+                        distance = 0.0;
+                    }
+                    else
+                    {
+                        Point3d p = wp.Position;
+                        distance += previousWaypoint.Position.distance(ref p);
+                    }
+                    previousWaypoint = wp;
+
+                    if (wp == waypoint)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return distance;
+        }
+
+        private void createStartWaypoints()
+        {
+            if (!Airstart)
+            {
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF, Position, AirGroupWaypoint.DefaultTakeoffV));
+            }
+            else
+            {
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, Position, Speed));
+            }
+        }
+
+        private void createEndWaypoints(AiAirport landingAirport = null)
+        {
+            if (landingAirport != null)
+            {
+                _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, landingAirport.Pos(), AirGroupWaypoint.DefaultLandingV));
+            }
+            else
+            {
+                if (!Airstart)
+                {
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.LANDING, Position, AirGroupWaypoint.DefaultLandingV));
+                }
+                else
+                {
+                    _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, Position, Speed));
+                }
+            }
+        }
+
+        private void createInbetweenWaypoints(Point3d from, Point3d to, bool plusRandomValue = false)
+        {
+            double mpX = (to.x - from.x);
+            double mpY = (to.y - from.y);
+            double mpZ = (to.z - from.z);
+            if (plusRandomValue)
+            {
+                mpX *= Random.Default.Next(90, 110) / 100.0;
+                mpY *= Random.Default.Next(90, 110) / 100.0;
+            }
+            Point3d p1 = new Point3d(from.x + 0.25 * mpX, from.y + 0.25 * mpY, from.z + 1.00 * mpZ);
+            Point3d p2 = new Point3d(from.x + 0.50 * mpX, from.y + 0.50 * mpY, from.z + 1.00 * mpZ);
+            Point3d p3 = new Point3d(from.x + 0.75 * mpX, from.y + 0.75 * mpY, from.z + 1.00 * mpZ);
+
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p1, AirGroupWaypoint.DefaultNormaflyV));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p2, AirGroupWaypoint.DefaultNormaflyV));
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, p3, AirGroupWaypoint.DefaultNormaflyV));
+        }
+
+        private void createStartInbetweenPoints(Point3d target, bool plusRandomValue = false)
+        {
+            createInbetweenWaypoints(Position, target, plusRandomValue);
+        }
+
+        private void createEndInbetweenPoints(Point3d target, AiAirport landingAirport = null, bool plusRandomValue = false)
+        {
+            if (landingAirport != null)
+            {
+                Point3d point = new Point3d(landingAirport.Pos().x, landingAirport.Pos().y, target.z);
+                createInbetweenWaypoints(target, point, plusRandomValue);
+            }
+            else
+            {
+                Point3d point = new Point3d(Position.x, Position.y, target.z);
+                createInbetweenWaypoints(target, point, plusRandomValue);
+            }
+        }
+
+        private Point3d? calculateRendevouzPoint(AirGroup escortAirGroup)
+        {
+            var altitude = Altitude.Value;
+            return new Point3d(Position.x + 0.33 * (escortAirGroup.Position.x - Position.x), Position.y + 0.33 * (escortAirGroup.Position.y - Position.y), altitude);
+        }
+
+        private void reset()
+        {
+            _waypoints.Clear();
+
+            this.Altitude = null;
+            this.EscortAirGroup = null;
+            this.TargetAirGroup = null;
+            this.TargetGroundGroup = null;
+            this.TargetStationary = null;
+            this.TargetArea = null;
         }
 
         #endregion

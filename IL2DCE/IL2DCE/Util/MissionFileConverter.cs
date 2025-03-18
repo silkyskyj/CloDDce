@@ -140,21 +140,22 @@ namespace IL2DCE.Util
             ISectionFile fileAirGroup = gameInterface.SectionFileCreate();
             string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
 
+            IList<AirGroup> airGroups = missionFile.AirGroups;
             //    3. & 4. 
-            if (missionFile.AirGroups.Count < 2)
+            if (airGroups.Count < 2)
             {
                 ErrorMsg.Add(string.Format(ErrorFormatNotNnough, MissionFile.SectionAirGroups));
             }
 
-            var armys = missionFile.AirGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
+            var armys = airGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
             if (armys.Count() < 2)
             {
                 ErrorMsg.Add(string.Format(ErrorFormatNotNnough, "Army"));
             }
             foreach (var army in armys)
             {
-                var airGroups = missionFile.AirGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
-                foreach (var airGroup in airGroups)
+                var airGroupsArmy = airGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
+                foreach (var airGroup in airGroupsArmy)
                 {
                     if (globalAircraftInfoFile.exist(AircraftInfo.SectionMain, airGroup.Class))
                     {
@@ -242,8 +243,8 @@ namespace IL2DCE.Util
             SectionFileUtil.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionMain);
             foreach (var army in armys)
             {
-                var airGroups = missionFile.AirGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
-                foreach (var airGroup in airGroups)
+                var airGroupsArmy = airGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
+                foreach (var airGroup in airGroupsArmy)
                 {
                     airGroup.WriteTo(fileMissionInitial);
                 }

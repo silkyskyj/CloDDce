@@ -19,7 +19,7 @@
         <Label Content="Select Air Force:" Height="50" Margin="34,290,1268,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" />
         <Label x:Name="labelSelectCampaign" Width="300" VerticalAlignment="Top" Margin="700,150,0,0" Height="50" HorizontalAlignment="Left" FontSize="28" Foreground="#B2FFFFFF" Content="Select Campaign:"/>
         <Controls:FilterComboBox HorizontalAlignment="Left" Margin="700,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="5" IsTabStop="True" IsEditable="False"/>
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,353,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="6"/>
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,354,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="6"/>
         <Label Content="Select Air Group:" HorizontalAlignment="Left" Margin="700,290,0,0" x:Name="labelSelectAirGroup" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
         <Label Content="Select Period:" HorizontalAlignment="Left" Margin="700,430,0,0" x:Name="labelSelectPeriod" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
         <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="700,494,0,0" VerticalAlignment="Top" FontSize="30" SelectedDateFormat="Long" Width="400" Background="#FFA0854A" IsTodayHighlighted="True" Foreground="#FFA0854A" TabIndex="7" IsTabStop="True">
@@ -44,17 +44,10 @@
                 </Style>
             </DatePicker.CalendarStyle>
         </DatePicker>
-        <Label Content=" - " HorizontalAlignment="Left" Margin="1114,482,0,0" x:Name="labelSelectPeriodRange_" VerticalAlignment="Top" Width="62" FontSize="48" Foreground="#B2FFFFFF" RenderTransformOrigin="2.623,0.795" />
-        <Label Content="Version ##.#.##.# [##.##.##.#]" HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="400" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
-        <Label Content="Max Additional Operations:" HorizontalAlignment="Left" Margin="700,570,0,0" x:Name="labelSelectAdditionalOperation" VerticalAlignment="Top" Width="431" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
-        <Label Content="Air" HorizontalAlignment="Left" Margin="700,635,0,0" x:Name="labelSelectAdditionalOperationAirGroup" VerticalAlignment="Top" Width="50" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
-        <Label Content="Ground" HorizontalAlignment="Left" Margin="886,635,0,0" x:Name="labelSelectAdditionalOperationGroundGroup" VerticalAlignment="Top" Width="106" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="758,635,0,0" x:Name="comboBoxSelectAdditionalAirOperations" VerticalAlignment="Top" Width="65" FontSize="28" Foreground="#FFA0854A" Background="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" TabIndex="9"/>
-        <Controls:FilterComboBox Height="50" HorizontalAlignment="Left" Margin="1000,635,0,0" x:Name="comboBoxSelectAdditionalGroundOperations" VerticalAlignment="Top" Width="80" FontSize="28" Foreground="#FFA0854A" Background="#00000000" IsEditable="True" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" TabIndex="10" IsTabStop="True" />
-        <Label Content="Randomize Air Group spawn location:" HorizontalAlignment="Left" Margin="1150,570,0,0" x:Name="labelSelectSpawnRandom" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Height="50" Width="480" />
-        <CheckBox x:Name="checkBoxSpawnRandomPlayer" Content="Player" HorizontalAlignment="Left" Margin="1150,635,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" Height="40" VerticalContentAlignment="Center" TabIndex="16" Width="120"/>
-        <CheckBox x:Name="checkBoxSpawnRandomFriendly" Content="Friendly" HorizontalAlignment="Left" Margin="1300,635,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" Height="40" VerticalContentAlignment="Center" TabIndex="17" Width="130"/>
-        <CheckBox x:Name="checkBoxSpawnRandomEnemy" Content="Enemy" HorizontalAlignment="Left" Margin="1460,635,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" Height="40" VerticalContentAlignment="Center" Width="130" TabIndex="18" IsTabStop="False" IsChecked="True"/>
-
+        <Label Content=" - " HorizontalAlignment="Left" Margin="1114,482,0,0" x:Name="labelSelectPeriodRange" VerticalAlignment="Top" Width="62" FontSize="48" Foreground="#B2FFFFFF" RenderTransformOrigin="2.623,0.795" />
+        <Controls:VersionLabel HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="390" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
+        <Controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1894,64,0,0" VerticalAlignment="Top" Width="16" Height="20"/>
+        <Controls:GeneralSettingsGroupBox x:Name="GeneralSettingsGroupBox" Header="GroupBox" Height="230" Width="1856" Margin="34,740,30,110" BorderBrush="#FFA0854A" Foreground="#FFA0854A" />
+        <Controls:AircraftImageBorder x:Name="borderImage" BorderBrush="#FFA0854A" Margin="1630,214,30,684" Width="260" Height="182" Background="#20F7F2F2" Opacity="1" BorderThickness="2,2,2,2" />
     </Grid>
 </UserControl>

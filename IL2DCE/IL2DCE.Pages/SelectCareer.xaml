@@ -8,7 +8,7 @@
     <Grid Height="1080" Width="1920" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Border BorderBrush="#FFA0854A" BorderThickness="1" Height="80" Margin="34,130,14,860"/>
         <Label Content="Select Career [IL2DCE]" Height="98" HorizontalAlignment="Left" Margin="12,12,0,0" x:Name="labelSelectCareer" VerticalAlignment="Top" FontSize="64" FontWeight="Bold" Foreground="#FF791313" />
-        <Label Content="Version ##.#.##.# [##.##.##.#]" HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="400" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
+        <Controls:VersionLabel HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="390" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
         <my1:ButtonAsMenuItem Content="Continue" Height="77" HorizontalAlignment="Left" Margin="1700,993,0,0" x:Name="Continue" VerticalAlignment="Top" Width="206" TabIndex="12" />
         <my1:ButtonAsMenuItem Content="New" Height="77" HorizontalAlignment="Left" Margin="1278,993,0,0" x:Name="New" VerticalAlignment="Top" Width="206" TabIndex="10" />
         <my1:ButtonAsMenuItem Content="Delete" Height="77" HorizontalAlignment="Left" Margin="1489,993,0,0" x:Name="Delete" VerticalAlignment="Top" Width="206" TabIndex="11" />
@@ -19,9 +19,7 @@
         <TextBox x:Name="textBoxStatusTotal" HorizontalAlignment="Left" Margin="1266,280,0,0" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="640" Height="680" Foreground="#B2FFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" TabIndex="8" />
         <Label x:Name="labelSelectCampaign" VerticalAlignment="Top" Margin="1020,150,0,0" Height="50" HorizontalAlignment="Left" FontSize="28" Foreground="#B2FFFFFF" Content="Campaign:"/>
         <Controls:FilterComboBox HorizontalAlignment="Left" Margin="1172,150,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="620" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="3" IsEditable="False"/>
-        <Border x:Name="borderImage" BorderBrush="#FFA0854A" BorderThickness="2" Margin="826,766,836,132" Width="258" Height="182" Background="#20F7F2F2" Opacity="1">
-            <Image x:Name="imageAircraft" HorizontalAlignment="Left" Height="180"  VerticalAlignment="Top" Width="256" RenderTransformOrigin="-1.555,1.944"/>
-        </Border>
+        <Controls:AircraftImageBorder x:Name="borderImage" BorderBrush="#FFA0854A" BorderThickness="2" Margin="826,766,836,132" Width="260" Height="182" Background="#20F7F2F2" Opacity="1" />
         <Label Content="Army:" Height="50" Margin="160,150,0,0" x:Name="labelSelectArmy" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" HorizontalAlignment="Left" />
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="258,150,0,0" x:Name="comboBoxSelectArmy" VerticalAlignment="Top" Width="160" FontSize="28" Foreground="#FFA0854A" TabIndex="1" Background="#00000000"/>
         <Label Content="Air Force:" Height="50" Margin="450,150,0,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" HorizontalAlignment="Left" />
@@ -32,5 +30,6 @@
         <Label Content="Total Status:" Height="50" Margin="1268,222,0,0" x:Name="labelStatusTotal" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" HorizontalAlignment="Left" />
         <Label Content="Current Status:" Height="50" Margin="682,410,0,0" x:Name="labelStatusCurrent" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" HorizontalAlignment="Left" />
         <Button x:Name="buttonFilterClear" Content="Clear" HorizontalAlignment="Left" Margin="1818,160,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FFA0854A" Width="64" Height="28" Background="{x:Null}" BorderBrush="#B2FFFFFF" TabIndex="4"/>
+        <Controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1894,64,0,0" VerticalAlignment="Top" Width="16" Height="20"/>
     </Grid>
 </UserControl>

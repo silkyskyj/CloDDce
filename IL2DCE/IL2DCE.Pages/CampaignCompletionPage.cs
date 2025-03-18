@@ -14,13 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Reflection;
 using System.Windows;
+using IL2DCE.Generator;
+using System.Windows.Controls;
+using IL2DCE.MissionObjectModel;
+using maddox.game.page;
 using maddox.game.play;
+using System.Linq;
 
 namespace IL2DCE.Pages
 {
-
     public class CampaignCompletionPage : PageDefImpl
     {
         private CampaignCompletion FrameworkElement
@@ -56,11 +59,11 @@ namespace IL2DCE.Pages
             CampaignInfo campaignInfo = career.CampaignInfo;
 
             FrameworkElement.textBoxInfo.Text = campaignInfo.ToSummaryString();
-            FrameworkElement.textBoxStatus.Text = string.Format("Current Status\n{0}\nTotal Result\n{1}\n", 
-                                                                career.ToCurrestStatusString(), 
+            FrameworkElement.textBoxStatus.Text = string.Format("Current Status\n{0}\nTotal Result\n{1}\n",
+                                                                career.ToCurrestStatusString(),
                                                                 career.ToTotalResultString());
 
-            FrameworkElement.labelVersion.Content = Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version);
+            UpdateAircraftImage(career);
         }
 
         public override void _leave(maddox.game.IGame play, object arg)
@@ -73,6 +76,14 @@ namespace IL2DCE.Pages
         private void Complete_Click(object sender, RoutedEventArgs e)
         {
             Game.gameInterface.PageChange(new SelectCareerPage(), null);
+        }
+
+        private void UpdateAircraftImage(Career career)
+        {
+            CampaignInfo campaignInfo = career.CampaignInfo;
+            MissionFile missionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+            AirGroup airGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == career.ArmyIndex && string.Compare(x.ToString(), career.AirGroup) == 0).FirstOrDefault();
+            FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
         }
     }
 }

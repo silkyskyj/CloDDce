@@ -21,6 +21,7 @@ using System.Globalization;
 using System.Linq;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
+using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Generator
 {
@@ -129,6 +130,10 @@ namespace IL2DCE.Generator
 
                 foreach (AirGroup airGroup in initialMission.AirGroups)
                 {
+#if DEBUG
+                    AirGroupWaypoint way = airGroup.Waypoints.FirstOrDefault();
+                    Debug.WriteLine("Init Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}, SpawnFromScript={7}({8})", airGroup.DisplayDetailName, way.X, way.Y, way.Z, way.V, airGroup.Airstart, airGroup.SetOnParked, airGroup.SpawnFromScript, airGroup.Spawn != null ? airGroup.Spawn.Time.Value.ToString(): string.Empty);
+#endif
                     airGroup.WriteTo(initialMissionTemplateFile);
                 }
 
@@ -426,8 +431,8 @@ namespace IL2DCE.Generator
 
             GeneratorAirOperation.AirGroupPlayer = airGroup;
             EMissionType? missionType = Career.MissionType;
-            SpawnLocation spawnLocation = new SpawnLocation() { IsRandomizePlayer = Career.SpawnRandomPlayer, IsRandomizeFliendly = Career.SpawnRandomFriendly, IsRandomizeEnemy = Career.SpawnRandomEnemy };
-            Spawn spawn = new Spawn(Career.Spawn);
+            Spawn spawn = new Spawn(Career.Spawn, Career.SpawnRandomAltitudeFriendly, Career.SpawnRandomAltitudeEnemy, new SpawnLocation(Career.SpawnRandomLocationPlayer, Career.SpawnRandomLocationFriendly, Career.SpawnRandomLocationEnemy), 
+                Career.SpawnRandomTimeFriendly, Career.SpawnRandomTimeEnemy, Career.SpawnRandomTimeFriendly || Career.SpawnRandomTimeEnemy ? new SpawnTime(true, 0, Career.SpawnRandomTimeBeginSec, Career.SpawnRandomTimeEndSec): null);
             bool result = false;
             if (missionType == null)
             {
@@ -437,7 +442,7 @@ namespace IL2DCE.Generator
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     missionType = availableMissionTypes[randomMissionTypeIndex];
                     if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawnLocation, Career.PlayerAirGroupSkill, spawn))
+                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill))
                     {
                         result = true;
                         break;
@@ -448,7 +453,7 @@ namespace IL2DCE.Generator
             else
             {
                 result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawnLocation, Career.PlayerAirGroupSkill, spawn);
+                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill);
             }
 
             if (!result)
@@ -482,6 +487,7 @@ namespace IL2DCE.Generator
             // Add additional air operations.
             if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
             {
+                spawn = Spawn.Create((int)ESpawn.Default, spawn);
                 int i = 0;
                 while (i < Career.AdditionalAirOperations && GeneratorAirOperation.AvailableAirGroups.Count > 0)
                 {
@@ -489,7 +495,7 @@ namespace IL2DCE.Generator
                     {
                         int randomAirGroupIndex = Random.Next(GeneratorAirOperation.AvailableAirGroups.Count);
                         AirGroup randomAirGroup = GeneratorAirOperation.AvailableAirGroups[randomAirGroupIndex];
-                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, spawnLocation, null))
+                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, spawn))
                         {
                             i++;
                         }
@@ -525,7 +531,7 @@ namespace IL2DCE.Generator
                 AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
                 if (way != null)
                 {
-                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked);
+                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}, SpawnFromScript={7}({8})", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked, item.SpawnFromScript, item.Spawn.Time.Value);
                 }
             }
             foreach (var item in GeneratorAirOperation.AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex != airGroup.ArmyIndex).OrderBy(x => x.Position.x))
@@ -533,7 +539,7 @@ namespace IL2DCE.Generator
                 AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
                 if (way != null)
                 {
-                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked);
+                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}, SpawnFromScript={7}({8})", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked, item.SpawnFromScript, item.Spawn.Time.Value);
                 }
             }
 #endif

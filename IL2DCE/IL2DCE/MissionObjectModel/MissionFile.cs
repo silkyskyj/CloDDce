@@ -59,16 +59,21 @@ namespace IL2DCE.MissionObjectModel
         public const string KeyWeapons = "Weapons";
         public const string KeyDetonator = "Detonator";
         public const string KeySetOnPark = "SetOnPark";
+        public const string KeySpawnFromScript = "SpawnFromScript";
         public const string KeySkill = "Skill";
         public const string KeyAging = "Aging";
         public const string KeySkin = "Skin";
         public const string KeyMarkingsOn = "MarkingsOn";
         public const string KeyBandColor = "BandColor";
         public const string KeyBriefing = "Briefing";
-
+        public const string ValueTTime = "TTime";
+        public const string ValueASpawnGroup = "ASpawnGroup";
+        
         public const float DefaultTime = 12.0f;
         public const int DefaulWeatherIndex = 0;
         public const int DefaulCloudsHeight = 1000;
+
+        public static readonly char[] SplitChars = new char[] { ' ' };
 
         #endregion
 
@@ -348,7 +353,7 @@ namespace IL2DCE.MissionObjectModel
                 string value;
                 file.get(SectionBuildings, i, out key, out value);
 
-                string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] valueParts = value.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
                 if (valueParts.Length > 4)
                 {
                     // Depots
@@ -466,6 +471,35 @@ namespace IL2DCE.MissionObjectModel
                         else if (value.StartsWith("Train"))
                         {
                             _railways.Add(road);
+                        }
+                    }
+                }
+            }
+
+            // Trigger & Action  (Support: Time & Spawn only)
+            IList<AirGroup> airGroups = AirGroups;
+            lines = file.lines(SectionAction);
+            for (int i = 0; i < lines; i++)
+            {
+                string key;
+                string value;
+                file.get(SectionAction, i, out key, out value);
+                if (file.exist(SectionTrigger, key) && !string.IsNullOrEmpty(value))
+                {
+                    string[] actions = value.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
+                    string trigger = file.get(SectionTrigger, key);
+                    string[] triggers = trigger.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
+                    if (actions.Length >= 3 && string.Compare(actions[0], ValueASpawnGroup, true) == 0 && string.Compare(actions[1], "1") == 0
+                        && triggers.Length >= 2 && string.Compare(triggers[0], ValueTTime, true) == 0)
+                    {
+                        var airGroup = airGroups.Where(x => string.Compare(x.Id, actions[2], true) == 0).FirstOrDefault();
+                        if (airGroup != null)
+                        {
+                            int time;
+                            if (int.TryParse(triggers[1], out time) && time >= 0)
+                            {
+                                airGroup.SetSpawn(new Spawn((int)ESpawn.Default, false, false, new Spawn.SpawnLocation(), false, false, new Spawn.SpawnTime(true, time)));
+                            }
                         }
                     }
                 }

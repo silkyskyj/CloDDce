@@ -1,0 +1,50 @@
+﻿<GroupBox x:Class="IL2DCE.Pages.Controls.GeneralSettingsGroupBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IL2DCE.Pages.Controls"
+             xmlns:Controls="clr-namespace:IL2DCE.Pages.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="230" d:DesignWidth="1856" Loaded="GroupBox_Loaded"  Header="General Settings" Foreground="#FFA0854A" BorderBrush="#FFA0854A" Height="230">
+    <Grid Margin="0,0,0,0">
+        <Label Content="[ Max Additional Operations ]" HorizontalAlignment="Left" x:Name="labelSelectAdditionalOperation" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Height="50" Margin="20,10,0,0" Width="380" />
+        <Label Content="Air" HorizontalAlignment="Left" Margin="20,74,0,0" x:Name="labelSelectAdditionalOperationAirGroup" VerticalAlignment="Top" Width="50" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="80,74,0,0" x:Name="comboBoxSelectAdditionalAirOperations" VerticalAlignment="Top" Width="65" FontSize="28" Foreground="#FFA0854A" Background="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" TabIndex="14"/>
+        <Label Content="Ground" HorizontalAlignment="Left" Margin="160,74,0,0" x:Name="labelSelectAdditionalOperationGroundGroup" VerticalAlignment="Top" Width="106" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
+        <Controls:ComboBoxEx Height="50" HorizontalAlignment="Left" Margin="276,74,0,0" x:Name="comboBoxSelectAdditionalGroundOperations" VerticalAlignment="Top" Width="80" FontSize="28" Foreground="#FFA0854A" Background="#00000000" IsEditable="True" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" TabIndex="15" IsTabStop="True" />
+        <Label Content="[ Randomize Air Group spawn ]" HorizontalAlignment="Left" Margin="430,10,0,0" x:Name="labelSelectSpawnRandom" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Height="50" Width="400" />
+        <CheckBox x:Name="checkBoxSpawnRandomLocationPlayer" Content="Player" HorizontalAlignment="Left" Margin="842,74,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" VerticalContentAlignment="Center" Width="110" TabIndex="18" Height="40"/>
+        <CheckBox x:Name="checkBoxSpawnRandomLocationFriendly" Content="Friendly" HorizontalAlignment="Left" Margin="580,74,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" VerticalContentAlignment="Center" TabIndex="16" Width="130" Height="40"/>
+        <CheckBox x:Name="checkBoxSpawnRandomLocationEnemy" Content="Enemy" HorizontalAlignment="Left" Margin="716,74,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" Height="40" VerticalContentAlignment="Center" Width="120" TabIndex="17" IsChecked="True"/>
+        <Label Content="Location:" HorizontalAlignment="Left" Margin="430,68,0,0" x:Name="labelSelectSpawnRandomLocation" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Height="50" Width="120" />
+        <Label Content="Time(delay):" HorizontalAlignment="Left" Margin="1024,68,0,0" x:Name="labelSelectSpawnRandomTime" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Height="50" Width="160" RenderTransformOrigin="0.5,0.5" >
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="-0.47"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-0.492"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <CheckBox x:Name="checkBoxSpawnRandomTimeFriendly" Content="Friendly" HorizontalAlignment="Left" Margin="1195,74,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" VerticalContentAlignment="Center" TabIndex="21" Width="130" Height="40"/>
+        <CheckBox x:Name="checkBoxSpawnRandomTimeEnemy" Content="Enemy" HorizontalAlignment="Left" Margin="1330,74,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" Height="40" VerticalContentAlignment="Center" Width="120" TabIndex="22" IsChecked="True"/>
+        <Controls:ComboBoxEx Height="50" HorizontalAlignment="Left" Margin="1456,68,0,0" x:Name="comboBoxSelectRandomTimeBegin" VerticalAlignment="Top" Width="100" FontSize="28" Foreground="#FFA0854A" Background="#00000000" IsEditable="True" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" TabIndex="23" IsTabStop="True" />
+        <Controls:ComboBoxEx Height="50" HorizontalAlignment="Left" Margin="1592,68,0,0" x:Name="comboBoxSelectRandomTimeEnd" VerticalAlignment="Top" Width="100" FontSize="28" Foreground="#FFA0854A" Background="#00000000" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" TabIndex="24" IsTabStop="True" IsSynchronizedWithCurrentItem="True" IsEditable="True" />
+        <Label Content=" - " HorizontalAlignment="Left" Margin="1545,53,0,0" x:Name="labelSelectPeriodRange" VerticalAlignment="Top" Width="62" FontSize="48" Foreground="#B2FFFFFF" RenderTransformOrigin="2.623,0.795" />
+        <Label Content="[sec]" HorizontalAlignment="Left" Margin="1697,68,0,0" x:Name="labelSelectRangeUnit" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" RenderTransformOrigin="2.623,0.795" />
+        <Label Content="Altitude:" HorizontalAlignment="Left" Margin="430,126,0,0" x:Name="labelSelectSpawnRandomAltitude" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Height="50" Width="160" RenderTransformOrigin="0.5,0.5" >
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="-0.47"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-0.492"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <CheckBox x:Name="checkBoxSpawnRandomAltitudeFriendly" Content="Friendly" HorizontalAlignment="Left" Margin="580,132,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" VerticalContentAlignment="Center" TabIndex="19" Width="130" Height="40"/>
+        <CheckBox x:Name="checkBoxSpawnRandomAltitudeEnemy" Content="Enemy" HorizontalAlignment="Left" Margin="716,132,0,0" VerticalAlignment="Top" FontSize="28" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" Height="40" VerticalContentAlignment="Center" Width="120" TabIndex="20" IsChecked="True"/>
+    </Grid>
+</GroupBox>

@@ -15,14 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game.play;
+using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Pages
 {
@@ -151,92 +150,12 @@ namespace IL2DCE.Pages
             }
         }
 
-        private int SelectedAdditionalAirOperationsComboBox
-        {
-            get
-            {
-                int? selected = FrameworkElement.comboBoxSelectAdditionalAirOperations.SelectedItem as int?;
-                if (selected != null)
-                {
-                    return selected.Value;
-                }
-
-                return -1;
-            }
-        }
-
-        private int SelectedAdditionalGroundOperationsComboBox
-        {
-            get
-            {
-                int? selected = FrameworkElement.comboBoxSelectAdditionalGroundOperations.SelectedItem as int?;
-                if (selected != null)
-                {
-                    return selected.Value;
-                }
-                else
-                {
-                    string text = FrameworkElement.comboBoxSelectAdditionalGroundOperations.Text;
-                    if (!string.IsNullOrEmpty(text))
-                    {
-                        int num;
-                        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out num))
-                        {
-                            return num;
-                        }
-                    }
-                }
-                return -1;
-            }
-        }
-
-        private bool SelectedSpawnRandomPlayer
-        {
-            get
-            {
-                bool? isCheckd = FrameworkElement.checkBoxSpawnRandomPlayer.IsChecked;
-                if (isCheckd != null)
-                {
-                    return isCheckd.Value;
-                }
-
-                return false;
-            }
-        }
-
-        private bool SelectedSpawnRandomFriendly
-        {
-            get
-            {
-                bool? isCheckd = FrameworkElement.checkBoxSpawnRandomFriendly.IsChecked;
-                if (isCheckd != null)
-                {
-                    return isCheckd.Value;
-                }
-
-                return false;
-            }
-        }
-
-        private bool SelectedSpawnRandomEnemy
-        {
-            get
-            {
-                bool? isCheckd = FrameworkElement.checkBoxSpawnRandomEnemy.IsChecked;
-                if (isCheckd != null)
-                {
-                    return isCheckd.Value;
-                }
-
-                return false;
-            }
-        }
-
         #endregion
 
         #region Variable
 
         private bool hookComboSelectionChanged = false;
+
         private MissionFile currentMissionFile = null;
 
         #endregion
@@ -251,16 +170,11 @@ namespace IL2DCE.Pages
             FrameworkElement.textBoxPilotName.TextChanged += new TextChangedEventHandler(textBoxPilotName_TextChanged);
             FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
             FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
-            FrameworkElement.comboBoxSelectAdditionalAirOperations.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAdditionalAirOperations_SelectionChanged);
-            FrameworkElement.comboBoxSelectAdditionalGroundOperations.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAdditionalGroundOperations_SelectionChanged);
-
             FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
             FrameworkElement.datePickerStart.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerStart_SelectedDateChanged);
             FrameworkElement.datePickerEnd.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerEnd_SelectedDateChanged);
-
-            FrameworkElement.comboBoxSelectAdditionalGroundOperations.Loaded += new RoutedEventHandler(comboBoxSelectAdditionalGroundOperations_Loaded);
-            
-            FrameworkElement.labelVersion.Content = Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version);
+            FrameworkElement.GeneralSettingsGroupBox.ComboBoxSelectionChangedEvent += new SelectionChangedEventHandler(GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent);
+            FrameworkElement.GeneralSettingsGroupBox.ComboBoxTextChangedEvent += new TextChangedEventHandler(GeneralSettingsGroupBox_ComboBoxTextChangedEvent);
         }
 
         public override void _enter(maddox.game.IGame play, object arg)
@@ -278,8 +192,6 @@ namespace IL2DCE.Pages
             UpdateAirForceComboBoxInfo(pageArgs != null ? pageArgs.AirForce : -1);
             UpdateCampaignComboBoxInfo();
             UpdateCampaignComboBoxFilter();
-            UpdateSelectedAdditionalAirOperationsComboBox();
-            UpdateSelectedAdditionalGroundOperationsComboBox();
         }
 
         public override void _leave(maddox.game.IGame play, object arg)
@@ -342,32 +254,24 @@ namespace IL2DCE.Pages
 
         private void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBoxItem itemAirGroup = FrameworkElement.comboBoxSelectAirGroup.SelectedItem as ComboBoxItem;
-            if (itemAirGroup != null)
+            UpdateAircraftImage();
+            UpdateButtonStatus();
+        }
+
+        private void GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent(object sender, SelectionChangedEventArgs e)
+        {
+            if (Game != null)
             {
-                AirGroup airGroup = itemAirGroup.Tag as AirGroup;
-                if (airGroup != null)
-                {
-                    DisplayAircraftImage(airGroup.Class);
-                }
+                UpdateButtonStatus();
             }
-
-            UpdateButtonStatus();
         }
 
-        private void comboBoxSelectAdditionalAirOperations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GeneralSettingsGroupBox_ComboBoxTextChangedEvent(object sender, TextChangedEventArgs e)
         {
-            UpdateButtonStatus();
-        }
-
-        private void comboBoxSelectAdditionalGroundOperations_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateButtonStatus();
-        }
-
-        private void comboBoxSelectAdditionalGroundOperations_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            FrameworkElement.comboBoxSelectAdditionalGroundOperations.TextBox.TextChanged += new TextChangedEventHandler(comboBoxSelectAdditionalGroundOperations_TextChanged);
+            if (Game != null)
+            {
+                UpdateButtonStatus();
+            }
         }
 
         #endregion
@@ -382,13 +286,6 @@ namespace IL2DCE.Pages
             }
         }
 
-        protected virtual void comboBoxSelectAdditionalGroundOperations_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (Game != null)
-            {
-                UpdateButtonStatus();
-            }
-        }
 
         #endregion
 
@@ -440,11 +337,17 @@ namespace IL2DCE.Pages
                 career.Aircraft = aircraftInfo.DisplayName;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
-                career.AdditionalAirOperations = SelectedAdditionalAirOperationsComboBox;
-                career.AdditionalGroundOperations = SelectedAdditionalGroundOperationsComboBox;
-                career.SpawnRandomPlayer = SelectedSpawnRandomPlayer;
-                career.SpawnRandomFriendly = SelectedSpawnRandomFriendly;
-                career.SpawnRandomEnemy = SelectedSpawnRandomEnemy;
+                career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperationsComboBox;
+                career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
+                career.SpawnRandomLocationFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationFriendly;
+                career.SpawnRandomLocationEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationEnemy;
+                career.SpawnRandomLocationPlayer = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationPlayer;
+                career.SpawnRandomAltitudeFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomAltitudeFriendly;
+                career.SpawnRandomAltitudeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomAltitudeEnemy;
+                career.SpawnRandomTimeFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
+                career.SpawnRandomTimeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy;
+                career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
+                career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
 
                 Game.Core.ResetCampaign(Game);
 
@@ -630,26 +533,6 @@ namespace IL2DCE.Pages
             comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
         }
 
-        private void UpdateSelectedAdditionalAirOperationsComboBox()
-        {
-            ComboBox comboBox = FrameworkElement.comboBoxSelectAdditionalAirOperations;
-            foreach (var item in Enumerable.Range(Config.MinAdditionalAirOperations, Config.MaxAdditionalAirOperations))
-            {
-                comboBox.Items.Add(item);
-            }
-            comboBox.SelectedItem = Config.DefaultAdditionalAirOperations;
-        }
-
-        private void UpdateSelectedAdditionalGroundOperationsComboBox()
-        {
-            ComboBox comboBox = FrameworkElement.comboBoxSelectAdditionalGroundOperations;
-            for (int i = Config.MinAdditionalGroundOperations; i <= Config.MaxAdditionalGroundOperations; i += 10)
-            {
-                comboBox.Items.Add(i);
-            }
-            comboBox.SelectedItem = Config.DefaultAdditionalGroundOperations;
-        }
-
         private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, AircraftInfo aircraftInfo = null)
         {
             if (aircraftInfo == null)
@@ -669,27 +552,10 @@ namespace IL2DCE.Pages
             }
         }
 
-        private void DisplayAircraftImage(string aircraftClass)
+        private void UpdateAircraftImage()
         {
-            //string path;
-            //;
-            //if (!string.IsNullOrEmpty(aircraftClass) &&
-            //    !string.IsNullOrEmpty(path = new AircraftImage(Game.gameInterface.ToFileSystemPath(Config.PartsFolder)).GetImagePath(aircraftClass)))
-            //{
-            //    // using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-            //    {
-            //        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            //        var decoder = new TiffBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
-            //        BitmapSource source = decoder.Frames[0];
-            //        FrameworkElement.imageAircraft.Source = source;
-            //        FrameworkElement.borderImage.Visibility = Visibility.Visible;
-            //    }
-            //}
-            //else
-            //{
-            //    FrameworkElement.imageAircraft.Source = null;
-            //    FrameworkElement.borderImage.Visibility = Visibility.Hidden;
-            //}
+            AirGroup airGroup = SelectedAirGroup;
+            FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
         }
 
         private void UpdateButtonStatus()
@@ -697,14 +563,18 @@ namespace IL2DCE.Pages
             string pilotName = FrameworkElement.textBoxPilotName.Text;
             DatePicker datePickerStart = FrameworkElement.datePickerStart;
             DatePicker datePickerEnd = FrameworkElement.datePickerEnd;
-            int addGroundOpe = SelectedAdditionalGroundOperationsComboBox;
+            int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
+            int timeBegin = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
+            int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
+            bool timeEnable = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy || FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
             FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 && 
                                                 !Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0) &&
                                                 SelectedCampaign != null && SelectedAirGroup != null &&
                                                 datePickerStart.SelectedDate.HasValue && datePickerEnd.SelectedDate.HasValue &&
                                                 datePickerStart.SelectedDate.Value <= datePickerEnd.SelectedDate.Value &&
                                                 (datePickerEnd.SelectedDate.Value - datePickerStart.SelectedDate.Value).TotalDays <= CampaignInfo.MaxCampaignPeriod &&
-                                                addGroundOpe >= Config.MinAdditionalGroundOperations && addGroundOpe <= Config.MaxAdditionalGroundOperations;
+                                                addGroundOpe >= Config.MinAdditionalGroundOperations && addGroundOpe <= Config.MaxAdditionalGroundOperations &&
+                                                (!timeEnable || timeEnable && timeBegin >= SpawnTime.MinimumBeginSec && timeEnd <= SpawnTime.MaximumEndSec && timeBegin <= timeEnd);
         }
     }
 }

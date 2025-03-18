@@ -70,7 +70,7 @@ namespace IL2DCE
         public const string ConvertLogFileName = "Covert.log";
 
         public const int DefaultAdditionalAirOperations = 3;
-        public const int MaxAdditionalAirOperations = 10;
+        public const int MaxAdditionalAirOperations = 7;
         public const int MinAdditionalAirOperations = 1;
         public const int DefaultAdditionalGroundOperations = 100;
         public const int MaxAdditionalGroundOperations = 300;
@@ -335,7 +335,7 @@ namespace IL2DCE
                 for (int i = 0; i < lines; i++)
                 {
                     confFile.get(SectionSkill, i, out key, out value);
-                    System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value != null ? value: string.Empty);
+                    System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value?? string.Empty);
                     // if you need delete default defined skill, please write no value key in ini file.
                     var delSkills = this.Skills.Where(x => string.Compare(x.Name, key, true) == 0);
                     if (delSkills.Any())

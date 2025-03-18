@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.ComponentModel;
 using System.Globalization;
 
@@ -47,36 +48,120 @@ namespace IL2DCE.MissionObjectModel
         Enemy = 2,
     }
 
-    public class SpawnLocation
+    public enum ESpawnTime
     {
-        public bool IsRandomizePlayer
-        {
-            get;
-            set;
-        }
-
-        public bool IsRandomizeFliendly
-        {
-            get;
-            set;
-        }
-
-        public bool IsRandomizeEnemy
-        {
-            get;
-            set;
-        }
-
-        public SpawnLocation()
-        {
-        }
+        Random = -2,
+        Default = -1,
+        Live = 0,
     }
 
     public class Spawn
     {
+        #region definition
+
         public const int SelectStartAltitude = 500;
         public const int SelectEndAltitude = 10000;
         public const int SelectStepAltitude = 500;
+
+        public class SpawnLocation
+        {
+            public bool IsRandomizePlayer
+            {
+                get;
+                set;
+            }
+
+            public bool IsRandomizeFliendly
+            {
+                get;
+                set;
+            }
+
+            public bool IsRandomizeEnemy
+            {
+                get;
+                set;
+            }
+
+            public SpawnLocation(bool isRandomizePlayer = false, bool isRandomizeFliendly = false, bool isRandomizeEnemy = false)
+            {
+                IsRandomizePlayer = isRandomizePlayer;
+                IsRandomizeFliendly = isRandomizeFliendly;
+                IsRandomizeEnemy = isRandomizeEnemy;
+            }
+        }
+
+        public class SpawnTime
+        {
+            public const int MinimumBeginSec = 15;
+            public const int MaximumEndSec = 1800;
+            public const int DefaultBeginSec = 30;
+            public const int DefaultEndSec = 120;
+            public const int DefaultSelectSec = 120;
+            public const int DefaultSec = 0;
+
+            public int Value
+            {
+                get;
+                set;
+            }
+
+            public bool IsDelay
+            {
+                get
+                {
+                    return Value > 0;
+                }
+            }
+
+            public bool IsLive
+            {
+                get
+                {
+                    return !IsDelay;
+                }
+            }
+
+            public bool IsRandom
+            {
+                get;
+                set;
+            }
+
+            public int BeginSec
+            {
+                get;
+                set;
+            }
+
+            public int EndSec
+            {
+                get;
+                set;
+            }
+
+            public SpawnTime(bool isRandom = false, int sec = DefaultSec, int beginSec = MinimumBeginSec, int endSec = MaximumEndSec)
+            {
+                IsRandom = isRandom;
+                if (isRandom)
+                {
+                    Value = sec >= MinimumBeginSec ? sec <= MaximumEndSec ? sec : MaximumEndSec : MinimumBeginSec;
+                }
+                else
+                {
+                    Value = sec;
+                }
+                BeginSec = beginSec >= MinimumBeginSec ? beginSec : MinimumBeginSec;
+                EndSec = endSec <= MaximumEndSec ? endSec < BeginSec ? BeginSec : endSec : MaximumEndSec;
+            }
+
+            public SpawnTime Clone()
+            {
+                return (SpawnTime)this.MemberwiseClone();
+            }
+        }
+
+        #endregion
 
         public ESpawn Type
         {
@@ -90,7 +175,44 @@ namespace IL2DCE.MissionObjectModel
             protected set;
         }
 
-        public string DisplayName
+        public SpawnLocation Location
+        {
+            get;
+            protected set;
+        }
+
+        public SpawnTime Time
+        {
+            get;
+            protected set;
+        }
+
+		public bool IsRandomizeTimeFliendly
+		{
+			get;
+			set;
+		}
+
+		public bool IsRandomizeTimeEnemy
+		{
+			get;
+			set;
+		}
+
+		public bool IsRandomizeAltitudeFliendly
+		{
+			get;
+			set;
+		}
+
+		public bool IsRandomizeAltitudeEnemy
+		{
+			get;
+			set;
+		}
+
+
+		public string DisplayName
         {
             get
             {
@@ -98,7 +220,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public Spawn(int altitude)
+        public Spawn(int altitude, bool isRandomizeAltitudeFliendly = false, bool isRandomizeAltitudeEnemy = false, SpawnLocation location = null, bool isRandomizeTimeFliendly = false, bool isRandomizeTimeEnemy = false, SpawnTime spawnTime = null)
         {
             if (altitude >= (int)ESpawn.Parked && altitude <= (int)ESpawn.Scramble)
             {
@@ -138,6 +260,42 @@ namespace IL2DCE.MissionObjectModel
                 Type = ESpawn.Default;
                 Altitude = altitude;
             }
+			IsRandomizeAltitudeFliendly = isRandomizeAltitudeFliendly;
+			IsRandomizeAltitudeEnemy = isRandomizeAltitudeEnemy;
+
+			Location = location != null ? location: new SpawnLocation();
+
+            IsRandomizeTimeFliendly = isRandomizeTimeFliendly;
+			IsRandomizeTimeEnemy = isRandomizeTimeEnemy;
+			Time = spawnTime != null ? spawnTime : new SpawnTime();
+        }
+
+        public static ESpawn CreateRandomSpawnType()
+        {
+            ESpawn type;
+			Random rnd = new Random();
+			switch (rnd.Next(1, 4))
+			{
+				case 1:
+					type = ESpawn.Parked;
+					break;
+				case 2:
+					type = ESpawn.Idle;
+					break;
+				case 3:
+					type = ESpawn.Scramble;
+					break;
+                default:
+				case 4:
+					type = ESpawn.AirStart;
+					break;
+			}
+            return type;
+		}
+
+		public static Spawn Create(int altitude, Spawn spawn)
+        {
+            return new Spawn(altitude, spawn.IsRandomizeAltitudeFliendly, spawn.IsRandomizeAltitudeEnemy, spawn.Location, spawn.IsRandomizeTimeFliendly, spawn.IsRandomizeTimeEnemy, spawn.Time.Clone());
         }
 
         public static string CreateDisplayName(int altitude)
