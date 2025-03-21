@@ -67,7 +67,6 @@ Sample mission (7 mission files)
 
  - Adlerangriff RAF/Lufutwaffe
  - Cross v Round.Tobruk [*] RAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force
- - Cross v Round.Tobruk [*] Hungarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
  - Isles of Doom.Tobruk [*] RAF/French Air Force/USAAF/Lufutwaffe/Regia Aeronautica
  - Kanalkampf RAF/Lufutwaffe
  - Steppe.Tobruk [*] RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
