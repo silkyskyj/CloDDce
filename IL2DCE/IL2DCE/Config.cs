@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -31,6 +32,7 @@ namespace IL2DCE
         public static readonly char[] SplitSpace = new char[] { ' ' };
         public static readonly char[] SplitComma = new char[] { ',' };
 
+        public const string AppName = "IL2DCE";
         public const string HomeFolder = "$home/";
         public const string UserFolder = "$user/";
         public const string PartsFolder = "$home/parts";
@@ -39,7 +41,7 @@ namespace IL2DCE
         public const string MissionFolderFormatSingle = "$home/parts/{0}/missions/Single";
         public const string MissionFolderFormatQuick = "$home/parts/{0}/mission/Quick";
         public const string MissionFolderFormatCampaign = "$home/parts/{0}/mission/campaign";
-        
+
         public const string ConfigFilePath = "$home/parts/IL2DCE/conf.ini";
         public const string CampaignInfoFileName = "CampaignInfo.ini";
         public const string AircraftInfoFileName = "AircraftInfo.ini";
@@ -59,12 +61,16 @@ namespace IL2DCE
         public const string SectionMissionFileConverter = "MissionFileConverter";
         public const string SectionQuickMissionPage = "QuickMissionPage";
         public const string SectionSkill = "Skill";
+        public const string SectionMissionType = "MissionType";
+        public const string SectionAircraft = "Aircraft";
 
         public const string KeySorceFolderFileName = "SorceFolderFileName";
         public const string KeySorceFolderFolderName = "SorceFolderFolderName";
         public const string KeyEnableFilterSelectCampaign = "EnableFilterSelectCampaign";
         public const string KeyEnableFilterSelectAirGroup = "EnableFilterSelectAirGroup";
-        public const string KeyEnableAutoSelectComboBoxItem = "EnableAutoSelectComboBoxItem";
+        public const string KeyDisableMissionType = "Disable";
+        public const string KeyRandomRed = "RandomRed";
+        public const string KeyRandomBlue = "RandomBlue";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Covert.log";
@@ -182,7 +188,7 @@ namespace IL2DCE
                 return sorceFolderFileName;
             }
         }
-        private string [] sorceFolderFileName;
+        private string[] sorceFolderFileName;
 
         public string[] SorceFolderFolderName
         {
@@ -205,13 +211,25 @@ namespace IL2DCE
             private set;
         }
 
-        public bool EnableAutoSelectComboBoxItem
+        public Skills Skills
         {
             get;
             private set;
         }
 
-        public Skills Skills
+        public EMissionType[] DisableMissionType
+        {
+            get;
+            private set;
+        }
+
+        public string[] AircraftRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] AircraftRandomBlue
         {
             get;
             private set;
@@ -324,7 +342,6 @@ namespace IL2DCE
 
             EnableFilterSelectCampaign = confFile.get(SectionQuickMissionPage, KeyEnableFilterSelectCampaign, 0) == 1;
             EnableFilterSelectAirGroup = confFile.get(SectionQuickMissionPage, KeyEnableFilterSelectAirGroup, 0) == 1;
-            EnableAutoSelectComboBoxItem = confFile.get(SectionQuickMissionPage, KeyEnableAutoSelectComboBoxItem, 0) == 1;
 
             Skills = Skills.CreateDefault();
             if (confFile.exist(SectionSkill))
@@ -335,7 +352,7 @@ namespace IL2DCE
                 for (int i = 0; i < lines; i++)
                 {
                     confFile.get(SectionSkill, i, out key, out value);
-                    System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value?? string.Empty);
+                    System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value ?? string.Empty);
                     // if you need delete default defined skill, please write no value key in ini file.
                     var delSkills = this.Skills.Where(x => string.Compare(x.Name, key, true) == 0);
                     if (delSkills.Any())
@@ -355,6 +372,46 @@ namespace IL2DCE
                         }
                     }
                 }
+            }
+
+            if (confFile.exist(SectionMissionType, KeyDisableMissionType))
+            {
+                string value = confFile.get(SectionMissionType, KeyDisableMissionType);
+                string[] values = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+                List<EMissionType> missionTypes = new List<EMissionType>();
+                foreach (var item in values)
+                {
+                    EMissionType missionType;
+                    if (Enum.TryParse<EMissionType>(item, true, out missionType))
+                    {
+                        missionTypes.Add(missionType);
+                    }
+                }
+                DisableMissionType = missionTypes.ToArray();
+            }
+            else
+            {
+                DisableMissionType = new EMissionType[0];
+            }
+
+            if (confFile.exist(SectionAircraft, KeyRandomRed))
+            {
+                string value = confFile.get(SectionAircraft, KeyRandomRed);
+                AircraftRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                AircraftRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionAircraft, KeyRandomBlue))
+            {
+                string value = confFile.get(SectionAircraft, KeyRandomBlue);
+                AircraftRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                AircraftRandomBlue = new string[0];
             }
         }
     }

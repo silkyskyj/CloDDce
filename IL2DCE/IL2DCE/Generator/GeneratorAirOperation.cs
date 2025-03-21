@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -118,13 +118,13 @@ namespace IL2DCE.Generator
         {
             if (missionParameters.MinAltitude != null && missionParameters.MinAltitude.HasValue && missionParameters.MaxAltitude != null && missionParameters.MaxAltitude.HasValue)
             {
-                return (double)Random.Next((int)missionParameters.MinAltitude.Value, (int)missionParameters.MaxAltitude.Value);
+                return (double)Random.Next((int)missionParameters.MinAltitude.Value, (int)missionParameters.MaxAltitude.Value + 1);
             }
             else
             {
                 GamePlay.gpLogServer(new Player[] { GamePlay.gpPlayer() }, "No altitude defined for: " + missionParameters.LoadoutId + ". Using default altitude.", null);
                 // Use some default altitudes
-                return (double)Random.Next(300, 7000);
+                return (double)Random.Next(300, 7000 + 1);
             }
         }
 
@@ -215,7 +215,7 @@ namespace IL2DCE.Generator
 
         private string getRandomSkill(EAircraftType aircraftType)
         {
-            int randomLevel = Random.Next(0, 4);
+            int randomLevel = Random.Next(0, (int)ESystemType.Count);
 
             return getTweakedSkill(aircraftType, randomLevel);
         }
@@ -812,7 +812,7 @@ namespace IL2DCE.Generator
                 AircraftParametersInfo aircraftParam = getAvailableRandomAircratParametersInfo(aircraftInfo, EMissionType.TRANSFER);
                 int startAlt = aircraftParam != null && aircraftParam.MinAltitude != null ? Math.Max((int)aircraftParam.MinAltitude.Value, Spawn.SelectStartAltitude) : Spawn.SelectStartAltitude;
                 int endAlt = aircraftParam != null && aircraftParam.MaxAltitude != null ? Math.Min((int)aircraftParam.MaxAltitude.Value, Spawn.SelectEndAltitude) : Spawn.SelectEndAltitude;
-                double altitude = Random.Next(startAlt, endAlt);
+                double altitude = Random.Next(startAlt, endAlt + 1);
                 airGroup.Transfer(altitude, aiAirportTarget);
                 return true;
             }
@@ -1420,34 +1420,7 @@ namespace IL2DCE.Generator
 
         private void SetRange(IEnumerable<Point3d> points)
         {
-#if false
-            wRECTF range = new wRECTF();
-            range.x1 = (float)points.Min(x => x.x);
-            range.x2 = (float)points.Max(x => x.x);
-            range.y1 = (float)points.Min(x => x.y);
-            range.y2 = (float)points.Max(x => x.y);
-#else
-            wRECTF range = new wRECTF() { x1 = float.MaxValue, x2 = float.MinValue, y1 = float.MaxValue, y2 = float.MinValue };
-            foreach (var item in points)
-            {
-                if (item.x < range.x1)
-                {
-                    range.x1 = (float)item.x;
-                }
-                if (item.x > range.x2)
-                {
-                    range.x2 = (float)item.x;
-                }
-                if (item.y < range.y1)
-                {
-                    range.y1 = (float)item.y;
-                }
-                if (item.y > range.y2)
-                {
-                    range.y2 = (float)item.y;
-                }
-            }
-#endif
+            wRECTF range = MapUtil.GetRange(points);
             Debug.WriteLine("SetRange({0},{1})-({2},{3})[{4},{5}]", range.x1, range.y1, range.x2, range.y2, range.x2 - range.x1 + 1, range.y2 - range.y1 + 1);
             Range = range;
         }
@@ -1480,7 +1453,7 @@ namespace IL2DCE.Generator
                 if (IsSpawnRandomTime(airGroup, spawn))
                 {
                     spawn.Time.IsRandom = true;
-                    spawn.Time.Value = Random.Next(spawn.Time.BeginSec, spawn.Time.EndSec);
+                    spawn.Time.Value = Random.Next(spawn.Time.BeginSec, spawn.Time.EndSec + 1);
                     Debug.WriteLine(string.Format(" => Time={0}", spawn.Time.Value));
                 }
                 else
@@ -1547,7 +1520,7 @@ namespace IL2DCE.Generator
         private void SetSpawnRandomAltitude(AirGroup airGroup, AircraftParametersInfo aircraftParametersInfo)
         {
             Point3d point = airGroup.Position;
-            point.z = Random.Next((int)aircraftParametersInfo.MinAltitude.Value, (int)aircraftParametersInfo.MaxAltitude.Value);
+            point.z = Random.Next((int)aircraftParametersInfo.MinAltitude.Value, (int)aircraftParametersInfo.MaxAltitude.Value + 1);  // + AircraftParameter Altitude Range
             airGroup.UpdateStartPoint(ref point, AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY);
             Debug.Write(string.Format(" => Altitude Changed[AirStart]={0}", airGroup.Position.ToString()));
         }
@@ -1561,8 +1534,8 @@ namespace IL2DCE.Generator
             {
                 do
                 {
-                    point.x = Random.Next((int)range.x1, (int)range.x2);
-                    point.y = Random.Next((int)range.y1, (int)range.y2);
+                    point.x = Random.Next((int)range.x1, (int)range.x2 + 1);
+                    point.y = Random.Next((int)range.y1, (int)range.y2 + 1);
                 } while (GamePlay.gpFrontArmy(point.x, point.y) != airGroup.ArmyIndex);
                 airGroup.UpdateStartPoint(ref point);
                 Debug.Write(string.Format(" => AirStart Pos Changed={0}", airGroup.Position.ToString()));
@@ -1588,8 +1561,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    airGroup.SetOnParked = true;
-                    Debug.Write(string.Format(" => Pos no Changed. SetOnParked={0}", airGroup.SetOnParked));
+                    SetSpawnRandomType(airGroup, ref point);
                 }
             }
         }
@@ -1599,13 +1571,7 @@ namespace IL2DCE.Generator
             Point3d point = airGroup.Position;
             if (airGroup.Airstart)
             {
-                bool updated = false;
-                IEnumerable<Point3d> posAirGroups = AssignedAirGroups.Select(x => x.Position);
-                while (posAirGroups.Where(x => x.distance(ref point) < SpawnMaxDifDistanceAirstart).Any())
-                {
-                    point.z += Random.Next(SpawnMaxDifDistanceAirstart / 2, SpawnMaxDifDistanceAirstart);
-                    updated = true;
-                }
+                bool updated = SetSpawnRandomAltitude(airGroup, ref point);
                 if (updated)
                 {
                     airGroup.UpdateStartPoint(ref point);
@@ -1616,10 +1582,41 @@ namespace IL2DCE.Generator
             {
                 if (AssignedAirGroups.Select(x => x.Position).Any(x => x.distance(ref point) < SpawnMaxDifDistanceAirport))
                 {
-                    airGroup.SetOnParked = true;
+                    SetSpawnRandomType(airGroup, ref point);
                 }
+            }
+        }
+
+        private void SetSpawnRandomType(AirGroup airGroup, ref Point3d point)
+        {
+            if (Random.Next(2) == 1)
+            {
+                airGroup.SetOnParked = true;
                 Debug.Write(airGroup.SetOnParked ? string.Format(" => Pos no Changed. SetOnParked={0}", airGroup.SetOnParked) : string.Empty);
             }
+            else if (SetSpawnRandomAltitude(airGroup, ref point))
+            {
+                airGroup.UpdateStartPoint(ref point, AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY);
+                Debug.Write(string.Format(" => Spawn Type Changed[AirStart]={0}, Pos={1}", true, airGroup.Position.ToString()));
+            }
+            else
+            {
+                Debug.Write(" => Pos no Changed.");
+            }
+        }
+
+        private bool SetSpawnRandomAltitude(AirGroup airGroup, ref Point3d point)
+        {
+            bool updated = false;
+            IEnumerable<Point3d> posAirGroups = AssignedAirGroups.Select(x => x.Position);
+            Point3d p = point;
+            while (posAirGroups.Where(x => x.distance(ref p) < SpawnMaxDifDistanceAirstart).Any())
+            {
+                p.z += Random.Next(SpawnMaxDifDistanceAirstart / 2, SpawnMaxDifDistanceAirstart + 1);   // + minimum Altitude 
+                updated = true;
+            }
+            point = p;
+            return updated;
         }
 
         #endregion

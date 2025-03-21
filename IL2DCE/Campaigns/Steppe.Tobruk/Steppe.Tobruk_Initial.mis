@@ -466,3 +466,6 @@
 [BoB_RA_56St_20Gruppo_353Sq.01_Way]
   NORMFLY 10881.22 34726.66 2500.00 300.00
   NORMFLY 16555.71 42022.70 500.00 300.00
+[Aircraft]
+  RandomRed Aircraft.AnsonMkI Aircraft.DefiantMkI Aircraft.SunderlandMkI Aircraft.WalrusMkI tobruk:Aircraft.SunderlandMkI_Trop tobruk:Aircraft.WalrusMkI_Trop
+  RandomBlue Aircraft.Bf-108B-2 Aircraft.Do-17Z-1 Aircraft.Do-17Z-2 Aircraft.Do-215B-1 Aircraft.FW-200C-1 Aircraft.He-115B-2 tobruk:Aircraft.Bf-108B-2_Trop

@@ -11,7 +11,7 @@
         <TextBox x:Name="textBoxInfo" HorizontalAlignment="Left" Margin="52,150,0,0" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="600" Height="820" Foreground="#B2FFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
         <TextBox x:Name="textBoxStatus" HorizontalAlignment="Left" Margin="689,150,0,95" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" Width="640" Height="820" Foreground="#B2FFFFFF" Background="Transparent" BorderBrush="#FF707070" FontSize="20" VerticalScrollBarVisibility="Auto" />
         <controls:VersionLabel HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="390" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
-        <controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1894,64,0,0" VerticalAlignment="Top" Width="16" Height="20"/>
+        <controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1892,62,0,0" VerticalAlignment="Top" Width="25" Height="25" TabIndex="1000"/>
         <controls:AircraftImageBorder x:Name="borderImage" BorderBrush="#FFA0854A" Margin="1370,150,289,748" Width="260" Height="182" Background="#20F7F2F2" Opacity="1" BorderThickness="2,2,2,2" />
     </Grid>
 </UserControl>

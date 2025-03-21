@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using IL2DCE.Generator;
-using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -29,7 +28,8 @@ namespace IL2DCE.MissionObjectModel
 {
     public class AirGroup
     {
-        public const string SquadronFormat = "D";
+        public const string SquadronFormat = "{0}.{1:D}";
+        public const string SquadronValueFormat = "D";
         public const int FlightCount = 4;
         public const string DefaultFormation = "LINEABREAST"; // "Line Abreast" or "Line Astern" is All Flight Group & All Country
 
@@ -271,8 +271,8 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                string airGoupKey = string.IsNullOrEmpty(VirtualAirGroupKey) ? CreateDisplayName(AirGroupKey) : VirtualAirGroupKey;
-                return string.Format("{0}.{1}", airGoupKey, _squadronIndex.ToString(SquadronFormat, CultureInfo.InvariantCulture.NumberFormat));
+                string airGroupKey = string.IsNullOrEmpty(VirtualAirGroupKey) ? CreateDisplayName(AirGroupKey) : VirtualAirGroupKey;
+                return string.Format(CultureInfo.InvariantCulture.NumberFormat, SquadronFormat, airGroupKey, _squadronIndex);
             }
         }
 
@@ -381,7 +381,6 @@ namespace IL2DCE.MissionObjectModel
             // TODO: Parse belt
 
             // Skill
-            // TODO: Multi Skill(=Different)
             Skill = sectionFile.get(id, MissionFile.KeySkill, string.Empty);
             Skills = ReadFligthTypeValue(sectionFile, id, Flights, MissionFile.KeySkill);
 #if DEBUG && false
@@ -451,6 +450,91 @@ namespace IL2DCE.MissionObjectModel
             Optimize();
         }
 
+        public AirGroup(string id, AircraftInfo aircraftInfo, Point3d point, AircraftLoadoutInfo aircraftLoadoutInfo)
+        {
+            // AirGroupKey
+            AirGroupKey = id.Substring(0, id.IndexOf("."));
+
+            // SquadronIndex
+            if (!int.TryParse(id.Substring(id.LastIndexOf(".") + 1, 1), NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _squadronIndex))
+            {
+                Debug.Assert(false);
+                throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
+            }
+
+            // KeyVirtualAirGroupKey
+
+            // Flight
+            Flights.Add(0, new string[] { "1" }.ToList());
+
+            // Class
+            Class = aircraftInfo.Aircraft;
+           
+            // Formation
+            Formation = DefaultFormation;
+
+            // CallSign
+            _callSign = 0;
+
+            // Fuel
+            _fuel = 100;
+
+            // Weapons
+            Weapons = aircraftLoadoutInfo.Weapons;
+
+            // Detonator
+            Detonator = aircraftLoadoutInfo.Detonator;
+
+            // Belt
+            // TODO: Parse belt
+
+            // Skill
+            Skill = MissionObjectModel.Skill.GetDefaultTyped().ToString();
+            Skills = new Dictionary<int, string>();
+#if DEBUG && false
+            Debug.WriteLine(string.Format("Skill[{0}]={1}", AirGroupKey, Skill));
+            if (Skills.Count > 0)
+            {
+                foreach (var item in Skills)
+                {
+                    Debug.WriteLine(string.Format("Skill{0}={1}", item.Key, item.Value));
+                }
+            }
+#endif
+
+            // Aging
+            // Skin
+            // MarkingsOn
+            // BandColor
+
+            // Id
+            int flightMask = 0x0;
+            foreach (int flightIndex in Flights.Keys)
+            {
+                if (Flights[flightIndex].Count > 0)
+                {
+                    int bit = (0x1 << flightIndex);
+                    flightMask = (flightMask | bit);
+                }
+            }
+            Id = ToString() + flightMask.ToString("X");
+
+            // Postion 
+            Position = point;
+            
+            // Speed
+            speed = AirGroupWaypoint.DefaultNormaflyV;
+
+            // Waypoints
+            _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, point, speed));
+            Airstart = true;
+
+            // SetOnPark
+            // SpawnFromScript
+
+            Optimize();
+        }
+
         #endregion
 
         #region Public methods
@@ -462,7 +546,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static string CreateSquadronString(string airGroupKey, int squadronIndex)
         {
-            return string.Format("{0}.{1}", airGroupKey, squadronIndex.ToString(SquadronFormat, CultureInfo.InvariantCulture.NumberFormat));
+            return string.Format(CultureInfo.InvariantCulture.NumberFormat, SquadronFormat, airGroupKey, squadronIndex);
         }
 
         public static string CreateDisplayName(string airGroupKey)
@@ -817,18 +901,18 @@ namespace IL2DCE.MissionObjectModel
             {
                 _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormaflyV));
                 Point3d pStart = new Point3d(targetStationary.X, targetStationary.Y, altitude);
-                createInbetweenWaypoints(rendevouzPosition.Value, pStart);
+                createInbetweenWaypoints(rendevouzPosition.Value, pStart, true);
             }
             else
             {
                 Point3d pStart = new Point3d(targetStationary.X, targetStationary.Y, altitude);
-                createStartInbetweenPoints(pStart);
+                createStartInbetweenPoints(pStart, true);
             }
 
             _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.RECON, targetStationary.X, targetStationary.Y, altitude, AirGroupWaypoint.DefaultFlyV, targetStationary.Id));
 
             Point3d pEnd = new Point3d(targetStationary.X, targetStationary.Y, altitude);
-            createEndInbetweenPoints(pEnd, landingAirport);
+            createEndInbetweenPoints(pEnd, landingAirport, true);
             createEndWaypoints(landingAirport);
         }
 
@@ -854,12 +938,12 @@ namespace IL2DCE.MissionObjectModel
                 {
                     _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormaflyV));
                     Point3d pStart = new Point3d(targetWaypoints[0].Position.x, targetWaypoints[0].Position.y, altitude);
-                    createInbetweenWaypoints(rendevouzPosition.Value, pStart);
+                    createInbetweenWaypoints(rendevouzPosition.Value, pStart, true);
                 }
                 else
                 {
                     Point3d pStart = new Point3d(targetWaypoints[0].Position.x, targetWaypoints[0].Position.y, altitude);
-                    createStartInbetweenPoints(pStart);
+                    createStartInbetweenPoints(pStart, true);
                 }
 
                 GroundGroupWaypoint lastGroundGroupWaypoint = null;
@@ -885,7 +969,7 @@ namespace IL2DCE.MissionObjectModel
                 if (lastGroundGroupWaypoint != null)
                 {
                     Point3d pEnd = new Point3d(lastGroundGroupWaypoint.Position.x, lastGroundGroupWaypoint.Position.y, altitude);
-                    createEndInbetweenPoints(pEnd, landingAirport);
+                    createEndInbetweenPoints(pEnd, landingAirport, true);
                 }
 
                 createEndWaypoints(landingAirport);
@@ -971,7 +1055,7 @@ namespace IL2DCE.MissionObjectModel
 
             if (interceptWaypoint != null)
             {
-                createStartInbetweenPoints(interceptWaypoint.Position);
+                createStartInbetweenPoints(interceptWaypoint.Position, true);
                 _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, interceptWaypoint.X, interceptWaypoint.Y, interceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(interceptWaypoint)));
 
                 if (targetWaypoints.IndexOf(interceptWaypoint) - 1 >= 0)
@@ -979,7 +1063,7 @@ namespace IL2DCE.MissionObjectModel
                     AirGroupWaypoint nextInterceptWaypoint = targetWaypoints[targetWaypoints.IndexOf(interceptWaypoint) - 1];
                     _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, nextInterceptWaypoint.X, nextInterceptWaypoint.Y, nextInterceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(nextInterceptWaypoint)));
 
-                    createEndInbetweenPoints(nextInterceptWaypoint.Position, landingAirport);
+                    createEndInbetweenPoints(nextInterceptWaypoint.Position, landingAirport, true);
                 }
                 else
                 {
@@ -988,7 +1072,7 @@ namespace IL2DCE.MissionObjectModel
             }
             else if (closestInterceptWaypoint != null)
             {
-                createStartInbetweenPoints(closestInterceptWaypoint.Position);
+                createStartInbetweenPoints(closestInterceptWaypoint.Position, true);
                 _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, closestInterceptWaypoint.X, closestInterceptWaypoint.Y, closestInterceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(closestInterceptWaypoint)));
 
                 if (targetWaypoints.IndexOf(closestInterceptWaypoint) + 1 < targetWaypoints.Count)
@@ -996,7 +1080,7 @@ namespace IL2DCE.MissionObjectModel
                     AirGroupWaypoint nextInterceptWaypoint = targetWaypoints[targetWaypoints.IndexOf(interceptWaypoint) + 1];
                     _waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.AATTACK_BOMBERS, nextInterceptWaypoint.X, nextInterceptWaypoint.Y, nextInterceptWaypoint.Z, AirGroupWaypoint.DefaultFlyV, targetAirGroup.Id + " " + targetWaypoints.IndexOf(nextInterceptWaypoint)));
 
-                    createEndInbetweenPoints(nextInterceptWaypoint.Position, landingAirport);
+                    createEndInbetweenPoints(nextInterceptWaypoint.Position, landingAirport, true);
                 }
                 else
                 {
@@ -1125,7 +1209,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#endregion
+        #endregion
 
         #region Private methods
 
@@ -1192,25 +1276,25 @@ namespace IL2DCE.MissionObjectModel
         private void UpdateFlightTypeValue()
         {
             // Skills
-            if (Skills.Count > 0)
+            if (Skills != null && Skills.Count > 0)
             {
                 Skills = UpdateFlightTypeValue(Flights, Skills);
             }
 
             // Skin 
-            if (Skin.Count > 0)
+            if (Skin != null && Skin.Count > 0)
             {
                 Skin = UpdateFlightTypeValue(Flights, Skin);
             }
 
             // MarkingsOn
-            if (MarkingsOn.Count > 0)
+            if (MarkingsOn != null && MarkingsOn.Count > 0)
             {
                 MarkingsOn = UpdateFlightTypeValue(Flights, MarkingsOn);
             }
 
             // BandColor
-            if (BandColor.Count > 0)
+            if (BandColor != null && BandColor.Count > 0)
             {
                 BandColor = UpdateFlightTypeValue(Flights, BandColor);
             }
@@ -1290,8 +1374,8 @@ namespace IL2DCE.MissionObjectModel
             double mpZ = (to.z - from.z);
             if (plusRandomValue)
             {
-                mpX *= Random.Default.Next(90, 110) / 100.0;
-                mpY *= Random.Default.Next(90, 110) / 100.0;
+                mpX *= Random.Default.Next(75, 125) / 100.0;
+                mpY *= Random.Default.Next(75, 125) / 100.0;
             }
             Point3d p1 = new Point3d(from.x + 0.25 * mpX, from.y + 0.25 * mpY, from.z + 1.00 * mpZ);
             Point3d p2 = new Point3d(from.x + 0.50 * mpX, from.y + 0.50 * mpY, from.z + 1.00 * mpZ);

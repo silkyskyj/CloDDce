@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -19,11 +19,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE
 {
@@ -143,6 +146,9 @@ namespace IL2DCE
             if (campaignsFolderSystemPath.Exists && campaignsFolderSystemPath.GetDirectories().Length > 0)
             {
                 ISectionFile globalAircraftInfoFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}", campaignsFolderPath, Config.AircraftInfoFileName));
+#if DEBUG && false
+                AircraftInfo.TraceAircraftInfo(globalAircraftInfoFile, string.Format("{0}/{1}", campaignsFolderPath, Config.AircraftInfoFileName));
+#endif
                 ISectionFile globalAirGroupInfoFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}", campaignsFolderPath, Config.AirGroupInfoFileName));
                 AirGroupInfos.Default = AirGroupInfos.Create(globalAirGroupInfoFile);
                 foreach (DirectoryInfo campaignFolderSystemPath in campaignsFolderSystemPath.GetDirectories())
@@ -220,7 +226,7 @@ namespace IL2DCE
             Career career = CurrentCareer;
             CampaignInfo campaignInfo = career.CampaignInfo;
 
-            ISectionFile previousMissionTemplateFile = null;
+            ISectionFile initialMissionTemplateFile = null;
             if (!CurrentCareer.Date.HasValue)
             {
                 // It is the first mission.
@@ -228,7 +234,7 @@ namespace IL2DCE
                 career.Experience = career.RankIndex * 1000;
 
                 // Generate the initial mission tempalte
-                generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out previousMissionTemplateFile, campaignInfo.AirGroupInfos);
+                generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
                 result = CampaignStatus.Empty;
             }
             else
@@ -261,7 +267,7 @@ namespace IL2DCE
                     career.Date = career.Date.Value.Add(new TimeSpan(1, 0, 0, 0));
                 }
 
-                previousMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
+                initialMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
             }
 
             string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
@@ -294,7 +300,7 @@ namespace IL2DCE
 
                 // Generate the template for the next mission
                 ISectionFile missionTemplateFile = null;
-                generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, previousMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
+                generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, initialMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
                 missionTemplateFile.save(career.MissionTemplateFileName);
 
                 // Generate the next mission based on the new template.
@@ -348,8 +354,8 @@ namespace IL2DCE
             career.Date = career.CampaignInfo.StartDate;
             career.Experience = career.RankIndex * 1000;
 
-            ISectionFile previousMissionTemplateFile = null;
-            generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out previousMissionTemplateFile, campaignInfo.AirGroupInfos);
+            ISectionFile initialMissionTemplateFile = null;
+            generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
 
             string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
             if (!Directory.Exists(missionFolderSystemPath))
@@ -375,7 +381,7 @@ namespace IL2DCE
 
             // Generate the template for the next mission
             ISectionFile missionTemplateFile = null;
-            generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, previousMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
+            generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, initialMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
             missionTemplateFile.save(career.MissionTemplateFileName);
 
             // Generate the next mission based on the new template.
@@ -462,7 +468,7 @@ namespace IL2DCE
                                         Path.GetFileNameWithoutExtension(Config.ConvertLogFileName) + i + Path.GetExtension(Config.ConvertLogFileName));
                 logFileSystemPath = (GamePlay as IGame).gameInterface.ToFileSystemPath(logFilePath);
             }
-            while (!SectionFileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
+            while (!FileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
             return logFileSystemPath;
         }
 

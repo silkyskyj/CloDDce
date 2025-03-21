@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.ComponentModel;
 using System.Globalization;
 
@@ -95,8 +94,8 @@ namespace IL2DCE.MissionObjectModel
         {
             public const int MinimumBeginSec = 15;
             public const int MaximumEndSec = 1800;
-            public const int DefaultBeginSec = 30;
-            public const int DefaultEndSec = 120;
+            public const int DefaultBeginSec = 15;
+            public const int DefaultEndSec = 45;
             public const int DefaultSelectSec = 120;
             public const int DefaultSec = 0;
 
@@ -235,7 +234,7 @@ namespace IL2DCE.MissionObjectModel
             else if (altitude == (int)ESpawn.Random)
             {
                 Random rnd = new Random();
-                switch (rnd.Next(1, 4))
+                switch (rnd.Next(1, 5))
                 {
                     case 1:
                         Type = ESpawn.Parked;
@@ -251,7 +250,7 @@ namespace IL2DCE.MissionObjectModel
                         break;
                     case 4:
                         Type = ESpawn.AirStart;
-                        Altitude = rnd.Next(SelectStartAltitude / SelectStepAltitude, SelectEndAltitude / SelectStepAltitude) * SelectStepAltitude;
+                        Altitude = rnd.Next(SelectStartAltitude / SelectStepAltitude, SelectEndAltitude / SelectStepAltitude + 1) * SelectStepAltitude;
                         break;
                 }
             }
@@ -274,7 +273,7 @@ namespace IL2DCE.MissionObjectModel
         {
             ESpawn type;
 			Random rnd = new Random();
-			switch (rnd.Next(1, 4))
+			switch (rnd.Next(1, 5))
 			{
 				case 1:
 					type = ESpawn.Parked;

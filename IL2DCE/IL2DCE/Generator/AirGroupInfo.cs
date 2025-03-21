@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
 
@@ -153,32 +154,32 @@ namespace IL2DCE.Generator
 
         public void Write(ISectionFile file, string airGroupKey = null, string aircraftClass = null)
         {
-            SectionFileUtil.Write(file, SectionMain, Name, string.Empty);
-            SectionFileUtil.Write(file, Name, KeySquadronCount, SquadronCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SectionFileUtil.Write(file, Name, KeyFlightCount, FlightCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SectionFileUtil.Write(file, Name, KeyFlightSize, FlightSize.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SectionFileUtil.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SectionFileUtil.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, SectionMain, Name, string.Empty);
+            SilkySkyCloDFile.Write(file, Name, KeySquadronCount, SquadronCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyFlightCount, FlightCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyFlightSize, FlightSize.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             if (string.IsNullOrEmpty(aircraftClass))
             {
-                Aircrafts.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty, false)); // All
+                Aircrafts.ForEach(x => SilkySkyCloDFile.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty, false)); // All
             }
             else
             {
                 foreach (var item in Aircrafts.Where(x => string.Compare(x, aircraftClass, true) == 0))
                 {
-                    SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), item, string.Empty, false);
+                    SilkySkyCloDFile.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), item, string.Empty, false);
                 }
             }
             if (string.IsNullOrEmpty(airGroupKey))
             {
-                AirGroupKeys.ForEach(x => SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), x, string.Empty, false)); // All
+                AirGroupKeys.ForEach(x => SilkySkyCloDFile.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), x, string.Empty, false)); // All
             }
             else
             {
                 foreach (var item in AirGroupKeys.Where(x => string.Compare(x, airGroupKey, true) == 0))
                 {
-                    SectionFileUtil.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), item, string.Empty, false);
+                    SilkySkyCloDFile.Write(file, string.Format("{0}.{1}", Name, SectionAirGroupKeys), item, string.Empty, false);
                 }
             }
         }
@@ -213,11 +214,11 @@ namespace IL2DCE.Generator
                     Name = section,
                     Aircrafts = aircrafts,
                     AirGroupKeys = airGroupKeys,
-                    SquadronCount = SectionFileUtil.ReadNumeric(file, section, KeySquadronCount, FileInfo),
-                    FlightCount = SectionFileUtil.ReadNumeric(file, section, KeyFlightCount, FileInfo),
-                    FlightSize = SectionFileUtil.ReadNumeric(file, section, KeyFlightSize, FileInfo),
-                    ArmyIndex = SectionFileUtil.ReadNumeric(file, section, KeyArmyIndex, FileInfo),
-                    AirForceIndex = SectionFileUtil.ReadNumeric(file, section, KeyAirForceIndex, FileInfo)
+                    SquadronCount = SilkySkyCloDFile.ReadNumeric(file, section, KeySquadronCount, FileInfo),
+                    FlightCount = SilkySkyCloDFile.ReadNumeric(file, section, KeyFlightCount, FileInfo),
+                    FlightSize = SilkySkyCloDFile.ReadNumeric(file, section, KeyFlightSize, FileInfo),
+                    ArmyIndex = SilkySkyCloDFile.ReadNumeric(file, section, KeyArmyIndex, FileInfo),
+                    AirForceIndex = SilkySkyCloDFile.ReadNumeric(file, section, KeyAirForceIndex, FileInfo)
                 };
             }
 

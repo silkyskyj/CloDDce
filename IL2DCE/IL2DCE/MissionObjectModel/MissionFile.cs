@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,10 @@ namespace IL2DCE.MissionObjectModel
         public const string KeyBriefing = "Briefing";
         public const string ValueTTime = "TTime";
         public const string ValueASpawnGroup = "ASpawnGroup";
-        
+        public const string KeyPartsCore = "core.100";
+        public const string KeyPartsBob = "bob.100";
+        public const string KeyPartsTobruk = "tobruk.100";
+
         public const float DefaultTime = 12.0f;
         public const int DefaulWeatherIndex = 0;
         public const int DefaulCloudsHeight = 1000;
@@ -78,6 +81,33 @@ namespace IL2DCE.MissionObjectModel
         #endregion
 
         #region Property (& Variable)
+
+        public IEnumerable<string> Parts
+        {
+            get;
+            private set;
+        }
+
+        public bool IsTypeDLC
+        {
+            get
+            {
+                return DLC.Any();
+            }
+        }
+
+        public IEnumerable<string> DLC
+        {
+            get
+            {
+                return Parts != null ? Parts.Except(new string[] { KeyPartsCore, KeyPartsBob }).Select(x => 
+                                                    { 
+                                                        int i = x.IndexOf("."); 
+                                                        return i != -1 ? x.Substring(0, i) : x;
+                                                    }): 
+                                       new string [0];
+            }
+        }
 
         public float Time
         {
@@ -255,6 +285,18 @@ namespace IL2DCE.MissionObjectModel
         private List<Stationary> _redStationaries = new List<Stationary>();
         private List<Stationary> _blueStationaries = new List<Stationary>();
 
+        public string[] AircraftRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] AircraftRandomBlue
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         //private List<Point3d> _redFrontMarkers = new List<Point3d>();
@@ -307,6 +349,7 @@ namespace IL2DCE.MissionObjectModel
         private void load(ISectionFile file)
         {
             // Main
+            Parts = SilkySkyCloDFile.ReadSectionKeies(file, SectionParts);
             Time = file.get(SectionMain, KeyTime, DefaultTime);
             WeatherIndex = file.get(SectionMain, KeyWeatherIndex, DefaulWeatherIndex);
             CloudsHeight = file.get(SectionMain, KeyCloudsHeight, DefaulCloudsHeight);
@@ -503,6 +546,26 @@ namespace IL2DCE.MissionObjectModel
                         }
                     }
                 }
+            }
+
+            if (file.exist(Config.SectionAircraft, Config.KeyRandomRed))
+            {
+                string value = file.get(Config.SectionAircraft, Config.KeyRandomRed);
+                AircraftRandomRed = value.Split(Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                AircraftRandomRed = new string[0];
+            }
+
+            if (file.exist(Config.SectionAircraft, Config.KeyRandomBlue))
+            {
+                string value = file.get(Config.SectionAircraft, Config.KeyRandomBlue);
+                AircraftRandomBlue = value.Split(Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                AircraftRandomBlue = new string[0];
             }
         }
 

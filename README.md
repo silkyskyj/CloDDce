@@ -1,4 +1,4 @@
-A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 
 Original: https://code.google.com/archive/p/il2dce/
 
@@ -15,6 +15,6 @@ In this way, OSS can be developed by individuals as they like, while respecting 
 
 ---
 IL2DCE [Forked by silkyskyj]
-Copyright © Stefan Rothdach 2016 & silkyskyj 2025
+Copyright © Stefan Rothdach 2011- & silkyskyj 2025-
 silkyskyj https://github.com/silkyskyj/il2dce
 Stefan Rothdach https://github.com/il2dce/il2dc (https://code.google.com/archive/p/il2dce/)

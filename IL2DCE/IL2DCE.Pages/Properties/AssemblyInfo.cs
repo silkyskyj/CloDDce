@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -23,13 +23,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 [assembly: AssemblyTitle("IL2DCE.Pages")]
-[assembly: AssemblyDescription("A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings")]
+[assembly: AssemblyDescription("A dynamic campaign engine & dynamicmission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings")]
 [assembly: Guid("2c4653c3-9629-4d26-8596-412fc6780829")]
 [assembly: AssemblyCompany("https://github.com/il2dce/il2dce")]
 [assembly: AssemblyProduct("IL2DCE [Forked by silkyskyj]")]
-[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2016 & silkyskyj 2025")]
+[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2011- & silkyskyj 2025-")]
 [assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.3.16.0")]
-[assembly: AssemblyFileVersion("0.3.16.0")]
+[assembly: AssemblyVersion("0.5.0.0")]
+[assembly: AssemblyFileVersion("0.5.0.0")]

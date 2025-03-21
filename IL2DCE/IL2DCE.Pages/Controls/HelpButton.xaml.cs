@@ -13,20 +13,34 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
-using System.Globalization;
+using System;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
 
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE.Pages.Controls
 {
-    public class Speed
+    /// <summary>
+    /// HelpButton.xaml の相互作用ロジック
+    /// </summary>
+    public partial class HelpButton : Button
     {
-        public const int SelectMinSpeed = 240;
-        public const int SelectMaxSpeed = 560;
-        public const int SelectStepSpeed = 20;
-
-        public static string CreateDisplayString(int speed)
+        public string Message
         {
-            return speed.ToString("###", CultureInfo.InvariantCulture.NumberFormat);
+            get;
+            set;
+        }
+
+        public HelpButton()
+        {
+            InitializeComponent();
+        }
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            MessageBox.Show(Regex.Unescape(Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

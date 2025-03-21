@@ -18,15 +18,15 @@
   GustPower 0
   GustAngle 45
 [Chiefs]
-  0_Chief Ship.tobnnk:Type_VIIC_SS nn /sleep 0/nnill 1/slownnre 10
-  1_Chief Ship.tobnnk:U-class_SS nn /sleep 0/nnill 1/slownnre 10
-  2_Chief Ship.tobnnk:Tribal_DD1941 nn /sleep 0/nnill 1/slownnre 1
-  3_Chief Ship.tobnnk:1936_DD nn /sleep 0/nnill 1/slownnre 10
+  0_Chief Ship.tobruk:Type_VIIC_SS nn /sleep 0/nnill 1/slownnre 10
+  1_Chief Ship.tobruk:U-class_SS nn /sleep 0/nnill 1/slownnre 10
+  2_Chief Ship.tobruk:Tribal_DD1941 nn /sleep 0/nnill 1/slownnre 1
+  3_Chief Ship.tobruk:1936_DD nn /sleep 0/nnill 1/slownnre 10
   4_Chief Armor.Pz_IVD nn /num_unnns 8
   5_Chief Armor.Pz_IVD nn /num_unnns 8
   6_Chief Armor.Matilda_2A nn /num_unnns 8
   7_Chief Armor.Matilda_2A nn /num_unnns 8
-  8_Chief Armor.tobnnk:Bedford_MW_AA nn /num_unnns 8
+  8_Chief Armor.tobruk:Bedford_MW_AA nn /num_unnns 8
   9_Chief Armor.SdKfz_10_4 nn /num_unnns 8
 [0_Chief_Road]
   29528.03 64729.38 38.40  0 2 9.17

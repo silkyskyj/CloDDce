@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using IL2DCE.MissionObjectModel;
-using IL2DCE.Util;
 using maddox.game;
 
 namespace IL2DCE.Generator
@@ -77,7 +77,7 @@ namespace IL2DCE.Generator
                     _aircraftInfoFile.get(Aircraft, i, out key, out value);
 
                     EMissionType missionType;
-                    if (Enum.TryParse<EMissionType>(key, false, out missionType))
+                    if (Enum.TryParse<EMissionType>(key, true, out missionType))
                     {
                         missionTypes.Add(missionType);
                     }
@@ -166,9 +166,9 @@ namespace IL2DCE.Generator
 
         public void Write(ISectionFile file)
         {
-            SectionFileUtil.Write(file, SectionMain, Aircraft, string.Empty);
-            SectionFileUtil.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(CultureInfo.InvariantCulture.NumberFormat));
-            SectionFileUtil.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            SilkySkyCloDFile.Write(file, SectionMain, Aircraft, string.Empty);
+            SilkySkyCloDFile.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            SilkySkyCloDFile.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(CultureInfo.InvariantCulture.NumberFormat));
             int lines = _aircraftInfoFile.lines(Aircraft);
             for (int i = 0; i < lines; i++)
             {
@@ -178,18 +178,56 @@ namespace IL2DCE.Generator
                 EMissionType missionType;
                 if (Enum.TryParse<EMissionType>(key, false, out missionType))
                 {
-                    SectionFileUtil.Write(file, Aircraft, key, value);
+                    SilkySkyCloDFile.Write(file, Aircraft, key, value);
                     IList<AircraftParametersInfo> aircraftParametersInfos = GetAircraftParametersInfo(missionType);
                     foreach (var item in aircraftParametersInfos)
                     {
                         string keyLoadOut = string.Format("{0}_{1}", Aircraft, item.LoadoutId);
                         if (_aircraftInfoFile.exist(keyLoadOut))
                         {
-                            SectionFileUtil.CopySection(_aircraftInfoFile, file, keyLoadOut, false);
+                            SilkySkyCloDFile.CopySection(_aircraftInfoFile, file, keyLoadOut, false);
                         }
                     }
                 }
             }
         }
+
+        #region Debug methods
+
+        [Conditional("DEBUG")]
+        public static void TraceAircraftInfo(ISectionFile globalAircraftInfoFile, string path)
+        {
+            int lines = globalAircraftInfoFile.lines(AircraftInfo.SectionMain);
+            Debug.WriteLine("AircraftInfo.ini[Lines={0}] Path={1}", lines, path);
+            for (int i = 0; i < lines; i++)
+            {
+                string key;
+                string value;
+                globalAircraftInfoFile.get(AircraftInfo.SectionMain, i, out key, out value);
+                try
+                {
+                    AircraftInfo aircraftInfo = new AircraftInfo(globalAircraftInfoFile, key);
+                    Debug.WriteLine("  Name={0}, IsFlyable={1}, Type={2}, MissionTypes.Count={3}", aircraftInfo.Aircraft, aircraftInfo.IsFlyable, aircraftInfo.AircraftType, aircraftInfo.MissionTypes.Count);
+                    foreach (var missionType in aircraftInfo.MissionTypes)
+                    {
+                        IList<AircraftParametersInfo> paramList = aircraftInfo.GetAircraftParametersInfo(missionType);
+                        foreach (var param in paramList)
+                        {
+                            Debug.WriteLine("    LoadoutId={0}, MinAltitude={1:F0}, MaxAltitude={2:F0}", param.LoadoutId, param.MinAltitude ?? -1, param.MaxAltitude ?? -1);
+                            AircraftLoadoutInfo loadout = aircraftInfo.GetAircraftLoadoutInfo(param.LoadoutId);
+                            Debug.WriteLine("    Weapons={0}, Detonator={1}", string.Join(" ", loadout.Weapons.Select(x => x.ToString())), string.Join(" ", loadout.Detonator));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string message = string.Format("Aircraft={0}, Error[{1}]", key, ex.Message);
+                    Debug.WriteLine(message);
+                    Core.WriteLog(message);
+                }
+            }
+        }
+
+        #endregion
     }
 }

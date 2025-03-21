@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace IL2DCE.MissionObjectModel
-{
+using System;
+using System.IO;
 
+namespace IL2DCE.Util
+{
+    public class FileUtil
+    {
+        public static bool IsFileWritable(string path)
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+                {
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("IsFileWritable[Error={0}][Path={1}]", ex.Message, path);
+                Core.WriteLog(message);
+            }
+            return false;
+        }
+    }
 }

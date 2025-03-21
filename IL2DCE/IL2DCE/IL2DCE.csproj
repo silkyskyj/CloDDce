@@ -61,7 +61,6 @@
     <Compile Include="MissionObjectModel\SilkySkyCloDFile.cs" />
     <Compile Include="MissionObjectModel\CloudAltitude.cs" />
     <Compile Include="MissionObjectModel\DistanceComparer.cs" />
-    <Compile Include="MissionObjectModel\EArmy.cs" />
     <Compile Include="MissionObjectModel\EMissionType.cs" />
     <Compile Include="MissionObjectModel\EnumExtensions.cs" />
     <Compile Include="MissionObjectModel\GroundGroupWaypointLine.cs" />
@@ -85,7 +84,7 @@
     <Compile Include="Util\Collection.cs" />
     <Compile Include="Util\MapUtil.cs" />
     <Compile Include="Util\MissionFileConverter.cs" />
-    <Compile Include="Util\SectionFileUtil.cs" />
+    <Compile Include="Util\FileUtil.cs" />
     <Compile Include="Util\VersionConverter.cs" />
   </ItemGroup>
   <ItemGroup>

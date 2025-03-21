@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -44,6 +44,7 @@ namespace IL2DCE
         public const string KeyAircraft = "Aircraft";
         public const string KeyAdditionalAirOperations = "AdditionalAirOperations";
         public const string KeyAdditionalGroundOperations = "AdditionalGroundOperations";
+        public const string KeyAdditionalAirGroups = "AdditionalAirGroups";
         public const string KeyAirGroupDislplay = "AirGroupDisplay";
         public const string KeySpawnRandomLocationPlayer = "SpawnRandomLocationPlayer";
         public const string KeySpawnRandomLocationFriendly = "SpawnRandomLocationFriendly";
@@ -202,6 +203,12 @@ namespace IL2DCE
         }
 
         public int AdditionalGroundOperations
+        {
+            get;
+            set;
+        }
+
+        public bool AdditionalAirGroups
         {
             get;
             set;
@@ -451,6 +458,7 @@ namespace IL2DCE
 
             AdditionalAirOperations = Config.DefaultAdditionalAirOperations;
             AdditionalGroundOperations = Config.DefaultAdditionalGroundOperations;
+            AdditionalAirGroups = false;
             SpawnRandomLocationPlayer = false;
             SpawnRandomLocationFriendly = false;
             SpawnRandomLocationEnemy = true;
@@ -514,6 +522,7 @@ namespace IL2DCE
 
                 AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
                 AdditionalGroundOperations = careerFile.get(SectionCampaign, KeyAdditionalGroundOperations, config.AdditionalGroundOperations);
+                AdditionalAirGroups = careerFile.get(SectionCampaign, KeyAdditionalAirGroups, false);
                 AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
                 SpawnRandomLocationPlayer = careerFile.get(SectionCampaign, KeySpawnRandomLocationPlayer, false);
                 SpawnRandomLocationFriendly = careerFile.get(SectionCampaign, KeySpawnRandomLocationFriendly, false);
@@ -635,6 +644,7 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAdditionalAirGroups, AdditionalAirGroups ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay?? string.Empty);
             careerFile.add(SectionCampaign, KeySpawnRandomLocationPlayer, SpawnRandomLocationPlayer ? "1": "0");
             careerFile.add(SectionCampaign, KeySpawnRandomLocationFriendly, SpawnRandomLocationFriendly ? "1" : "0");

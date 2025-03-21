@@ -63,6 +63,9 @@
     <Compile Include="Controls\GeneralSettingsGroupBox.xaml.cs">
       <DependentUpon>GeneralSettingsGroupBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\HelpButton.xaml.cs">
+      <DependentUpon>HelpButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
@@ -136,6 +139,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\GeneralSettingsGroupBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\HelpButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

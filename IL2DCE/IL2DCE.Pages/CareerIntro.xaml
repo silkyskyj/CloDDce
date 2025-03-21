@@ -11,18 +11,18 @@
         <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="12,993,0,0" x:Name="Back" VerticalAlignment="Top" Width="206" TabIndex="100" />
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="33,214,0,0" x:Name="comboBoxSelectArmy" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="1"/>
         <Label Content="Select Army:" Height="50" Margin="34,150,1000,0" x:Name="labelSelectArmy" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" />
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,494,0,0" x:Name="comboBoxSelectRank" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="3"/>
-        <Label Content="Select Rank:" Height="50" HorizontalAlignment="Left" Margin="35,430,0,0" x:Name="labelSelectRank" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#B2FFFFFF" />
-        <TextBox FontSize="28" Foreground="#FFA0854A" Height="50" HorizontalAlignment="Left" Margin="34,635,0,0" x:Name="textBoxPilotName" VerticalAlignment="Top" Width="618" TabIndex="4"/>
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,494,0,0" x:Name="comboBoxSelectRank" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="6"/>
+        <Label Content="Select Rank:" Height="50" HorizontalAlignment="Left" Margin="35,430,0,0" x:Name="labelSelectRank" VerticalAlignment="Top" Width="157" FontSize="28" Foreground="#B2FFFFFF" />
+        <TextBox FontSize="28" Foreground="#FFA0854A" Height="50" HorizontalAlignment="Left" Margin="34,635,0,0" x:Name="textBoxPilotName" VerticalAlignment="Top" Width="618" TabIndex="8"/>
         <Label Content="Enter Pilot Name:" FontSize="28" Foreground="#B2FFFFFF" Height="50" HorizontalAlignment="Left" Margin="33,570,0,0" x:Name="labelEnterPilotName" VerticalAlignment="Top" Width="617" />
-        <ComboBox Height="47" HorizontalAlignment="Left" Margin="34,354,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="2"/>
-        <Label Content="Select Air Force:" Height="50" Margin="34,290,1268,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" />
+        <ComboBox Height="47" HorizontalAlignment="Left" Margin="34,354,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="5"/>
+        <Label Content="Select Air Force:" Height="50" Margin="34,290,1681,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" />
         <Label x:Name="labelSelectCampaign" Width="300" VerticalAlignment="Top" Margin="700,150,0,0" Height="50" HorizontalAlignment="Left" FontSize="28" Foreground="#B2FFFFFF" Content="Select Campaign:"/>
-        <Controls:FilterComboBox HorizontalAlignment="Left" Margin="700,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="5" IsTabStop="True" IsEditable="False"/>
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,354,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="6"/>
-        <Label Content="Select Air Group:" HorizontalAlignment="Left" Margin="700,290,0,0" x:Name="labelSelectAirGroup" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
+        <Controls:FilterComboBox HorizontalAlignment="Left" Margin="700,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="10" IsTabStop="True" IsEditable="False"/>
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,354,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="14"/>
+        <Label Content="Select Air Group:" HorizontalAlignment="Left" Margin="700,290,0,0" x:Name="labelSelectAirGroup" VerticalAlignment="Top" Width="214" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
         <Label Content="Select Period:" HorizontalAlignment="Left" Margin="700,430,0,0" x:Name="labelSelectPeriod" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
-        <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="700,494,0,0" VerticalAlignment="Top" FontSize="30" SelectedDateFormat="Long" Width="400" Background="#FFA0854A" IsTodayHighlighted="True" Foreground="#FFA0854A" TabIndex="7" IsTabStop="True">
+        <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="700,494,0,0" VerticalAlignment="Top" FontSize="30" SelectedDateFormat="Long" Width="400" Background="#FFA0854A" IsTodayHighlighted="True" Foreground="#FFA0854A" TabIndex="16" IsTabStop="True">
             <DatePicker.CalendarStyle>
                 <Style TargetType="{x:Type Calendar}">
                     <Setter Property="LayoutTransform">
@@ -33,7 +33,7 @@
                 </Style>
             </DatePicker.CalendarStyle>
         </DatePicker>
-        <DatePicker x:Name="datePickerEnd" HorizontalAlignment="Left" Margin="1190,494,0,0" VerticalAlignment="Top" Width="400" FontSize="30" SelectedDateFormat="Long" Background="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="8">
+        <DatePicker x:Name="datePickerEnd" HorizontalAlignment="Left" Margin="1190,494,0,0" VerticalAlignment="Top" Width="400" FontSize="30" SelectedDateFormat="Long" Background="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="18">
             <DatePicker.CalendarStyle>
                 <Style TargetType="{x:Type Calendar}">
                     <Setter Property="LayoutTransform">
@@ -46,8 +46,11 @@
         </DatePicker>
         <Label Content=" - " HorizontalAlignment="Left" Margin="1114,482,0,0" x:Name="labelSelectPeriodRange" VerticalAlignment="Top" Width="62" FontSize="48" Foreground="#B2FFFFFF" RenderTransformOrigin="2.623,0.795" />
         <Controls:VersionLabel HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="390" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
-        <Controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1894,64,0,0" VerticalAlignment="Top" Width="16" Height="20"/>
-        <Controls:GeneralSettingsGroupBox x:Name="GeneralSettingsGroupBox" Header="GroupBox" Height="230" Width="1856" Margin="34,740,30,110" BorderBrush="#FFA0854A" Foreground="#FFA0854A" />
+        <Controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1892,62,0,0" VerticalAlignment="Top" Width="25" Height="25" TabIndex="1000"/>
+        <Controls:GeneralSettingsGroupBox x:Name="GeneralSettingsGroupBox" Header="GroupBox" Height="230" Width="1856" Margin="34,740,30,110" BorderBrush="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="20" />
         <Controls:AircraftImageBorder x:Name="borderImage" BorderBrush="#FFA0854A" Margin="1630,214,30,684" Width="260" Height="182" Background="#20F7F2F2" Opacity="1" BorderThickness="2,2,2,2" />
+        <Controls:HelpButton x:Name="helpButtonAirForce" Content="?" HorizontalAlignment="Left" Margin="244,305,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="You can select the Air Group defined in both the mission file and each setting file, and the AirForce to which the AirCraft belongs. *Setting files AircraftInfo.ini &amp; AirgroupInfo.ini\nIf the files exist in each campaign folder, those files will be prioritized." TabIndex="3"/>
+        <Controls:HelpButton x:Name="helpButtonRank" Content="?" HorizontalAlignment="Left" Margin="196,445,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="The selection you make here will affect the position of the flight within the Air Group." TabIndex="6"/>
+        <Controls:HelpButton x:Name="helpButtonAirGroup" Content="?" HorizontalAlignment="Left" Margin="918,305,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="You can select the Air Group defined in the mission file and each setting file.\n*Setting files AircraftInfo.ini &amp; AirgroupInfo.ini" TabIndex="12"/>
     </Grid>
 </UserControl>

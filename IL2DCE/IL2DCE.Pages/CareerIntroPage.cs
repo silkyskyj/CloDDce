@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game.play;
@@ -148,6 +149,20 @@ namespace IL2DCE.Pages
 
                 return null;
             }
+        }
+
+        private string SelectedPilotName
+        {
+            get
+            {
+                return FrameworkElement.textBoxPilotName.Text;
+            }
+        }
+
+        private bool IsErrorPilotName
+        {
+            get;
+            set;
         }
 
         #endregion
@@ -282,10 +297,30 @@ namespace IL2DCE.Pages
         {
             if (Game != null)
             {
-                UpdateButtonStatus();
+                string pilotName = SelectedPilotName;
+                ToolTip toolTip = FrameworkElement.textBoxPilotName.ToolTip as ToolTip;
+                if (IsErrorPilotName = Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0))
+                {
+                    FrameworkElement.textBoxPilotName.BorderBrush = Brushes.Red;
+                    if (toolTip == null)
+                    {
+                        toolTip = new ToolTip();
+                    }
+                    FrameworkElement.textBoxPilotName.ToolTip = toolTip;
+                    toolTip.Foreground = Brushes.Red;
+                    toolTip.Content = "This pilot name is already in use.";
+                }
+                else
+                {
+                    FrameworkElement.textBoxPilotName.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 171, 173, 179));
+                    if (toolTip != null)
+                    {
+                        toolTip.Content = string.Empty;
+                    }
+                }
             }
+            UpdateButtonStatus();
         }
-
 
         #endregion
 
@@ -317,7 +352,7 @@ namespace IL2DCE.Pages
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            string pilotName = FrameworkElement.textBoxPilotName.Text;
+            string pilotName = SelectedPilotName;
             int armyIndex = SelectedArmyIndex;
             int airForceIndex = SelectedAirForceIndex;
             int rankIndex = SelectedRank;
@@ -328,8 +363,6 @@ namespace IL2DCE.Pages
             {
                 Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
                 career.BattleType = EBattleType.Campaign;
-                Game.Core.AvailableCareers.Add(career);
-                Game.Core.CurrentCareer = career;
                 career.CampaignInfo = campaign;
                 career.AirGroup = airGroup.ToString();
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
@@ -339,6 +372,7 @@ namespace IL2DCE.Pages
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
                 career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperationsComboBox;
                 career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
+                career.AdditionalAirGroups = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirGroups;
                 career.SpawnRandomLocationFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationFriendly;
                 career.SpawnRandomLocationEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationEnemy;
                 career.SpawnRandomLocationPlayer = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationPlayer;
@@ -349,6 +383,9 @@ namespace IL2DCE.Pages
                 career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
                 career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
 
+                Game.Core.AvailableCareers.Add(career);
+                Game.Core.CurrentCareer = career;
+
                 Game.Core.ResetCampaign(Game);
 
                 Game.gameInterface.PageChange(new BattleIntroPage(), null);
@@ -357,7 +394,7 @@ namespace IL2DCE.Pages
             {
                 string message = string.Format("{0} - {1} {2} {3} {4}", "CareerIntroPage.Start_Click", ex.Message, campaign.Name, airGroup.DisplayDetailName, ex.StackTrace);
                 Core.WriteLog(message);
-                MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -560,7 +597,7 @@ namespace IL2DCE.Pages
 
         private void UpdateButtonStatus()
         {
-            string pilotName = FrameworkElement.textBoxPilotName.Text;
+            // string pilotName = FrameworkElement.textBoxPilotName.Text;
             DatePicker datePickerStart = FrameworkElement.datePickerStart;
             DatePicker datePickerEnd = FrameworkElement.datePickerEnd;
             int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
@@ -568,7 +605,7 @@ namespace IL2DCE.Pages
             int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
             bool timeEnable = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy || FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
             FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 && 
-                                                !Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0) &&
+                                                !IsErrorPilotName/*!Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0)*/ &&
                                                 SelectedCampaign != null && SelectedAirGroup != null &&
                                                 datePickerStart.SelectedDate.HasValue && datePickerEnd.SelectedDate.HasValue &&
                                                 datePickerStart.SelectedDate.Value <= datePickerEnd.SelectedDate.Value &&

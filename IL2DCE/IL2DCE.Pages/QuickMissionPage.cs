@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using IL2DCE.Generator;
@@ -283,6 +282,7 @@ namespace IL2DCE
                 FrameworkElement.checkBoxSelectAirgroupFilter.Unchecked += new RoutedEventHandler(checkBoxSelectAirgroupFilter_CheckedChange);
 
                 FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(buttonImportMission_Click);
+                FrameworkElement.buttonReload.Click += new RoutedEventHandler(buttonReload_Click);
 
                 FrameworkElement.labelSelectMissionTarget.Visibility = Visibility.Hidden;
                 FrameworkElement.comboBoxSelectTarget.Visibility = Visibility.Hidden;
@@ -336,11 +336,6 @@ namespace IL2DCE
                     UpdateTimeComboBoxInfo();
                     UpdateWeatherComboBoxInfo();
                     UpdateCloudAltitudeComboBoxInfo();
-                    //if (Game.Core.Config.EnableAutoSelectComboBoxItem)
-                    //{
-                    //    UpdateComboBoxSelectInfoAirForce();
-                    //    UpdateComboBoxSelectInfoArmy();
-                    //}
                 }
 
                 UpdateButtonStatus();
@@ -351,11 +346,6 @@ namespace IL2DCE
                 if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateAirForceComboBoxInfo(true);
-
-                    //if (Game.Core.Config.EnableAutoSelectComboBoxItem)
-                    //{
-                    //    UpdateComboBoxSelectInfoAirForce();
-                    //}
                 }
 
                 UpdateButtonStatus();
@@ -586,6 +576,18 @@ namespace IL2DCE
                 }
             }
 
+            private void buttonReload_Click(object sender, RoutedEventArgs e)
+            {
+                if (MessageBox.Show("Your current selections will be lost.\nDo you want to reload this page ?", "Confimation [IL2DCE]",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    Game.Core.ReadCampaignInfo();
+                    Game.Core.ReadCareerInfo();
+
+                    Game.gameInterface.PageChange(new QuickMissionPage(), null);
+                }
+            }
+
             private void Back_Click(object sender, RoutedEventArgs e)
             {
                 if (Game.gameInterface.BattleIsRun())
@@ -632,6 +634,7 @@ namespace IL2DCE
                     career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
                     career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperationsComboBox;
                     career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
+                    career.AdditionalAirGroups = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirGroups;
                     career.SpawnRandomLocationFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationFriendly;
                     career.SpawnRandomLocationEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationEnemy;
                     career.SpawnRandomLocationPlayer = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationPlayer;
@@ -653,7 +656,7 @@ namespace IL2DCE
                 {
                     string message = string.Format("{0} - {1} {2} {3} {4}", "QuickMissionPage.Start_Click", ex.Message, campaignInfo.Name, airGroup.DisplayDetailName, ex.StackTrace);
                     Core.WriteLog(message);
-                    MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
 
@@ -734,7 +737,7 @@ namespace IL2DCE
                 {
                     string message = string.Format("{0} - {1} {2} {3}", "QuickMissionPage.buttonImportMissi_Click", ex.Message, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
                     Core.WriteLog(message);
-                    MessageBox.Show(string.Format("{0}", ex.Message), "IL2DCE", MessageBoxButton.OK, MessageBoxImage.Stop);
+                    MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Stop);
                 }
 
                 model.Result = new object[] { files, converter.CovertedMission.Count, error, logFileSystemPath, };
@@ -761,7 +764,7 @@ namespace IL2DCE
                                             Path.GetFileNameWithoutExtension(Config.ConvertLogFileName) + i + Path.GetExtension(Config.ConvertLogFileName));
                     logFileSystemPath = Game.gameInterface.ToFileSystemPath(logFilePath);
                 }
-                while (!SectionFileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
+                while (!FileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
                 return logFileSystemPath;
             }
 
@@ -929,10 +932,14 @@ namespace IL2DCE
                 {
                     comboBox.Items.Add(new ComboBoxItem() { Tag = null, Content = RandomString });
                     // AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                   EMissionType[] disable = Game.Core.Config.DisableMissionType;
                     AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
                     foreach (var item in aircraftInfo.MissionTypes)
                     {
-                        comboBox.Items.Add(new ComboBoxItem() { Tag = item, Content = item.ToDescription() });
+                        if (!disable.Contains(item))
+                        {
+                            comboBox.Items.Add(new ComboBoxItem() { Tag = item, Content = item.ToDescription() });
+                        }
                     }
                 }
 
@@ -970,14 +977,6 @@ namespace IL2DCE
                         {
                             comboBox.Items.Add(new ComboBoxItem() { Tag = i, Content = Spawn.CreateDisplayName(i) });
                         }
-#if false
-                        if (string.IsNullOrEmpty(selected) || Game.Core.Config.EnableAutoSelectComboBoxItem)
-                        {
-                            selected = airGroup.SetOnParked ? 
-                                            ESpawn.Parked.ToDescription() : way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF ? 
-                                                    ESpawn.Idle.ToDescription() : ((((int)way.Z) / Spawn.SelectStepAltitude) * Spawn.SelectStepAltitude).ToString(CultureInfo.InvariantCulture.NumberFormat);
-                        }
-#endif
                         defaultMissionAltitude = airGroup.SetOnParked ? (int)ESpawn.Parked :
                                             way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF ? (int)ESpawn.Idle : (int)way.Z;
                     }
@@ -1021,14 +1020,6 @@ namespace IL2DCE
                         AirGroupWaypoint way = airGroup.Waypoints.FirstOrDefault();
                         if (way != null)
                         {
-#if false
-                            if (string.IsNullOrEmpty(selected) || Game.Core.Config.EnableAutoSelectComboBoxItem)
-                            {
-                                selected = Speed.CreateDisplayString(((int)way.V) != 0 ? (((int)way.V) / Speed.SelectStepSpeed) * Speed.SelectStepSpeed: AirGroupWaypoint.DefaultFlyV);
-                                comboBox.Text = selected;
-                            }
-#endif
-
                             speedMissonDefault = ((int)way.V);
                         }
                     }
@@ -1056,13 +1047,6 @@ namespace IL2DCE
                 AirGroup airGroup = SelectedAirGroup;
                 if (campaignInfo != null && currentMissionFile != null && airGroup != null)
                 {
-
-#if false
-                    if (string.IsNullOrEmpty(selected) || Game.Core.Config.EnableAutoSelectComboBoxItem)
-                    {
-                        selected = airGroup.Fuel != -1 ? Fuel.CreateDisplayString(((airGroup.Fuel / Fuel.SelectStepFuel) * Fuel.SelectStepFuel)): string.Empty;
-                    }
-#endif
                     fuelMissionDefault = airGroup.Fuel;
                 }
                 FrameworkElement.labelDefaultFuel.Content = fuelMissionDefault >= 0 ? string.Format(Config.Culture, MissionDefaultFormat, airGroup.Fuel) : string.Empty;
@@ -1272,47 +1256,6 @@ namespace IL2DCE
                 }
             }
 
-            private void UpdateComboBoxSelectInfoAirForce()
-            {
-                int start = FrameworkElement.comboBoxSelectAirForce.SelectedIndex;
-                if (FrameworkElement.comboBoxSelectAirGroup.Items.Count == 0)
-                {
-                    // AirForce
-                    while (FrameworkElement.comboBoxSelectAirForce.SelectedIndex + 1 < FrameworkElement.comboBoxSelectAirForce.Items.Count
-                            && FrameworkElement.comboBoxSelectAirGroup.Items.Count == 0)
-                    {
-                        FrameworkElement.comboBoxSelectAirForce.SelectedIndex++;
-                        Thread.Sleep(1);
-                    }
-                    if (FrameworkElement.comboBoxSelectAirGroup.Items.Count == 0 && start > 0)
-                    {
-                        FrameworkElement.comboBoxSelectAirForce.SelectedIndex = start;
-                        while (FrameworkElement.comboBoxSelectAirForce.SelectedIndex - 1 >= 0
-                                && FrameworkElement.comboBoxSelectAirGroup.Items.Count == 0)
-                        {
-                            FrameworkElement.comboBoxSelectAirForce.SelectedIndex--;
-                            Thread.Sleep(1);
-                        }
-                    }
-                }
-            }
-
-            private void UpdateComboBoxSelectInfoArmy()
-            {
-                // Army
-                if (FrameworkElement.comboBoxSelectAirGroup.Items.Count == 0)
-                {
-                    if (FrameworkElement.comboBoxSelectArmy.SelectedIndex == 0)
-                    {
-                        FrameworkElement.comboBoxSelectArmy.SelectedIndex = 1;
-                    }
-                    else if (FrameworkElement.comboBoxSelectArmy.SelectedIndex == 1)
-                    {
-                        FrameworkElement.comboBoxSelectArmy.SelectedIndex = 0;
-                    }
-                }
-            }
-
             #endregion
 
             private void UpdateButtonStatus()
@@ -1344,15 +1287,16 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude >= 0 ? career.CloudAltitude.ToString() : string.Empty);
                 EnableSelectItem(FrameworkElement.GeneralSettingsGroupBox.comboBoxSelectAdditionalAirOperations, career.AdditionalAirOperations >= 0 ? career.AdditionalAirOperations.ToString() : string.Empty);
                 EnableSelectItem(FrameworkElement.GeneralSettingsGroupBox.comboBoxSelectAdditionalGroundOperations, career.AdditionalGroundOperations >= 0 ? career.AdditionalGroundOperations.ToString() : string.Empty);
-                FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.IsChecked = career.SpawnRandomLocationPlayer;
+                FrameworkElement.GeneralSettingsGroupBox.checkBoxAdditionalAirgroups.IsChecked = career.AdditionalAirGroups;
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationFriendly.IsChecked = career.SpawnRandomLocationFriendly;
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationEnemy.IsChecked = career.SpawnRandomLocationEnemy;
+                FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.IsChecked = career.SpawnRandomLocationPlayer;
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomAltitudeFriendly.IsChecked = career.SpawnRandomAltitudeFriendly;
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomAltitudeEnemy.IsChecked = career.SpawnRandomAltitudeEnemy;
-                FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomTimeFriendly.IsChecked = career.SpawnRandomTimeFriendly;
-                FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomTimeEnemy.IsChecked = career.SpawnRandomTimeEnemy;
                 EnableSelectItem(FrameworkElement.GeneralSettingsGroupBox.comboBoxSelectRandomTimeBegin, career.SpawnRandomTimeBeginSec >= 0 ? career.SpawnRandomTimeBeginSec.ToString() : string.Empty);
                 EnableSelectItem(FrameworkElement.GeneralSettingsGroupBox.comboBoxSelectRandomTimeEnd, career.SpawnRandomTimeEndSec >= 0 ? career.SpawnRandomTimeEndSec.ToString() : string.Empty);
+                FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomTimeFriendly.IsChecked = career.SpawnRandomTimeFriendly;
+                FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomTimeEnemy.IsChecked = career.SpawnRandomTimeEnemy;
             }
 
             private void UpdateAircraftImage()

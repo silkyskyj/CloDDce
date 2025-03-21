@@ -1,10 +1,24 @@
-﻿using System.ComponentModel;
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using IL2DCE.MissionObjectModel;
-using static IL2DCE.Pages.Controls.ProgressWindow;
 
 namespace IL2DCE.Pages.Controls
 {
@@ -55,6 +69,20 @@ namespace IL2DCE.Pages.Controls
                     }
                 }
                 return -1;
+            }
+        }
+
+        public bool SelectedAdditionalAirGroups
+        {
+            get
+            {
+                bool? isCheckd = checkBoxAdditionalAirgroups.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
             }
         }
 
@@ -288,7 +316,7 @@ namespace IL2DCE.Pages.Controls
         public void UpdateSelectRandomTimeBeginComboBox()
         {
             ComboBox comboBox = comboBoxSelectRandomTimeBegin;
-            for (int i = Spawn.SpawnTime.MinimumBeginSec; i <= Spawn.SpawnTime.MaximumEndSec; i += i)
+            for (int i = Spawn.SpawnTime.MinimumBeginSec; i <= Spawn.SpawnTime.MaximumEndSec; i += i < 60 ? 15: i < 300 ? 60 : i < 1800 ? 300: 1800)
             {
                 comboBox.Items.Add(i);
             }
@@ -303,7 +331,7 @@ namespace IL2DCE.Pages.Controls
         public void UpdateSelectRandomTimeEndComboBox()
         {
             ComboBox comboBox = comboBoxSelectRandomTimeEnd;
-            for (int i = Spawn.SpawnTime.MinimumBeginSec; i <= Spawn.SpawnTime.MaximumEndSec; i += i)
+            for (int i = Spawn.SpawnTime.MinimumBeginSec; i <= Spawn.SpawnTime.MaximumEndSec; i += i < 60 ? 15 : i < 300 ? 60 : i < 1800 ? 300 : 1800)
             {
                 comboBox.Items.Add(i);
             }
@@ -313,6 +341,46 @@ namespace IL2DCE.Pages.Controls
             }
             comboBox.SelectedItem = Spawn.SpawnTime.DefaultEndSec;
             comboBox.IsEnabled = SelectedSpawnRandomTimeFriendly || SelectedSpawnRandomTimeEnemy;
+        }
+
+        private void buttonRandomizeAllCheck_Click(object sender, RoutedEventArgs e)
+        {
+            checkBoxSpawnRandomLocationFriendly.IsChecked = true;
+            checkBoxSpawnRandomLocationEnemy.IsChecked = true;
+            checkBoxSpawnRandomLocationPlayer.IsChecked = true;
+            checkBoxSpawnRandomAltitudeFriendly.IsChecked = true;
+            checkBoxSpawnRandomAltitudeEnemy.IsChecked = true;
+            checkBoxSpawnRandomTimeFriendly.IsChecked = true;
+            checkBoxSpawnRandomTimeEnemy.IsChecked = true;
+        }
+
+        private void buttonRandomizeAllUnCheck_Click(object sender, RoutedEventArgs e)
+        {
+            checkBoxSpawnRandomLocationFriendly.IsChecked = false;
+            checkBoxSpawnRandomLocationEnemy.IsChecked = false;
+            checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+            checkBoxSpawnRandomAltitudeFriendly.IsChecked = false;
+            checkBoxSpawnRandomAltitudeEnemy.IsChecked = false;
+            checkBoxSpawnRandomTimeFriendly.IsChecked = false;
+            checkBoxSpawnRandomTimeEnemy.IsChecked = false;
+        }
+
+        private void buttonAllDefault_Click(object sender, RoutedEventArgs e)
+        {
+            comboBoxSelectAdditionalAirOperations.SelectedItem = Config.DefaultAdditionalAirOperations;
+            comboBoxSelectAdditionalGroundOperations.SelectedItem = Config.DefaultAdditionalGroundOperations;
+            checkBoxAdditionalAirgroups.IsChecked = false;
+
+            checkBoxSpawnRandomLocationFriendly.IsChecked = false;
+            checkBoxSpawnRandomLocationEnemy.IsChecked = true;
+            checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+            checkBoxSpawnRandomAltitudeFriendly.IsChecked = false;
+            checkBoxSpawnRandomAltitudeEnemy.IsChecked = true;
+            checkBoxSpawnRandomTimeFriendly.IsChecked = false;
+            checkBoxSpawnRandomTimeEnemy.IsChecked = true;
+
+            comboBoxSelectRandomTimeBegin.SelectedItem = Spawn.SpawnTime.DefaultBeginSec;
+            comboBoxSelectRandomTimeEnd.SelectedItem = Spawn.SpawnTime.DefaultEndSec;
         }
     }
 }

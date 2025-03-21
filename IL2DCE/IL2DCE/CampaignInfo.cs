@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using IL2DCE.Generator;
-using IL2DCE.Util;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 
 namespace IL2DCE
@@ -333,13 +333,13 @@ namespace IL2DCE
 
         public void Write(ISectionFile file)
         {
-            SectionFileUtil.Write(file, SectionMain, KeyName, name);
-            SectionFileUtil.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile);
-            SectionFileUtil.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles));
-            SectionFileUtil.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles));
-            SectionFileUtil.Write(file, SectionMain, KeyScriptFile, ScriptFileName);
-            SectionFileUtil.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
-            SectionFileUtil.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
+            SilkySkyCloDFile.Write(file, SectionMain, KeyName, name);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles));
+            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles));
+            SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
+            SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
         }
     }
 }

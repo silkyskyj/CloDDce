@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -409,5 +409,141 @@ namespace IL2DCE.MissionObjectModel
         }
 
         #endregion
+
+        public static int ReadNumeric(ISectionFile file, string section, string key, string fileInfo = null)
+        {
+            int num = file.get(section, key, -1);
+            if (num == -1)
+            {
+                InvalidInifileFormatException(fileInfo, section, key);
+            }
+            return num;
+        }
+
+        public static void InvalidInifileFormatException(string file, string section, string key)
+        {
+            throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file != null ? file : string.Empty, section, key));
+        }
+
+        public static void Write(ISectionFile file, string section, string key, string value, bool overwrite = true)
+        {
+            if (file.exist(section, key))
+            {
+                if (overwrite)
+                {
+                    file.set(section, key, value);
+                }
+            }
+            else
+            {
+                file.add(section, key, value);
+            }
+        }
+
+        public static IEnumerable<string> ReadSectionKeies(ISectionFile fileSrc, string section)
+        {
+            List<string> keys = new List<string>();
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    keys.Add(key);
+                }
+            }
+            return keys;
+        }
+
+
+        public static int CopySection(ISectionFile fileSrc, ISectionFile fileDest, string section, bool overwrite = true)
+        {
+            int count = 0;
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    if (!fileDest.exist(section, key) || overwrite)
+                    {
+                        fileDest.add(section, key, value);
+                    }
+                    // Debug.WriteLine("{0} {1} Key={2} Value={3}", section, i, key, value);
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public static IEnumerable<string> CopySectionGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, bool overwrite = true)
+        {
+            List<string> keys = new List<string>();
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    if (!fileDest.exist(section, key) || overwrite)
+                    {
+                        fileDest.add(section, key, value);
+                    }
+                    // Debug.WriteLine("{0} {1} Key={2} Value={3}", section, i, key, value);
+                    keys.Add(key);
+                }
+            }
+            return keys;
+        }
+
+        public static int CopySectionReplace(ISectionFile fileSrc, ISectionFile fileDest, string section, IEnumerable<string> oldValue, string newValue)
+        {
+            int count = 0;
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    foreach (var item in oldValue)
+                    {
+                        value = value.Replace(item, newValue);
+                    }
+                    Write(fileDest, section, key, value);
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public static IEnumerable<string> CopySectionReplaceGetKey(ISectionFile fileSrc, ISectionFile fileDest, string section, IEnumerable<string> oldValue, string newValue)
+        {
+            List<string> keys = new List<string>();
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    foreach (var item in oldValue)
+                    {
+                        value = value.Replace(item, newValue);
+                    }
+                    Write(fileDest, section, key, value);
+                    keys.Add(key);
+                }
+            }
+            return keys;
+        }
     }
 }

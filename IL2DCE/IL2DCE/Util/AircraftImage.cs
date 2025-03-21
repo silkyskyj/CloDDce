@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,6 @@ namespace IL2DCE.Util
 
         private const string defaultPart = "bob";
 
-        private string aircraftClass;
         private string baseFolder;
 
         public AircraftImage(string baseFolder)

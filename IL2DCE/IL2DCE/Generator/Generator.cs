@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game;
+using maddox.GP;
+using XLAND;
 using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Generator
@@ -86,7 +89,6 @@ namespace IL2DCE.Generator
         public void GenerateInitialMissionTempalte(IEnumerable<string> initialMissionTemplateFiles, out ISectionFile initialMissionTemplateFile, AirGroupInfos airGroupInfos = null)
         {
             initialMissionTemplateFile = null;
-
             foreach (string fileName in initialMissionTemplateFiles)
             {
                 // Use the first template file to load the map.
@@ -97,35 +99,34 @@ namespace IL2DCE.Generator
             if (initialMissionTemplateFile != null)
             {
                 // Delete everything from the template file.
-                if (initialMissionTemplateFile.exist("AirGroups"))
+                if (initialMissionTemplateFile.exist(MissionFile.SectionAirGroups))
                 {
                     // Delete all air groups from the template file.
-                    int lines = initialMissionTemplateFile.lines("AirGroups");
+                    int lines = initialMissionTemplateFile.lines(MissionFile.SectionAirGroups);
                     for (int i = 0; i < lines; i++)
                     {
                         string key;
                         string value;
-                        initialMissionTemplateFile.get("AirGroups", i, out key, out value);
+                        initialMissionTemplateFile.get(MissionFile.SectionAirGroups, i, out key, out value);
                         initialMissionTemplateFile.delete(key);
                         initialMissionTemplateFile.delete(key + "_Way");
                     }
-                    initialMissionTemplateFile.delete("AirGroups");
+                    initialMissionTemplateFile.delete(MissionFile.SectionAirGroups);
                 }
 
-                if (initialMissionTemplateFile.exist("Chiefs"))
+                if (initialMissionTemplateFile.exist(MissionFile.SectionChiefs))
                 {
                     // Delete all ground groups from the template file.
-                    int lines = initialMissionTemplateFile.lines("Chiefs");
+                    int lines = initialMissionTemplateFile.lines(MissionFile.SectionChiefs);
                     for (int i = 0; i < lines; i++)
                     {
                         string key;
                         string value;
-                        initialMissionTemplateFile.get("Chiefs", i, out key, out value);
+                        initialMissionTemplateFile.get(MissionFile.SectionChiefs, i, out key, out value);
                         initialMissionTemplateFile.delete(key + "_Road");
                     }
-                    initialMissionTemplateFile.delete("Chiefs");
+                    initialMissionTemplateFile.delete(MissionFile.SectionChiefs);
                 }
-
                 MissionFile initialMission = new MissionFile(GamePlay, initialMissionTemplateFiles, airGroupInfos);
 
                 foreach (AirGroup airGroup in initialMission.AirGroups)
@@ -145,41 +146,41 @@ namespace IL2DCE.Generator
         }
 
         /// <summary>
-        /// Generates the next mission template based on the previous mission template. 
+        /// Generates the next mission template based on the initial mission template. 
         /// </summary>
         /// <param name="staticTemplateFiles"></param>
-        /// <param name="previousMissionTemplate"></param>
+        /// <param name="initialMissionTemplate"></param>
         /// <param name="missionTemplateFile"></param>
         /// <param name="airGroupInfos"></param>
         /// <remarks>
         /// For now it has a simplified implementaiton. It only generated random supply ships and air groups.
         /// </remarks>
-        public void GenerateMissionTemplate(IEnumerable<string> staticTemplateFiles, ISectionFile previousMissionTemplate, out ISectionFile missionTemplateFile, AirGroupInfos airGroupInfos = null)
+        public void GenerateMissionTemplate(IEnumerable<string> staticTemplateFiles, ISectionFile initialMissionTemplate, out ISectionFile missionTemplateFile, AirGroupInfos airGroupInfos = null)
         {
             MissionFile staticTemplateFile = new MissionFile(GamePlay, staticTemplateFiles, airGroupInfos);
 
             // Use the previous mission template to initialise the next mission template.
-            missionTemplateFile = previousMissionTemplate;
+            missionTemplateFile = initialMissionTemplate;
 
             // Remove the ground groups but keep the air groups.
-            if (missionTemplateFile.exist("Chiefs"))
+            if (missionTemplateFile.exist(MissionFile.SectionChiefs))
             {
                 // Delete all ground groups from the template file.
-                int lines = missionTemplateFile.lines("Chiefs");
+                int lines = missionTemplateFile.lines(MissionFile.SectionChiefs);
                 for (int i = 0; i < lines; i++)
                 {
                     string key;
                     string value;
-                    missionTemplateFile.get("Chiefs", i, out key, out value);
+                    missionTemplateFile.get(MissionFile.SectionChiefs, i, out key, out value);
                     missionTemplateFile.delete(key + "_Road");
                 }
-                missionTemplateFile.delete("Chiefs");
+                missionTemplateFile.delete(MissionFile.SectionChiefs);
             }
 
-            if (missionTemplateFile.exist("Stationary"))
+            if (missionTemplateFile.exist(MissionFile.SectionStationary))
             {
                 // Delete all stationaries from the template file.
-                missionTemplateFile.delete("Stationary");
+                missionTemplateFile.delete(MissionFile.SectionStationary);
             }
 
             // Generate supply ships and trains.
@@ -369,8 +370,17 @@ namespace IL2DCE.Generator
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
             GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups);
 
-            // Load the environment template file for the generated mission.
+            if (Career.AdditionalAirGroups)
+            {
+                IEnumerable<string> aircraftsRed;
+                IEnumerable<string> aircraftsBlue;
+                GetRandomAircraftList(missionTemplateFile, out aircraftsRed, out aircraftsBlue);
+                AirGroupInfos airGroupInfos = Career.CampaignInfo.AirGroupInfos != null ? Career.CampaignInfo.AirGroupInfos: AirGroupInfos.Default;
+                IEnumerable<AirGroup> airGroups = GetRandomAirGroups(Career.CampaignInfo.AirGroupInfos != null ? Career.CampaignInfo.AirGroupInfos : AirGroupInfos.Default, aircraftsRed, aircraftsBlue);
+                GeneratorAirOperation.AvailableAirGroups.AddRange(airGroups);
+            }
 
+            // Load the environment template file for the generated mission.
             missionFile = GamePlay.gpLoadSectionFile(environmentTemplateFile);
             briefingFile = new BriefingFile();
 
@@ -396,31 +406,31 @@ namespace IL2DCE.Generator
             }
 
             // Add things to the template file.
-            double time = Career.Time == (int)MissionTime.Random ? Random.Next(5, 21): Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
+            double time = Career.Time == (int)MissionTime.Random ? Random.Next(5, 22): Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
             missionFile.set(MissionFile.SectionMain, MissionFile.KeyTime, time.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int weatherIndex = Career.Weather == (int)EWeather.Random ? Random.Next(0, 2): Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
+            int weatherIndex = Career.Weather == (int)EWeather.Random ? Random.Next(0, 3): Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
             missionFile.set(MissionFile.SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Random.Next(5, 15) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
+            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Random.Next(5, 16) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
             missionFile.set(MissionFile.SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = string.Empty;
-            if (weatherIndex == 0)
+            if (weatherIndex == (int)EWeather.Clear)
             {
-                weatherString = "Clear";
+                weatherString = EWeather.Clear.ToDescription();
             }
-            else if (weatherIndex == 1)
+            else if (weatherIndex == (int)EWeather.LightClouds)
             {
                 weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Light clouds at {0}m", cloudsHeight);
             }
-            else if (weatherIndex == 2)
+            else if (weatherIndex == (int)EWeather.MediumClouds)
             {
                 weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Medium clouds at {0}m", cloudsHeight);
             }
 
             briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
-                                                                Career.CampaignInfo.Id, Career.Date.Value.ToShortDateString(), MissionTime.ToString(time), weatherString);
+                                                                Career.CampaignInfo.Id, Career.Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo), MissionTime.ToString(time), weatherString);
 
             // Create a air operation for the player.
             AirGroup airGroup = GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
@@ -437,6 +447,10 @@ namespace IL2DCE.Generator
             if (missionType == null)
             {
                 List<EMissionType> availableMissionTypes = GeneratorAirOperation.GetAvailableMissionTypes(airGroup).ToList();
+                foreach (var item in Config.DisableMissionType)
+                {
+                    availableMissionTypes.Remove(item);
+                }
                 while (availableMissionTypes.Count > 0)
                 {
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
@@ -544,6 +558,97 @@ namespace IL2DCE.Generator
             }
 #endif
         }
+
+        private void GetRandomAircraftList(MissionFile missionFile, out IEnumerable<string> aircraftsRed, out IEnumerable<string> aircraftsBlue)
+        {
+            IEnumerable<string> dlc = missionFile.DLC;
+            string[] aircraftRandomRed;
+            string[] aircraftRandomBlue;
+            if (missionFile.AircraftRandomRed.Any() && missionFile.AircraftRandomBlue.Any())
+            {
+                aircraftRandomRed = missionFile.AircraftRandomRed;
+                aircraftRandomBlue = missionFile.AircraftRandomBlue;
+            }
+            else
+            {
+                aircraftRandomRed = Config.AircraftRandomRed;
+                aircraftRandomBlue = Config.AircraftRandomBlue;
+            }
+            aircraftsRed = aircraftRandomRed.Where(x => x.IndexOf(":") == -1 || dlc.Any(y => x.StartsWith(y, StringComparison.InvariantCultureIgnoreCase)));
+            aircraftsBlue = aircraftRandomBlue.Where(x => x.IndexOf(":") == -1 || dlc.Any(y => x.StartsWith(y, StringComparison.InvariantCultureIgnoreCase)));
+        }
+
+        private IEnumerable<AirGroup> GetRandomAirGroups(AirGroupInfos airGroupInfosLocal, IEnumerable<string> aircraftsRed, IEnumerable<string> aircraftsBlue)
+        {
+            const int AvarageAirOperationAirGroupCount = 4;
+            const int MaxRetryCreateOneAirGroup = 10;
+            const int MaxRetryCreateAllAirGroups = 250;
+            List<AirGroup> airGroups = new List<AirGroup>();
+            if (aircraftsRed.Any() && aircraftsBlue.Any())
+            {
+                int needAirGroups = Career.AdditionalAirOperations * AvarageAirOperationAirGroupCount - GeneratorAirOperation.AvailableAirGroups.Count;
+                wRECTF rangeRed = MapUtil.GetRange(GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == (int)EArmy.Red).Select(x => x.Position));
+                wRECTF rangeBlue = MapUtil.GetRange(GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == (int)EArmy.Blue).Select(x => x.Position));
+                CampaignInfo campaign = Career.CampaignInfo;
+                int reTries = -1;
+                while (airGroups.Count < needAirGroups && reTries < MaxRetryCreateAllAirGroups)
+                {
+                    int army = Random.Next((int)EArmy.Red, (int)EArmy.Blue + 1);
+                    string aircrftClass = (army == (int)EArmy.Red) ? aircraftsRed.ElementAt(Random.Next(aircraftsRed.Count())) : aircraftsBlue.ElementAt(Random.Next(aircraftsBlue.Count()));
+                    AircraftInfo aircraftInfo = campaign.GetAircraftInfo(aircrftClass);
+                    EMissionType missionType = aircraftInfo.MissionTypes[Random.Next(aircraftInfo.MissionTypes.Count)];
+                    IList<AircraftParametersInfo> aircraftParametersInfos = aircraftInfo.GetAircraftParametersInfo(missionType);
+                    AircraftParametersInfo aircraftParametersInfo = aircraftParametersInfos[Random.Next(aircraftParametersInfos.Count)];
+                    AircraftLoadoutInfo aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
+                    IEnumerable<AirGroupInfo> airGroupInfos = 
+                        (airGroupInfos = airGroupInfosLocal != null ? airGroupInfosLocal.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army): new AirGroupInfo[0]).Any() ? 
+                            airGroupInfos : AirGroupInfos.Default.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army);
+                    if (airGroupInfos.Any())
+                    {
+                        AirGroupInfo airGroupInfo = airGroupInfos.ElementAt(Random.Next(airGroupInfos.Count()));
+                        int reTry = -1;
+                        string airGroupSquadron;
+                        do
+                        {
+                            string airGroupKey = airGroupInfo.AirGroupKeys[Random.Next(airGroupInfo.AirGroupKeys.Count)];
+                            int airSquadron = Random.Next(airGroupInfo.SquadronCount);
+                            airGroupSquadron = string.Format(CultureInfo.InvariantCulture.NumberFormat, AirGroup.SquadronFormat, airGroupKey, airSquadron);
+                        }
+                        while (airGroups.Any(x => string.Compare(x.ToString(), airGroupSquadron) == 0) && reTry++ <= MaxRetryCreateOneAirGroup);
+                        reTries += reTry;
+                        string id = string.Format("{0}{1}", airGroupSquadron, 0.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                        Point3d point = CreateRandomPoint(ref (army == (int)EArmy.Red ? ref rangeRed : ref rangeBlue),
+                                                            aircraftParametersInfo.MinAltitude != null ? (int)aircraftParametersInfo.MinAltitude.Value : Spawn.SelectStartAltitude,
+                                                            aircraftParametersInfo.MaxAltitude != null ? (int)aircraftParametersInfo.MaxAltitude.Value : Spawn.SelectEndAltitude);
+                        AirGroup airGroup = new AirGroup(id, aircraftInfo, point, aircraftLoadoutInfo);
+                        airGroup.SetAirGroupInfo(airGroupInfo);
+                        airGroups.Add(airGroup);
+                    }
+                }
+            }
+            return airGroups;
+        }
+
+        private Point3d CreateRandomPoint(ref wRECTF rect, int minAltitude, int maxAltitude)
+        {
+            return new Point3d(Random.Next((int)rect.x1, (int)rect.x2 + 1), Random.Next((int)rect.y1, (int)rect.y2 + 1), Random.Next(minAltitude, maxAltitude));
+        }
+
+        //private Point3d CreateRandomSafePoint(ref wRECTF rect, int minAltitude, int maxAltitude)
+        //{
+        //    Point3d point;
+        //    do
+        //    {
+        //        point = new Point3d(Random.Next((int)rect.x1, (int)rect.x2 + 1), Random.Next((int)rect.y1, (int)rect.y2 + 1), Random.Next(minAltitude, maxAltitude));
+
+        //        GamePlay.gpFrontArmy();
+        //        GamePlay.gpFrontDistance();
+        //        GamePlay.gpFindPath();
+        //        GamePlay.gpLandType();
+
+        //    } while ();
+        //    return point;
+        //}
 
         private static List<string> determineAircraftOrder(AirGroup airGroup)
         {

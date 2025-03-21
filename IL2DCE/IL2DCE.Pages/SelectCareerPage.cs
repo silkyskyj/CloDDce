@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using IL2DCE.MissionObjectModel;
-using IL2DCE.Util;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -110,13 +106,14 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
                 FrameworkElement.comboBoxSelectArmy.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
                 FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
-                FrameworkElement.ListCareer.SelectionChanged += new System.Windows.Controls.SelectionChangedEventHandler(listCampaign_SelectionChanged);
+                FrameworkElement.ListCareer.SelectionChanged += new SelectionChangedEventHandler(listCampaign_SelectionChanged);
 
-                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(bBack_Click);
-                FrameworkElement.New.Click += new System.Windows.RoutedEventHandler(bNew_Click);
-                FrameworkElement.Delete.Click += new System.Windows.RoutedEventHandler(Delete_Click);
-                FrameworkElement.Continue.Click += new System.Windows.RoutedEventHandler(bContinue_Click);
-                FrameworkElement.buttonFilterClear.Click += new System.Windows.RoutedEventHandler(buttonFilterClear_Click);
+                FrameworkElement.Back.Click += new RoutedEventHandler(bBack_Click);
+                FrameworkElement.New.Click += new RoutedEventHandler(bNew_Click);
+                FrameworkElement.Delete.Click += new RoutedEventHandler(Delete_Click);
+                FrameworkElement.Continue.Click += new RoutedEventHandler(bContinue_Click);
+                FrameworkElement.buttonFilterClear.Click += new RoutedEventHandler(buttonFilterClear_Click);
+                FrameworkElement.buttonReload.Click += new RoutedEventHandler(buttonReload_Click);
 
                 FrameworkElement.Continue.IsEnabled = false;
                 FrameworkElement.Delete.IsEnabled = false;
@@ -151,18 +148,18 @@ namespace IL2DCE
 
             #region Button Click
 
-            private void bBack_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void bBack_Click(object sender, RoutedEventArgs e)
             {
                 Game.gameInterface.PagePop(null);
             }
 
-            private void bNew_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void bNew_Click(object sender, RoutedEventArgs e)
             {
                 Game.gameInterface.PageChange(new CareerIntroPage(), 
                     new CareerIntroPage.PageArgs() { Army = SelectedArmyIndex, AirForce = SelectedAirForceIndex });
             }
 
-            private void bContinue_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void bContinue_Click(object sender, RoutedEventArgs e)
             {
                 Career career = SelectedCareer;
                 if (career != null && career.CampaignInfo != null)
@@ -178,7 +175,7 @@ namespace IL2DCE
                 }
             }
 
-            void Delete_Click(object sender, System.Windows.RoutedEventArgs e)
+            void Delete_Click(object sender, RoutedEventArgs e)
             {
                 Career career = SelectedCareer;
                 if (career != null)
@@ -192,11 +189,23 @@ namespace IL2DCE
                 }
             }
 
-            private void buttonFilterClear_Click(object sender, System.Windows.RoutedEventArgs e)
+            private void buttonFilterClear_Click(object sender, RoutedEventArgs e)
             {
                 FrameworkElement.comboBoxSelectCampaign.SelectedIndex = FrameworkElement.comboBoxSelectCampaign.Items.Count > 0 ? 0 : -1;
                 FrameworkElement.comboBoxSelectArmy.SelectedIndex = FrameworkElement.comboBoxSelectArmy.Items.Count > 0 ? 0 : -1;
                 FrameworkElement.comboBoxSelectAirForce.SelectedIndex = FrameworkElement.comboBoxSelectAirForce.Items.Count > 0 ? 0 : -1;
+            }
+
+            private void buttonReload_Click(object sender, RoutedEventArgs e)
+            {
+                if (MessageBox.Show("Your current selections will be lost.\nDo you want to reload this page ?", "Confimation [IL2DCE]",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    Game.Core.ReadCampaignInfo();
+                    Game.Core.ReadCareerInfo();
+
+                    Game.gameInterface.PageChange(new SelectCareerPage(), null);
+                }
             }
 
             #endregion
@@ -235,7 +244,7 @@ namespace IL2DCE
                 UpdateButtonStatus();
             }
 
-            private void listCampaign_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+            private void listCampaign_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
                 Career career = SelectedCareer;
                 if (career != null && career.CampaignInfo != null)

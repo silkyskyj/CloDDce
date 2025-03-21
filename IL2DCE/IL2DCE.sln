@@ -62,6 +62,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 	ProjectSection(SolutionItems) = preProject
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
+		..\readme_il2dce_silkyskyj.txt = ..\readme_il2dce_silkyskyj.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cross v Roundel.Tobruk", "Cross v Roundel.Tobruk", "{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC}"
