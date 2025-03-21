@@ -3,8 +3,9 @@ A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover 
 ===========================================================================================================================
                                                                                                                  03/22/2025
 This is the silkyskyj version of IL2DCE.
-I forked and customized the source code, which the original author Stefan Rothdach created and released in 2011 and has been customizing until recently, under the terms of the AGPL3.0 license.
-My customizations do not significantly change the basic functions that originally existed in IL2DCE, but mainly modify and add functions to the User Interface and random selection parts.
+
+IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
+I have forked the source code and customized it under the AGPL3.0 license terms, and am releasing it this time.
 
 It is important to note that this add-in does not replace or attempt to compete with existing apps and add-ins such as Quick Mission, Single Mission, Campaign, and other apps and add-ins created by various developers, official development teams, and groups.
 I hope you will choose it as one of the several ways to play the game.
