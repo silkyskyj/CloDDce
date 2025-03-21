@@ -122,7 +122,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release copy "$(ProjectDir)\IL2DCE.Inst.nsi" "$(TargetDir)..\..\IL2DCE.Inst.nsi"
-copy "$(SolutionDir)..\README.md" "$(TargetDir)..\..\README.md"</PostBuildEvent>
+copy "$(SolutionDir)..\README.md" "$(TargetDir)..\..\README.md"
+copy "$(SolutionDir)..\readme_il2dce_silkyskyj.txt" "$(TargetDir)..\..\readme_il2dce_silkyskyj.txt"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
