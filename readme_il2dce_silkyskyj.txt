@@ -36,7 +36,7 @@ Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finiss
  - Campaign
  - Air Group
  - Campaign Period
- - Filter display function for existing carrier list (Army/Air Force/Campaign)
+ - Filter display function for existing career list (Army/Air Force/Campaign)
 
 2. The following items can be selected and set in Dynamic Quick Mission.
  - Campaign (mission file for IL2DCE)
@@ -49,8 +49,8 @@ Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finiss
  - Air Group
  - Skill (system default or custom skills) 20 in total + user-defined (can be set in il2dce's conf.ini file)
  - Mission Type
- - Spwan type [idle/Parked/AirStart(Altitude)]
- - Spwan Speed
+ - Spawn type [idle/Parked/AirStart(Altitude)]
+ - Spawn Speed
  - Fuel % value (5% increments)
  - Time
  - Weather
@@ -59,14 +59,14 @@ Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finiss
 Items that can be selected and set commonly in 1. 2.
  - Max Additional Air Operations [1-7]
  - Max Additional Ground Operations [10-300]
- - Random Air Group Spwan Location [Player/Friendly/Enemy]
+ - Random Air Group Spawn Location [Player/Friendly/Enemy]
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
  - Time(Spawn delay) 15-1800[sec] [Friendly/Enemy]
 
 Sample mission (7 mission files)
 
  - Adlerangriff RAF/Lufutwaffe
- - Cross v Round.Tobruk [*] RAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force
+ - Cross v Round.Tobruk [*] RAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Hungarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
  - Isles of Doom.Tobruk [*] RAF/French Air Force/USAAF/Lufutwaffe/Regia Aeronautica
  - Kanalkampf RAF/Lufutwaffe
  - Steppe.Tobruk [*] RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
