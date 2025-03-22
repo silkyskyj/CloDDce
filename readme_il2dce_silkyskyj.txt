@@ -1,7 +1,7 @@
 ﻿===========================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.0)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.1)
 ===========================================================================================================================
-                                                                                                                 03/22/2025
+                                                                                                                 03/23/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -57,7 +57,7 @@ Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finiss
  - Cloud Altitude
 
 Items that can be selected and set commonly in 1. 2.
- - Max Additional Air Operations [1-7]
+ - Max Additional Air Operations [1-12]
  - Max Additional Ground Operations [10-300]
  - Random Air Group Spawn Location [Player/Friendly/Enemy]
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
@@ -95,6 +95,7 @@ History
 
   Ver      Date       Comment
 
+  0.5.1    03/23/2025 Fixed: mission type Cover was not assaigned 
   0.5.0    03/22/2025 New release 
 
 ---
