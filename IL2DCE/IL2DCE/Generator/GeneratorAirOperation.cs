@@ -475,7 +475,7 @@ namespace IL2DCE.Generator
             AirGroup forcedEscortAirGroup, AirGroup forcedEscortedAirGroup, AirGroup forcedOffensiveAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Spawn spawn, Skill[] skill = null, int speed = -1, int fuel = -1)
         {
             bool result = false;
-            if (isMissionTypeAvailable(airGroup, missionType))
+            if (!airGroup.MissionAssigned && isMissionTypeAvailable(airGroup, missionType))
             {
                 AvailableAirGroups.Remove(airGroup);
                 // jamRunway(airGroup);
@@ -489,7 +489,10 @@ namespace IL2DCE.Generator
 
                 airGroup.SetOnParked = Config.SpawnParked;
                 OptimizeSpawn(airGroup, spawn, aircraftParametersInfo);
-                AssignedAirGroups.Add(airGroup);
+                if (!AssignedAirGroups.Any(x => string.Compare(airGroup.ToString(), x.ToString(), true) == 0))
+                {
+                    AssignedAirGroups.Add(airGroup);
+                }
 
                 Spawn spawnDefault = Spawn.Create((int)ESpawn.Default, spawn);
                 AirGroup escortAirGroup = forcedEscortAirGroup;
@@ -575,7 +578,7 @@ namespace IL2DCE.Generator
                         AirGroup defensiveAirGroup = getAvailableRandomDefensiveAirGroup(airGroup);     // Enemy Air Group
                         if (defensiveAirGroup != null && !defensiveAirGroup.MissionAssigned)
                         {
-                            CreateAirOperationDefensiv(sectionFile, briefingFile, airGroup, defensiveAirGroup, spawnDefault);   // Enemy Air Group
+                            CreateAirOperationDefensiv(sectionFile, briefingFile, defensiveAirGroup, airGroup, spawnDefault);   // Enemy Air Group
                         }
                     }
                 }
@@ -913,7 +916,7 @@ namespace IL2DCE.Generator
         }
 #endif
 
-        private bool CreateAirOperationDefensiv(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, AirGroup defensiveAirGroup, Spawn spawn)
+        private bool CreateAirOperationDefensiv(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup defensiveAirGroup, AirGroup offensiveAirGroup, Spawn spawn)
         {
             bool result = false;
 
@@ -935,7 +938,7 @@ namespace IL2DCE.Generator
                 int defensiveMissionTypeIndex = Random.Next(availableDefensiveMissionTypes.Count);
                 EMissionType randomDefensiveMissionType = availableDefensiveMissionTypes[defensiveMissionTypeIndex];
 
-                CreateAirOperation(sectionFile, briefingFile, defensiveAirGroup, randomDefensiveMissionType, false, null, null, airGroup, null, null, spawn);
+                CreateAirOperation(sectionFile, briefingFile, defensiveAirGroup, randomDefensiveMissionType, false, null, null, offensiveAirGroup, null, null, spawn);
                 result = true;
             }
             return result;
