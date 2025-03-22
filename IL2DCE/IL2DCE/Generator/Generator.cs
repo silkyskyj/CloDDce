@@ -20,10 +20,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using IL2DCE.MissionObjectModel;
-using IL2DCE.Util;
 using maddox.game;
-using maddox.GP;
-using XLAND;
 using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Generator
@@ -366,18 +363,22 @@ namespace IL2DCE.Generator
         {
             MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName), Career.CampaignInfo.AirGroupInfos);
 
+            AirGroup airGroup = missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
+            if (airGroup == null)
+            {
+                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
+            }
+
             GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Config, Random, Career.CampaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries);
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
-            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups);
+            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups, airGroup);
 
             if (Career.AdditionalAirGroups)
             {
                 IEnumerable<string> aircraftsRed;
                 IEnumerable<string> aircraftsBlue;
                 GetRandomAircraftList(missionTemplateFile, out aircraftsRed, out aircraftsBlue);
-                AirGroupInfos airGroupInfos = Career.CampaignInfo.AirGroupInfos != null ? Career.CampaignInfo.AirGroupInfos: AirGroupInfos.Default;
-                IEnumerable<AirGroup> airGroups = GetRandomAirGroups(Career.CampaignInfo.AirGroupInfos != null ? Career.CampaignInfo.AirGroupInfos : AirGroupInfos.Default, aircraftsRed, aircraftsBlue);
-                GeneratorAirOperation.AvailableAirGroups.AddRange(airGroups);
+                GeneratorAirOperation.AddRandomAirGroups(Career.AdditionalAirOperations, aircraftsRed, aircraftsBlue);
             }
 
             // Load the environment template file for the generated mission.
@@ -433,13 +434,6 @@ namespace IL2DCE.Generator
                                                                 Career.CampaignInfo.Id, Career.Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo), MissionTime.ToString(time), weatherString);
 
             // Create a air operation for the player.
-            AirGroup airGroup = GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
-            if (airGroup == null)
-            {
-                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
-            }
-
-            GeneratorAirOperation.AirGroupPlayer = airGroup;
             EMissionType? missionType = Career.MissionType;
             Spawn spawn = new Spawn(Career.Spawn, Career.SpawnRandomAltitudeFriendly, Career.SpawnRandomAltitudeEnemy, new SpawnLocation(Career.SpawnRandomLocationPlayer, Career.SpawnRandomLocationFriendly, Career.SpawnRandomLocationEnemy), 
                 Career.SpawnRandomTimeFriendly, Career.SpawnRandomTimeEnemy, Career.SpawnRandomTimeFriendly || Career.SpawnRandomTimeEnemy ? new SpawnTime(true, 0, Career.SpawnRandomTimeBeginSec, Career.SpawnRandomTimeEndSec): null);
@@ -499,32 +493,27 @@ namespace IL2DCE.Generator
             }
 
             // Add additional air operations.
-            if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
+            if (GeneratorAirOperation.HasAvailableAirGroup)
             {
                 spawn = Spawn.Create((int)ESpawn.Default, spawn);
                 int i = 0;
-                while (i < Career.AdditionalAirOperations && GeneratorAirOperation.AvailableAirGroups.Count > 0)
+                while (i < Career.AdditionalAirOperations && GeneratorAirOperation.HasAvailableAirGroup)
                 {
-                    if (GeneratorAirOperation.AvailableAirGroups.Count > 0)
+                    AirGroup randomAirGroup = GeneratorAirOperation.GetAvailableRandomAirGroup();
+                    if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, spawn))
                     {
-                        int randomAirGroupIndex = Random.Next(GeneratorAirOperation.AvailableAirGroups.Count);
-                        AirGroup randomAirGroup = GeneratorAirOperation.AvailableAirGroups[randomAirGroupIndex];
-                        if (GeneratorAirOperation.CreateRandomAirOperation(missionFile, briefingFile, randomAirGroup, spawn))
-                        {
-                            i++;
-                        }
+                        i++;
                     }
                 }
             }
 
             // Add additional ground operations.
-            if (GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
+            if (GeneratorGroundOperation.HasAvailableGroundGroup)
             {
                 int i = 0;
-                while (i < Career.AdditionalGroundOperations && GeneratorGroundOperation.AvailableGroundGroups.Count > 0)
+                while (i < Career.AdditionalGroundOperations && GeneratorGroundOperation.HasAvailableGroundGroup)
                 {
-                    int randomGroundGroupIndex = Random.Next(GeneratorGroundOperation.AvailableGroundGroups.Count);
-                    GroundGroup randomGroundGroup = GeneratorGroundOperation.AvailableGroundGroups[randomGroundGroupIndex];
+                    GroundGroup randomGroundGroup = GeneratorGroundOperation.GetAvailableRandomGroundGroup();
                     if (GeneratorGroundOperation.CreateRandomGroundOperation(missionFile, randomGroundGroup))
                     {
                         i++;
@@ -533,29 +522,10 @@ namespace IL2DCE.Generator
             }
 
             // Add all stationaries.
-            foreach (Stationary stationary in GeneratorGroundOperation.AvailableStationaries)
-            {
-                stationary.WriteTo(missionFile);
-            }
+            GeneratorGroundOperation.StationaryWriteTo(missionFile);
 
 #if DEBUG
-            
-            foreach (var item in GeneratorAirOperation.AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex == airGroup.ArmyIndex).OrderBy(x => x.Position.x))
-            {
-                AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
-                if (way != null)
-                {
-                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}, SpawnFromScript={7}({8})", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked, item.SpawnFromScript, item.Spawn.Time.Value);
-                }
-            }
-            foreach (var item in GeneratorAirOperation.AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex != airGroup.ArmyIndex).OrderBy(x => x.Position.x))
-            {
-                AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
-                if (way != null)
-                {
-                    Debug.WriteLine("Name={0} Pos=({1:F2},{2:F2},{3:F2}) V={4:F2}, AirStart={5}, SetOnParked={6}, SpawnFromScript={7}({8})", item.DisplayDetailName, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked, item.SpawnFromScript, item.Spawn.Time.Value);
-                }
-            }
+            GeneratorAirOperation.TraceAssignedAirGroups();
 #endif
         }
 
@@ -577,78 +547,6 @@ namespace IL2DCE.Generator
             aircraftsRed = aircraftRandomRed.Where(x => x.IndexOf(":") == -1 || dlc.Any(y => x.StartsWith(y, StringComparison.InvariantCultureIgnoreCase)));
             aircraftsBlue = aircraftRandomBlue.Where(x => x.IndexOf(":") == -1 || dlc.Any(y => x.StartsWith(y, StringComparison.InvariantCultureIgnoreCase)));
         }
-
-        private IEnumerable<AirGroup> GetRandomAirGroups(AirGroupInfos airGroupInfosLocal, IEnumerable<string> aircraftsRed, IEnumerable<string> aircraftsBlue)
-        {
-            const int AvarageAirOperationAirGroupCount = 4;
-            const int MaxRetryCreateOneAirGroup = 10;
-            const int MaxRetryCreateAllAirGroups = 250;
-            List<AirGroup> airGroups = new List<AirGroup>();
-            if (aircraftsRed.Any() && aircraftsBlue.Any())
-            {
-                int needAirGroups = Career.AdditionalAirOperations * AvarageAirOperationAirGroupCount - GeneratorAirOperation.AvailableAirGroups.Count;
-                wRECTF rangeRed = MapUtil.GetRange(GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == (int)EArmy.Red).Select(x => x.Position));
-                wRECTF rangeBlue = MapUtil.GetRange(GeneratorAirOperation.AvailableAirGroups.Where(x => x.ArmyIndex == (int)EArmy.Blue).Select(x => x.Position));
-                CampaignInfo campaign = Career.CampaignInfo;
-                int reTries = -1;
-                while (airGroups.Count < needAirGroups && reTries < MaxRetryCreateAllAirGroups)
-                {
-                    int army = Random.Next((int)EArmy.Red, (int)EArmy.Blue + 1);
-                    string aircrftClass = (army == (int)EArmy.Red) ? aircraftsRed.ElementAt(Random.Next(aircraftsRed.Count())) : aircraftsBlue.ElementAt(Random.Next(aircraftsBlue.Count()));
-                    AircraftInfo aircraftInfo = campaign.GetAircraftInfo(aircrftClass);
-                    EMissionType missionType = aircraftInfo.MissionTypes[Random.Next(aircraftInfo.MissionTypes.Count)];
-                    IList<AircraftParametersInfo> aircraftParametersInfos = aircraftInfo.GetAircraftParametersInfo(missionType);
-                    AircraftParametersInfo aircraftParametersInfo = aircraftParametersInfos[Random.Next(aircraftParametersInfos.Count)];
-                    AircraftLoadoutInfo aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
-                    IEnumerable<AirGroupInfo> airGroupInfos = 
-                        (airGroupInfos = airGroupInfosLocal != null ? airGroupInfosLocal.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army): new AirGroupInfo[0]).Any() ? 
-                            airGroupInfos : AirGroupInfos.Default.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army);
-                    if (airGroupInfos.Any())
-                    {
-                        AirGroupInfo airGroupInfo = airGroupInfos.ElementAt(Random.Next(airGroupInfos.Count()));
-                        int reTry = -1;
-                        string airGroupSquadron;
-                        do
-                        {
-                            string airGroupKey = airGroupInfo.AirGroupKeys[Random.Next(airGroupInfo.AirGroupKeys.Count)];
-                            int airSquadron = Random.Next(airGroupInfo.SquadronCount);
-                            airGroupSquadron = string.Format(CultureInfo.InvariantCulture.NumberFormat, AirGroup.SquadronFormat, airGroupKey, airSquadron);
-                        }
-                        while (airGroups.Any(x => string.Compare(x.ToString(), airGroupSquadron) == 0) && reTry++ <= MaxRetryCreateOneAirGroup);
-                        reTries += reTry;
-                        string id = string.Format("{0}{1}", airGroupSquadron, 0.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                        Point3d point = CreateRandomPoint(ref (army == (int)EArmy.Red ? ref rangeRed : ref rangeBlue),
-                                                            aircraftParametersInfo.MinAltitude != null ? (int)aircraftParametersInfo.MinAltitude.Value : Spawn.SelectStartAltitude,
-                                                            aircraftParametersInfo.MaxAltitude != null ? (int)aircraftParametersInfo.MaxAltitude.Value : Spawn.SelectEndAltitude);
-                        AirGroup airGroup = new AirGroup(id, aircraftInfo, point, aircraftLoadoutInfo);
-                        airGroup.SetAirGroupInfo(airGroupInfo);
-                        airGroups.Add(airGroup);
-                    }
-                }
-            }
-            return airGroups;
-        }
-
-        private Point3d CreateRandomPoint(ref wRECTF rect, int minAltitude, int maxAltitude)
-        {
-            return new Point3d(Random.Next((int)rect.x1, (int)rect.x2 + 1), Random.Next((int)rect.y1, (int)rect.y2 + 1), Random.Next(minAltitude, maxAltitude));
-        }
-
-        //private Point3d CreateRandomSafePoint(ref wRECTF rect, int minAltitude, int maxAltitude)
-        //{
-        //    Point3d point;
-        //    do
-        //    {
-        //        point = new Point3d(Random.Next((int)rect.x1, (int)rect.x2 + 1), Random.Next((int)rect.y1, (int)rect.y2 + 1), Random.Next(minAltitude, maxAltitude));
-
-        //        GamePlay.gpFrontArmy();
-        //        GamePlay.gpFrontDistance();
-        //        GamePlay.gpFindPath();
-        //        GamePlay.gpLandType();
-
-        //    } while ();
-        //    return point;
-        //}
 
         private static List<string> determineAircraftOrder(AirGroup airGroup)
         {
