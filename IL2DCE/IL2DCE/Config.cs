@@ -71,12 +71,13 @@ namespace IL2DCE
         public const string KeyDisableMissionType = "Disable";
         public const string KeyRandomRed = "RandomRed";
         public const string KeyRandomBlue = "RandomBlue";
+        public const string KeyEnableMissionMultiAssign = "EnableMissionMultiAssign";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Covert.log";
 
         public const int DefaultAdditionalAirOperations = 3;
-        public const int MaxAdditionalAirOperations = 7;
+        public const int MaxAdditionalAirOperations = 12;
         public const int MinAdditionalAirOperations = 1;
         public const int DefaultAdditionalGroundOperations = 100;
         public const int MaxAdditionalGroundOperations = 300;
@@ -230,6 +231,12 @@ namespace IL2DCE
         }
 
         public string[] AircraftRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public bool EnableMissionMultiAssign
         {
             get;
             private set;
@@ -413,6 +420,8 @@ namespace IL2DCE
             {
                 AircraftRandomBlue = new string[0];
             }
+
+            EnableMissionMultiAssign = confFile.get(SectionCore, KeyEnableMissionMultiAssign, 0) == 1;
         }
     }
 }

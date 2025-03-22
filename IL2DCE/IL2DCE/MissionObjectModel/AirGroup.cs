@@ -296,6 +296,20 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
+        public bool MissionAssigned
+        {
+            get
+            {
+                return MissionType != null && MissionType.HasValue;
+            }
+        }
+
+        public EMissionType? MissionType
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Public constructors
@@ -722,6 +736,8 @@ namespace IL2DCE.MissionObjectModel
             Point3d target = new Point3d(Position.x, Position.y, altitude);
             createEndInbetweenPoints(target, landingAirport, true);
             createEndWaypoints(landingAirport);
+
+            MissionType = EMissionType.TRANSFER;
         }
 
         public void Cover(AirGroup offensiveAirGroup, double altitude, AiAirport landingAirport = null)
@@ -768,6 +784,8 @@ namespace IL2DCE.MissionObjectModel
                 createEndInbetweenPoints(position.Value, landingAirport);
                 createEndWaypoints(landingAirport);
             }
+
+            MissionType = EMissionType.COVER;
         }
 
         public void Hunting(Point2d targetArea, double altitude, AiAirport landingAirport = null)
@@ -785,6 +803,7 @@ namespace IL2DCE.MissionObjectModel
 
             createEndInbetweenPoints(p, landingAirport, true);
             createEndWaypoints(landingAirport);
+            MissionType = EMissionType.HUNTING;
         }
 
         public void GroundAttack(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
@@ -819,6 +838,8 @@ namespace IL2DCE.MissionObjectModel
             Point3d pEnd = new Point3d(targetStationary.X, targetStationary.Y, altitude);
             createEndInbetweenPoints(pEnd, landingAirport);
             createEndWaypoints(landingAirport);
+
+            MissionType = EMissionType.ATTACK_ARTILLERY;
         }
 
         public void GroundAttack(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
@@ -880,6 +901,8 @@ namespace IL2DCE.MissionObjectModel
 
                 createEndWaypoints(landingAirport);
             }
+
+            MissionType = EMissionType.ATTACK_ARMOR;
         }
 
         public void Recon(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
@@ -914,6 +937,8 @@ namespace IL2DCE.MissionObjectModel
             Point3d pEnd = new Point3d(targetStationary.X, targetStationary.Y, altitude);
             createEndInbetweenPoints(pEnd, landingAirport, true);
             createEndWaypoints(landingAirport);
+
+            MissionType = EMissionType.RECON;
         }
 
         public void Recon(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
@@ -973,6 +998,8 @@ namespace IL2DCE.MissionObjectModel
                 }
 
                 createEndWaypoints(landingAirport);
+
+                MissionType = EMissionType.RECON;
             }
         }
 
@@ -995,6 +1022,7 @@ namespace IL2DCE.MissionObjectModel
             }
 
             createEndWaypoints(landingAirport);
+            MissionType = EMissionType.ESCORT;
         }
 
         public void Follow(AirGroup targetAirGroup, AiAirport landingAirport = null)
@@ -1016,6 +1044,7 @@ namespace IL2DCE.MissionObjectModel
             }
 
             createEndWaypoints(landingAirport);
+            MissionType = EMissionType.FOLLOW;
         }
 
         public void Intercept(AirGroup targetAirGroup, AiAirport landingAirport = null)
@@ -1089,6 +1118,7 @@ namespace IL2DCE.MissionObjectModel
             }
 
             createEndWaypoints(landingAirport);
+            MissionType = EMissionType.INTERCEPT;
         }
 
         #endregion 

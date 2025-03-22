@@ -38,9 +38,17 @@ namespace IL2DCE.Generator
             set;
         }
 
-        public List<GroundGroup> AvailableGroundGroups = new List<GroundGroup>();
+        public bool HasAvailableGroundGroup
+        {
+            get
+            {
+                return AvailableGroundGroups.Count > 0;
+            }
+        }
 
-        public List<Stationary> AvailableStationaries = new List<Stationary>();
+        private List<GroundGroup> AvailableGroundGroups = new List<GroundGroup>();
+
+        private List<Stationary> AvailableStationaries = new List<Stationary>();
 
         public GeneratorGroundOperation(IGamePlay gamePlay, Config config, IRandom random, CampaignInfo campaignInfo, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries)
         {
@@ -407,6 +415,18 @@ namespace IL2DCE.Generator
 
         #region GroundGroup
 
+        #region GetAvailable
+
+        public GroundGroup GetAvailableRandomGroundGroup()
+        {
+            if (HasAvailableGroundGroup)
+            {
+                int randomIndex = Random.Next(AvailableGroundGroups.Count);
+                return AvailableGroundGroups[randomIndex];
+            }
+            return null;
+        }
+
         public List<GroundGroup> getAvailableEnemyGroundGroups(int armyIndex)
         {
             List<GroundGroup> groundGroups = new List<GroundGroup>();
@@ -560,7 +580,11 @@ namespace IL2DCE.Generator
 
         #endregion
 
+        #endregion
+
         #region Stationary
+
+        #region GetAvailable
 
         public List<Stationary> getAvailableEnemyStationaries(int armyIndex)
         {
@@ -639,7 +663,7 @@ namespace IL2DCE.Generator
             }
             else if (missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
             {
-                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery, 
+                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery,
                     EStationaryType.Ammo, EStationaryType.Weapons, EStationaryType.Aircraft, EStationaryType.Radar, EStationaryType.Depot, });
             }
             else if (missionType == EMissionType.ATTACK_AIRCRAFT)
@@ -715,6 +739,16 @@ namespace IL2DCE.Generator
             else
             {
                 return null;
+            }
+        }
+
+        #endregion
+
+        public void StationaryWriteTo(ISectionFile file)
+        {
+            foreach (Stationary stationary in AvailableStationaries)
+            {
+                stationary.WriteTo(file);
             }
         }
 
