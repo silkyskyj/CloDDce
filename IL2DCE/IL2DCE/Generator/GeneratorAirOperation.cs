@@ -475,7 +475,7 @@ namespace IL2DCE.Generator
             AirGroup forcedEscortAirGroup, AirGroup forcedEscortedAirGroup, AirGroup forcedOffensiveAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Spawn spawn, Skill[] skill = null, int speed = -1, int fuel = -1)
         {
             bool result = false;
-            if (!airGroup.MissionAssigned && isMissionTypeAvailable(airGroup, missionType))
+            if (!airGroup.MissionAssigned && AvailableAirGroups.Contains(airGroup) && isMissionTypeAvailable(airGroup, missionType))
             {
                 AvailableAirGroups.Remove(airGroup);
                 // jamRunway(airGroup);
@@ -489,10 +489,7 @@ namespace IL2DCE.Generator
 
                 airGroup.SetOnParked = Config.SpawnParked;
                 OptimizeSpawn(airGroup, spawn, aircraftParametersInfo);
-                if (!AssignedAirGroups.Any(x => string.Compare(airGroup.ToString(), x.ToString(), true) == 0))
-                {
-                    AssignedAirGroups.Add(airGroup);
-                }
+                AssignedAirGroups.Add(airGroup);
 
                 Spawn spawnDefault = Spawn.Create((int)ESpawn.Default, spawn);
                 AirGroup escortAirGroup = forcedEscortAirGroup;
@@ -811,7 +808,8 @@ namespace IL2DCE.Generator
                     EMissionType? missionType = GetRandomMissionType(targetAirGroup);
                     if (missionType != null)
                     {
-                        if (CreateAirOperation(sectionFile, briefingFile, targetAirGroup, missionType.Value, true, null, null, null, null, null, spawn) && GetTargetPoint(targetAirGroup) != null)
+                        CreateAirOperation(sectionFile, briefingFile, targetAirGroup, missionType.Value, true, null, null, null, null, null, spawn);
+                        if (GetTargetPoint(targetAirGroup) != null)
                         {
                             followedAirGroup = targetAirGroup;
                             break;
@@ -850,8 +848,8 @@ namespace IL2DCE.Generator
                     EMissionType? missionType = GetRandomMissionType(targetAirGroup);
                     if (missionType != null)
                     {
-                        if (CreateAirOperation(sectionFile, briefingFile, targetAirGroup, missionType.Value, true, null, null, null, null, null, spawn)
-                            && GetTargetPoint(targetAirGroup) != null && GetTargetAltitude(targetAirGroup) != null)
+                        CreateAirOperation(sectionFile, briefingFile, targetAirGroup, missionType.Value, true, null, null, null, null, null, spawn);
+                        if (GetTargetPoint(targetAirGroup) != null && GetTargetAltitude(targetAirGroup) != null)
                         {
                             huntingAirGroup = targetAirGroup;
                             break;
@@ -1459,12 +1457,14 @@ namespace IL2DCE.Generator
             }
             else if (airGroup.TargetAirGroup != null && airGroup.TargetAirGroup.Waypoints != null && airGroup.TargetAirGroup.Waypoints.Count > 0)
             {
-                AirGroupWaypoint way = airGroup.TargetAirGroup.Waypoints[airGroup.TargetAirGroup.Waypoints.Count - 1];
+                int wayIdx = airGroup.TargetAirGroup.Waypoints.Count / 2;
+                AirGroupWaypoint way = airGroup.TargetAirGroup.Waypoints[wayIdx];
                 return new Point2d(way.X, way.Y);
             }
             else if (airGroup.TargetGroundGroup != null && airGroup.TargetGroundGroup.Waypoints != null && airGroup.TargetGroundGroup.Waypoints.Count > 0)
             {
-                GroundGroupWaypoint way = airGroup.TargetGroundGroup.Waypoints[airGroup.TargetGroundGroup.Waypoints.Count - 1];
+                int wayIdx = airGroup.TargetGroundGroup.Waypoints.Count / 2;
+                GroundGroupWaypoint way = airGroup.TargetGroundGroup.Waypoints[wayIdx];
                 return new Point2d(way.X, way.Y);
             }
             else if (airGroup.TargetStationary != null)
@@ -1473,7 +1473,7 @@ namespace IL2DCE.Generator
             }
             else if (airGroup.Waypoints != null && airGroup.Waypoints.Count > 0)
             {
-                int wayIdx = (airGroup.Waypoints.Count - 1) / 2;
+                int wayIdx = airGroup.Waypoints.Count / 2;
                 AirGroupWaypoint way = airGroup.Waypoints[wayIdx];
                 return new Point2d(way.X, way.Y);
             }
@@ -1494,7 +1494,7 @@ namespace IL2DCE.Generator
             }
             else if (airGroup.Waypoints != null && airGroup.Waypoints.Count > 0)
             {
-                int wayIdx = (airGroup.Waypoints.Count - 1) / 2;
+                int wayIdx = airGroup.Waypoints.Count / 2;
                 AirGroupWaypoint way = airGroup.Waypoints[wayIdx];
                 return way.Z;
             }
@@ -1707,8 +1707,8 @@ namespace IL2DCE.Generator
 
         public void AddRandomAirGroups(int additionalAirOperations, IEnumerable<string> aircraftsRed, IEnumerable<string> aircraftsBlue)
         {
-            const int AvarageAirOperationAirGroupCount = 4;
-            int needAirGroups = additionalAirOperations * AvarageAirOperationAirGroupCount - AvailableAirGroups.Count;
+            const int MaxAirOperationAirGroupCount = 3;
+            int needAirGroups = additionalAirOperations * MaxAirOperationAirGroupCount - AvailableAirGroups.Count;
             IEnumerable<AirGroup> airGroups = GetRandomAirGroups(needAirGroups, CampaignInfo.AirGroupInfos, aircraftsRed, aircraftsBlue);
             AvailableAirGroups.AddRange(airGroups);
             AllAirGroups.AddRange(airGroups);

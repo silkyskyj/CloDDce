@@ -1,6 +1,6 @@
-﻿===========================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.2)
-===========================================================================================================================
+﻿============================================================================================================================
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.3)
+============================================================================================================================
                                                                                                                  03/24/2025
 This is the silkyskyj version of IL2DCE.
 
@@ -95,6 +95,7 @@ History
 
   Ver      Date       Comment
 
+  0.5.3    03/24/2025 Changed: Changed the logic for generating the mission types Hunting and Follow. Changed some misspellings in the key names in the Config.ini file. Sorce* -> Source*
   0.5.2    03/24/2025 Fixed a bug when the EnableMissionMultiAssign option introduced in v0.5.1 was enabled (Air Groups could be duplicated in missions such as Hunting).
   0.5.1    03/23/2025 Fixed: mission type Cover was not assaigned 
   0.5.0    03/22/2025 New release 

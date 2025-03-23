@@ -168,6 +168,18 @@ namespace IL2DCE
         private ISectionFile _globalAircraftInfoFile;
         private ISectionFile _localAircraftInfoFile;
 
+        public string[] AircraftRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] AircraftRandomBlue
+        {
+            get;
+            private set;
+        }
+
         public object Data
         {
             get;
@@ -285,6 +297,26 @@ namespace IL2DCE
             else
             {
                 InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyEndDate);
+            }
+
+            if (campaignFile.exist(Config.SectionAircraft, Config.KeyRandomRed))
+            {
+                string value = campaignFile.get(Config.SectionAircraft, Config.KeyRandomRed);
+                AircraftRandomRed = value.Split(Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                AircraftRandomRed = new string[0];
+            }
+
+            if (campaignFile.exist(Config.SectionAircraft, Config.KeyRandomBlue))
+            {
+                string value = campaignFile.get(Config.SectionAircraft, Config.KeyRandomBlue);
+                AircraftRandomBlue = value.Split(Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                AircraftRandomBlue = new string[0];
             }
         }
 
