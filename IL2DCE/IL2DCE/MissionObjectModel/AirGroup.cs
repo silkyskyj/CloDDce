@@ -290,12 +290,6 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public object Data
-        {
-            get;
-            set;
-        }
-
         public bool MissionAssigned
         {
             get
@@ -1445,12 +1439,12 @@ namespace IL2DCE.MissionObjectModel
         {
             _waypoints.Clear();
 
-            this.Altitude = null;
-            this.EscortAirGroup = null;
-            this.TargetAirGroup = null;
-            this.TargetGroundGroup = null;
-            this.TargetStationary = null;
-            this.TargetArea = null;
+            Altitude = null;
+            EscortAirGroup = null;
+            TargetAirGroup = null;
+            TargetGroundGroup = null;
+            TargetStationary = null;
+            TargetArea = null;
         }
 
         #endregion

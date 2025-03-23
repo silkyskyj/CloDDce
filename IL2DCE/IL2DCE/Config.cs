@@ -64,8 +64,8 @@ namespace IL2DCE
         public const string SectionMissionType = "MissionType";
         public const string SectionAircraft = "Aircraft";
 
-        public const string KeySorceFolderFileName = "SorceFolderFileName";
-        public const string KeySorceFolderFolderName = "SorceFolderFolderName";
+        public const string KeySourceFolderFileName = "SourceFolderFileName";
+        public const string KeySourceFolderFolderName = "SourceFolderFolderName";
         public const string KeyEnableFilterSelectCampaign = "EnableFilterSelectCampaign";
         public const string KeyEnableFilterSelectAirGroup = "EnableFilterSelectAirGroup";
         public const string KeyDisableMissionType = "Disable";
@@ -327,9 +327,9 @@ namespace IL2DCE
                 _campaignsFolder = CampaignsFolderDefault;
             }
 
-            if (confFile.exist(SectionMissionFileConverter, KeySorceFolderFileName))
+            if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFileName))
             {
-                string str = confFile.get(SectionMissionFileConverter, KeySorceFolderFileName);
+                string str = confFile.get(SectionMissionFileConverter, KeySourceFolderFileName);
                 sorceFolderFileName = string.IsNullOrEmpty(str) ? new string[0] : str.Split(SplitComma, System.StringSplitOptions.RemoveEmptyEntries);
             }
             else
@@ -337,9 +337,9 @@ namespace IL2DCE
                 sorceFolderFileName = new string[0];
             }
 
-            if (confFile.exist(SectionMissionFileConverter, KeySorceFolderFolderName))
+            if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFolderName))
             {
-                string str = confFile.get(SectionMissionFileConverter, KeySorceFolderFolderName);
+                string str = confFile.get(SectionMissionFileConverter, KeySourceFolderFolderName);
                 sorceFolderFolderName = string.IsNullOrEmpty(str) ? new string[0] : str.Split(SplitComma, System.StringSplitOptions.RemoveEmptyEntries);
             }
             else

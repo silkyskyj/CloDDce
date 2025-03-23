@@ -361,7 +361,8 @@ namespace IL2DCE.Generator
 
         public void GenerateMission(string environmentTemplateFile, string missionTemplateFileName, string missionId, out ISectionFile missionFile, out BriefingFile briefingFile)
         {
-            MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName), Career.CampaignInfo.AirGroupInfos);
+            CampaignInfo campaignInfo = Career.CampaignInfo;
+            MissionFile missionTemplateFile = new MissionFile(GamePlay.gpLoadSectionFile(missionTemplateFileName), campaignInfo.AirGroupInfos);
 
             AirGroup airGroup = missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup) == 0).FirstOrDefault();
             if (airGroup == null)
@@ -369,9 +370,9 @@ namespace IL2DCE.Generator
                 throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
             }
 
-            GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Config, Random, Career.CampaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries);
+            GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Config, Random, campaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries);
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
-            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, Career.CampaignInfo, missionTemplateFile.AirGroups, airGroup);
+            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionTemplateFile.AirGroups, airGroup);
 
             if (Career.AdditionalAirGroups)
             {
@@ -407,13 +408,13 @@ namespace IL2DCE.Generator
             }
 
             // Add things to the template file.
-            double time = Career.Time == (int)MissionTime.Random ? Random.Next(5, 22): Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
+            double time = Career.Time == (int)MissionTime.Random ? Random.Next((int)MissionTime.Begin, (int)MissionTime.End + 1) : Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
             missionFile.set(MissionFile.SectionMain, MissionFile.KeyTime, time.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int weatherIndex = Career.Weather == (int)EWeather.Random ? Random.Next(0, 3): Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
+            int weatherIndex = Career.Weather == (int)EWeather.Random ? Random.Next((int)EWeather.Clear, (int)EWeather.Count) : Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
             missionFile.set(MissionFile.SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
-            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Random.Next(5, 16) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
+            int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Random.Next(CloudAltitude.Min / 100, CloudAltitude.Max / 100 + 1) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
             missionFile.set(MissionFile.SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
 
             string weatherString = string.Empty;
@@ -431,7 +432,7 @@ namespace IL2DCE.Generator
             }
 
             briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
-                                                                Career.CampaignInfo.Id, Career.Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo), MissionTime.ToString(time), weatherString);
+                                                                campaignInfo.Id, Career.Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo), MissionTime.ToString(time), weatherString);
 
             // Create a air operation for the player.
             EMissionType? missionType = Career.MissionType;
@@ -534,10 +535,16 @@ namespace IL2DCE.Generator
             IEnumerable<string> dlc = missionFile.DLC;
             string[] aircraftRandomRed;
             string[] aircraftRandomBlue;
+            CampaignInfo campaignInfo = Career.CampaignInfo;
             if (missionFile.AircraftRandomRed.Any() && missionFile.AircraftRandomBlue.Any())
             {
                 aircraftRandomRed = missionFile.AircraftRandomRed;
                 aircraftRandomBlue = missionFile.AircraftRandomBlue;
+            }
+            else if (campaignInfo.AircraftRandomRed.Any() && campaignInfo.AircraftRandomBlue.Any())
+            {
+                aircraftRandomRed = campaignInfo.AircraftRandomRed;
+                aircraftRandomBlue = campaignInfo.AircraftRandomBlue;
             }
             else
             {
@@ -594,7 +601,7 @@ namespace IL2DCE.Generator
                     }
                 }
             }
-            else if (airGroupInfo.FlightSize % 1 == 0)
+            else
             {
                 foreach (int key in airGroup.Flights.Keys)
                 {
