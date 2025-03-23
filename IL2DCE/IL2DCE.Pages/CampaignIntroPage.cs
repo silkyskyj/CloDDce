@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -131,7 +132,7 @@ namespace IL2DCE
                     {
                         Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
                         var decoder = new TiffBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
-                        BitmapSource source = decoder.Frames[0];
+                        BitmapSource source = decoder.Frames.First();
                         FrameworkElement.imageAircraft.Source = source;
                         FrameworkElement.borderImage.Visibility = Visibility.Visible;
                     }

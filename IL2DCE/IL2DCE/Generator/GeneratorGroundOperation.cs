@@ -75,7 +75,7 @@ namespace IL2DCE.Generator
                 // TODO: Use range of the aircraft instead of the maxDistance.
                 // Problem is that range depends on loadout, so depending on loadout different targets would be available.
 
-                Point2d last = copy[copy.Count - 1].Position;
+                Point2d last = copy.Last().Position;
                 double maxDistance = last.distance(ref position);
 
                 List<KeyValuePair<GroundGroup, int>> elements = new List<KeyValuePair<GroundGroup, int>>();
@@ -126,7 +126,7 @@ namespace IL2DCE.Generator
                 // TODO: Use range of the aircraft instead of the maxDistance.
                 // Problem is that range depends on loadout, so depending on loadout different targets would be available.
 
-                Point2d last = copy[copy.Count - 1].Position;
+                Point2d last = copy.Last().Position;
                 double maxDistance = last.distance(ref position);
 
                 List<KeyValuePair<Stationary, int>> elements = new List<KeyValuePair<Stationary, int>>();
@@ -350,62 +350,57 @@ namespace IL2DCE.Generator
         {
             string groundGroupId = groundGroup.Id;
 
+            List<GroundGroupWaypoint> waypoints = groundGroup.Waypoints;
             for (int i = 1; i < columnSize; i++)
             {
                 double xOffset = -1.0;
                 double yOffset = -1.0;
 
                 bool subWaypointUsed = false;
-                Point2d p1 = groundGroup.Waypoints[0].Position;
-                if (groundGroup.Waypoints[0].SubWaypoints.Count > 0)
+                GroundGroupWaypoint wayPointFirst = waypoints.First();
+                Point2d p1 = wayPointFirst.Position;
+                if (wayPointFirst.SubWaypoints.Count > 0)
                 {
-                    foreach (GroundGroupWaypoint subWaypoint in groundGroup.Waypoints[0].SubWaypoints)
-                    {
-                        Point2d p2 = subWaypoint.Position;
-                        double distance = p1.distance(ref p2);
-                        xOffset = 500 * ((p2.x - p1.x) / distance);
-                        yOffset = 500 * ((p2.y - p1.y) / distance);
-                        subWaypointUsed = true;
-                        break;
-                    }
+                    Point2d p2 = wayPointFirst.SubWaypoints[0].Position;
+                    double distance = p1.distance(ref p2);
+                    xOffset = 500 * ((p2.x - p1.x) / distance);
+                    yOffset = 500 * ((p2.y - p1.y) / distance);
+                    subWaypointUsed = true;
                 }
                 if (subWaypointUsed == false)
                 {
-                    Point2d p2 = groundGroup.Waypoints[1].Position;
+                    Point2d p2 = waypoints[1].Position;
                     double distance = p1.distance(ref p2);
                     xOffset = 500 * ((p2.x - p1.x) / distance);
                     yOffset = 500 * ((p2.y - p1.y) / distance);
                 }
 
-                groundGroup.Waypoints[0].X += xOffset;
-                groundGroup.Waypoints[0].Y += yOffset;
+                wayPointFirst.X += xOffset;
+                wayPointFirst.Y += yOffset;
 
                 subWaypointUsed = false;
-                p1 = new Point2d(groundGroup.Waypoints[groundGroup.Waypoints.Count - 1].X, groundGroup.Waypoints[groundGroup.Waypoints.Count - 1].Y);
-                if (groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].SubWaypoints.Count > 0)
+                GroundGroupWaypoint wayPointLast = waypoints.Last();
+                p1 = new Point2d(wayPointLast.X, wayPointLast.Y);
+                GroundGroupWaypoint wayPointLast2 = waypoints[waypoints.Count - 2];
+                if (wayPointLast2.SubWaypoints.Count > 0)
                 {
-                    for (int j = groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].SubWaypoints.Count - 1; j >= 0; j--)
-                    {
-                        GroundGroupWaypoint subWaypoint = groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].SubWaypoints[j];
-
-                        Point2d p2 = subWaypoint.Position;
-                        double distance = p1.distance(ref p2);
-                        xOffset = 500 * ((p2.x - p1.x) / distance);
-                        yOffset = 500 * ((p2.y - p1.y) / distance);
-                        subWaypointUsed = true;
-                        break;
-                    }
+                    GroundGroupWaypoint subWaypoint = wayPointLast2.SubWaypoints.Last();
+                    Point2d p2 = subWaypoint.Position;
+                    double distance = p1.distance(ref p2);
+                    xOffset = 500 * ((p2.x - p1.x) / distance);
+                    yOffset = 500 * ((p2.y - p1.y) / distance);
+                    subWaypointUsed = true;
                 }
                 if (subWaypointUsed == false)
                 {
-                    Point2d p2 = new Point2d(groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].X, groundGroup.Waypoints[groundGroup.Waypoints.Count - 2].Y);
+                    Point2d p2 = new Point2d(wayPointLast2.X, wayPointLast2.Y);
                     double distance = p1.distance(ref p2);
                     xOffset = 500 * ((p2.x - p1.x) / distance);
                     yOffset = 500 * ((p2.y - p1.y) / distance);
                 }
 
-                groundGroup.Waypoints[groundGroup.Waypoints.Count - 1].X -= xOffset;
-                groundGroup.Waypoints[groundGroup.Waypoints.Count - 1].Y -= yOffset;
+                wayPointLast.X -= xOffset;
+                wayPointLast.Y -= yOffset;
 
                 groundGroup.Id = groundGroupId + "." + i.ToString(CultureInfo.InvariantCulture.NumberFormat);
 

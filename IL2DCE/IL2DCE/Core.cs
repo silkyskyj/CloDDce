@@ -283,7 +283,7 @@ namespace IL2DCE
             }
 
             // Preload mission file for path calculation.
-            game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles[0]);
+            game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
 
             ISectionFile careerFile = GamePlay.gpCreateSectionFile();
             string careerFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.CareerInfoFileName);
@@ -369,7 +369,7 @@ namespace IL2DCE
             }
 
             // Preload mission file for path calculation.
-            game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles[0]);
+            game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
             game.gameInterface.BattleStop();
 
             // ISectionFile careerFile = GamePlay.gpCreateSectionFile();

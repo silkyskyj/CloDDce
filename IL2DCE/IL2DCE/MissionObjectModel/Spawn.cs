@@ -215,7 +215,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return CreateDisplayName(Altitude);
+                return CreateDisplayString(Altitude);
             }
         }
 
@@ -297,7 +297,7 @@ namespace IL2DCE.MissionObjectModel
             return new Spawn(altitude, spawn.IsRandomizeAltitudeFliendly, spawn.IsRandomizeAltitudeEnemy, spawn.Location, spawn.IsRandomizeTimeFliendly, spawn.IsRandomizeTimeEnemy, spawn.Time.Clone());
         }
 
-        public static string CreateDisplayName(int altitude)
+        public static string CreateDisplayString(int altitude)
         {
             if (altitude >= (int)ESpawn.Parked && altitude <= (int)ESpawn.Default)
             {

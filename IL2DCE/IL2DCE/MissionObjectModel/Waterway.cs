@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.Linq;
 using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
@@ -34,7 +35,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Waypoints[0];
+                return Waypoints.First();
             }
         }
 
@@ -42,7 +43,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Waypoints[Waypoints.Count - 1];
+                return Waypoints.Last();
             }
         }
 

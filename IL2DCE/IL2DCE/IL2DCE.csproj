@@ -39,6 +39,7 @@
     <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
     <Compile Include="MissionObjectModel\EBattleType.cs" />
+    <Compile Include="MissionObjectModel\Flight.cs" />
     <Compile Include="MissionObjectModel\Fuel.cs" />
     <Compile Include="Generator\AircraftInfo.cs" />
     <Compile Include="Generator\AircraftLoadoutInfo.cs" />

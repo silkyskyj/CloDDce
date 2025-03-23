@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
 
 namespace IL2DCE.Generator
 {
@@ -52,11 +53,11 @@ namespace IL2DCE.Generator
             string[] parameters = valuePart.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (parameters != null && parameters.Length == 1)
             {
-                this.loadoutId = parameters[0];
+                this.loadoutId = parameters.First();
             }
             else if (parameters != null && parameters.Length >= 3)
             {
-                this.loadoutId = parameters[0];
+                this.loadoutId = parameters.First();
                 minAltitude = double.Parse(parameters[1]);
                 maxAltitude = double.Parse(parameters[2]);
             }

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows;
+using IL2DCE.MissionObjectModel;
 using maddox.game.page;
 
 namespace IL2DCE
@@ -46,7 +47,10 @@ namespace IL2DCE
                 string result = GetResultSummary() + GetPlayerStat();
 
                 FrameworkElement.textBoxDescription.Text = result;
-                FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
+                if (Game.Core.CurrentCareer.BattleType == EBattleType.Campaign)
+                {
+                    FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
+                }
             }
         }
     }

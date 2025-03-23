@@ -451,7 +451,7 @@ namespace IL2DCE.Generator
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     missionType = availableMissionTypes[randomMissionTypeIndex];
                     if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill))
+                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill, Career.Speed, Career.Fuel, Career.Flight))
                     {
                         result = true;
                         break;
@@ -462,7 +462,7 @@ namespace IL2DCE.Generator
             else
             {
                 result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill);
+                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill, Career.Speed, Career.Fuel, Career.Flight);
             }
 
             if (!result)
@@ -477,7 +477,7 @@ namespace IL2DCE.Generator
             int playerSquadronIndex = airGroup.SquadronIndex;
             if (aircraftOrder.Count > 0)
             {
-                string playerPosition = aircraftOrder[aircraftOrder.Count - 1];
+                string playerPosition = aircraftOrder.Last();
 
                 double factor = aircraftOrder.Count / 6;
                 int playerPositionIndex = (int)(Math.Floor(Career.RankIndex * factor));

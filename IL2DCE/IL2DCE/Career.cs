@@ -342,6 +342,12 @@ namespace IL2DCE
             set;
         }
 
+        public int Flight
+        {
+            get;
+            set;
+        }
+
         public int Spawn
         {
             get;
@@ -610,6 +616,7 @@ namespace IL2DCE
         {
             BattleType = EBattleType.Unknown;
             MissionType = null;
+            Flight = (int)EFlight.Default;
             Spawn = (int)ESpawn.Default;
             Speed = -1;
             Fuel = -1;
