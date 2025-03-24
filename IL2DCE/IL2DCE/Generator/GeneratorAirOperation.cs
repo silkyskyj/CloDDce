@@ -414,7 +414,7 @@ namespace IL2DCE.Generator
 
         #region Create air Operation
 
-        public bool CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, Spawn spawn, Skill[] skill = null, int speed = -1, int fuel = -1, int flight = -1)
+        public bool CreateRandomAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, Spawn spawn, Skill[] skill = null, int speed = -1, int fuel = -1, int flight = -1, EFormation formation = EFormation.Default)
         {
             bool result = false;
             IEnumerable<EMissionType> availableMissionTypes = GetAvailableMissionTypes(airGroup);
@@ -422,7 +422,7 @@ namespace IL2DCE.Generator
             {
                 int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count());
                 EMissionType randomMissionType = availableMissionTypes.ElementAt(randomMissionTypeIndex);
-                result = CreateAirOperation(sectionFile, briefingFile, airGroup, randomMissionType, true, null, null, null, null, null, spawn, skill, speed, fuel);
+                result = CreateAirOperation(sectionFile, briefingFile, airGroup, randomMissionType, true, null, null, null, null, null, spawn, skill, speed, fuel, flight, formation);
             }
             else
             {
@@ -432,7 +432,7 @@ namespace IL2DCE.Generator
         }
 
         public bool CreateAirOperation(ISectionFile sectionFile, BriefingFile briefingFile, AirGroup airGroup, EMissionType missionType, bool allowDefensiveOperation,
-            AirGroup forcedEscortAirGroup, AirGroup forcedEscortedAirGroup, AirGroup forcedOffensiveAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Spawn spawn, Skill[] skill = null, int speed = -1, int fuel = -1, int flight = -1)
+            AirGroup forcedEscortAirGroup, AirGroup forcedEscortedAirGroup, AirGroup forcedOffensiveAirGroup, GroundGroup forcedTargetGroundGroup, Stationary forcedTargetStationary, Spawn spawn, Skill[] skill = null, int speed = -1, int fuel = -1, int flight = -1, EFormation formation = EFormation.Default)
         {
             bool result = false;
             if (!airGroup.MissionAssigned && AvailableAirGroups.Contains(airGroup) && isMissionTypeAvailable(airGroup, missionType))
@@ -516,6 +516,9 @@ namespace IL2DCE.Generator
 
                     // Fuel
                     airGroup.SetFuel(fuel);
+
+                    // Formation
+                    airGroup.SetFormation(formation);
 
                     // Create Briefing 
                     GeneratorBriefing.CreateBriefing(briefingFile, airGroup, missionType, escortAirGroup);

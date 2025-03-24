@@ -166,9 +166,9 @@ namespace IL2DCE.Generator
 
         public void Write(ISectionFile file)
         {
-            SilkySkyCloDFile.Write(file, SectionMain, Aircraft, string.Empty);
-            SilkySkyCloDFile.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(CultureInfo.InvariantCulture.NumberFormat));
-            SilkySkyCloDFile.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(CultureInfo.InvariantCulture.NumberFormat));
+            SilkySkyCloDFile.Write(file, SectionMain, Aircraft, string.Empty, true);
+            SilkySkyCloDFile.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(CultureInfo.InvariantCulture.NumberFormat), true);
+            SilkySkyCloDFile.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(CultureInfo.InvariantCulture.NumberFormat), true);
             int lines = _aircraftInfoFile.lines(Aircraft);
             for (int i = 0; i < lines; i++)
             {
@@ -178,7 +178,7 @@ namespace IL2DCE.Generator
                 EMissionType missionType;
                 if (Enum.TryParse<EMissionType>(key, false, out missionType))
                 {
-                    SilkySkyCloDFile.Write(file, Aircraft, key, value);
+                    SilkySkyCloDFile.Write(file, Aircraft, key, value, true);
                     IList<AircraftParametersInfo> aircraftParametersInfos = GetAircraftParametersInfo(missionType);
                     foreach (var item in aircraftParametersInfos)
                     {

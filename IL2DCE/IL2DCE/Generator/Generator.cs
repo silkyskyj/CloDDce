@@ -451,7 +451,7 @@ namespace IL2DCE.Generator
                     int randomMissionTypeIndex = Random.Next(availableMissionTypes.Count);
                     missionType = availableMissionTypes[randomMissionTypeIndex];
                     if (GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill, Career.Speed, Career.Fuel, Career.Flight))
+                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill, Career.Speed, Career.Fuel, Career.Flight, Career.Formation))
                     {
                         result = true;
                         break;
@@ -462,7 +462,7 @@ namespace IL2DCE.Generator
             else
             {
                 result = GeneratorAirOperation.CreateAirOperation(missionFile, briefingFile, airGroup, missionType.Value, Career.AllowDefensiveOperation,
-                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill, Career.Speed, Career.Fuel, Career.Flight);
+                                                            Career.EscortAirGroup, Career.EscoredtAirGroup, Career.OffensiveAirGroup, Career.TargetGroundGroup, Career.TargetStationary, spawn, Career.PlayerAirGroupSkill, Career.Speed, Career.Fuel, Career.Flight, Career.Formation);
             }
 
             if (!result)

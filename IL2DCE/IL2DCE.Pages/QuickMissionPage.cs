@@ -145,6 +145,20 @@ namespace IL2DCE
                 }
             }
 
+            private EFormation SelectedFormation
+            {
+                get
+                {
+                    ComboBoxItem selected = FrameworkElement.comboBoxSelectFormation.SelectedItem as ComboBoxItem;
+                    if (selected != null && selected.Tag != null)
+                    {
+                        return (EFormation)selected.Tag;
+                    }
+
+                    return EFormation.Default;
+                }
+            }
+
             private int SelectedSpawn
             {
                 get
@@ -383,6 +397,8 @@ namespace IL2DCE
                 {
                     UpdateMissionTypeComboBoxInfo();
                     UpdateFlightComboBoxInfo();
+                    UpdateFormationComboBoxInfo();
+                    UpdateFormationDefaultLabel();
                     UpdateSkillComboBoxInfo();
                     UpdateSkillComboBoxSkillValueInfo();
                     UpdateFuelComboBoxInfo();
@@ -493,6 +509,8 @@ namespace IL2DCE
                 {
                     UpdateMissionTypeComboBoxInfo();
                     UpdateFlightComboBoxInfo();
+                    UpdateFormationComboBoxInfo();
+                    UpdateFormationDefaultLabel();
                     UpdateSkillComboBoxInfo();
                     UpdateSkillComboBoxSkillValueInfo();
                     UpdateFuelComboBoxInfo();
@@ -645,6 +663,7 @@ namespace IL2DCE
                     career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                     career.MissionType = SelectedMissionType;
                     career.Flight = SelectedFlight;
+                    career.Formation = SelectedFormation;
                     career.Spawn = SelectedSpawn;
                     career.Fuel = SelectedFuel;
                     career.Speed = SelectedSpeed;
@@ -1001,9 +1020,9 @@ namespace IL2DCE
             {
                 string missionTypeDefault = string.Empty;
                 AirGroup airGroup = SelectedAirGroup;
-                AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
-                if (airGroup != null && airGroupInfo != null)
+                if (airGroup != null && airGroup.AirGroupInfo != null)
                 {
+                    AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
                     EMissionType? missionType = SelectedMissionType;
                     if (missionType != null)
                     {
@@ -1020,6 +1039,38 @@ namespace IL2DCE
                     }
                 }
                 FrameworkElement.labelDefaultFlight.Content = string.IsNullOrEmpty(missionTypeDefault) ? string.Empty : string.Format(MissionTypeDefaultFormat, missionTypeDefault);
+            }
+
+            private void UpdateFormationComboBoxInfo()
+            {
+                ComboBox comboBox = FrameworkElement.comboBoxSelectFormation;
+                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+                comboBox.Items.Clear();
+
+                AirGroup airGroup = SelectedAirGroup;
+                if (currentMissionFile != null && airGroup != null)
+                {
+                    Config config = Game.Core.Config;
+                    AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                    Formations formations = Formations.Default[airGroupInfo.FormationsType];
+
+                    // comboBox.Items.Add(new ComboBoxItem() { Tag = EFormation.Random, Content = EFormation.Random.ToDescription() });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = EFormation.Default, Content = EFormation.Default.ToDescription() });
+                    formations.ForEach(x => comboBox.Items.Add(new ComboBoxItem() { Tag = x, Content = x.ToDescription() }));
+                }
+
+                EnableSelectItem(comboBox, selected, currentMissionFile == null);
+            }
+
+            private void UpdateFormationDefaultLabel()
+            {
+                string missionDefault = string.Empty;
+                AirGroup airGroup = SelectedAirGroup;
+                if (airGroup != null)
+                {
+                    missionDefault = airGroup.Formation;
+                }
+                FrameworkElement.labelDefaultFormation.Content = string.IsNullOrEmpty(missionDefault) ? string.Empty : string.Format(MissionDefaultFormat, missionDefault);
             }
 
             private void UpdateSpawnComboBoxInfo()
@@ -1355,6 +1406,7 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
                 EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription() : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectFlight, Flight.CreateDisplayString(career.Flight));
+                EnableSelectItem(FrameworkElement.comboBoxSelectFormation, career.Formation.ToDescription());
                 EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayString(career.Spawn));
                 EnableSelectItem(FrameworkElement.comboBoxSpeed, career.Speed.ToString());
                 EnableSelectItem(FrameworkElement.comboBoxFuel, career.Fuel.ToString());

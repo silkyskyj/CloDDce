@@ -571,12 +571,12 @@ namespace IL2DCE.MissionObjectModel
             if (_waypoints.Count > 0)
             {
                 // Section AirGroup
-                SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionAirGroups, Id, string.Empty);
+                SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionAirGroups, Id, string.Empty, true);
 
                 // VirtualAirGroupKey
                 if (!String.IsNullOrEmpty(VirtualAirGroupKey))
                 {
-                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyVirtualAirGroupKey, VirtualAirGroupKey);
+                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyVirtualAirGroupKey, VirtualAirGroupKey, true);
                 }
 
                 // Flight
@@ -589,14 +589,14 @@ namespace IL2DCE.MissionObjectModel
                         {
                             acNumberLine += acNumber + " ";
                         }
-                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyFlight + flightIndex, acNumberLine.TrimEnd());
+                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyFlight + flightIndex, acNumberLine.TrimEnd(), true);
                     }
                 }
 
-                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyClass, Class);
-                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyFormation, Formation);
-                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyCallSign, CallSign.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyFuel, Fuel.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyClass, Class, true);
+                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyFormation, Formation, true);
+                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyCallSign, CallSign.ToString(CultureInfo.InvariantCulture.NumberFormat), true);
+                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyFuel, Fuel.ToString(CultureInfo.InvariantCulture.NumberFormat), true);
 
                 // Weapons
                 if (Weapons != null && Weapons.Length > 0)
@@ -606,14 +606,14 @@ namespace IL2DCE.MissionObjectModel
                     {
                         weaponsLine += weapon.ToString(CultureInfo.InvariantCulture.NumberFormat) + " ";
                     }
-                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyWeapons, weaponsLine.TrimEnd());
+                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyWeapons, weaponsLine.TrimEnd(), true);
                 }
 
                 if (Detonator != null && Detonator.Count > 0)
                 {
                     foreach (string detonator in Detonator)
                     {
-                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyDetonator, detonator);
+                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyDetonator, detonator, true);
                     }
                 }
 
@@ -628,7 +628,7 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else if (!string.IsNullOrEmpty(Skill))
                 {
-                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySkill, Skill);
+                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySkill, Skill, true);
                 }
                 else
                 {
@@ -638,7 +638,7 @@ namespace IL2DCE.MissionObjectModel
                 // Aging
                 if (!string.IsNullOrEmpty(Aging))
                 {
-                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyAging, Aging);
+                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyAging, Aging, true);
                 }
 
                 // Skin
@@ -665,13 +665,13 @@ namespace IL2DCE.MissionObjectModel
                     switch (Spawn.Type)
                     {
                         case ESpawn.Parked:
-                            SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySetOnPark, "1");
+                            SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySetOnPark, "1", true);
                             break;
                         case ESpawn.Idle:
-                            SilkySkyCloDFile.Write(sectionFile, Id, "Idle", "1");
+                            SilkySkyCloDFile.Write(sectionFile, Id, "Idle", "1", true);
                             break;
                         case ESpawn.Scramble:
-                            SilkySkyCloDFile.Write(sectionFile, Id, "Scramble", "1");
+                            SilkySkyCloDFile.Write(sectionFile, Id, "Scramble", "1", true);
                             break;
                             //case ESpawn.AirStart:
                             //default:
@@ -684,38 +684,34 @@ namespace IL2DCE.MissionObjectModel
                     if (Spawn.Time.IsDelay)
                     {
                         string action = string.Format("Spawn_{0}", Id);
-                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySpawnFromScript, "1");
-                        SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionTrigger, action, string.Format("{0} {1}", MissionFile.ValueTTime, Spawn.Time.Value.ToString(CultureInfo.InvariantCulture.NumberFormat)));
-                        SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionAction, action, string.Format("{0} {1} {2}", MissionFile.ValueASpawnGroup, "1", Id));
+                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySpawnFromScript, "1", true);
+                        SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionTrigger, action, string.Format("{0} {1}", MissionFile.ValueTTime, Spawn.Time.Value.ToString(CultureInfo.InvariantCulture.NumberFormat)), true);
+                        SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionAction, action, string.Format("{0} {1} {2}", MissionFile.ValueASpawnGroup, "1", Id), true);
                     }
                 }
                 // else
                 {
                     if (SetOnParked)
                     {
-                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySetOnPark, "1");
+                        SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySetOnPark, "1", true);
                     }
                 }
 
                 // Waypoint
                 foreach (AirGroupWaypoint waypoint in _waypoints)
                 {
-                    if (waypoint.Target == null)
-                    {
-                        SilkySkyCloDFile.Write(sectionFile, Id + MissionFile.SectionWay,
-                                        waypoint.Type.ToString(),
-                                        waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                    }
-                    else
-                    {
-                        SilkySkyCloDFile.Write(sectionFile, Id + MissionFile.SectionWay,
-                                        waypoint.Type.ToString(),
-                                        waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + waypoint.Target);
-                    }
+                    SilkySkyCloDFile.Write(sectionFile, Id + MissionFile.SectionWay,
+                                    waypoint.Type.ToString(),
+                                    string.Format("{0:F2} {1:F2} {2:F2} {3:F2} {4}",
+                                    waypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                    waypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                    waypoint.Z.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                    waypoint.V.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                    waypoint.Target ?? string.Empty));
                 }
 
                 // Briefing
-                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyBriefing, this.Id);
+                SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyBriefing, this.Id, true);
             }
         }
 
@@ -1155,11 +1151,6 @@ namespace IL2DCE.MissionObjectModel
 
                     // TODO: Update after Waypoint Z(Altitude) value
                 }
-
-                if (spawn.Time.IsDelay)
-                {
-
-                }
             }
         }
 
@@ -1168,6 +1159,11 @@ namespace IL2DCE.MissionObjectModel
             if (speed != -1)
             {
                 this.speed = speed;
+                AirGroupWaypoint way = Waypoints.FirstOrDefault();
+                if (way != null && way.Type != AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF && way.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
+                {
+                    way.V = speed;
+                }
             }
         }
 
@@ -1192,6 +1188,19 @@ namespace IL2DCE.MissionObjectModel
                     aircraftNumber++;
                 }
                 Flights[i] = aircraftNumbers;
+            }
+        }
+
+        public void SetFormation(EFormation formation)
+        {
+            if (formation == EFormation.Random)
+            {
+                Formations formations = Formations.Default[AirGroupInfo.FormationsType];
+                formation = formations.GetRandom();
+            }
+            if (formation != EFormation.Default)
+            {
+                Formation = formation.ToString();
             }
         }
 
@@ -1285,7 +1294,7 @@ namespace IL2DCE.MissionObjectModel
                 int flight = item.Key / 10;
                 string key = string.Format("{0}{1}{2}", keyInfo,
                     (flight > 0 ? flight.ToString(CultureInfo.InvariantCulture.NumberFormat) : string.Empty), (item.Key % 10));
-                SilkySkyCloDFile.Write(sectionFile, id, key, item.Value);
+                SilkySkyCloDFile.Write(sectionFile, id, key, item.Value, true);
             }
         }
 

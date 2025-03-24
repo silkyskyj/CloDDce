@@ -365,13 +365,13 @@ namespace IL2DCE
 
         public void Write(ISectionFile file)
         {
-            SilkySkyCloDFile.Write(file, SectionMain, KeyName, name);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles));
-            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles));
-            SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
-            SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo));
+            SilkySkyCloDFile.Write(file, SectionMain, KeyName, name, true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile, true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName, true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
         }
     }
 }

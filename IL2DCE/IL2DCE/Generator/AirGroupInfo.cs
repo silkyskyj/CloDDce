@@ -86,7 +86,8 @@ namespace IL2DCE.Generator
         public const string KeyFlightSize = "FlightSize";
         public const string KeyArmyIndex = "ArmyIndex";
         public const string KeyAirForceIndex = "AirForceIndex";
-
+        public const string KeyFormationsType = "FormationsType";
+        
         #region Public properties
 
         public string Name
@@ -145,6 +146,12 @@ namespace IL2DCE.Generator
             set;
         }
 
+        public int FormationsType
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         public bool Read(ISectionFile file)
@@ -154,12 +161,13 @@ namespace IL2DCE.Generator
 
         public void Write(ISectionFile file, string airGroupKey = null, string aircraftClass = null)
         {
-            SilkySkyCloDFile.Write(file, SectionMain, Name, string.Empty);
+            SilkySkyCloDFile.Write(file, SectionMain, Name, string.Empty, true);
             SilkySkyCloDFile.Write(file, Name, KeySquadronCount, SquadronCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             SilkySkyCloDFile.Write(file, Name, KeyFlightCount, FlightCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             SilkySkyCloDFile.Write(file, Name, KeyFlightSize, FlightSize.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             SilkySkyCloDFile.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             SilkySkyCloDFile.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyFormationsType, FormationsType.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
             if (string.IsNullOrEmpty(aircraftClass))
             {
                 Aircrafts.ForEach(x => SilkySkyCloDFile.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty, false)); // All
@@ -218,7 +226,8 @@ namespace IL2DCE.Generator
                     FlightCount = SilkySkyCloDFile.ReadNumeric(file, section, KeyFlightCount, FileInfo),
                     FlightSize = SilkySkyCloDFile.ReadNumeric(file, section, KeyFlightSize, FileInfo),
                     ArmyIndex = SilkySkyCloDFile.ReadNumeric(file, section, KeyArmyIndex, FileInfo),
-                    AirForceIndex = SilkySkyCloDFile.ReadNumeric(file, section, KeyAirForceIndex, FileInfo)
+                    AirForceIndex = SilkySkyCloDFile.ReadNumeric(file, section, KeyAirForceIndex, FileInfo),
+                    FormationsType = file.get(section, KeyFormationsType, (int)EFormationsType.Unknown)
                 };
             }
 

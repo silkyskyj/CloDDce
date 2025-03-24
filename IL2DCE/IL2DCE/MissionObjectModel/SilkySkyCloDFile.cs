@@ -425,7 +425,7 @@ namespace IL2DCE.MissionObjectModel
             throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file != null ? file : string.Empty, section, key));
         }
 
-        public static void Write(ISectionFile file, string section, string key, string value, bool overwrite = true)
+        public static void Write(ISectionFile file, string section, string key, string value, bool overwrite)
         {
             if (file.exist(section, key))
             {
@@ -438,6 +438,11 @@ namespace IL2DCE.MissionObjectModel
             {
                 file.add(section, key, value);
             }
+        }
+
+        public static void Write(ISectionFile file, string section, string key, string value)
+        {
+            file.add(section, key, value);
         }
 
         public static IEnumerable<string> ReadSectionKeies(ISectionFile fileSrc, string section)

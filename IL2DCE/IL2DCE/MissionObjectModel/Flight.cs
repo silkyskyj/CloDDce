@@ -17,7 +17,6 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using IL2DCE.Generator;
 
 namespace IL2DCE.MissionObjectModel
 {

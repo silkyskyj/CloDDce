@@ -51,6 +51,10 @@ namespace IL2DCE
                 {
                     FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
                 }
+                else
+                {
+                    FrameworkElement.textBoxSlide.Visibility = Visibility.Hidden;
+                }
             }
         }
     }
