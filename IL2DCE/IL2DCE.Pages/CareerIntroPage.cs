@@ -15,14 +15,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
+using maddox.game.page;
+using maddox.game;
 using maddox.game.play;
 using static IL2DCE.MissionObjectModel.Spawn;
+using System.Globalization;
+using maddox.GP;
 
 namespace IL2DCE.Pages
 {
@@ -172,6 +177,7 @@ namespace IL2DCE.Pages
         private bool hookComboSelectionChanged = false;
 
         private MissionFile currentMissionFile = null;
+        private bool missionLoaded = false;
 
         #endregion
 
@@ -190,6 +196,8 @@ namespace IL2DCE.Pages
             FrameworkElement.datePickerEnd.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerEnd_SelectedDateChanged);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxSelectionChangedEvent += new SelectionChangedEventHandler(GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxTextChangedEvent += new TextChangedEventHandler(GeneralSettingsGroupBox_ComboBoxTextChangedEvent);
+            FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
+            // FrameworkElement.buttonMissionLoad.Visibility = Visibility.Hidden;
         }
 
         public override void _enter(maddox.game.IGame play, object arg)
@@ -261,6 +269,7 @@ namespace IL2DCE.Pages
             {
                 currentMissionFile = null;
             }
+            missionLoaded = false;
 
             UpdateDataPicker();
             UpdateAirGroupComboBoxInfo();
@@ -339,6 +348,32 @@ namespace IL2DCE.Pages
         #endregion
 
         #region Button Click
+
+        private void buttonMissionLoad_Click(object sender, RoutedEventArgs e)
+        {
+            CampaignInfo campaignInfo = SelectedCampaign;
+            if (campaignInfo != null)
+            {
+                GameIterface gameIterface = Game.gameInterface;
+                if (gameIterface.BattleIsRun())
+                {
+                    gameIterface.BattleStop();
+                }
+                try
+                {
+                    // Game.gameInterface.AppPartsLoadAll();
+                    Game.gameInterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
+                    Game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
+                    missionLoaded = true;
+                    UpdateAirGroupComboBoxContent();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+                // Game.gameInterface.PostMissionLoad(campaignInfo.StaticTemplateFiles.First());
+            }
+        }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
@@ -565,7 +600,12 @@ namespace IL2DCE.Pages
                         AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
                         if (airGroupInfo.ArmyIndex == armyIndex && airGroupInfo.AirForceIndex == airForceIndex && aircraftInfo.IsFlyable)
                         {
-                            comboBox.Items.Add(new ComboBoxItem() { Tag = airGroup, Content = CreateAirGroupContent(airGroup, campaignInfo, aircraftInfo) });
+                            comboBox.Items.Add(new ComboBoxItem()
+                            {
+                                Tag = airGroup,
+                                Content = missionLoaded ? CreateAirGroupContent(airGroup, campaignInfo) : CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo)
+                            });
+
                         }
                     }
                 }
@@ -574,13 +614,58 @@ namespace IL2DCE.Pages
             comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
         }
 
-        private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, AircraftInfo aircraftInfo = null)
+        private void UpdateAirGroupComboBoxContent()
+        {
+            CampaignInfo campaignInfo = SelectedCampaign;
+            foreach (ComboBoxItem item in FrameworkElement.comboBoxSelectAirGroup.Items)
+            {
+                AirGroup airGroup = item.Tag as AirGroup;
+                item.Content = CreateAirGroupContent(airGroup, campaignInfo);
+            }
+        }
+
+        private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo)
+        {
+            string content = string.Empty;
+            AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+            Point3d pos = airGroup.Position;
+            double distance = Game.gpFrontDistance(airGroup.ArmyIndex, pos.x, pos.y);
+            if (distance == 0)
+            {
+                distance = Game.gpFrontDistance(airGroup.ArmyIndex == (int)EArmy.Red ? (int)EArmy.Blue : (int)EArmy.Red, pos.x, pos.y);
+            }
+            if (airGroup.Airstart)
+            {
+                content = CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo, distance);
+            }
+            else
+            {
+                string airportName = string.Empty;
+                var airports = Game.gpAirports();
+                var airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR());
+                if (!airport.Any())
+                {
+                    airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR() * 1.5);
+                }
+                if (airport.Any())
+                {
+                    airportName = airport.First().Name();
+                }
+                content = CreateAirGroupContent(airGroup, campaignInfo, airportName, aircraftInfo, distance);
+            }
+
+            return content;
+        }
+
+        private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, string airportName, AircraftInfo aircraftInfo = null, double distance = -1)
         {
             if (aircraftInfo == null)
             {
                 aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
             }
-            return string.Format("{0} ({1}){2}", airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]": string.Empty);
+            return string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} ({1}){2}{3}",
+                    airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]" : string.IsNullOrEmpty(airportName) ? string.Empty : string.Format(" [{0}]", airportName),
+                    distance >= 0 ? string.Format(CultureInfo.InvariantCulture.NumberFormat, " {0:F2}km", distance / 1000) : string.Empty);
         }
 
         private void UpdateDataPicker()
