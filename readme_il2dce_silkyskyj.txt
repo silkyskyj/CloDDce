@@ -97,7 +97,8 @@ History
 
   Ver      Date       Comment
 
-  0.5.6    03/29/2025 Added: Select Auto re-Arm(bullets only), Auto re-Fuel, Track Recording option in Dynamic Quick Mission page, Career & Campaign Intro page. Fixed: FrontMaker is not displayed. Armor/Vehicle are not placed.
+  0.5.6    03/29/2025 Added: Select Auto re-Arm(bullets only), Auto re-Fuel, Track Recording option in Dynamic Quick Mission page, Career & Campaign Intro page. display the spawn airport and the distance [km] from the front line option in Select Air Group list.
+                      Fixed: FrontMaker is not displayed. Armor/Vehicle are not placed.
   0.5.5    03/24/2025 Added: Select Formation in Dynamic Quick Mission Page. Fixed: abend error after import mission. where some of Air Group ways were overwritten and not saved property(including a bug where the speed was not set.)
   0.5.4    03/23/2025 Added: Select flight count & size. Fixed: Bug Where the fuel and speed values set in Dynamic Quick mission were not reflected.
   0.5.3    03/23/2025 Changed: Changed the logic for generating the mission types Hunting and Follow. Changed some misspellings in the key names in the Config.ini file. Sorce* -> Source*
