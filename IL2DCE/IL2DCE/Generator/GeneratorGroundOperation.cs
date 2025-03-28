@@ -16,10 +16,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
+using maddox.game.world;
 using maddox.GP;
 
 namespace IL2DCE.Generator
@@ -50,7 +53,9 @@ namespace IL2DCE.Generator
 
         private List<Stationary> AvailableStationaries = new List<Stationary>();
 
-        public GeneratorGroundOperation(IGamePlay gamePlay, Config config, IRandom random, CampaignInfo campaignInfo, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries)
+        private IEnumerable<Point3d> FrontMarkers;
+
+        public GeneratorGroundOperation(IGamePlay gamePlay, Config config, IRandom random, CampaignInfo campaignInfo, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IEnumerable<Point3d> frontMarkers)
         {
             GamePlay = gamePlay;
             Random = random;
@@ -59,6 +64,8 @@ namespace IL2DCE.Generator
             AvailableStationaries.Clear();
             AvailableGroundGroups.AddRange(groundGroups);
             AvailableStationaries.AddRange(stationaries);
+
+            FrontMarkers = frontMarkers;
         }
 
         public GroundGroup getRandomTargetBasedOnRange(List<GroundGroup> availableGroundGroups, AirGroup offensiveAirGroup)
@@ -163,7 +170,7 @@ namespace IL2DCE.Generator
             return selectedStationary;
         }
 
-        private void findPath(GroundGroup groundGroup, Point2d start, Point2d end)
+        private IEnumerable<GroundGroupWaypoint> CreateWaypoints(GroundGroup groundGroup, Point2d start, Point2d end)
         {
             IRecalcPathParams pathParams = null;
             if (groundGroup.Type == EGroundGroupType.Armor || groundGroup.Type == EGroundGroupType.Vehicle)
@@ -180,51 +187,56 @@ namespace IL2DCE.Generator
                 while (pathParams.State == RecalcPathState.WAIT)
                 {
                     //Game.gpLogServer(new Player[] { Game.gpPlayer() }, "Wait for path.", null);
-                    System.Threading.Thread.Sleep(100);
+                    Thread.Sleep(100);
                 }
 
                 if (pathParams.State == RecalcPathState.SUCCESS)
                 {
                     //Game.gpLogServer(new Player[] { Game.gpPlayer() }, "Path found (" + pathParams.Path.Length.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + ").", null);
 
+                    List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
                     GroundGroupWaypoint lastGroundGroupWaypoint = null;
-                    foreach (maddox.game.world.AiWayPoint aiWayPoint in pathParams.Path)
+                    foreach (AiWayPoint aiWayPoint in pathParams.Path)
                     {
-                        if (aiWayPoint is maddox.game.world.AiGroundWayPoint)
+                        if (aiWayPoint is AiGroundWayPoint)
                         {
-                            maddox.game.world.AiGroundWayPoint aiGroundWayPoint = aiWayPoint as maddox.game.world.AiGroundWayPoint;
-
+                            AiGroundWayPoint aiGroundWayPoint = aiWayPoint as AiGroundWayPoint;
                             if (aiGroundWayPoint.P.z == -1)
                             {
                                 GroundGroupWaypoint groundGroupWaypoint = new GroundGroupWaypointLine(aiGroundWayPoint.P.x, aiGroundWayPoint.P.y, aiGroundWayPoint.roadWidth, aiGroundWayPoint.Speed);
                                 lastGroundGroupWaypoint = groundGroupWaypoint;
-                                groundGroup.Waypoints.Add(groundGroupWaypoint);
+                                waypoints.Add(groundGroupWaypoint);
                             }
                             else if (lastGroundGroupWaypoint != null)
                             {
                                 // TODO: Fix calculated param
 
-                                //string s = aiGroundWayPoint.P.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + aiGroundWayPoint.P.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + aiGroundWayPoint.P.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + " " + aiGroundWayPoint.roadWidth.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-                                //GroundGroupSubWaypoint groundGroupSubWaypoint = new GroundGroupSubWaypoint(s, null);
-                                //lastGroundGroupWaypoint.SubWaypoints.Add(groundGroupSubWaypoint);
+                                //string s = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2}", 
+                                //    aiGroundWayPoint.P.x, aiGroundWayPoint.P.y, aiGroundWayPoint.P.z, aiGroundWayPoint.roadWidth);
+
+                                GroundGroupWaypoint groundGroupSubWaypoint = new GroundGroupWaypointLine(aiGroundWayPoint.P.x, aiGroundWayPoint.P.x, aiGroundWayPoint.P.z, null);
+                                lastGroundGroupWaypoint.SubWaypoints.Add(groundGroupSubWaypoint);
                             }
                         }
                     }
+                    return waypoints;
                 }
                 else if (pathParams.State == RecalcPathState.FAILED)
                 {
+                    Debug.WriteLine("Path not found.");
                     //Game.gpLogServer(new Player[] { Game.gpPlayer() }, "Path not found.", null);
                 }
             }
+            return null;
         }
 
-        private void findRoad(GroundGroup groundGroup, Point2d start, Point2d end, IList<Waterway> roads)
+        private IEnumerable<GroundGroupWaypoint> CreateWaypoints(GroundGroup groundGroup, Point2d start, Point2d end, IList<Groundway> roads)
         {
             if (roads != null && roads.Count > 0)
             {
-                Waterway closestRoad = null;
+                Groundway closestRoad = null;
                 double closestRoadDistance = 0.0;
-                foreach (Waterway road in roads)
+                foreach (Groundway road in roads)
                 {
                     if (road.Start != null && road.End != null)
                     {
@@ -255,16 +267,25 @@ namespace IL2DCE.Generator
 
                 if (closestRoad != null)
                 {
-                    //findPath(groundGroup, start, new Point2d(closestRoad.Start.X, closestRoad.Start.Y));
+                    // CreateWaypoints(groundGroup, start, new Point2d(closestRoad.Start.X, closestRoad.Start.Y));
 
-                    groundGroup.Waypoints.AddRange(closestRoad.Waypoints);
+                    List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
+                    waypoints.AddRange(closestRoad.Waypoints);
 
-                    List<Waterway> availableRoads = new List<Waterway>(roads);
+                    List<Groundway> availableRoads = new List<Groundway>(roads);
                     availableRoads.Remove(closestRoad);
 
-                    findRoad(groundGroup, new Point2d(closestRoad.End.Position.x, closestRoad.End.Position.y), end, availableRoads);
+                    IEnumerable<GroundGroupWaypoint> results = CreateWaypoints(groundGroup, new Point2d(closestRoad.End.Position.x, closestRoad.End.Position.y), end, availableRoads);
+                    if (results != null && results.Any())
+                    {
+                        waypoints.AddRange(results);
+                    }
+
+                    return waypoints;
                 }
             }
+
+            return null;
         }
 
         public bool CreateRandomGroundOperation(ISectionFile missionFile, GroundGroup groundGroup)
@@ -288,60 +309,64 @@ namespace IL2DCE.Generator
             }
             else
             {
-                //IList<Point3d> friendlyMarkers = MissionTemplate.GetFriendlyMarkers(groundGroup.Army);
-                //if (friendlyMarkers.Count > 0)
-                //{
-                //    List<Point3d> availableFriendlyMarkers = new List<Point3d>(friendlyMarkers);
+                IEnumerable<Point3d> friendlyMarkers = FrontMarkers.Where(x => x.z == groundGroup.Army);
+                if (friendlyMarkers.Any())
+                {
+                    List<Point3d> availableFriendlyMarkers = new List<Point3d>(friendlyMarkers);
 
-                //    // Find closest friendly marker
-                //    Point3d? closestMarker = null;
-                //    foreach (Point3d marker in availableFriendlyMarkers)
-                //    {
-                //        if (closestMarker == null)
-                //        {
-                //            closestMarker = marker;
-                //        }
-                //        else if (closestMarker.HasValue)
-                //        {
-                //            Point3d p1 = new Point3d(marker.x, marker.y, marker.z);
-                //            Point3d p2 = new Point3d(closestMarker.Value.x, closestMarker.Value.y, closestMarker.Value.z);
-                //            if (groundGroup.Position.distance(ref p1) < groundGroup.Position.distance(ref p2))
-                //            {
-                //                closestMarker = marker;
-                //            }
-                //        }
-                //    }
+                    // Find closest friendly marker
+                    Point3d? closestMarker = null;
+                    foreach (Point3d marker in availableFriendlyMarkers)
+                    {
+                        if (closestMarker == null)
+                        {
+                            closestMarker = marker;
+                        }
+                        else if (closestMarker.HasValue)
+                        {
+                            Point2d p1 = new Point2d(marker.x, marker.y);
+                            Point2d p2 = new Point2d(closestMarker.Value.x, closestMarker.Value.y);
+                            if (groundGroup.Position.distance(ref p1) < groundGroup.Position.distance(ref p2))
+                            {
+                                closestMarker = marker;
+                            }
+                        }
+                    }
 
-                //    if (closestMarker != null && closestMarker.HasValue)
-                //    {
-                //        availableFriendlyMarkers.Remove(closestMarker.Value);
+                    if (closestMarker != null && closestMarker.HasValue)
+                    {
+                        availableFriendlyMarkers.Remove(closestMarker.Value);
 
-                //        if (availableFriendlyMarkers.Count > 0)
-                //        {
-                //            int markerIndex = rand.Next(availableFriendlyMarkers.Count);
+                        if (availableFriendlyMarkers.Count > 0)
+                        {
+                            int markerIndex = Random.Next(availableFriendlyMarkers.Count);
+                            Point2d end = new Point2d(availableFriendlyMarkers[markerIndex].x, availableFriendlyMarkers[markerIndex].y);
 
-                //            groundGroup.Waypoints.Clear();
+                            IEnumerable<GroundGroupWaypoint> wayPoints;
+                            if (groundGroup.Type == EGroundGroupType.Armor || groundGroup.Type == EGroundGroupType.Vehicle)
+                            {
+                                Point2d start = new Point2d(closestMarker.Value.x, closestMarker.Value.y);
+                                wayPoints = CreateWaypoints(groundGroup, start, end);
+                                groundGroup.WriteTo(missionFile);
+                            }
+                            else
+                            {
+                                Point2d start = new Point2d(groundGroup.Position.x, groundGroup.Position.y);
+                                wayPoints = CreateWaypoints(groundGroup, start, end);
+                                groundGroup.WriteTo(missionFile);
+                                generateColumnFormation(missionFile, groundGroup, 3);
+                            }
 
-                //            if (groundGroup.Type == EGroundGroupType.Armor || groundGroup.Type == EGroundGroupType.Vehicle)
-                //            {
-                //                findPath(groundGroup, new Point2d(closestMarker.Value.x, closestMarker.Value.y), new Point2d(availableFriendlyMarkers[markerIndex].x, availableFriendlyMarkers[markerIndex].y));
-                //                groundGroup.WriteTo(missionFile);
-                //            }
-                //            else
-                //            {
-                //                Point2d start = new Point2d(groundGroup.Position.x, groundGroup.Position.y);
-                //                Point2d end = new Point2d(availableFriendlyMarkers[markerIndex].x, availableFriendlyMarkers[markerIndex].y);
+                            if (wayPoints != null && wayPoints.Any())
+                            {
+                                groundGroup.Waypoints.Clear();
+                                groundGroup.Waypoints.AddRange(wayPoints);
 
-
-                //                findPath(groundGroup, start, end);
-
-                //                groundGroup.WriteTo(missionFile);
-
-                //                generateColumnFormation(missionFile, groundGroup, 3);
-                //            }
-                //        }
-                //    }
-                //}
+                                result = true;
+                            }
+                        }
+                    }
+                }
             }
             return result;
         }

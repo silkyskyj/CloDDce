@@ -592,7 +592,8 @@ namespace IL2DCE.Generator
                     }
                     else
                     {
-                        airGroup = null;
+                        groundGroup = null;
+                        // airGroup = null;
                     }
                 }
                 else if (stationary != null)
@@ -654,7 +655,8 @@ namespace IL2DCE.Generator
                     }
                     else
                     {
-                        airGroup = null;
+                        // airGroup = null;
+                        groundGroup = null;
                     }
                 }
                 else if (stationary != null)
@@ -1626,7 +1628,7 @@ namespace IL2DCE.Generator
                     pointAirport = x.Pos();
                     return GamePlay.gpFrontArmy(pointAirport.x, pointAirport.y) == airGroup.ArmyIndex &&
                             /*x.ParkCountFree() > SpawnNeedParkCountFree && */MapUtil.IsInRange(ref range, ref pointAirport) &&
-                            !posAirGroups.Any(y => y.distance(ref pointAirport) < SpawnMaxDifDistanceAirport);
+                            !posAirGroups.Any(y => y.distance(ref pointAirport) <= x.FieldR());
                 });
                 if (aiAirports.Any())
                 {

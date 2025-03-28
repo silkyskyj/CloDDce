@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 using maddox.game;
 using maddox.GP;
 
@@ -212,29 +213,38 @@ namespace IL2DCE.MissionObjectModel
 
         public string Id
         {
-            get
-            {
-                return _id;
-            }
+            get;
+            private set;
         }
-        private string _id;
 
-        public double X;
+        public double X
+        {
+            get;
+            private set;
+        }
 
-        public double Y;
+        public double Y
+        {
+            get;
+            private set;
+        }
 
-        public double Direction;
+        public double Direction
+        {
+            get;
+            private set;
+        }
 
         public string Class
         {
             get;
-            set;
+            private set;
         }
 
         public ECountry Country
         {
             get;
-            set;
+            private set;
         }
 
         public Point2d Position
@@ -322,7 +332,7 @@ namespace IL2DCE.MissionObjectModel
         public string Options
         {
             get;
-            set;
+            private set;
         }
 
         public string DisplayName
@@ -333,35 +343,9 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public Stationary(ISectionFile sectionFile, string id)
-        {
-            _id = id;
-
-            string value = sectionFile.get("Stationary", id);
-
-            string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (valueParts.Length > 4)
-            {
-                Class = valueParts[0];
-                Country = ParseCountry(valueParts[1]);
-                double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Direction);
-
-                if (valueParts.Length > 5)
-                {
-                    for (int i = 5; i < valueParts.Length; i++)
-                    {
-                        Options += valueParts[i] + " ";
-                    }
-                    Options = Options.Trim();
-                }
-            }
-        }
-
         public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)
         {
-            _id = id;
+            Id = id;
             X = x;
             Y = y;
             Direction = direction;
@@ -370,7 +354,44 @@ namespace IL2DCE.MissionObjectModel
             Options = options;
         }
 
-        private ECountry ParseCountry(string str)
+        public static Stationary Create(ISectionFile sectionFile, string id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                string value = sectionFile.get(MissionFile.SectionStationary, id);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    string[] valueParts = value.Split(MissionFile.SplitChars, StringSplitOptions.RemoveEmptyEntries);
+                    if (valueParts.Length > 4)
+                    {
+                        ECountry country = ParseCountry(valueParts[1]);
+                        double x;
+                        double y;
+                        double direction;
+                        if (double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
+                            double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
+                            double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out direction))
+                        {
+                            StringBuilder options = new StringBuilder();
+                            if (valueParts.Length > 5)
+                            {
+                                for (int i = 5; i < valueParts.Length; i++)
+                                {
+                                    options.Append(valueParts[i]);
+                                    options.Append(" ");
+                                }
+                            }
+
+                            return new Stationary(id, valueParts[0], country, x ,y, direction, options.ToString().TrimEnd());
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static ECountry ParseCountry(string str)
         {
             if (!string.IsNullOrWhiteSpace(str))
             {
@@ -394,12 +415,8 @@ namespace IL2DCE.MissionObjectModel
 
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = Class + " " + Country.ToString() + " " + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(CultureInfo.InvariantCulture.NumberFormat);
-            if (Options != null)
-            {
-                value += Options;
-            }
-            sectionFile.add("Stationary", Id, value);
+            string value = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2} {5}", Class, Country.ToString(), X, Y, Direction, Options ?? string.Empty);
+            sectionFile.add("Stationary", Id, value.TrimEnd());
         }
     }
 }

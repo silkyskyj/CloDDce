@@ -41,6 +41,7 @@ namespace IL2DCE
         public const string MissionFolderFormatSingle = "$home/parts/{0}/missions/Single";
         public const string MissionFolderFormatQuick = "$home/parts/{0}/mission/Quick";
         public const string MissionFolderFormatCampaign = "$home/parts/{0}/mission/campaign";
+        public const string RecordFolder = "$user/records";
 
         public const string ConfigFilePath = "$home/parts/IL2DCE/conf.ini";
         public const string CampaignInfoFileName = "CampaignInfo.ini";
@@ -55,6 +56,7 @@ namespace IL2DCE
         public const string DebugMissionFileName = "IL2DCEDebug.mis";
         public const string DebugBriefingFileName = "IL2DCEDebug.briefing";
         public const string DebugMissionScriptFileName = "IL2DCEDebug.cs";
+        public const string RecordExt = ".trk";
 
         public const string SectionMain = "Main";
         public const string SectionCore = "Core";
@@ -72,6 +74,8 @@ namespace IL2DCE
         public const string KeyRandomRed = "RandomRed";
         public const string KeyRandomBlue = "RandomBlue";
         public const string KeyEnableMissionMultiAssign = "EnableMissionMultiAssign";
+        public const string KeyProcessTimeReArm = "ProcessTimeReArm";
+        public const string KeyProcessTimeReFuel = "ProcessTimeReFuel";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Covert.log";
@@ -82,6 +86,8 @@ namespace IL2DCE
         public const int DefaultAdditionalGroundOperations = 100;
         public const int MaxAdditionalGroundOperations = 300;
         public const int MinAdditionalGroundOperations = 10;
+        public const int DefaultProcessTimeReArm = 300;
+        public const int DefaultProcessTimeReFuel = 300;
 
         #endregion
 
@@ -242,6 +248,18 @@ namespace IL2DCE
             private set;
         }
 
+        public int ProcessTimeReArm
+        {
+            get;
+            private set;
+        }
+
+        public int ProcessTimeReFuel
+        {
+            get;
+            private set;
+        }
+
         public static CultureInfo Culture = new CultureInfo("en-US", true);
         public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
 
@@ -262,6 +280,15 @@ namespace IL2DCE
 
         public Config(ISectionFile confFile)
         {
+            if (confFile.exist(SectionMain, "campaignsFolder"))
+            {
+                _campaignsFolder = confFile.get(SectionMain, "campaignsFolder");
+            }
+            else
+            {
+                _campaignsFolder = CampaignsFolderDefault;
+            }
+
             SpawnParked = false;
             if (confFile.exist(SectionCore, "forceSetOnPark"))
             {
@@ -318,14 +345,15 @@ namespace IL2DCE
                 double.TryParse(value, NumberStyles.Any, Culture, out _statKillsOver);
             }
 
-            if (confFile.exist(SectionMain, "campaignsFolder"))
+            ProcessTimeReArm = confFile.get(SectionCore, KeyProcessTimeReArm, DefaultProcessTimeReArm);
+            ProcessTimeReFuel = confFile.get(SectionCore, KeyProcessTimeReFuel, DefaultProcessTimeReFuel);
+
+            if (confFile.exist(SectionCore, "statType"))
             {
-                _campaignsFolder = confFile.get(SectionMain, "campaignsFolder");
+                string value = confFile.get(SectionCore, "statType");
+                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _statType);
             }
-            else
-            {
-                _campaignsFolder = CampaignsFolderDefault;
-            }
+
 
             if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFileName))
             {

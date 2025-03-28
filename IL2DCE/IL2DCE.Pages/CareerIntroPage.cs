@@ -352,6 +352,7 @@ namespace IL2DCE.Pages
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
+            Config config = Game.Core.Config;
             string pilotName = SelectedPilotName;
             int armyIndex = SelectedArmyIndex;
             int airForceIndex = SelectedAirForceIndex;
@@ -382,6 +383,9 @@ namespace IL2DCE.Pages
                 career.SpawnRandomTimeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy;
                 career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
                 career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
+                career.ReArmTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
+                career.ReFuelTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
+                career.TrackRecording = FrameworkElement.GeneralSettingsGroupBox.SelectedTrackRecoding;
 
                 Game.Core.AvailableCareers.Add(career);
                 Game.Core.CurrentCareer = career;

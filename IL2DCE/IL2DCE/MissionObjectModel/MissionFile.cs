@@ -17,9 +17,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using IL2DCE.Generator;
 using maddox.game;
+using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -43,7 +45,7 @@ namespace IL2DCE.MissionObjectModel
         public const string SectionTrigger = "Trigger";
         public const string SectionAction = "Action";
         public const string SectionAirdromes = "Airdromes";
-        public const string SectionWay = "_Way";
+        public const string SectionWay = "Way";
         public const string KeyRunways = "Runways";
         public const string KeyWeatherIndex = "WeatherIndex";
         public const string KeyCloudsHeight = "CloudsHeight";
@@ -92,7 +94,15 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return DLC.Any();
+                return DLCParts.Any();
+            }
+        }
+
+        public IEnumerable<string> DLCParts
+        {
+            get
+            {
+                return Parts != null ? Parts.Except(new string[] { KeyPartsCore, KeyPartsBob }) :new string[0];
             }
         }
 
@@ -127,163 +137,71 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public IList<Waterway> Roads
+        public List<Groundway> Roads
         {
-            get
-            {
-                return _roads;
-            }
-        }
-        private List<Waterway> _roads = new List<Waterway>();
-
-        public IList<Waterway> Waterways
-        {
-            get
-            {
-                return _waterways;
-            }
-        }
-        private List<Waterway> _waterways = new List<Waterway>();
-
-        public IList<Waterway> Railways
-        {
-            get
-            {
-                return _railways;
-            }
-        }
-        private List<Waterway> _railways = new List<Waterway>();
-
-        public IList<Building> Depots
-        {
-            get
-            {
-                return _depots;
-            }
-        }
-        private List<Building> _depots = new List<Building>();
-
-        public IList<Stationary> Radar
-        {
-            get
-            {
-                return _radars;
-            }
-        }
-        private List<Stationary> _radars = new List<Stationary>();
-
-        public IList<Stationary> Aircraft
-        {
-            get
-            {
-                return _aircrafts;
-            }
-        }
-        private List<Stationary> _aircrafts = new List<Stationary>();
-
-        public IList<Stationary> Artilleries
-        {
-            get
-            {
-                return _artilleries;
-            }
-        }
-        private List<Stationary> _artilleries = new List<Stationary>();
-
-        //public IList<Point3d> RedFrontMarkers
-        //{
-        //    get
-        //    {
-        //        return _redFrontMarkers;
-        //    }
-        //}
-
-        //public IList<Point3d> BlueFrontMarkers
-        //{
-        //    get
-        //    {
-        //        return _blueFrontMarkers;
-        //    }
-        //}
-
-        public IList<AirGroup> AirGroups
-        {
-            get
-            {
-                List<AirGroup> airGroups = new List<AirGroup>();
-                airGroups.AddRange(_redAirGroups);
-                airGroups.AddRange(_blueAirGroups);
-                return airGroups;
-            }
+            get;
+            private set;
         }
 
-        public IList<AirGroup> RedAirGroups
+        public List<Groundway> Waterways
         {
-            get
-            {
-                List<AirGroup> airGroups = new List<AirGroup>();
-                airGroups.AddRange(_redAirGroups);
-                return airGroups;
-            }
-        }
-        private List<AirGroup> _redAirGroups = new List<AirGroup>();
-
-        public IList<AirGroup> BlueAirGroups
-        {
-            get
-            {
-                List<AirGroup> airGroups = new List<AirGroup>();
-                airGroups.AddRange(_blueAirGroups);
-                return airGroups;
-            }
-        }
-        private List<AirGroup> _blueAirGroups = new List<AirGroup>();
-
-        public IList<GroundGroup> GroundGroups
-        {
-            get
-            {
-                List<GroundGroup> groundGroups = new List<GroundGroup>();
-                groundGroups.AddRange(_redGroundGroups);
-                groundGroups.AddRange(_blueGroundGroups);
-                return groundGroups;
-            }
+            get;
+            private set;
         }
 
-        public IList<GroundGroup> RedGroundGroups
+        public List<Groundway> Railways
         {
-            get
-            {
-                List<GroundGroup> groundGroups = new List<GroundGroup>();
-                groundGroups.AddRange(_redGroundGroups);
-                return groundGroups;
-            }
+            get;
+            private set;
         }
-        private List<GroundGroup> _redGroundGroups = new List<GroundGroup>();
 
-        public IList<GroundGroup> BlueGroundGroups
+        public List<Building> Depots
         {
-            get
-            {
-                List<GroundGroup> groundGroups = new List<GroundGroup>();
-                groundGroups.AddRange(_blueGroundGroups);
-                return groundGroups;
-            }
+            get;
+            private set;
         }
-        private List<GroundGroup> _blueGroundGroups = new List<GroundGroup>();
 
-        public IList<Stationary> Stationaries
+        public List<Stationary> Radars
         {
-            get
-            {
-                List<Stationary> stationaries = new List<Stationary>();
-                stationaries.AddRange(_redStationaries);
-                stationaries.AddRange(_blueStationaries);
-                return stationaries;
-            }
+            get;
+            private set;
         }
-        private List<Stationary> _redStationaries = new List<Stationary>();
-        private List<Stationary> _blueStationaries = new List<Stationary>();
+
+        public List<Stationary> Aircrafts
+        {
+            get;
+            private set;
+        }
+
+        public List<Stationary> Artilleries
+        {
+            get;
+            private set;
+        }
+
+        public List<Point3d> FrontMarkers
+        {
+            get;
+            private set;
+        }
+
+        public List<AirGroup> AirGroups
+        {
+            get;
+            private set;
+        }
+
+        public List<GroundGroup> GroundGroups
+        {
+            get;
+            private set;
+        }
+
+        public List<Stationary> Stationaries
+        {
+            get;
+            private set;
+        }
 
         public string[] AircraftRandomRed
         {
@@ -298,10 +216,6 @@ namespace IL2DCE.MissionObjectModel
         }
 
         #endregion
-
-        //private List<Point3d> _redFrontMarkers = new List<Point3d>();
-        //private List<Point3d> _blueFrontMarkers = new List<Point3d>();
-        //private List<Point3d> _neutralFrontMarkers = new List<Point3d>();
 
         private AirGroupInfos airGroupInfos;
 
@@ -326,24 +240,18 @@ namespace IL2DCE.MissionObjectModel
 
         private void init()
         {
-            _roads.Clear();
-            _waterways.Clear();
-            _railways.Clear();
-            _depots.Clear();
-            _aircrafts.Clear();
-            _artilleries.Clear();
+            Roads = new List<Groundway>();
+            Waterways = new List<Groundway>();
+            Railways = new List<Groundway>();
+            Depots = new List<Building>();
+            Radars = new List<Stationary>();
+            Aircrafts = new List<Stationary>();
+            Artilleries = new List<Stationary>();
 
-            //_redFrontMarkers.Clear();
-            //_blueFrontMarkers.Clear();
-            //_neutralFrontMarkers.Clear();
-
-            _redAirGroups.Clear();
-            _blueAirGroups.Clear();
-            _redGroundGroups.Clear();
-            _blueGroundGroups.Clear();
-
-            _redStationaries.Clear();
-            _blueStationaries.Clear();
+            FrontMarkers = new List<Point3d>();
+            AirGroups = new List<AirGroup>();
+            GroundGroups = new List<GroundGroup>();
+            Stationaries = new List<Stationary>();
         }
 
         private void load(ISectionFile file)
@@ -362,28 +270,27 @@ namespace IL2DCE.MissionObjectModel
                 string value;
                 file.get(SectionStationary, i, out key, out value);
 
-                Stationary stationary = new Stationary(file, key);
-                if (stationary.Army == (int)EArmy.Red)
+                Stationary stationary = Stationary.Create(file, key);
+                if (stationary != null)
                 {
-                    _redStationaries.Add(stationary);
-                }
-                else if (stationary.Army == (int)EArmy.Blue)
-                {
-                    _blueStationaries.Add(stationary);
-                }
-                else
-                {
-                    if (stationary.Type == EStationaryType.Radar)
+                    if (stationary.Army != (int)EArmy.None)
                     {
-                        _radars.Add(stationary);
+                        Stationaries.Add(stationary);
                     }
-                    else if (stationary.Type == EStationaryType.Artillery)
+                    else
                     {
-                        _artilleries.Add(stationary);
-                    }
-                    else if (stationary.Type == EStationaryType.Aircraft)
-                    {
-                        _aircrafts.Add(stationary);
+                        if (stationary.Type == EStationaryType.Radar)
+                        {
+                            Radars.Add(stationary);
+                        }
+                        else if (stationary.Type == EStationaryType.Artillery)
+                        {
+                            Artilleries.Add(stationary);
+                        }
+                        else if (stationary.Type == EStationaryType.Aircraft)
+                        {
+                            Aircrafts.Add(stationary);
+                        }
                     }
                 }
             }
@@ -395,53 +302,56 @@ namespace IL2DCE.MissionObjectModel
                 string key;
                 string value;
                 file.get(SectionBuildings, i, out key, out value);
-
+#if true
+                Building building = Building.Create(key, value);
+                if (building != null)
+                {
+                    Depots.Add(building);
+                }
+#else
                 string[] valueParts = value.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
                 if (valueParts.Length > 4)
                 {
                     // Depots
                     if (valueParts[0] == "buildings.House$Oil_Bunker-Small" || valueParts[0] == "buildings.House$Oil_Bunker-Middle" || valueParts[0] == "buildings.House$Oil_Bunker-Big")
                     {
-                        Building building = new Building(file, key);
-                        _depots.Add(building);
+                        Building building = Building.Create(file, key);
+                        if (building != null)
+                        {
+                            _depots.Add(building);
+                        }
                     }
 
                     // Other buldings ...
                 }
+#endif
             }
 
             // FrontMaker
-            //for (int i = 0; i < file.lines(SectionFrontMarker); i++)
-            //{
-            //    string key;
-            //    string value;
-            //    file.get(SectionFrontMarker, i, out key, out value);
+            lines = file.lines(SectionFrontMarker);
+            for (int i = 0; i < lines; i++)
+            {
+                string key;
+                string value;
+                file.get(SectionFrontMarker, i, out key, out value);
 
-            //    string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            //    if (valueParts.Length == 3)
-            //    {
-            //        double x;
-            //        double y;
-            //        int army;
-            //        if (double.TryParse(valueParts[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x)
-            //            && double.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y)
-            //            && int.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out army))
-            //        {
-            //            if (army == 0)
-            //            {
-            //                _neutralFrontMarkers.Add(new Point3d(x, y, 0.0));
-            //            }
-            //            else if (army == 1)
-            //            {
-            //                _redFrontMarkers.Add(new Point3d(x, y, 0.0));
-            //            }
-            //            else if (army == 2)
-            //            {
-            //                _blueFrontMarkers.Add(new Point3d(x, y, 0.0));
-            //            }
-            //        }
-            //    }
-            //}
+                string[] valueParts = value.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
+                if (valueParts.Length == 3)
+                {
+                    double x;
+                    double y;
+                    int army;
+                    if (double.TryParse(valueParts[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x)
+                        && double.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y)
+                        && int.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out army))
+                    {
+                        if (!FrontMarkers.Any(a => a.x == x && a.y == y && a.z == army))
+                        {
+                            FrontMarkers.Add(new Point3d(x, y, army));
+                        }
+                    }
+                }
+            }
 
             // AirGroups
             lines = file.lines(SectionAirGroups);
@@ -458,13 +368,9 @@ namespace IL2DCE.MissionObjectModel
                 {
                     AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
                     airGroup.SetAirGroupInfo(airGroupInfoTarget);
-                    if (airGroup.ArmyIndex == (int)EArmy.Red)
+                    if (airGroup.ArmyIndex != (int)EArmy.None)
                     {
-                        _redAirGroups.Add(airGroup);
-                    }
-                    else if (airGroup.ArmyIndex == (int)EArmy.Blue)
-                    {
-                        _blueAirGroups.Add(airGroup);
+                        AirGroups.Add(airGroup);
                     }
                     else
                     {
@@ -487,33 +393,26 @@ namespace IL2DCE.MissionObjectModel
                 file.get(SectionChiefs, i, out key, out value);
 
                 GroundGroup groundGroup = GroundGroup.Create(file, key);
-                if (groundGroup != null && groundGroup.Army != 0)
+                if (groundGroup != null && groundGroup.Army != (int)EArmy.None)
                 {
-                    if (groundGroup.Army == (int)EArmy.Red)
-                    {
-                        _redGroundGroups.Add(groundGroup);
-                    }
-                    else if (groundGroup.Army == (int)EArmy.Blue)
-                    {
-                        _blueGroundGroups.Add(groundGroup);
-                    }
+                    GroundGroups.Add(groundGroup);
                 }
                 else
                 {
-                    Waterway road = Waterway.Create(file, key);
+                    Groundway road = Groundway.Create(file, key);
                     if (road != null)
                     {
                         if (value.StartsWith("Vehicle") || value.StartsWith("Armor"))
                         {
-                            _roads.Add(road);
+                            Roads.Add(road);
                         }
                         else if (value.StartsWith("Ship"))
                         {
-                            _waterways.Add(road);
+                            Waterways.Add(road);
                         }
                         else if (value.StartsWith("Train"))
                         {
-                            _railways.Add(road);
+                            Railways.Add(road);
                         }
                     }
                 }
@@ -548,6 +447,7 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
+            // Aircraft (Random)
             if (file.exist(Config.SectionAircraft, Config.KeyRandomRed))
             {
                 string value = file.get(Config.SectionAircraft, Config.KeyRandomRed);
@@ -583,101 +483,5 @@ namespace IL2DCE.MissionObjectModel
 
             return new AirGroupInfo [0];
         }
-
-        public IList<GroundGroup> GetGroundGroups(int armyIndex)
-        {
-            if (armyIndex == (int)EArmy.Red)
-            {
-                return _redGroundGroups;
-            }
-            else if (armyIndex == (int)EArmy.Blue)
-            {
-                return _blueGroundGroups;
-            }
-            else
-            {
-                return new List<GroundGroup>();
-            }
-        }
-
-        public IList<AirGroup> GetAirGroups(int armyIndex)
-        {
-            if (armyIndex == (int)EArmy.Red)
-            {
-                return _redAirGroups;
-            }
-            else if (armyIndex == (int)EArmy.Blue)
-            {
-                return _blueAirGroups;
-            }
-            else
-            {
-                return new List<AirGroup>();
-            }
-        }
-
-        public IList<Stationary> GetFriendlyStationaries(int armyIndex)
-        {
-            if (armyIndex == (int)EArmy.Red)
-            {
-                return _redStationaries;
-            }
-            else if (armyIndex == (int)EArmy.Blue)
-            {
-                return _blueStationaries;
-            }
-            else
-            {
-                return new List<Stationary>();
-            }
-        }
-
-        public IList<Stationary> GetEnemyStationaries(int armyIndex)
-        {
-            if (armyIndex == (int)EArmy.Red)
-            {
-                return _blueStationaries;
-            }
-            else if (armyIndex == (int)EArmy.Blue)
-            {
-                return _redStationaries;
-            }
-            else
-            {
-                return new List<Stationary>();
-            }
-        }
-
-        //public IList<Point3d> GetFriendlyMarkers(int armyIndex)
-        //{
-        //    if (armyIndex == (int)EArmy.Red)
-        //    {
-        //        return _redFrontMarkers;
-        //    }
-        //    else if (armyIndex == (int)EArmy.Blue)
-        //    {
-        //        return _blueFrontMarkers;
-        //    }
-        //    else
-        //    {
-        //        return new List<Point3d>();
-        //    }
-        //}
-
-        //public IList<Point3d> GetEnemyMarkers(int armyIndex)
-        //{
-        //    if (armyIndex == (int)EArmy.Red)
-        //    {
-        //        return _blueFrontMarkers;
-        //    }
-        //    else if (armyIndex == (int)EArmy.Blue)
-        //    {
-        //        return _redFrontMarkers;
-        //    }
-        //    else
-        //    {
-        //        return new List<Point3d>();
-        //    }
-        //}
     }
 }

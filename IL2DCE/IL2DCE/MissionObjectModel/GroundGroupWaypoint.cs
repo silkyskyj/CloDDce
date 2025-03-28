@@ -29,10 +29,8 @@ namespace IL2DCE.MissionObjectModel
 
         public List<GroundGroupWaypoint> SubWaypoints
         {
-            get
-            {
-                return _subWaypoints;
-            }
+            get;
+            private set;
         }
 
         public Point2d Position
@@ -45,14 +43,8 @@ namespace IL2DCE.MissionObjectModel
 
         public double? V
         {
-            get
-            {
-                return _v;
-            }
-            set
-            {
-                _v = value;
-            }
+            get;
+            set;
         }
 
         public double Count
@@ -63,9 +55,11 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        protected List<GroundGroupWaypoint> _subWaypoints = new List<GroundGroupWaypoint>();
-        protected double? _v;
-
         #endregion
+
+        public GroundGroupWaypoint()
+        {
+            SubWaypoints = new List<GroundGroupWaypoint>();
+        }
     }
 }

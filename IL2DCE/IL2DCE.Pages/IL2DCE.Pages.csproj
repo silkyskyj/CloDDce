@@ -89,6 +89,10 @@
     <Compile Include="SelectCampaignPage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="core">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="gamePages">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePages.dll</HintPath>
       <Private>False</Private>

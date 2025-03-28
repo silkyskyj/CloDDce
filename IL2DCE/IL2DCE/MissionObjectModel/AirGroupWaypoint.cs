@@ -70,10 +70,18 @@ namespace IL2DCE.MissionObjectModel
         }
 
         // Altitude
-        public double Z;
+        public double Z
+        {
+            get;
+            set;
+        }
 
         // Speed
-        public double V;
+        public double V
+        {
+            get;
+            set;
+        }
 
         public string Target
         {
@@ -109,7 +117,7 @@ namespace IL2DCE.MissionObjectModel
         {
             string key;
             string value;
-            sectionFile.get(id + "_Way", line, out key, out value);
+            sectionFile.get(string.Format("{0}_{1}", id, MissionFile.SectionWay), line, out key, out value);
             AirGroupWaypointTypes type;
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value) && Enum.TryParse(key, true, out type))
             {

@@ -17,15 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using IL2DCE.MissionObjectModel;
 using maddox.game;
 
 namespace IL2DCE.Generator
 {
     public class AircraftLoadoutInfo
     {
-        private const string KeyWeapons = "Weapons";
-        private const string KeyDetonator = "Detonator";
-
         public int[] Weapons
         {
             get;
@@ -46,56 +44,20 @@ namespace IL2DCE.Generator
 
         public AircraftLoadoutInfo(ISectionFile aircraftInfoFile, string aircraft, string loadoutId)
         {
-            string section = string.Format("{0}_{1}", aircraft, loadoutId);
-            if (aircraftInfoFile.exist(section))
-            {
-                if (aircraftInfoFile.exist(section, KeyWeapons))
-                {
-                    // Weapons
-                    string weaponsLine = aircraftInfoFile.get(section, KeyWeapons);
-                    string[] weaponsList = weaponsLine.Split(new char[] { ' ' });
-                    if (weaponsList.Length > 0)
-                    {
-                        Weapons = new int[weaponsList.Length];
-                        for (int i = 0; i < weaponsList.Length; i++)
-                        {
-                            Weapons[i] = int.Parse(weaponsList[i]);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new FormatException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}.Weapons]", aircraft, loadoutId));
-                }
-
-                Detonator = new List<string>();
-                int lines = aircraftInfoFile.lines(section);
-                for (int i = 0; i < lines; i++)
-                {
-                    string key;
-                    string value;
-                    aircraftInfoFile.get(section, i, out key, out value);
-                    if (string.Compare(key, KeyDetonator, true) == 0)
-                    {
-                        Detonator.Add(value);
-                    }
-                }
-            }
-            else
-            {
-                throw new ArgumentException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}]", aircraft, loadoutId));
-            }
+            AircraftLoadoutInfo aircraftLoadoutInfo = Create(aircraftInfoFile, aircraft, loadoutId, true);
+            Weapons = aircraftLoadoutInfo.Weapons;
+            Detonator = aircraftLoadoutInfo.Detonator;
         }
 
-        public static AircraftLoadoutInfo Create(ISectionFile aircraftInfoFile, string aircraft, string loadoutId)
+        public static AircraftLoadoutInfo Create(ISectionFile aircraftInfoFile, string aircraft, string loadoutId, bool throwException = false)
         {
             string section = string.Format("{0}_{1}", aircraft, loadoutId);
             if (aircraftInfoFile.exist(section))
             {
-                if (aircraftInfoFile.exist(section, KeyWeapons))
+                if (aircraftInfoFile.exist(section, MissionFile.KeyWeapons))
                 {
                     // Weapons
-                    string weaponsLine = aircraftInfoFile.get(section, KeyWeapons);
+                    string weaponsLine = aircraftInfoFile.get(section, MissionFile.KeyWeapons);
                     string[] weaponsList = weaponsLine.Split(new char[] { ' ' });
                     if (weaponsList.Length > 0)
                     {
@@ -109,7 +71,7 @@ namespace IL2DCE.Generator
                         for (int i = 0; i < lines; i++)
                         {
                             aircraftInfoFile.get(section, i, out key, out value);
-                            if (string.Compare(key, KeyDetonator, true) == 0)
+                            if (string.Compare(key, MissionFile.KeyDetonator, true) == 0)
                             {
                                 detonator.Add(value);
                             }
@@ -118,6 +80,14 @@ namespace IL2DCE.Generator
                         return new AircraftLoadoutInfo(weapons, detonator);
                     }
                 }
+                else if (throwException)
+                {
+                    throw new FormatException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}.Weapons]", aircraft, loadoutId));
+                }
+            }
+            else if (throwException)
+            {
+                throw new ArgumentException(string.Format("Invalid Aircraft Loadout Info[{0}_{1}]", aircraft, loadoutId));
             }
             return null;
         }

@@ -56,7 +56,7 @@ namespace IL2DCE.MissionObjectModel
         {
             string key;
             string value;
-            sectionFile.get(id + "_Road", line, out key, out value);
+            sectionFile.get(string.Format("{0}_{1}", id, MissionFile.SectionRoad), line, out key, out value);
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
             {
                 if (waypointLong.IsMatch(value))
@@ -71,7 +71,8 @@ namespace IL2DCE.MissionObjectModel
                             double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) && 
                             double.TryParse(match.Groups[9].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
                         {
-                            return new GroundGroupWaypointSpline(x, y, v, match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value); 
+                            return new GroundGroupWaypointSpline(x, y, v, 
+                                string.Format("{0} {1} {2} {3}", match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value)); 
                         }
                     }
                 }
@@ -85,7 +86,8 @@ namespace IL2DCE.MissionObjectModel
                         if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
                             double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
                         {
-                            return new GroundGroupWaypointSpline(x, y, null, match.Groups[1].Value + " " + match.Groups[2].Value + " " + match.Groups[3].Value + " " + match.Groups[4].Value);
+                            return new GroundGroupWaypointSpline(x, y, null,
+                                string.Format("{0} {1} {2} {3}", match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value));
                         }
                     }
                 }
@@ -97,17 +99,8 @@ namespace IL2DCE.MissionObjectModel
         {
             string key;
             string value;
-            sectionFile.get(id + "_Road", line, out key, out value);
-
-            if (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            sectionFile.get(string.Format("{0}_{1}", id, MissionFile.SectionRoad), line, out key, out value);
+            return (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value));
         }
-
     }
 }

@@ -234,6 +234,48 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
+        public bool SelectedAutoReArm
+        {
+            get
+            {
+                bool? isCheckd = checkBoxAutoReArm.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
+        public bool SelectedAutoReFuel
+        {
+            get
+            {
+                bool? isCheckd = checkBoxAutoReFuel.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
+        public bool SelectedTrackRecoding
+        {
+            get
+            {
+                bool? isCheckd = checkBoxTrackRecording.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
         #endregion
 
         public GeneralSettingsGroupBox()
@@ -381,6 +423,10 @@ namespace IL2DCE.Pages.Controls
 
             comboBoxSelectRandomTimeBegin.SelectedItem = Spawn.SpawnTime.DefaultBeginSec;
             comboBoxSelectRandomTimeEnd.SelectedItem = Spawn.SpawnTime.DefaultEndSec;
+
+            checkBoxAutoReArm.IsChecked = false;
+            checkBoxAutoReFuel.IsChecked = false;
+            checkBoxTrackRecording.IsChecked = false;
         }
     }
 }

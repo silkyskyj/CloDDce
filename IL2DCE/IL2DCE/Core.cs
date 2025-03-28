@@ -21,17 +21,18 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.world;
 
 namespace IL2DCE
 {
     public class Core
     {
+
+        #region Property
+
         public Config Config
         {
             get
@@ -99,12 +100,16 @@ namespace IL2DCE
             set;
         }
 
+        #endregion
+
         private static StreamWriter writerLog;
         private static object writerLogObject = new object();
 
         private string _debugFolderSystemPath;
         private string _careersFolderSystemPath;
         private string _campaignsFolderSystemPath;
+
+        #region Constructor
 
         public Core(IGame game)
             : this(game, new Random())
@@ -135,6 +140,8 @@ namespace IL2DCE
 
             _debugFolderSystemPath = gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DebugFolderName));
         }
+
+        #endregion
 
         public void ReadCampaignInfo()
         {

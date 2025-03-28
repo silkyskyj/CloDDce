@@ -88,7 +88,7 @@ namespace IL2DCE.MissionObjectModel
                 foreach (var item in Sections)
                 {
                     list.Add(string.Format("[{0}]", item.Key));
-                    item.Value.ForEach(x => 
+                    item.Value.ForEach(x =>
                     {
                         list.Add(string.Format("  {0} {1}", x.Key, x.Value));
                     });
@@ -293,7 +293,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 key = resultSection[line].Key;
                 value = resultSection[line].Value;
-                return  true;
+                return true;
             }
 
             key = string.Empty;
@@ -422,7 +422,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static void InvalidInifileFormatException(string file, string section, string key)
         {
-            throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file != null ? file : string.Empty, section, key));
+            throw new FormatException(string.Format("Invalid Value [File:{0}, Section:{1}, Key:{2}]", file ?? string.Empty, section, key));
         }
 
         public static void Write(ISectionFile file, string section, string key, string value, bool overwrite)
@@ -461,7 +461,6 @@ namespace IL2DCE.MissionObjectModel
             }
             return keys;
         }
-
 
         public static int CopySection(ISectionFile fileSrc, ISectionFile fileDest, string section, bool overwrite = true)
         {
@@ -549,6 +548,21 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
             return keys;
+        }
+
+        public static void Delete(ISectionFile fileSrc, string section, string keyDelete)
+        {
+            int lines = fileSrc.lines(section);
+            for (int i = 0; i < lines; i++)
+            {
+                string key;
+                string value;
+                fileSrc.get(section, i, out key, out value);
+                if (string.Compare(key, keyDelete, true) == 0)
+                {
+                    fileSrc.delete(section, i);
+                }
+            }
         }
     }
 }

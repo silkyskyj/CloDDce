@@ -55,6 +55,9 @@ namespace IL2DCE
         public const string KeySpawnRandomTimeEndSec = "SpawnRandomTimeEndSec";
         public const string KeySpawnRandomAltitudeFriendly = "SpawnRandomAltitudeFriendly";
         public const string KeySpawnRandomAltitudeEnemy = "SpawnRandomAltitudeEnemy";
+        public const string KeyReArm = "ReArm";
+        public const string KeyReFuel = "ReFuel";
+        public const string KeyTrackRecording = "TrackRecording";
         public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
 
@@ -274,7 +277,23 @@ namespace IL2DCE
             set;
         }
 
-        #endregion
+        public int ReArmTime
+        {
+            get;
+            set;
+        }
+
+        public int ReFuelTime
+        {
+            get;
+            set;
+        }
+
+        public bool TrackRecording
+        {
+            get;
+            set;
+        }
 
         #region Status
 
@@ -414,7 +433,7 @@ namespace IL2DCE
             set;
         }
 
-        public Skill [] PlayerAirGroupSkill
+        public Skill[] PlayerAirGroupSkill
         {
             get;
             set;
@@ -452,6 +471,10 @@ namespace IL2DCE
 
         #endregion
 
+        #endregion
+
+        #region Constructor
+
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
         {
             _pilotName = pilotName;
@@ -485,6 +508,9 @@ namespace IL2DCE
             KillsGroundHistory = new Dictionary<DateTime, string>();
 
             AllowDefensiveOperation = true;
+
+            ReArmTime = -1;
+            ReFuelTime = -1;
 
             #region Quick Mission Info 
 
@@ -545,6 +571,11 @@ namespace IL2DCE
                 SpawnRandomTimeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomTimeEnemy, true);
                 SpawnRandomTimeBeginSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeBeginSec, MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec);
                 SpawnRandomTimeEndSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeEndSec, MissionObjectModel.Spawn.SpawnTime.DefaultEndSec);
+
+                ReArmTime = careerFile.get(SectionCampaign, KeyReArm, false) ? Config.DefaultProcessTimeReArm: -1;
+                ReFuelTime = careerFile.get(SectionCampaign, KeyReFuel, false) ? Config.DefaultProcessTimeReFuel: -1;
+
+                TrackRecording = careerFile.get(SectionCampaign, KeyTrackRecording, false);
 
                 Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -618,6 +649,8 @@ namespace IL2DCE
             #endregion
         }
 
+#endregion
+
         public void InitQuickMssionInfo()
         {
             BattleType = EBattleType.Unknown;
@@ -669,7 +702,10 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEnemy, SpawnRandomTimeEnemy ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomTimeBeginSec, SpawnRandomTimeBeginSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEndSec, SpawnRandomTimeEndSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
-
+            careerFile.add(SectionCampaign, KeyReArm, ReArmTime >= 0 ? "1": "0");
+            careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1": "0");
+            careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
+            
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));

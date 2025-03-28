@@ -37,6 +37,9 @@ namespace IL2DCE
     /// </summary>
     public class CampaignInfo
     {
+
+        #region definition
+
         public const string SectionMain = "Main";
         public const string KeyName = "name";
         public const string KeyEnvironmentTemplate = "environmentTemplate";
@@ -51,6 +54,10 @@ namespace IL2DCE
         /// Max Campaign Period
         /// </summary>
         public const int MaxCampaignPeriod = 730;
+
+        #endregion
+
+        #region Property & Variable
 
         /// <summary>
         /// The id of the campaign.
@@ -165,9 +172,6 @@ namespace IL2DCE
         }
         private AirGroupInfos _localAirGroupInfos;
 
-        private ISectionFile _globalAircraftInfoFile;
-        private ISectionFile _localAircraftInfoFile;
-
         public string[] AircraftRandomRed
         {
             get;
@@ -185,6 +189,13 @@ namespace IL2DCE
             get;
             set;
         }
+
+        private ISectionFile _globalAircraftInfoFile;
+        private ISectionFile _localAircraftInfoFile;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Constructor
@@ -319,6 +330,8 @@ namespace IL2DCE
                 AircraftRandomBlue = new string[0];
             }
         }
+
+        #endregion
 
         public static void InvalidInifileFormatException(string folder, string section, string key)
         {

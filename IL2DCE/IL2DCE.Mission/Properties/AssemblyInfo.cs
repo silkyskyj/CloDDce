@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.5.5.0")]
-[assembly: AssemblyFileVersion("0.5.5.0")]
+[assembly: AssemblyVersion("0.5.6.0")]
+[assembly: AssemblyFileVersion("0.5.6.0")]

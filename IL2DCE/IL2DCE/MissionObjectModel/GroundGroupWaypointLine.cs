@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using maddox.game;
@@ -64,7 +63,7 @@ namespace IL2DCE.MissionObjectModel
         {
             string key;
             string value;
-            sectionFile.get(id + "_Road", line, out key, out value);
+            sectionFile.get(string.Format("{0}_{1}", id, MissionFile.SectionRoad), line, out key, out value);
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
             {
                 if (waypointLong.IsMatch(value))
@@ -111,16 +110,8 @@ namespace IL2DCE.MissionObjectModel
         {
             string key;
             string value;
-            sectionFile.get(id + "_Road", line, out key, out value);
-
-            if (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            sectionFile.get(string.Format("{0}_{1}", id, MissionFile.SectionRoad), line, out key, out value);
+            return (waypointShort.IsMatch(value) && !waypointLong.IsMatch(value));
         }
     }
 }

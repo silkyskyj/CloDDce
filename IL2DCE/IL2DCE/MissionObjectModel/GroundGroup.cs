@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using maddox.game;
@@ -36,30 +37,8 @@ namespace IL2DCE.MissionObjectModel
     {
         public EGroundGroupType Type
         {
-            get
-            {
-                // Type
-                if (Class.StartsWith("Vehicle"))
-                {
-                    return EGroundGroupType.Vehicle;
-                }
-                else if (Class.StartsWith("Armor"))
-                {
-                    return EGroundGroupType.Armor;
-                }
-                else if (Class.StartsWith("Ship"))
-                {
-                    return EGroundGroupType.Ship;
-                }
-                else if (Class.StartsWith("Train"))
-                {
-                    return EGroundGroupType.Train;
-                }
-                else
-                {
-                    return EGroundGroupType.Unknown;
-                }
-            }
+            get;
+            private set;
         }
 
         public Point2d Position
@@ -72,52 +51,32 @@ namespace IL2DCE.MissionObjectModel
 
         public string Id
         {
-            get
-            {
-                return _id;
-            }
-            set
-            {
-                _id = value;
-            }
+            get;
+            set;
         }
-        private string _id;
 
         public string Class
         {
             get;
-            set;
+            private set;
         }
 
         public ECountry Country
         {
             get;
-            set;
+            private set;
         }
 
         public int Army
         {
-            get
-            {
-                if (Country == ECountry.gb || Country == ECountry.fr || Country == ECountry.us || Country == ECountry.ru || Country == ECountry.rz || Country == ECountry.pl)
-                {
-                    return (int)EArmy.Red;
-                }
-                else if (Country == ECountry.de || Country == ECountry.it || Country == ECountry.ja || Country == ECountry.ro || Country == ECountry.fi || Country == ECountry.hu)
-                {
-                    return (int)EArmy.Blue;
-                }
-                else
-                {
-                    return (int)EArmy.None;
-                }
-            }
+            get;
+            private set;
         }
 
         public string Options
         {
             get;
-            set;
+            private set;
         }
 
         public List<GroundGroupWaypoint> Waypoints
@@ -137,14 +96,14 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public GroundGroup(string id, string @class, ECountry country, string options, List<GroundGroupWaypoint> waypoints)
+        public GroundGroup(string id, string @class, int army, ECountry country, string options, List<GroundGroupWaypoint> waypoints)
         {
-            _id = id;
-
+            Id = id;
             Class = @class;
+            Type = ParseType(Class);
             Country = country;
+            Army = army;
             Options = options;
-
             Waypoints.AddRange(waypoints);
         }
 
@@ -166,17 +125,20 @@ namespace IL2DCE.MissionObjectModel
                     // Country = country;
                     value = value.Remove(0, 2);
 
+                    EArmy army = MissionObjectModel.Army.Parse(country);
+
                     // Options
                     string options = value.Trim();
 
                     // Waypoints
                     List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
                     GroundGroupWaypoint lastWaypoint = null;
-                    int lines = sectionFile.lines(id + "_Road");
+                    string section = string.Format("{0}_{1}", id, MissionFile.SectionRoad);
+                    int lines = sectionFile.lines(section);
                     for (int i = 0; i < lines; i++)
                     {
                         string key;
-                        sectionFile.get(id + "_Road", i, out key, out value);
+                        sectionFile.get(section, i, out key, out value);
 
                         GroundGroupWaypoint waypoint = null;
                         if (!key.Contains("S"))
@@ -213,100 +175,73 @@ namespace IL2DCE.MissionObjectModel
 
                     if (waypoints.Count > 0)
                     {
-                        return new GroundGroup(id, @class, country, options, waypoints);
+                        return new GroundGroup(id, @class, (int)army, country, options, waypoints);
                     }
                 }
-
             }
 
             return null;
         }
 
-        //public GroundGroup(ISectionFile sectionFile, string id)
-        //{
-        //    _id = id;
+        public static EGroundGroupType ParseType(string classString)
+        {
+            if (classString.StartsWith("Vehicle"))
+            {
+                return EGroundGroupType.Vehicle;
+            }
+            else if (classString.StartsWith("Armor"))
+            {
+                return EGroundGroupType.Armor;
+            }
+            else if (classString.StartsWith("Ship"))
+            {
+                return EGroundGroupType.Ship;
+            }
+            else if (classString.StartsWith("Train"))
+            {
+                return EGroundGroupType.Train;
+            }
+            return EGroundGroupType.Unknown;
+        }
 
-        //    string value = sectionFile.get("Chiefs", id);
-
-        //     Class
-        //    Class = value.Substring(0, value.IndexOf(" "));
-        //    value = value.Remove(0, Class.Length + 1);
-
-        //     Army
-        //    ECountry country;
-        //    if (Enum.TryParse(value.Substring(0, 2), true, out country))
-        //    {
-        //        Country = country;
-        //        value = value.Remove(0, 2);
-        //    }
-        //    else
-        //    {
-        //        Debug.Assert(false, "Parse Country");
-        //    }
-
-        //     Options
-        //    Options = value.Trim();
-
-        //     Waypoints
-        //    GroundGroupWaypoint lastWaypoint = null;
-        //    for (int i = 0; i < sectionFile.lines(id + "_Road"); i++)
-        //    {
-        //        string key;
-        //        sectionFile.get(id + "_Road", i, out key, out value);
-
-        //        GroundGroupWaypoint waypoint = null;
-        //        if (!key.Contains("S"))
-        //        {
-        //            waypoint = GroundGroupWaypointLine.Create(sectionFile, id, i);
-        //        }
-        //        else if (key.Contains("S"))
-        //        {
-        //            waypoint = GroundGroupWaypointSpline.Create(sectionFile, id, i);
-        //        }
-
-        //        if (waypoint != null)
-        //        {
-        //             Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
-        //            if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < sectionFile.lines(id + "_Road") - 1)
-        //            {
-        //                if (lastWaypoint != null)
-        //                {
-        //                    lastWaypoint.SubWaypoints.Add(waypoint);
-        //                }
-        //                else
-        //                {
-        //                    throw new FormatException(string.Format("no GroundGroup sub Waypoint[{0}]", id));
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Waypoints.Add(waypoint);
-        //                lastWaypoint = waypoint;
-        //            }
-        //        }
-        //    }
-        //}
+        public void UpdateArmy(int army)
+        {
+            Debug.WriteLine("GroundGroup.UpdateArmy({0} -> {1})", Army, army);
+            Army = army;
+        }
 
         public void WriteTo(ISectionFile sectionFile)
         {
             if (Waypoints.Count > 1)
             {
-                sectionFile.add("Chiefs", Id, Class + " " + Country.ToString() + " " + Options);
+                sectionFile.add(MissionFile.SectionChiefs, Id, string.Format("{0} {1} {2}", Class, Country.ToString(), Options));
                 // Write all waypoints except for the last one.
+                string section = string.Format("{0}_{1}", Id, MissionFile.SectionRoad);
                 for (int i = 0; i < Waypoints.Count - 1; i++)
                 {
                     if (Waypoints[i] is GroundGroupWaypointLine)
                     {
                         if (Waypoints[i].V.HasValue)
                         {
-                            sectionFile.add(Id + "_Road", Waypoints[i].X.ToString(CultureInfo.InvariantCulture.NumberFormat), Waypoints[i].Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + (Waypoints[i] as GroundGroupWaypointLine).Z.ToString(CultureInfo.InvariantCulture.NumberFormat) + "  0 " + (Waypoints[i].SubWaypoints.Count + 2).ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Waypoints[i].V.Value.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            sectionFile.add(section, Waypoints[i].X.ToString("F2", CultureInfo.InvariantCulture.NumberFormat),
+                                            string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}", 
+                                                            Waypoints[i].Y, 
+                                                            (Waypoints[i] as GroundGroupWaypointLine).Z, 
+                                                            (Waypoints[i].SubWaypoints.Count + 2), 
+                                                            Waypoints[i].V.Value));
                         }
                     }
                     else if (Waypoints[i] is GroundGroupWaypointSpline)
                     {
                         if (Waypoints[i].V.HasValue)
                         {
-                            sectionFile.add(Id + "_Road", "S", (Waypoints[i] as GroundGroupWaypointSpline).S + " P " + Waypoints[i].X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Waypoints[i].Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + "  0 " + (Waypoints[i].SubWaypoints.Count + 2).ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Waypoints[i].V.Value.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            sectionFile.add(section, "S", 
+                                            string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}  0 {3} {4:F2}", 
+                                                            (Waypoints[i] as GroundGroupWaypointSpline).S, 
+                                                            Waypoints[i].X, 
+                                                            Waypoints[i].Y, 
+                                                            (Waypoints[i].SubWaypoints.Count + 2), 
+                                                            Waypoints[i].V.Value));
                         }
                     }
 
@@ -314,11 +249,14 @@ namespace IL2DCE.MissionObjectModel
                     {
                         if (subWaypoint is GroundGroupWaypointLine)
                         {
-                            sectionFile.add(Id + "_Road", subWaypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat), subWaypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + (subWaypoint as GroundGroupWaypointLine).Z.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            sectionFile.add(section, subWaypoint.X.ToString("F2", CultureInfo.InvariantCulture.NumberFormat),
+                                string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2}", subWaypoint.Y, (subWaypoint as GroundGroupWaypointLine).Z));
                         }
                         else if (subWaypoint is GroundGroupWaypointSpline)
                         {
-                            sectionFile.add(Id + "_Road", "S", (subWaypoint as GroundGroupWaypointSpline).S + " P " + subWaypoint.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + subWaypoint.Y.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            sectionFile.add(section, "S",
+                                string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}", 
+                                (subWaypoint as GroundGroupWaypointSpline).S, subWaypoint.X, subWaypoint.Y));
                         }
                     }
                 }
@@ -327,11 +265,15 @@ namespace IL2DCE.MissionObjectModel
                 GroundGroupWaypoint wayPointLast = Waypoints.Last();
                 if (wayPointLast is GroundGroupWaypointLine)
                 {
-                    sectionFile.add(Id + "_Road", wayPointLast.X.ToString(CultureInfo.InvariantCulture.NumberFormat), wayPointLast.Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + (wayPointLast as GroundGroupWaypointLine).Z.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                    sectionFile.add(section, wayPointLast.X.ToString(CultureInfo.InvariantCulture.NumberFormat),
+                                    string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2}", 
+                                                            wayPointLast.Y, (wayPointLast as GroundGroupWaypointLine).Z));
                 }
                 else if (wayPointLast is GroundGroupWaypointSpline)
                 {
-                    sectionFile.add(Id + "_Road", "S", (wayPointLast as GroundGroupWaypointSpline).S + " P " + wayPointLast.X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + wayPointLast.Y.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                    sectionFile.add(section, "S", 
+                                    string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}", 
+                                                            (wayPointLast as GroundGroupWaypointSpline).S, wayPointLast.X,  wayPointLast.Y));
                 }
             }
         }

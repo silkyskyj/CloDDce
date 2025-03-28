@@ -16,6 +16,7 @@
 
 using System;
 using System.Linq;
+using IL2DCE.MissionObjectModel;
 
 namespace IL2DCE.Generator
 {
@@ -28,7 +29,7 @@ namespace IL2DCE.Generator
                 return this.loadoutId;
             }
         }
-        private string loadoutId = "";
+        private string loadoutId = string.Empty;
 
         public double? MinAltitude
         {
@@ -48,23 +49,44 @@ namespace IL2DCE.Generator
         }
         private double? maxAltitude = null;
 
+        public AircraftParametersInfo(string loadoutId, double? minAltitude = null, double? maxAltitude = null)
+        {
+            this.loadoutId = loadoutId;
+            this.minAltitude = minAltitude;
+            this.maxAltitude = maxAltitude;
+        }
+
         public AircraftParametersInfo(string valuePart)
         {
-            string[] parameters = valuePart.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            AircraftParametersInfo aircraftParametersInfo = Create(valuePart, true);
+            loadoutId = aircraftParametersInfo.loadoutId;
+            minAltitude = aircraftParametersInfo.minAltitude;
+            maxAltitude = aircraftParametersInfo.maxAltitude;
+        }
+
+        public static AircraftParametersInfo Create(string valuePart, bool throwException = false)
+        {
+            string[] parameters = valuePart.Split(MissionFile.SplitChars, StringSplitOptions.RemoveEmptyEntries);
             if (parameters != null && parameters.Length == 1)
             {
-                this.loadoutId = parameters.First();
+                return new AircraftParametersInfo(parameters.First());
             }
             else if (parameters != null && parameters.Length >= 3)
             {
-                this.loadoutId = parameters.First();
-                minAltitude = double.Parse(parameters[1]);
-                maxAltitude = double.Parse(parameters[2]);
+                double minAltitude;
+                double maxAltitude;
+                if (double.TryParse(parameters[1], out minAltitude) && double.TryParse(parameters[2], out maxAltitude))
+                {
+                    return new AircraftParametersInfo(parameters.First(), minAltitude, maxAltitude);
+                }
             }
-            else
+
+            if (throwException)
             {
                 throw new FormatException(string.Format("Invalid Aircraft Parameters Info[{0}]", valuePart));
             }
+
+            return null;
         }
     }
 }

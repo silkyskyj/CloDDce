@@ -28,7 +28,7 @@ namespace IL2DCE.Generator
     {
         Unknown = 0,
         Fighter = 1,            // = no gunner seat
-        FighterSub = 2,      // = gunner seat
+        FighterSub = 2,         // = gunner seat
         FighterBomber = 3,      // = no gunner seat
         FighterBomberSub = 4,   // = gunner seat
         Bomber = 5,             // = no gunner seat

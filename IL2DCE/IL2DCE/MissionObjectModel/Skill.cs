@@ -94,8 +94,8 @@ namespace IL2DCE.MissionObjectModel
         {
             new float [] { 0.30f, 0.11f, 0.78f, 0.40f, 0.64f, 0.85f, 0.85f, 0.21f, },    // Rookie      (Fighter)
             new float [] { 0.32f, 0.12f, 0.87f, 0.60f, 0.74f, 0.90f, 0.90f, 0.31f, },    // Avarage
-            new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
             new float [] { 0.52f, 0.13f, 0.89f, 0.70f, 0.74f, 0.95f, 0.92f, 0.31f, },    // Experienced
+            new float [] { 0.73f, 0.14f, 0.92f, 0.80f, 0.74f, 1.00f, 0.95f, 0.41f, },    // Veteran
             new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
 
             new float [] { 0.30f, 0.11f, 0.78f, 0.20f, 0.74f, 0.85f, 0.90f, 0.88f, },    // Rookie      (Bomber)

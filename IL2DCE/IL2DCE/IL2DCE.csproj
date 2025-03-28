@@ -35,6 +35,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MissionObjectModel\AircraftState.cs" />
     <Compile Include="MissionObjectModel\AirForce.cs" />
     <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="MissionObjectModel\Weather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MissionObjectModel\Stationary.cs" />
-    <Compile Include="MissionObjectModel\Waterway.cs" />
+    <Compile Include="MissionObjectModel\Groundway.cs" />
     <Compile Include="MissionObjectModel\MissionFile.cs" />
     <Compile Include="Random.cs" />
     <Compile Include="MissionObjectModel\Speed.cs" />

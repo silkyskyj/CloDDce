@@ -1,7 +1,7 @@
 ﻿============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.5)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.6)
 ============================================================================================================================
-                                                                                                                 03/24/2025
+                                                                                                                 03/29/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -97,6 +97,7 @@ History
 
   Ver      Date       Comment
 
+  0.5.6    03/29/2025 Added: Select Auto re-Arm(bullets only), Auto re-Fuel, Track Recording option in Dynamic Quick Mission page, Career & Campaign Intro page. Fixed: FrontMaker is not displayed. Armor/Vehicle are not placed.
   0.5.5    03/24/2025 Added: Select Formation in Dynamic Quick Mission Page. Fixed: abend error after import mission. where some of Air Group ways were overwritten and not saved property(including a bug where the speed was not set.)
   0.5.4    03/23/2025 Added: Select flight count & size. Fixed: Bug Where the fuel and speed values set in Dynamic Quick mission were not reflected.
   0.5.3    03/23/2025 Changed: Changed the logic for generating the mission types Hunting and Follow. Changed some misspellings in the key names in the Config.ini file. Sorce* -> Source*

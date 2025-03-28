@@ -25,55 +25,43 @@ namespace IL2DCE.MissionObjectModel
     {
         public string Id
         {
-            get
-            {
-                return _id;
-            }
+            get;
+            private set;
         }
-        private string _id;
 
-        public double X;
+        public double X
+        {
+            get;
+            private set;
+        }
 
-        public double Y;
+        public double Y
+        {
+            get;
+            private set;
+        }
 
-        public double Direction;
+        public double Direction
+        {
+            get;
+            private set;
+        }
 
-        public int Status;
+        public int Status
+        {
+            get;
+            private set;
+        }
 
         public string Class
         {
             get;
-            set;
-        }
-
-        public Point2d Position
-        {
-            get
-            {
-                return new Point2d(this.X, this.Y);
-            }
-        }
-
-        public Building(ISectionFile sectionFile, string id)
-        {
-            _id = id;
-
-            string value = sectionFile.get("Buildings", id);
-
-            string[] valueParts = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (valueParts.Length > 4)
-            {
-                Class = valueParts[0];
-                int.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Status);
-                double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out X);
-                double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Y);
-                double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out Direction);
-            }
+            private set;
         }
 
         public Building(string id, string @class, int status, double x, double y, double direction)
         {
-            _id = id;
+            Id = id;
             Class = @class;
             Status = status;
             X = x;
@@ -81,10 +69,39 @@ namespace IL2DCE.MissionObjectModel
             Direction = direction;
         }
 
+        public static Building Create(ISectionFile sectionFile, string id)
+        {
+            string value = sectionFile.get(MissionFile.SectionBuildings, id);
+            return Create(id, value);
+        }
+
+        public static Building Create(string id, string value)
+        {
+            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(value))
+            {
+                string[] valueParts = value.Split(MissionFile.SplitChars, StringSplitOptions.RemoveEmptyEntries);
+                if (valueParts.Length > 4)
+                {
+                    double x;
+                    double y;
+                    double direction;
+                    int status;
+                    if (int.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out status) &&
+                        double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
+                        double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
+                        double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out direction))
+                    {
+                        return new Building(id, valueParts[0], status, x, y, direction);
+                    }
+                }
+            }
+            return null;
+        }
+
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = Class + " " + Status.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " " + Direction.ToString(CultureInfo.InvariantCulture.NumberFormat);
-            sectionFile.add("Buildings", Id, value);
+            string value = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2}", Class, Status, X, Y, Direction);
+            sectionFile.add(MissionFile.SectionBuildings, Id, value);
         }
     }
 }

@@ -16,8 +16,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.MissionObjectModel
 {

@@ -29,5 +29,9 @@ namespace IL2DCE.MissionObjectModel
             get;
             set;
         }
+
+        public GroupWaypoint()
+        {
+        }
     }
 }

@@ -14,32 +14,51 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using maddox.game.world;
+
 namespace IL2DCE.MissionObjectModel
 {
-    public enum EArmy
+    public class AircraftState
     {
-        None = 0,
-        Red = 1,
-        Blue = 2,
-        Count = 2,
-    }
-
-    public class Army
-    {
-        public static EArmy Parse(ECountry country)
+        public AiAircraft Aircraft
         {
-            if (country == ECountry.gb || country == ECountry.fr || country == ECountry.us || country == ECountry.ru || country == ECountry.rz || country == ECountry.pl)
-            {
-                return EArmy.Red;
-            }
-            else if (country == ECountry.de || country == ECountry.it || country == ECountry.ja || country == ECountry.ro || country == ECountry.fi || country == ECountry.hu)
-            {
-                return EArmy.Blue;
-            }
-            else
-            {
-                return EArmy.None;
-            }
+            get;
+            private set;
+        }
+
+        public bool IsLanded
+        {
+            get;
+            set;
+        }
+
+        public bool IsStoped
+        {
+            get;
+            set;
+        }
+
+        public double StopedTime
+        {
+            get;
+            set;
+        }
+
+        public double ReArmedTime
+        {
+            get;
+            set;
+        }
+
+        public double ReFueledTime
+        {
+            get;
+            set;
+        }
+
+        public AircraftState(AiAircraft aircraft)
+        {
+            Aircraft = aircraft;
         }
     }
 }
