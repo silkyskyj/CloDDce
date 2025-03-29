@@ -645,8 +645,8 @@ namespace IL2DCE
                     try
                     {
                         // Game.gameInterface.AppPartsLoadAll();
-                        Game.gameInterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
-                        Game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
+                        gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
+                        gameIterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
                         missionLoaded = true;
                         UpdateAirGroupComboBoxContent();
                     }

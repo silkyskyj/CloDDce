@@ -34,9 +34,12 @@ namespace IL2DCE.Generator
         #region definition
 
         private const float SpawnRangeInflateRate = 1.33f;
-        private const int SpawnMaxDifDistanceAirstart = 500;
-        private const int SpawnMaxDifDistanceAirport = 1500;
+        private const int MaxSpawnDifDistanceAirstart = 500;
+        private const int MaxSpawnDifDistanceAirport = 1500;
         private const int SpawnNeedParkCountFree = 12;
+        private const int MaxRetrySpawnRandomChange = 100;
+        private const int MaxRetryCreateOneAirGroup = 10;
+        private const int MaxRetryCreateAllAirGroups = 250;
 
         #endregion
 
@@ -1610,11 +1613,12 @@ namespace IL2DCE.Generator
             // Debug.WriteLine("Range({0},{1})-({2},{3})[{4},{5}]", range.x1, range.y1, range.x2, range.y2, range.x2 - range.x1 + 1, range.y2 - range.y1 + 1);
             if (airGroup.Airstart)
             {
+                int reTry = -1;
                 do
                 {
                     point.x = Random.Next((int)range.x1, (int)range.x2 + 1);
                     point.y = Random.Next((int)range.y1, (int)range.y2 + 1);
-                } while (GamePlay.gpFrontArmy(point.x, point.y) != airGroup.ArmyIndex);
+                } while (GamePlay.gpFrontArmy(point.x, point.y) != airGroup.ArmyIndex && reTry++ < MaxRetrySpawnRandomChange);
                 airGroup.UpdateStartPoint(ref point);
                 Debug.Write(string.Format(" => AirStart Pos Changed={0}", airGroup.Position.ToString()));
             }
@@ -1658,7 +1662,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                if (AssignedAirGroups.Select(x => x.Position).Any(x => x.distance(ref point) < SpawnMaxDifDistanceAirport))
+                if (AssignedAirGroups.Select(x => x.Position).Any(x => x.distance(ref point) < MaxSpawnDifDistanceAirport))
                 {
                     SetSpawnRandomType(airGroup, ref point);
                 }
@@ -1688,10 +1692,12 @@ namespace IL2DCE.Generator
             bool updated = false;
             IEnumerable<Point3d> posAirGroups = AssignedAirGroups.Select(x => x.Position);
             Point3d p = point;
-            while (posAirGroups.Where(x => x.distance(ref p) < SpawnMaxDifDistanceAirstart).Any())
+            int reTry = -1;
+            while (posAirGroups.Where(x => x.distance(ref p) < MaxSpawnDifDistanceAirstart).Any() && reTry < MaxRetrySpawnRandomChange)
             {
-                p.z += Random.Next(SpawnMaxDifDistanceAirstart / 2, SpawnMaxDifDistanceAirstart + 1);   // + minimum Altitude 
+                p.z += Random.Next(MaxSpawnDifDistanceAirstart / 2, MaxSpawnDifDistanceAirstart + 1);   // + minimum Altitude 
                 updated = true;
+                reTry++;
             }
             point = p;
             return updated;
@@ -1710,8 +1716,6 @@ namespace IL2DCE.Generator
 
         private IEnumerable<AirGroup> GetRandomAirGroups(int needAirGroups, AirGroupInfos airGroupInfosLocal, IEnumerable<string> aircraftsRed, IEnumerable<string> aircraftsBlue)
         {
-            const int MaxRetryCreateOneAirGroup = 10;
-            const int MaxRetryCreateAllAirGroups = 250;
             List<AirGroup> airGroups = new List<AirGroup>();
             if (aircraftsRed.Any() && aircraftsBlue.Any())
             {
