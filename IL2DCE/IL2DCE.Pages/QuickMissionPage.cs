@@ -644,7 +644,7 @@ namespace IL2DCE
                     }
                     try
                     {
-                        // Game.gameInterface.AppPartsLoadAll();
+                        // gameIterface.AppPartsLoadAll();
                         gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
                         gameIterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
                         missionLoaded = true;
@@ -654,7 +654,6 @@ namespace IL2DCE
                     {
                         Debug.WriteLine(ex.Message);
                     }
-                    // Game.gameInterface.PostMissionLoad(campaignInfo.StaticTemplateFiles.First());
                 }
             }
 

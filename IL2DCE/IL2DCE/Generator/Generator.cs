@@ -247,7 +247,7 @@ namespace IL2DCE.Generator
                     chiefIndex++;
 
                     // For blue army        // Armor.Pz_35t nn /num_units 8
-                    GroundGroup armor = new GroundGroup(id, "Armor.Pz_35t1", (int)EArmy.Blue, ECountry.de, "/num_units 8", groundway.Waypoints);
+                    GroundGroup armor = new GroundGroup(id, "Armor.Pz_35t", (int)EArmy.Blue, ECountry.de, "/num_units 8", groundway.Waypoints);
                     armor.WriteTo(missionTemplateFile);
                 }
                 else

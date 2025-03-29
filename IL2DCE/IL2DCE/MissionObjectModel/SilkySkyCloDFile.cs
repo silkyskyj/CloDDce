@@ -564,5 +564,22 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
         }
+
+        public static void DeleteSectionAndSubSection(ISectionFile fileSrc, string section, string [] SubSectionAddKey)
+        {
+            int lines = fileSrc.lines(section);
+            for (int i = 0; i < lines; i++)
+            {
+                string key;
+                string value;
+                fileSrc.get(section, i, out key, out value);
+                fileSrc.delete(key);
+                foreach (var item in SubSectionAddKey)
+                {
+                    fileSrc.delete(string.Format("{0}_{1}", key, item));
+                }
+            }
+            fileSrc.delete(section);
+        }
     }
 }
