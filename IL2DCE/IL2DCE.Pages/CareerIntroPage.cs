@@ -361,17 +361,17 @@ namespace IL2DCE.Pages
                 }
                 try
                 {
-                    // Game.gameInterface.AppPartsLoadAll();
                     gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
                     gameIterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
                     missionLoaded = true;
                     UpdateAirGroupComboBoxContent();
+                    gameIterface.BattleStart();
+                    gameIterface.BattleStop();
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message);
                 }
-                // Game.gameInterface.PostMissionLoad(campaignInfo.StaticTemplateFiles.First());
             }
         }
 
