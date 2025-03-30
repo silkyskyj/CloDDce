@@ -644,11 +644,12 @@ namespace IL2DCE
                     }
                     try
                     {
-                        // gameIterface.AppPartsLoadAll();
                         gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
                         gameIterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
                         missionLoaded = true;
                         UpdateAirGroupComboBoxContent();
+                        gameIterface.BattleStart();
+                        gameIterface.BattleStop();
                     }
                     catch (Exception ex)
                     {

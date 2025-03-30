@@ -78,7 +78,7 @@ namespace IL2DCE
         public const string KeyProcessTimeReFuel = "ProcessTimeReFuel";
 
         public const string LogFileName = "il2dce.log";
-        public const string ConvertLogFileName = "Covert.log";
+        public const string ConvertLogFileName = "Convert.log";
 
         public const int DefaultAdditionalAirOperations = 3;
         public const int MaxAdditionalAirOperations = 12;
@@ -353,7 +353,6 @@ namespace IL2DCE
                 string value = confFile.get(SectionCore, "statType");
                 int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _statType);
             }
-
 
             if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFileName))
             {

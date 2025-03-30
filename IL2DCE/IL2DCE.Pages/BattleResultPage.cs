@@ -363,11 +363,18 @@ namespace IL2DCE.Pages
 
         protected virtual string GetPlayerStat()
         {
-            IGameSingle game = Game as IGameSingle;
-            IPlayer player = game.gameInterface.Player();
-            IPlayerStat st = player.GetBattleStat();
-
-            return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs: {3}\n Landings: {4}\n Deaths: {5}\n Bails: {6}\n Ditches: {7}\n PlanesWrittenOff: {8}\n" +
+            Config config = Game.Core.Config;
+            int statType = config.StatType;
+            if (statType == 1)
+            {
+                return GetPlayerStatDefaultAPI();
+            }
+            else
+            {
+                IGameSingle game = Game as IGameSingle;
+                IPlayer player = game.gameInterface.Player();
+                IPlayerStat st = player.GetBattleStat();
+                return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs: {3}\n Landings: {4}\n Deaths: {5}\n Bails: {6}\n Ditches: {7}\n PlanesWrittenOff: {8}\n" +
                                     " Kills[Aircraft]: {9}\n Kills[GroundUnit]: {10}\n Friendly Kills[Aircraft]: {11}\n Friendly Kills[GroundUnit]: {12}\n" +
                                     "\n KillsTypes\n  Aircraft: {13}\n  GroundUnit: {14}\n  Aircraft[Friendly]: {15}\n  GroundUnit[Friendly]: {16}\n",
                                     player?.Name() ?? string.Empty,
@@ -387,6 +394,7 @@ namespace IL2DCE.Pages
                                     ToString(killsGroundUnit),
                                     ToString(killsFliendlyAircraft),
                                     ToString(killsFliendlyGroundUnit));
+            }
         }
 
         protected virtual string GetPlayerStatDefaultAPI()
