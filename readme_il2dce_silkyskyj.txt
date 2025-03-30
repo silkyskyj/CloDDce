@@ -1,7 +1,7 @@
 ﻿============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.7)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.8)
 ============================================================================================================================
-                                                                                                                 03/29/2025
+                                                                                                                 03/30/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -64,6 +64,9 @@ Items that can be selected and set commonly in 1. 2.
  - Random Air Group Spawn Location [Player/Friendly/Enemy]
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
  - Time(Spawn delay) 15-1800[sec] [Friendly/Enemy]
+ - Auto re-Arm (bullets only)
+ - Auto re-Fuel
+ - Track Recording
 
 Sample mission (7 mission files)
 
@@ -97,6 +100,7 @@ History
 
   Ver      Date       Comment
 
+  0.5.8    03/30/2025 Fixed: The name of Blue amry Armor replaced by default wa incorrect. when use PreLoad button, the page to become unstable. Stats are not displayed with statType option 1.
   0.5.7    03/29/2025 Fixed: Fixed: Depending on the position of the FrontMarker, the random spawn localtion may continue to process infinitely.
   0.5.6    03/29/2025 Added: Select Auto re-Arm(bullets only), Auto re-Fuel, Track Recording option in Dynamic Quick Mission page, Career & Campaign Intro page. display the spawn airport and the distance [km] from the front line option in Select Air Group list.
                       Fixed: FrontMarker is not displayed. Armor/Vehicle are not placed.
