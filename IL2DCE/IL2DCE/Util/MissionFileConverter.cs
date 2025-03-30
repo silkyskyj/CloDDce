@@ -214,12 +214,12 @@ namespace IL2DCE.Util
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionSplines);
             IEnumerable<string> countries = Country.ToStrings().Select(x => string.Format(" {0} ", x));
             string replaceCountry = string.Format(" {0} ", ECountry.nn.ToString());
-            IEnumerable<string> keys = SilkySkyCloDFile.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs, countries, replaceCountry);
+            IEnumerable<string> keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs);
             foreach (var item in keys)
             {
                 SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.SectionRoad));
             }
-            keys = SilkySkyCloDFile.CopySectionReplaceGetKey(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs, countries, replaceCountry);
+            keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs);
             foreach (var item in keys)
             {
                 SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, item);

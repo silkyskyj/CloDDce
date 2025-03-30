@@ -36,22 +36,22 @@
 [splines]
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.Minensuchboote nn /sleep 0/skill 1/slowfire 1
-  1_Chief Ship.HMS_Flowers_Corvette nn /sleep 0/skill 1/slowfire 1
-  2_Chief Armor.Pz_38t nn 
-  3_Chief Armor.Pz_38t nn 
-  4_Chief Armor.Pz_38t nn 
-  6_Chief Armor.Pz_38t nn 
-  7_Chief Armor.Pz_38t nn 
-  8_Chief Armor.tobruk:Matilda_2A_CS nn 
-  9_Chief Armor.tobruk:Matilda_2A_CS nn 
-  10_Chief Armor.tobruk:Matilda_2A_CS nn 
-  11_Chief Armor.tobruk:Matilda_2A_CS nn 
-  12_Chief Armor.tobruk:Matilda_2A_CS nn 
-  13_Chief Armor.tobruk:Matilda_2A_CS nn 
-  5_Chief Armor.Pz_38t nn 
-  14_Chief Ship.tobruk:Leipzig_CL nn /sleep 0/skill 1/slowfire 1
-  15_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 1/slowfire 1
+  0_Chief Ship.Minensuchboote de /sleep 0/skill 1/slowfire 1
+  1_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1
+  2_Chief Armor.Pz_38t de 
+  3_Chief Armor.Pz_38t de 
+  4_Chief Armor.Pz_38t de 
+  6_Chief Armor.Pz_38t de 
+  7_Chief Armor.Pz_38t de 
+  8_Chief Armor.tobruk:Matilda_2A_CS gb 
+  9_Chief Armor.tobruk:Matilda_2A_CS gb 
+  10_Chief Armor.tobruk:Matilda_2A_CS gb 
+  11_Chief Armor.tobruk:Matilda_2A_CS gb 
+  12_Chief Armor.tobruk:Matilda_2A_CS gb 
+  13_Chief Armor.tobruk:Matilda_2A_CS gb 
+  5_Chief Armor.Pz_38t de 
+  14_Chief Ship.tobruk:Leipzig_CL de /sleep 0/skill 1/slowfire 1
+  15_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1
 [0_Chief_Road]
   18285.60 17714.58 38.40  0 2 5.56
   14241.82 13997.96 38.40
@@ -170,7 +170,11 @@
   9_bld buildings.House$Oil_Bunker-Middle 1 20368.96 8615.64 0.00
 [BuildingsLinks]
 [FrontMarker]
-  FrontMarker0 21322.53 21852.10 0
-  FrontMarker1 13416.25 19734.12 1
-  FrontMarker2 18665.18 13840.58 2
-  FrontMarker3 9838.03 10867.51 0
+  FrontMarker0 13416.25 19734.12 1
+  FrontMarker1 18665.18 13840.58 2
+  FrontMarker2 9910.83 9342.60 2
+  FrontMarker3 22563.90 22716.76 2
+  FrontMarker4 16387.76 16577.86 2
+  FrontMarker5 9347.46 9848.39 1
+  FrontMarker6 22064.51 23226.49 1
+  FrontMarker7 16026.28 16915.38 1

@@ -35,14 +35,14 @@
 [splines]
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 2/slowfire 1
-  1_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 2/slowfire 1
-  2_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 2/slowfire 1
-  3_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 2/slowfire 1
-  4_Chief Train.57xx_0-6-0PT nn 
-  5_Chief Train.57xx_0-6-0PT nn 
-  6_Chief Train.57xx_0-6-0PT nn 
-  8_Chief Train.57xx_0-6-0PT nn 
+  0_Chief Ship.Tanker_Medium1 de /sleep 0/skill 2/slowfire 1
+  1_Chief Ship.Tanker_Medium1 de /sleep 0/skill 2/slowfire 1
+  2_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
+  3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 2/slowfire 1
+  4_Chief Train.57xx_0-6-0PT de 
+  5_Chief Train.57xx_0-6-0PT de 
+  6_Chief Train.57xx_0-6-0PT gb 
+  8_Chief Train.57xx_0-6-0PT gb 
 [0_Chief_Road]
   238888.66 135231.30 38.40  0 2 5.56
   239731.39 150119.61 38.40  0 2 2.78

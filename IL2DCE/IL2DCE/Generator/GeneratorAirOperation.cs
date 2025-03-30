@@ -1260,7 +1260,8 @@ namespace IL2DCE.Generator
             else if (missionType == EMissionType.ARMED_RECON)
             {
                 List<GroundGroup> groundGroups = GeneratorGroundOperation.getAvailableEnemyGroundGroups(airGroup.ArmyIndex, new List<EGroundGroupType> { EGroundGroupType.Armor, EGroundGroupType.Vehicle, EGroundGroupType.Train });
-                List<Stationary> stationaries = GeneratorGroundOperation.getAvailableEnemyStationaries(airGroup.ArmyIndex, new List<EStationaryType> { EStationaryType.Aircraft, EStationaryType.Artillery, EStationaryType.Radar, EStationaryType.Depot });
+                List<Stationary> stationaries = GeneratorGroundOperation.getAvailableEnemyStationaries(airGroup.ArmyIndex, new List<EStationaryType> { EStationaryType.Artillery, EStationaryType.Ammo, EStationaryType.Weapons,
+                                                                EStationaryType.Aircraft, EStationaryType.Radar, EStationaryType.Depot, EStationaryType.Car, EStationaryType.ConstCar, });
                 return groundGroups.Count > 0 || stationaries.Count > 0;
             }
             else if (missionType == EMissionType.ATTACK_ARMOR)
@@ -1280,7 +1281,7 @@ namespace IL2DCE.Generator
             }
             else if (missionType == EMissionType.ATTACK_ARTILLERY)
             {
-                IList<Stationary> stationaries = GeneratorGroundOperation.getAvailableEnemyStationaries(airGroup.ArmyIndex, new List<EStationaryType> { EStationaryType.Artillery });
+                IList<Stationary> stationaries = GeneratorGroundOperation.getAvailableEnemyStationaries(airGroup.ArmyIndex, new List<EStationaryType> { EStationaryType.Artillery, EStationaryType.Ammo, EStationaryType.Weapons, });
                 return stationaries.Count > 0;
             }
             else if (missionType == EMissionType.ATTACK_DEPOT)

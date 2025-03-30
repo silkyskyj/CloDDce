@@ -676,15 +676,14 @@ namespace IL2DCE.Generator
 
         public Stationary getAvailableRandomEnemyStationary(AirGroup airGroup, EMissionType missionType)
         {
-            if (missionType == EMissionType.ARMED_MARITIME_RECON || missionType == EMissionType.MARITIME_RECON
-                || missionType == EMissionType.ATTACK_SHIP)
+            if (missionType == EMissionType.ARMED_MARITIME_RECON || missionType == EMissionType.MARITIME_RECON || missionType == EMissionType.ATTACK_SHIP)
             {
                 return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Ship });
             }
             else if (missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
             {
-                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery,
-                    EStationaryType.Ammo, EStationaryType.Weapons, EStationaryType.Aircraft, EStationaryType.Radar, EStationaryType.Depot, });
+                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery, EStationaryType.Ammo, EStationaryType.Weapons, 
+                                                    EStationaryType.Aircraft, EStationaryType.Radar, EStationaryType.Depot, EStationaryType.Car, EStationaryType.ConstCar, });
             }
             else if (missionType == EMissionType.ATTACK_AIRCRAFT)
             {
@@ -692,7 +691,7 @@ namespace IL2DCE.Generator
             }
             else if (missionType == EMissionType.ATTACK_ARTILLERY)
             {
-                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery, EStationaryType.Ammo });
+                return getAvailableRandomEnemyStationary(airGroup, new List<EStationaryType> { EStationaryType.Artillery, EStationaryType.Ammo, EStationaryType.Weapons, });
             }
             else if (missionType == EMissionType.ATTACK_RADAR)
             {

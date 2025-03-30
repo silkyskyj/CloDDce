@@ -412,12 +412,15 @@ namespace IL2DCE.MissionObjectModel
                 if (way.Type == AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF)
                 {
                     Airstart = false;
+                    Speed = AirGroupWaypoint.DefaultTakeoffV;
                 }
                 else if (way.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                 {
                     Airstart = true;
+                    Speed = way.V;
                 }
             }
+
 
             // SetOnPark
             SetOnParked = string.Compare(sectionFile.get(id, MissionFile.KeySetOnPark, "0"), "1") == 0;

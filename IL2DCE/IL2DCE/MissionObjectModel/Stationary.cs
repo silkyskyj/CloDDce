@@ -41,7 +41,7 @@ namespace IL2DCE.MissionObjectModel
 
     public class Stationary
     {
-        private static readonly List<string> _depots = new List<string>
+        private static readonly List<string> Depots = new List<string>
         {
             "Stationary.Morris_CS8_tank",
             "Stationary.Morris_CS8",
@@ -49,7 +49,7 @@ namespace IL2DCE.MissionObjectModel
             "Stationary.Opel_Blitz_cargo",
         };
 
-        private static readonly List<string> _aircrafts = new List<string>
+        private static readonly List<string> Aircrafts = new List<string>
         {
             "Stationary.AnsonMkI",
             "Stationary.BeaufighterMkIF",
@@ -257,76 +257,14 @@ namespace IL2DCE.MissionObjectModel
 
         public EStationaryType Type
         {
-            get
-            {
-                // Type
-                if (!string.IsNullOrEmpty(Class))
-                {
-                    if (Class.StartsWith("Stationary.Radar"))
-                    {
-                        return EStationaryType.Radar;
-                    }
-                    else if (Class.StartsWith("Artillery"))
-                    {
-                        return EStationaryType.Artillery;
-                    }
-                    else if (_aircrafts.Contains(Class))
-                    {
-                        return EStationaryType.Aircraft;
-                    }
-                    else if (_depots.Contains(Class))
-                    {
-                        return EStationaryType.Depot;
-                    }
-                    else if (Class.StartsWith("Ship"))
-                    {
-                        return EStationaryType.Ship;
-                    }
-                    else if (Class.StartsWith("Stationary.Ammo"))
-                    {
-                        return EStationaryType.Ammo;
-                    }
-                    else if (Class.StartsWith("Stationary.Weapons"))
-                    {
-                        return EStationaryType.Weapons;
-                    }
-                    else if (Class.StartsWith("Stationary.Opel") || Class.StartsWith("Stationary.Ford") || Class.StartsWith("Stationary.BMW") || 
-                            Class.StartsWith("Stationary.Renault") || Class.StartsWith("Stationary.Krupp") ||Class.StartsWith("Stationary.MG") || 
-                            Class.StartsWith("Stationary.Austin") || Class.StartsWith("Stationary.Morris") || Class.StartsWith("Stationary.Bedford"))
-                    {
-                        return EStationaryType.Car;
-                    }
-                    else if (Class.StartsWith("Stationary.Unic") || Class.StartsWith("Stationary.Kubelwagen")) 
-                    {
-                        return EStationaryType.ConstCar;
-                    }
-                    else if (Class.StartsWith("Stationary.Environment"))
-                    {
-                        return EStationaryType.Environment;
-                    }
-                }
-
-                return EStationaryType.Unknown;
-            }
+            get;
+            private set;
         }
 
         public int Army
         {
-            get
-            {
-                if (Country == ECountry.gb || Country == ECountry.fr || Country == ECountry.us || Country == ECountry.ru || Country == ECountry.rz || Country == ECountry.pl)
-                {
-                    return (int)EArmy.Red;
-                }
-                else if (Country == ECountry.de || Country == ECountry.it || Country == ECountry.ja || Country == ECountry.ro || Country == ECountry.fi || Country == ECountry.hu)
-                {
-                    return (int)EArmy.Blue;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+            get;
+            private set;
         }
 
         public string Options
@@ -343,14 +281,16 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public Stationary(string id, string @class, ECountry country, double x, double y, double direction, string options = null)
+        public Stationary(string id, string @class, int army, ECountry country, double x, double y, double direction, string options = null)
         {
             Id = id;
+            Class = @class;
+            Type = ParseType(Class);
+            Army = army;
+            Country = country;
             X = x;
             Y = y;
             Direction = direction;
-            Class = @class;
-            Country = country;
             Options = options;
         }
 
@@ -364,7 +304,13 @@ namespace IL2DCE.MissionObjectModel
                     string[] valueParts = value.Split(MissionFile.SplitChars, StringSplitOptions.RemoveEmptyEntries);
                     if (valueParts.Length > 4)
                     {
+                        // Class
+                        string @class = valueParts[0];
+
                         ECountry country = ParseCountry(valueParts[1]);
+
+                        EArmy army = MissionObjectModel.Army.Parse(country);
+
                         double x;
                         double y;
                         double direction;
@@ -382,7 +328,7 @@ namespace IL2DCE.MissionObjectModel
                                 }
                             }
 
-                            return new Stationary(id, valueParts[0], country, x ,y, direction, options.ToString().TrimEnd());
+                            return new Stationary(id, @class, (int)army, country, x ,y, direction, options.ToString().TrimEnd());
                         }
                     }
                 }
@@ -411,6 +357,55 @@ namespace IL2DCE.MissionObjectModel
             }
             Debug.Assert(false, "Parse Country");
             return ECountry.nn;
+        }
+
+        public static EStationaryType ParseType(string classString)
+        {
+            if (classString.StartsWith("Stationary.Radar"))
+            {
+                return EStationaryType.Radar;
+            }
+            else if (classString.StartsWith("Artillery"))
+            {
+                return EStationaryType.Artillery;
+            }
+            else if (Aircrafts.Contains(classString))
+            {
+                return EStationaryType.Aircraft;
+            }
+            else if (Depots.Contains(classString))
+            {
+                return EStationaryType.Depot;
+            }
+            else if (classString.StartsWith("Ship"))
+            {
+                return EStationaryType.Ship;
+            }
+            else if (classString.StartsWith("Stationary.Ammo"))
+            {
+                return EStationaryType.Ammo;
+            }
+            else if (classString.StartsWith("Stationary.Weapons"))
+            {
+                return EStationaryType.Weapons;
+            }
+            else if (classString.StartsWith("Stationary.Opel") || classString.StartsWith("Stationary.Ford") || classString.StartsWith("Stationary.BMW") || classString.StartsWith("Stationary.Albion") ||
+                    classString.StartsWith("Stationary.Renault") || classString.StartsWith("Stationary.Krupp") || classString.StartsWith("Stationary.MG") || classString.StartsWith("Stationary.Guy") ||
+                    classString.StartsWith("Stationary.Austin") || classString.StartsWith("Stationary.Morris") || classString.StartsWith("Stationary.Bedford") || classString.StartsWith("Stationary.AEC_Matador)") ||
+                    classString.StartsWith("Stationary.Scammell") || classString.StartsWith("Stationary.Horch"))
+            {
+                return EStationaryType.Car;
+            }
+            else if (classString.StartsWith("Stationary.Unic") || classString.StartsWith("Stationary.Kubelwagen"))
+            {
+                return EStationaryType.ConstCar;
+            }
+            else if (classString.StartsWith("Stationary.Environment"))
+            {
+                return EStationaryType.Environment;
+            }
+
+            return EStationaryType.Unknown;
         }
 
         public void WriteTo(ISectionFile sectionFile)

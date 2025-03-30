@@ -36,12 +36,12 @@
 [splines]
 [CustomChiefs]
 [Chiefs]
-  0_Chief Armor.tobruk:Pz_IVF nn /num_units 8
-  1_Chief Armor.tobruk:Matilda_2A_Late nn /num_units 8
-  2_Chief Ship.Tanker_Medium2 nn /sleep 0/skill 1/slowfire 1
-  3_Chief Ship.Tanker_Medium1 nn /sleep 0/skill 1/slowfire 1
-  4_Chief Ship.Minensuchboote nn /sleep 0/skill 1/slowfire 1
-  5_Chief Ship.HMS_Flowers_Corvette nn /sleep 0/skill 1/slowfire 1
+  0_Chief Armor.tobruk:Pz_IVF de /num_units 8
+  1_Chief Armor.tobruk:Matilda_2A_Late gb /num_units 8
+  2_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1
+  3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1
+  4_Chief Ship.Minensuchboote de /sleep 0/skill 1/slowfire 1
+  5_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1
 [0_Chief_Road]
   21828.05 21153.62 38.40  0 2 6.94
   21781.66 21121.67 38.40  0 2 3.47

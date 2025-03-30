@@ -1420,7 +1420,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE, Version=0.5.7.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE, Version=0.5.8.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_A733BDCD8D05B26FE64E57C03E48D121"
@@ -1602,7 +1602,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE.Mission, Version=0.5.7.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE.Mission, Version=0.5.8.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_BF1A350921A7A64AD6C592B0A98A2554"
@@ -1824,7 +1824,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IL2DCE.Pages, Version=0.5.7.0, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:IL2DCE.Pages, Version=0.5.8.0, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_E6FF180B83966ABEDCEC72CA3483AEF4"
@@ -2106,15 +2106,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:IL2DCE [silkyskyj]"
-        "ProductCode" = "8:{04A38B37-9053-4167-8DAE-12BC8BA58DAC}"
-        "PackageCode" = "8:{8651515A-06FB-4A61-98C0-BC785F8EDA53}"
+        "ProductCode" = "8:{EB52CC4A-D867-40FF-9AC3-961E352D3FFC}"
+        "PackageCode" = "8:{AB207C6D-1AB1-4684-B531-80BE5EC4F13B}"
         "UpgradeCode" = "8:{CC7C88D9-649D-49CC-9CCE-475DE0EC7480}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.5.8"
+        "ProductVersion" = "8:0.5.9"
         "Manufacturer" = "8:Stefan Rothdach & silkyskyj"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/silkyskyj/il2dce"

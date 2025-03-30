@@ -108,32 +108,14 @@ namespace IL2DCE.Generator
                 // Delete everything from the template file.
                 if (initialMissionTemplateFile.exist(MissionFile.SectionAirGroups))
                 {
-                    // Delete all air groups from the template file.
-                    int lines = initialMissionTemplateFile.lines(MissionFile.SectionAirGroups);
-                    for (int i = 0; i < lines; i++)
-                    {
-                        string key;
-                        string value;
-                        initialMissionTemplateFile.get(MissionFile.SectionAirGroups, i, out key, out value);
-                        initialMissionTemplateFile.delete(key);
-                        initialMissionTemplateFile.delete(string.Format("{0}_{1}", key, MissionFile.SectionWay));
-                    }
-                    initialMissionTemplateFile.delete(MissionFile.SectionAirGroups);
+                    SilkySkyCloDFile.DeleteSectionAndSubSection(initialMissionTemplateFile, MissionFile.SectionAirGroups, new string[] { MissionFile.SectionWay });
                 }
 
                 if (initialMissionTemplateFile.exist(MissionFile.SectionChiefs))
                 {
-                    // Delete all ground groups from the template file.
-                    int lines = initialMissionTemplateFile.lines(MissionFile.SectionChiefs);
-                    for (int i = 0; i < lines; i++)
-                    {
-                        string key;
-                        string value;
-                        initialMissionTemplateFile.get(MissionFile.SectionChiefs, i, out key, out value);
-                        initialMissionTemplateFile.delete(string.Format("{0}_{1}", key, MissionFile.SectionRoad));
-                    }
-                    initialMissionTemplateFile.delete(MissionFile.SectionChiefs);
+                    SilkySkyCloDFile.DeleteSectionAndSubSection(initialMissionTemplateFile, MissionFile.SectionChiefs, new string[] { MissionFile.SectionRoad });
                 }
+
                 MissionFile initialMission = new MissionFile(GamePlay, initialMissionTemplateFiles, airGroupInfos);
 
                 foreach (AirGroup airGroup in initialMission.AirGroups)
@@ -175,19 +157,10 @@ namespace IL2DCE.Generator
 
             // Remove the ground groups & stationaries but keep the air groups.
 
-            int i;
             // Delete all ground groups from the template file. (=initialMissionTemplate)
             if (missionTemplateFile.exist(MissionFile.SectionChiefs))
             {
-                int lines = missionTemplateFile.lines(MissionFile.SectionChiefs);
-                for (i = 0; i < lines; i++)
-                {
-                    string key;
-                    string value;
-                    missionTemplateFile.get(MissionFile.SectionChiefs, i, out key, out value);
-                    missionTemplateFile.delete(string.Format("{0}_{1}", key, MissionFile.SectionRoad));
-                }
-                missionTemplateFile.delete(MissionFile.SectionChiefs);
+                SilkySkyCloDFile.DeleteSectionAndSubSection(missionTemplateFile, MissionFile.SectionChiefs, new string[] { MissionFile.SectionRoad });
             }
 
             // Delete all stationaries from the template file.
@@ -210,22 +183,23 @@ namespace IL2DCE.Generator
             int army;
             int army2;
 
-            //// 0. Chief
-            //foreach (GroundGroup groundGroup in staticTemplateFile.GroundGroups)
-            //{
-            //    Point2d point = groundGroup.Position;
-            //    army = GamePlay.gpFrontArmy(point.x, point.y);
-            //    if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
-            //    {
-            //        groundGroup.UpdateArmy(army);
-            //    }
-            //    else
-            //    {
-            //        Debug.WriteLine("no Army GroundGroup[X:{0:F2}, Y:{1:F2}] {2}[{3}]", point.x, point.y, groundGroup.DisplayName, groundGroup.Id);
-            //    }
-            //}
+            // 0. Chief
+            foreach (GroundGroup groundGroup in staticTemplateFile.GroundGroups)
+            {
+                Point2d point = groundGroup.Position;
+                army = GamePlay.gpFrontArmy(point.x, point.y);
+                if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
+                {
+                    groundGroup.UpdateArmy(army);
+                    groundGroup.WriteTo(missionTemplateFile);
+                }
+                else
+                {
+                    Debug.WriteLine("no Army GroundGroup[X:{0:F2}, Y:{1:F2}] {2}[{3}]", point.x, point.y, groundGroup.DisplayName, groundGroup.Id);
+                }
+            }
 
-            // 1. Roads
+            // 1. Roads (Chiefs Vehicle/Armor)
             // TODO: Only create a random 
             foreach (Groundway groundway in staticTemplateFile.Roads)
             {
@@ -255,7 +229,7 @@ namespace IL2DCE.Generator
                 }
             }
 
-            // 2. Waterways
+            // 2. Waterways (Chiefs Ship)
             // TODO: Only create a random (or decent) amount of supply ships.
             foreach (Groundway groundway in staticTemplateFile.Waterways)
             {
@@ -267,7 +241,7 @@ namespace IL2DCE.Generator
                     chiefIndex++;
 
                     // For red army
-                    GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium1", (int)EArmy.Red, ECountry.gb, "/sleep 0/skill 2/slowfire 1", groundway.Waypoints);
+                    GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium1", (int)EArmy.Red, ECountry.gb, "/sleep 0/skill 2/slowfire 1", groundway.Waypoints);  // British Tanker
                     supplyShip.WriteTo(missionTemplateFile);
                 }
                 else if (army == (int)EArmy.Blue)
@@ -276,7 +250,7 @@ namespace IL2DCE.Generator
                     chiefIndex++;
 
                     // For blue army
-                    GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium1", (int)EArmy.Blue, ECountry.de, "/sleep 0/skill 2/slowfire 1", groundway.Waypoints);
+                    GroundGroup supplyShip = new GroundGroup(id, "Ship.Tanker_Medium2", (int)EArmy.Blue, ECountry.de, "/sleep 0/skill 2/slowfire 1", groundway.Waypoints); // German Tanker
                     supplyShip.WriteTo(missionTemplateFile);
                 }
                 else
@@ -285,7 +259,7 @@ namespace IL2DCE.Generator
                 }
             }
 
-            // 3. Railways
+            // 3. Railways (Chiefs Train)
             foreach (Groundway railway in staticTemplateFile.Railways)
             {
                 army = GamePlay.gpFrontArmy(railway.Start.X, railway.Start.Y);
@@ -297,7 +271,7 @@ namespace IL2DCE.Generator
                     chiefIndex++;
 
                     // For red army
-                    GroundGroup train = new GroundGroup(id, "Train.57xx_0-6-0PT_c0", (int)EArmy.Red, ECountry.gb, "", railway.Waypoints);
+                    GroundGroup train = new GroundGroup(id, "Train.57xx_0-6-0PT_c0", (int)EArmy.Red, ECountry.gb, "", railway.Waypoints);       // United Kingdom 57xx 0-6-0PT c0
                     train.WriteTo(missionTemplateFile);
                 }
                 else if (army == (int)EArmy.Blue && army2 == (int)EArmy.Blue)
@@ -306,7 +280,7 @@ namespace IL2DCE.Generator
                     chiefIndex++;
 
                     // For blue army
-                    GroundGroup train = new GroundGroup(id, "Train.BR56-00_c2", (int)EArmy.Blue, ECountry.de, "", railway.Waypoints);
+                    GroundGroup train = new GroundGroup(id, "Train.BR56-00_c2", (int)EArmy.Blue, ECountry.de, "", railway.Waypoints);           // Germany BR56-00, Cargo Type 2
                     train.WriteTo(missionTemplateFile);
                 }
                 else
@@ -326,7 +300,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For red army
-                    Stationary fuelTruck = new Stationary(id, "Stationary.Morris_CS8_tank", ECountry.gb, depot.X, depot.Y, depot.Direction);
+                    Stationary fuelTruck = new Stationary(id, "Stationary.Morris_CS8_tank", (int)EArmy.Red, ECountry.gb, depot.X, depot.Y, depot.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
                 else if (army == (int)EArmy.Blue)
@@ -335,7 +309,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For blue army
-                    Stationary fuelTruck = new Stationary(id, "Stationary.Opel_Blitz_fuel", ECountry.de, depot.X, depot.Y, depot.Direction);
+                    Stationary fuelTruck = new Stationary(id, "Stationary.Opel_Blitz_fuel", (int)EArmy.Blue, ECountry.de, depot.X, depot.Y, depot.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
                 else
@@ -355,7 +329,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For red army
-                    Stationary fuelTruck = new Stationary(id, "Stationary.HurricaneMkI_dH5-20", ECountry.gb, aircraft.X, aircraft.Y, aircraft.Direction);
+                    Stationary fuelTruck = new Stationary(id, "Stationary.HurricaneMkI_dH5-20", (int)EArmy.Red, ECountry.gb, aircraft.X, aircraft.Y, aircraft.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
                 else if (army == (int)EArmy.Blue)
@@ -364,7 +338,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For blue army
-                    Stationary fuelTruck = new Stationary(id, "Stationary.Bf-109E-1", ECountry.de, aircraft.X, aircraft.Y, aircraft.Direction);
+                    Stationary fuelTruck = new Stationary(id, "Stationary.Bf-109E-1", (int)EArmy.Blue, ECountry.de, aircraft.X, aircraft.Y, aircraft.Direction);
                     fuelTruck.WriteTo(missionTemplateFile);
                 }
                 else
@@ -384,7 +358,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For red army
-                    Stationary aaGun = new Stationary(id, "Artillery.Bofors", ECountry.gb, artillery.X, artillery.Y, artillery.Direction, "/timeout 0/radius_hide 0");
+                    Stationary aaGun = new Stationary(id, "Artillery.Bofors", (int)EArmy.Red, ECountry.gb, artillery.X, artillery.Y, artillery.Direction, "/timeout 0/radius_hide 0");
                     aaGun.WriteTo(missionTemplateFile);
                 }
                 else if (army == (int)EArmy.Blue)
@@ -393,7 +367,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For blue army
-                    Stationary aaGun = new Stationary(id, "Artillery.4_cm_Flak_28", ECountry.de, artillery.X, artillery.Y, artillery.Direction, "/timeout 0/radius_hide 0");
+                    Stationary aaGun = new Stationary(id, "Artillery.4_cm_Flak_28", (int)EArmy.Blue, ECountry.de, artillery.X, artillery.Y, artillery.Direction, "/timeout 0/radius_hide 0");
                     aaGun.WriteTo(missionTemplateFile);
                 }
                 else
@@ -413,7 +387,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For red army
-                    Stationary radarSite = new Stationary(id, "Stationary.Radar.EnglishRadar1", ECountry.gb, radar.X, radar.Y, radar.Direction);
+                    Stationary radarSite = new Stationary(id, "Stationary.Radar.EnglishRadar1", (int)EArmy.Red, ECountry.gb, radar.X, radar.Y, radar.Direction);
                     radarSite.WriteTo(missionTemplateFile);
                 }
                 else if (army == (int)EArmy.Blue)
@@ -422,7 +396,7 @@ namespace IL2DCE.Generator
                     stationaryIndex++;
 
                     // For blue army
-                    Stationary radarSite = new Stationary(id, "Stationary.Radar.Wotan_II", ECountry.de, radar.X, radar.Y, radar.Direction);
+                    Stationary radarSite = new Stationary(id, "Stationary.Radar.Wotan_II", (int)EArmy.Blue, ECountry.de, radar.X, radar.Y, radar.Direction);
                     radarSite.WriteTo(missionTemplateFile);
                 }
                 else
@@ -432,7 +406,7 @@ namespace IL2DCE.Generator
             }
 
             // 8. FrontMarker
-            i = 0;
+            int i = 0;
             foreach (Point3d point in staticTemplateFile.FrontMarkers)
             {
                 string key = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
