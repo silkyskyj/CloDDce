@@ -21,6 +21,8 @@ using System.Globalization;
 using System.Linq;
 using maddox.game;
 using maddox.GP;
+using static System.Collections.Specialized.BitVector32;
+using static maddox.core.WRenderContext;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -88,6 +90,18 @@ namespace IL2DCE.MissionObjectModel
         }
         private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
 
+        public string CustomChief
+        {
+            get;
+            private set;
+        }
+
+        public IEnumerable<string> CustomChiefValues
+        {
+            get;
+            private set;
+        }
+
         public string DisplayName
         {
             get
@@ -96,7 +110,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public GroundGroup(string id, string @class, int army, ECountry country, string options, List<GroundGroupWaypoint> waypoints)
+        public GroundGroup(string id, string @class, int army, ECountry country, string options, List<GroundGroupWaypoint> waypoints, string customChief = null, IEnumerable<string> customChiefValues = null)
         {
             Id = id;
             Class = @class;
@@ -105,13 +119,15 @@ namespace IL2DCE.MissionObjectModel
             Army = army;
             Options = options;
             Waypoints.AddRange(waypoints);
+            CustomChief = customChief;
+            CustomChiefValues = customChiefValues;
         }
 
         public static GroundGroup Create(ISectionFile sectionFile, string id)
         {
             // _id = id;
 
-            string value = sectionFile.get("Chiefs", id, string.Empty);
+            string value = sectionFile.get(MissionFile.SectionChiefs, id, string.Empty);
             if (!string.IsNullOrEmpty(value))
             {
                 // Class
@@ -173,11 +189,29 @@ namespace IL2DCE.MissionObjectModel
                         }
                     }
 
+                    // CustomChiefs
+                    string customChief = null;
+                    List<string> customChiefValues = null;
+                    value = sectionFile.get(MissionFile.SectionCustomChiefs, @class, string.Empty);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        customChief = value;
+                        customChiefValues = new List<string>();
+                        lines = sectionFile.lines(@class);
+                        for (int i = 0; i < lines; i++)
+                        {
+                            string key;
+                            sectionFile.get(@class, i, out key, out value);
+                            customChiefValues.Add(key);
+                        }
+                    }
+
                     if (waypoints.Count > 0)
                     {
-                        return new GroundGroup(id, @class, (int)army, country, options, waypoints);
+                        return new GroundGroup(id, @class, (int)army, country, options, waypoints, customChief, customChiefValues);
                     }
                 }
+
             }
 
             return null;
@@ -214,7 +248,10 @@ namespace IL2DCE.MissionObjectModel
         {
             if (Waypoints.Count > 1)
             {
+                // Chiefs
                 sectionFile.add(MissionFile.SectionChiefs, Id, string.Format("{0} {1} {2}", Class, Country.ToString(), Options));
+
+                // Road
                 // Write all waypoints except for the last one.
                 string section = string.Format("{0}_{1}", Id, MissionFile.SectionRoad);
                 for (int i = 0; i < Waypoints.Count - 1; i++)
@@ -274,6 +311,19 @@ namespace IL2DCE.MissionObjectModel
                     sectionFile.add(section, "S", 
                                     string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}", 
                                                             (wayPointLast as GroundGroupWaypointSpline).S, wayPointLast.X,  wayPointLast.Y));
+                }
+
+                // CustomChief
+                if (!string.IsNullOrEmpty(CustomChief) && CustomChiefValues!= null)
+                {
+                    if (!sectionFile.exist(MissionFile.SectionCustomChiefs, Class))
+                    {
+                        sectionFile.add(MissionFile.SectionCustomChiefs, Class, CustomChief);
+                        foreach (var item in CustomChiefValues)
+                        {
+                            sectionFile.add(Class, item, string.Empty);
+                        }
+                    }
                 }
             }
         }
