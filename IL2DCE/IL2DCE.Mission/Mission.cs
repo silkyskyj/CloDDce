@@ -590,7 +590,7 @@ namespace IL2DCE
                                 }
                                 else
                                 {
-                                    aircraftState.StopedTime -= ProcSecInterval;
+                                    aircraftState.StopedTime += ProcSecInterval;
                                 }
                                 continue;
                             }
