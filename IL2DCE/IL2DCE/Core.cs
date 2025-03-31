@@ -25,6 +25,7 @@ using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
+using maddox.game.play;
 
 namespace IL2DCE
 {
@@ -379,9 +380,6 @@ namespace IL2DCE
             game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
             game.gameInterface.BattleStop();
 
-            // ISectionFile careerFile = GamePlay.gpCreateSectionFile();
-            // string careerFileName = string.Format("{0}/{1}/{2}", UserMissionFolder, career.PilotName, CareerInfoFileName);
-
             string missionId = campaignInfo.Id;
             string missionFileName = string.Format("{0}/{1}/{2}.mis", Config.UserMissionFolder, career.PilotName, missionId);
             career.MissionFileName = missionFileName;
@@ -422,6 +420,21 @@ namespace IL2DCE
                 briefingFile.SaveTo(string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugBriefingFileName));
                 File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugMissionScriptFileName), true);
             }
+
+            string statsFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.StatsInfoFileName);
+            ISectionFile statsFile = GamePlay.gpLoadSectionFile(statsFileName);
+            if (statsFile != null)
+            {
+                career.ReadResult(statsFile);
+            }
+        }
+
+        public void UpdateResult(Career career)
+        {
+            string statsFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.StatsInfoFileName);
+            ISectionFile statsFile = GamePlay.gpCreateSectionFile();
+            career.WriteResult(statsFile);
+            statsFile.save(statsFileName);
         }
 
         public void InitCampaign()

@@ -91,11 +91,12 @@ namespace IL2DCE.Pages
 
         protected void Fly_Click(object sender, RoutedEventArgs e)
         {
-            UpdateTotalPlayerStat();
-
             Career career = Game.Core.CurrentCareer;
+            UpdateTotalPlayerStat(career.BattleType == EBattleType.QuickMission);
+
             if (career.BattleType == EBattleType.QuickMission)
             {
+                Game.Core.UpdateResult(career);
                 Game.gameInterface.PageChange(new QuickMissionPage(), null);
             }
             else
@@ -134,6 +135,7 @@ namespace IL2DCE.Pages
                             if (item is AiActor)
                             {
                                 AiActor actor = item as AiActor;
+                                Debug.WriteLine("battleGetDamageVictims Actor.IsValid: {0}={1} IsAlive={2}", actor.Name(), actor.IsValid(), actor.IsAlive());
                                 ArrayList damageInitiatorsArray = Game.battleGetDamageInitiators(actor);
                                 foreach (var initiator in damageInitiatorsArray)
                                 {
@@ -142,7 +144,7 @@ namespace IL2DCE.Pages
                                         DamagerScore score = initiator as DamagerScore;
                                         if (score.initiator.Actor != null)
                                         {
-                                            Debug.WriteLine("Actor.IsValid: {0}={1}", score.initiator.Actor.Name(), score.initiator.Actor.IsValid());
+                                            Debug.WriteLine("Actor.IsValid: {0}={1} IsAlive={2}", score.initiator.Actor.Name(), score.initiator.Actor.IsValid(), score.initiator.Actor.IsAlive());
                                             if (score.score > killsScoreOver && score.initiator != null && score.initiator.Player != null)
                                             {
                                                 int armyActor = actor.Army();
@@ -255,17 +257,18 @@ namespace IL2DCE.Pages
             }
         }
 
-        protected void UpdateTotalPlayerStat()
+        protected void UpdateTotalPlayerStat(bool useDateNow = false)
         {
             Config config = Game.Core.Config;
             int statType = config.StatType;
             if (statType == 1)
             {
-                UpdateTotalPlayerStatDefaultAPI();
+                UpdateTotalPlayerStatDefaultAPI(useDateNow);
             }
             else
             {
                 Career career = Game.Core.CurrentCareer;
+                DateTime dt = useDateNow ? DateTime.Now : career.Date.Value;
                 IPlayerStat st = Game.gameInterface.Player().GetBattleStat();
 
                 career.Takeoffs += st.takeoffs;
@@ -276,13 +279,29 @@ namespace IL2DCE.Pages
                 string killsTypes = ToString(killsAircraft);
                 if (!string.IsNullOrEmpty(killsTypes))
                 {
-                    if (career.KillsHistory.ContainsKey(career.Date.Value.Date))
+                    if (useDateNow)
                     {
-                        career.KillsHistory[career.Date.Value.Date] += ", " + killsTypes;
+                        string val = string.Format("{0}|{1}|{2}|{3}",
+                            career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft, killsTypes);
+                        if (career.KillsHistory.ContainsKey(dt.Date))
+                        {
+                            career.KillsHistory[dt.Date] += ", " + val;
+                        }
+                        else
+                        {
+                            career.KillsHistory.Add(dt.Date, val);
+                        }
                     }
                     else
                     {
-                        career.KillsHistory.Add(career.Date.Value.Date, killsTypes);
+                        if (career.KillsHistory.ContainsKey(dt.Date))
+                        {
+                            career.KillsHistory[dt.Date] += ", " + killsTypes;
+                        }
+                        else
+                        {
+                            career.KillsHistory.Add(dt.Date, killsTypes);
+                        }
                     }
                 }
 
@@ -290,25 +309,42 @@ namespace IL2DCE.Pages
                 killsTypes = ToString(killsGroundUnit);
                 if (!string.IsNullOrEmpty(killsTypes))
                 {
-                    if (career.KillsGroundHistory.ContainsKey(career.Date.Value.Date))
+                    if (useDateNow)
                     {
-                        career.KillsGroundHistory[career.Date.Value.Date] += ", " + killsTypes;
+                        string val = string.Format("{0}|{1}|{2}|{3}",
+                            career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft, killsTypes);
+                        if (career.KillsGroundHistory.ContainsKey(dt.Date))
+                        {
+                            career.KillsGroundHistory[dt.Date] += ", " + val;
+                        }
+                        else
+                        {
+                            career.KillsGroundHistory.Add(dt.Date, val);
+                        }
                     }
                     else
                     {
-                        career.KillsGroundHistory.Add(career.Date.Value.Date, killsTypes);
+                        if (career.KillsGroundHistory.ContainsKey(dt.Date))
+                        {
+                            career.KillsGroundHistory[dt.Date] += ", " + killsTypes;
+                        }
+                        else
+                        {
+                            career.KillsGroundHistory.Add(dt.Date, killsTypes);
+                        }
                     }
                 }
             }
         }
 
-        protected void UpdateTotalPlayerStatDefaultAPI()
+        protected void UpdateTotalPlayerStatDefaultAPI(bool useDateNow = false)
         {
             IGameSingle game = (Game as IGameSingle);
             IPlayer player = game.gameInterface.Player();
             IPlayerStat st = player.GetBattleStat();
 
             Career career = game.Core.CurrentCareer;
+            DateTime dt = useDateNow ? DateTime.Now : career.Date.Value;
 
             career.Takeoffs += st.takeoffs;
             career.Landings += st.landings;
@@ -318,13 +354,13 @@ namespace IL2DCE.Pages
             string killsTypes = ToStringkillsTypes(st.killsTypes);
             if (!string.IsNullOrEmpty(killsTypes))
             {
-                if (career.KillsHistory.ContainsKey(career.Date.Value.Date))
+                if (career.KillsHistory.ContainsKey(dt.Date))
                 {
-                    career.KillsHistory[career.Date.Value.Date] += ", " + killsTypes;
+                    career.KillsHistory[dt.Date] += ", " + killsTypes;
                 }
                 else
                 {
-                    career.KillsHistory.Add(career.Date.Value.Date, killsTypes);
+                    career.KillsHistory.Add(dt.Date, killsTypes);
                 }
             }
         }
@@ -357,8 +393,8 @@ namespace IL2DCE.Pages
                                     game.BattleSuccess.ToString(),
                                     exp,                       // Before 
                                     exp2,                      // Add Now
-                                    rank < Rank.RankMax ? ((rank + 1) * 1000).ToString(CultureInfo.InvariantCulture.NumberFormat):  " - ",       // Next Rank
-                                    rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty); // Rank Up
+                                    rank < Rank.RankMax ? ((rank + 1) * 1000).ToString(CultureInfo.InvariantCulture.NumberFormat):  " - ",      // Next Rank
+                                    rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty);                    // Rank Up
         }
 
         protected virtual string GetPlayerStat()
@@ -374,9 +410,9 @@ namespace IL2DCE.Pages
                 IGameSingle game = Game as IGameSingle;
                 IPlayer player = game.gameInterface.Player();
                 IPlayerStat st = player.GetBattleStat();
-                return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs: {3}\n Landings: {4}\n Deaths: {5}\n Bails: {6}\n Ditches: {7}\n PlanesWrittenOff: {8}\n" +
-                                    " Kills[Aircraft]: {9}\n Kills[GroundUnit]: {10}\n Friendly Kills[Aircraft]: {11}\n Friendly Kills[GroundUnit]: {12}\n" +
-                                    "\n KillsTypes\n  Aircraft: {13}\n  GroundUnit: {14}\n  Aircraft[Friendly]: {15}\n  GroundUnit[Friendly]: {16}\n",
+                return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs:         {3,2}\n Landings:         {4,2}\n Deaths:           {5,2}\n Bails:            {6,2}\n Ditches:          {7,2}\n PlanesWrittenOff: {8,2}\n" +
+                                    " Kills[Aircraft]:            {9,2}\n Kills[GroundUnit]:          {10,2}\n Friendly Kills[Aircraft]:   {11,2}\n Friendly Kills[GroundUnit]: {12,2}\n" +
+                                    "\n KillsTypes\n  Aircraft:             {13,2}\n  GroundUnit:           {14,2}\n  Aircraft[Friendly]:   {15,2}\n  GroundUnit[Friendly]: {16,2}\n",
                                     player?.Name() ?? string.Empty,
                                     Game.Core.CurrentCareer.ToString(),
                                     ToStringTimeSpan(st.tTotalTypes),
@@ -402,8 +438,8 @@ namespace IL2DCE.Pages
             IGameSingle game = Game as IGameSingle;
             IPlayer player = game.gameInterface.Player();
             IPlayerStat st = player.GetBattleStat();
-            return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs: {3}\n Landings: {4}\n Deaths: {5}\n Bails: {6}\n Ditches: {7}\n PlanesWrittenOff: {8}\n" +
-                                    " Kills: {9}\n Friendly Kills: {10}\n KillsTypes: {11}\n",
+            return String.Format("PlayerStat [{0}] {1}\n Flying Time: {2}\n Takeoffs:         {3,2}\n Landings:         {4,2}\n Deaths:           {5,2}\n Bails:            {6,2}\n Ditches:          {7,2}\n PlanesWrittenOff: {8,2}\n" +
+                                    " Kills:            {9,2}\n Friendly Kills:   {10,2}\n KillsTypes: {11}\n",
                                     player?.Name() ?? string.Empty,
                                     Game.Core.CurrentCareer.ToString(),
                                     ToStringTimeSpan(st.tTotalTypes),

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows;
+using System.Windows.Media;
 using IL2DCE.MissionObjectModel;
 using maddox.game.page;
 
@@ -49,17 +50,13 @@ namespace IL2DCE
             {
                 base._enter(play, arg);
 
-                string result = GetResultSummary() + GetPlayerStat();
+                FontFamily fontFamiry = new System.Windows.Media.FontFamily("Consolas");
+                FrameworkElement.textBoxDescription.FontFamily = fontFamiry;
+                FrameworkElement.textBoxSlide.FontFamily = fontFamiry;
 
+                string result = GetResultSummary() + GetPlayerStat();
                 FrameworkElement.textBoxDescription.Text = result;
-                if (Game.Core.CurrentCareer.BattleType == EBattleType.Campaign)
-                {
-                    FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
-                }
-                else
-                {
-                    FrameworkElement.textBoxSlide.Visibility = Visibility.Hidden;
-                }
+                FrameworkElement.textBoxSlide.Text = GetTotalPlayerStat();
             }
         }
     }

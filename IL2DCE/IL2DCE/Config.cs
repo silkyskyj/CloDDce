@@ -31,6 +31,7 @@ namespace IL2DCE
 
         public static readonly char[] SplitSpace = new char[] { ' ' };
         public static readonly char[] SplitComma = new char[] { ',' };
+        public static readonly char[] SplitOr = new char[] { '|' };
 
         public const string AppName = "IL2DCE";
         public const string HomeFolder = "$home/";
@@ -48,6 +49,7 @@ namespace IL2DCE
         public const string AircraftInfoFileName = "AircraftInfo.ini";
         public const string AirGroupInfoFileName = "AirGroupInfo.ini";
         public const string CareerInfoFileName = "Career.ini";
+        public const string StatsInfoFileName = "Stats.ini";
         public const string MissionScriptFileName = "MissionSingle.cs";
         public const string UserMissionFolder = "$user/mission/IL2DCE";
         public const string UserMissionsFolder = "$user/missions/IL2DCE";

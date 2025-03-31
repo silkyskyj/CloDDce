@@ -349,7 +349,7 @@ namespace IL2DCE
 
         public string ToSummaryString()
         {
-            return string.Format(" Name: {0}\n StartDate: {1}\n EndDate: {2}\n",
+            return string.Format(" Name: {0}\n StartDate: {1,-12}\n   EndDate: {2,-12}\n",
                                 Name,
                                 StartDate.ToString("d", DateTimeFormatInfo.InvariantInfo),
                                 EndDate.ToString("d", DateTimeFormatInfo.InvariantInfo));

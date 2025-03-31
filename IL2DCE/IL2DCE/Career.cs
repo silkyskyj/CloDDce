@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
@@ -572,8 +573,8 @@ namespace IL2DCE
                 SpawnRandomTimeBeginSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeBeginSec, MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec);
                 SpawnRandomTimeEndSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeEndSec, MissionObjectModel.Spawn.SpawnTime.DefaultEndSec);
 
-                ReArmTime = careerFile.get(SectionCampaign, KeyReArm, false) ? Config.DefaultProcessTimeReArm: -1;
-                ReFuelTime = careerFile.get(SectionCampaign, KeyReFuel, false) ? Config.DefaultProcessTimeReFuel: -1;
+                ReArmTime = careerFile.get(SectionCampaign, KeyReArm, false) ? Config.DefaultProcessTimeReArm : -1;
+                ReFuelTime = careerFile.get(SectionCampaign, KeyReFuel, false) ? Config.DefaultProcessTimeReFuel : -1;
 
                 TrackRecording = careerFile.get(SectionCampaign, KeyTrackRecording, false);
 
@@ -649,7 +650,7 @@ namespace IL2DCE
             #endregion
         }
 
-#endregion
+        #endregion
 
         public void InitQuickMssionInfo()
         {
@@ -692,8 +693,8 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalAirGroups, AdditionalAirGroups ? "1" : "0");
-            careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay?? string.Empty);
-            careerFile.add(SectionCampaign, KeySpawnRandomLocationPlayer, SpawnRandomLocationPlayer ? "1": "0");
+            careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay ?? string.Empty);
+            careerFile.add(SectionCampaign, KeySpawnRandomLocationPlayer, SpawnRandomLocationPlayer ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomLocationFriendly, SpawnRandomLocationFriendly ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomLocationEnemy, SpawnRandomLocationEnemy ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomAltitudeFriendly, SpawnRandomAltitudeFriendly ? "1" : "0");
@@ -702,10 +703,98 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEnemy, SpawnRandomTimeEnemy ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomTimeBeginSec, SpawnRandomTimeBeginSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEndSec, SpawnRandomTimeEndSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionCampaign, KeyReArm, ReArmTime >= 0 ? "1": "0");
-            careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1": "0");
+            careerFile.add(SectionCampaign, KeyReArm, ReArmTime >= 0 ? "1" : "0");
+            careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
-            
+
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
+            foreach (var item in KillsHistory)
+            {
+                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+            }
+            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(KillsFormat, Config.Culture));
+            foreach (var item in KillsGroundHistory)
+            {
+                careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+            }
+        }
+
+        public void ReadResult(ISectionFile careerFile, bool formattingDisplay = false)
+        {
+            Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
+            Landings = careerFile.get(SectionStat, KeyLandings, 0);
+            Bails = careerFile.get(SectionStat, KeyBails, 0);
+            Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
+            Kills = careerFile.get(SectionStat, KeyKills, 0f);
+
+            string key;
+            string value;
+            DateTime dt;
+            int lines;
+
+            KillsHistory = new Dictionary<DateTime, string>();
+            lines = careerFile.lines(SectionKillsResult);
+            for (int i = 0; i < lines; i++)
+            {
+                careerFile.get(SectionKillsResult, i, out key, out value);
+                if (DateTime.TryParse(key, out dt))
+                {
+                    if (formattingDisplay)
+                    {
+                        value = FommatingDisplayKillsHistoryValue(value);
+                    }
+                    if (KillsHistory.ContainsKey(dt.Date))
+                    {
+                        KillsHistory[dt.Date] += ", " + value;
+                    }
+                    else
+                    {
+                        KillsHistory.Add(dt.Date, value);
+                    }
+                }
+            }
+
+            KillsGround = careerFile.get(SectionStat, KeyKillsGround, 0f);
+            KillsGroundHistory = new Dictionary<DateTime, string>();
+            lines = careerFile.lines(SectionKillsGroundResult);
+            for (int i = 0; i < lines; i++)
+            {
+                careerFile.get(SectionKillsGroundResult, i, out key, out value);
+                if (DateTime.TryParse(key, out dt))
+                {
+                    if (formattingDisplay)
+                    {
+                        value = FommatingDisplayKillsHistoryValue(value);
+                    }
+                    if (KillsGroundHistory.ContainsKey(dt.Date))
+                    {
+                        KillsGroundHistory[dt.Date] += ", " + value;
+                    }
+                    else
+                    {
+                        KillsGroundHistory.Add(dt.Date, value);
+                    }
+                }
+            }
+        }
+
+        private string FommatingDisplayKillsHistoryValue(string val)
+        {
+            string [] vals = val.Split(Config.SplitOr);
+            if (vals.Length >= 4)
+            {
+                return string.Format("[{0}] {1} ({2}) {3}", vals[0], vals[1], vals[2], vals[3]);
+            }
+
+            return val;
+        }
+
+        public void WriteResult(ISectionFile careerFile)
+        {
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
@@ -724,12 +813,12 @@ namespace IL2DCE
 
         public string ToCurrestStatusString()
         {
-            return String.Format(" Date: {0}\n Army: {1}\n AirForce: {2}\n Rank: {3}\n AirGroup: {4}\n Aircraft: {5}\n Experience: {6}\n",
+            return String.Format(" Date:       {0}\n Army:       {1}\n AirForce:   {2}\n Rank:       {3}\n AirGroup:   {4}\n Aircraft:   {5}\n Experience: {6}\n",
                                     Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo),
                                     ((EArmy)ArmyIndex).ToString(),
-                                    ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription(): ((EAirForceBlue)AirForceIndex).ToDescription(),
+                                    ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription() : ((EAirForceBlue)AirForceIndex).ToDescription(),
                                     AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex],
-                                    string.IsNullOrEmpty(AirGroupDisplay) ? AirGroup: AirGroupDisplay,
+                                    string.IsNullOrEmpty(AirGroupDisplay) ? AirGroup : AirGroupDisplay,
                                     Aircraft,
                                     Experience);
         }
@@ -744,15 +833,15 @@ namespace IL2DCE
             {
                 if (KillsHistory.ContainsKey(item))
                 {
-                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), KillsHistory[item]);
+                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), FommatingDisplayKillsHistoryValue(KillsHistory[item]));
                 }
                 if (KillsGroundHistory.ContainsKey(item))
                 {
-                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), KillsGroundHistory[item]);
+                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), FommatingDisplayKillsHistoryValue(KillsGroundHistory[item]));
                 }
             }
 
-            return String.Format(" Takeoffs: {0}\n Landings: {1}\n Deaths: {2}\n Bails: {3}\n Kills[Aircraft]: {4}\n Kills[GroundUnit]: {5}\n Kills History:\n{6}\n",
+            return String.Format(" Takeoffs:          {0,3}\n Landings:          {1,3}\n Deaths:            {2,3}\n Bails:             {3,3}\n Kills[Aircraft]:   {4,3}\n Kills[GroundUnit]: {5,3}\n Kills History:\n{6,3}\n",
                                     Takeoffs,
                                     Landings,
                                     Deaths,

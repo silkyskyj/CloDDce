@@ -315,6 +315,7 @@ namespace IL2DCE
                 FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(buttonImportMission_Click);
                 FrameworkElement.buttonReload.Click += new RoutedEventHandler(buttonReload_Click);
                 FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
+                FrameworkElement.buttonStats.Click += new RoutedEventHandler(buttonStats_Click);
 
                 // FrameworkElement.buttonMissionLoad.Visibility = Visibility.Hidden;
                 FrameworkElement.labelSelectMissionTarget.Visibility = Visibility.Hidden;
@@ -655,6 +656,21 @@ namespace IL2DCE
                     {
                         Debug.WriteLine(ex.Message);
                     }
+                }
+            }
+
+            private void buttonStats_Click(object sender, RoutedEventArgs e)
+            {
+                string pilotName = Game.gameInterface.Player().Name();
+                string resultFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, pilotName, Config.StatsInfoFileName);
+                ISectionFile resultFile = Game.gpLoadSectionFile(resultFileName);
+                if (resultFile != null)
+                {
+                    Career career = new Career(pilotName, -1, -1, -1);
+                    career.ReadResult(resultFile, true);
+                    TotalStatsWindow window = new TotalStatsWindow(career);
+                    window.Title = "Dynamic Quick Mission Total Status [IL2DCE]";
+                    window.ShowDialog();
                 }
             }
 

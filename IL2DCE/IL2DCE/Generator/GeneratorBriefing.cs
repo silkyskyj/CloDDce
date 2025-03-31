@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Globalization;
+using System.Text;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 
@@ -60,23 +62,25 @@ namespace IL2DCE.Generator
 
             if (airGroup.Waypoints.Count > 0)
             {
-                string waypointSection = "Waypoints:\n";
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Waypoints:");
 
                 int i = 1;
                 foreach (AirGroupWaypoint waypoint in airGroup.Waypoints)
                 {
                     if (waypoint.Type == AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY)
                     {
-                        waypointSection += i + ". " + GamePlay.gpSectorName(waypoint.X, waypoint.Y) + "\n";
+                        sb.AppendFormat(CultureInfo.InvariantCulture.NumberFormat, "{0,2}. {1,-5}", i, GamePlay.gpSectorName(waypoint.X, waypoint.Y));
+                        sb.AppendLine();
                     }
                     else
                     {
-                        waypointSection += i + ". " + GamePlay.gpSectorName(waypoint.X, waypoint.Y) + " " + waypoint.Type.ToString() + "\n";
+                        sb.AppendFormat(CultureInfo.InvariantCulture.NumberFormat, "{0,2}. {1,-5} {2}", i, GamePlay.gpSectorName(waypoint.X, waypoint.Y), waypoint.Type.ToString());
+                        sb.AppendLine();
                     }
                     i++;
                 }
-
-                briefingFile.Description[airGroup.Id].Sections.Add("waypointSection", waypointSection.TrimEnd("\n".ToCharArray()));
+                briefingFile.Description[airGroup.Id].Sections.Add("waypointSection", sb.ToString().TrimEnd("\n".ToCharArray()));
             }
 
             if (airGroup.EscortAirGroup != null)

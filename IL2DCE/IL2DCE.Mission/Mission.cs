@@ -249,7 +249,7 @@ namespace IL2DCE
 
             public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
             {
-                Debug.WriteLine("Mission.OnPlaceEnter({0}, {1}, {2})", player.Name(), actor.Name(), placeIndex);
+                Debug.WriteLine("Mission.OnPlaceEnter({0}, {1}, {2})", player.Name(), actor!= null ? actor.Name(): string.Empty, placeIndex);
                 base.OnPlaceEnter(player, actor, placeIndex);
 
                 if (actor is AiCart)
@@ -267,7 +267,7 @@ namespace IL2DCE
 
             public override void OnPlaceLeave(Player player, AiActor actor, int placeIndex)
             {
-                Debug.WriteLine("Mission.OnPlaceLeave({0}, {1}, {2})", player.Name(), actor.Name(), placeIndex);
+                Debug.WriteLine("Mission.OnPlaceLeave({0}, {1}, {2})", player.Name(), actor != null ? actor.Name() : string.Empty, placeIndex);
                 base.OnPlaceLeave(player, actor, placeIndex);
             }
 

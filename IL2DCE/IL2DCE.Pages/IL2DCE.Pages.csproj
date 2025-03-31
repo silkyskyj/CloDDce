@@ -69,6 +69,9 @@
     <Compile Include="Controls\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TotalStatsWindow.xaml.cs">
+      <DependentUpon>TotalStatsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\VersionLabel.xaml.cs">
       <DependentUpon>VersionLabel.xaml</DependentUpon>
     </Compile>
@@ -155,6 +158,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TotalStatsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
