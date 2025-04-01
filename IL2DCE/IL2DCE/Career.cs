@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
@@ -603,7 +602,8 @@ namespace IL2DCE
                 for (int i = 0; i < lines; i++)
                 {
                     careerFile.get(SectionKillsResult, i, out key, out value);
-                    if (DateTime.TryParse(key, out dt))
+                    if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                    // if (DateTime.TryParse(key, out dt))
                     {
                         value = VersionConverter.ReplaceKillsHistory(value);
                         if (KillsHistory.ContainsKey(dt.Date))
@@ -623,7 +623,8 @@ namespace IL2DCE
                 for (int i = 0; i < lines; i++)
                 {
                     careerFile.get(SectionKillsGroundResult, i, out key, out value);
-                    if (DateTime.TryParse(key, out dt))
+                    if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                    // if (DateTime.TryParse(key, out dt))
                     {
                         if (KillsGroundHistory.ContainsKey(dt.Date))
                         {
@@ -676,7 +677,7 @@ namespace IL2DCE
                 PilotName);
         }
 
-        public void WriteTo(ISectionFile careerFile)
+        public void WriteTo(ISectionFile careerFile, int historyMax)
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
 
@@ -712,18 +713,18 @@ namespace IL2DCE
             careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
-            foreach (var item in KillsHistory)
+            foreach (var item in KillsHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
             careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(KillsFormat, Config.Culture));
-            foreach (var item in KillsGroundHistory)
+            foreach (var item in KillsGroundHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
         }
 
-        public void ReadResult(ISectionFile careerFile, bool formattingDisplay = false)
+        public void ReadResult(ISectionFile careerFile)
         {
             Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
             Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -741,12 +742,9 @@ namespace IL2DCE
             for (int i = 0; i < lines; i++)
             {
                 careerFile.get(SectionKillsResult, i, out key, out value);
-                if (DateTime.TryParse(key, out dt))
+                if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                // if (DateTime.TryParse(key, out dt))
                 {
-                    if (formattingDisplay)
-                    {
-                        value = FommatingDisplayKillsHistoryValue(value);
-                    }
                     if (KillsHistory.ContainsKey(dt.Date))
                     {
                         KillsHistory[dt.Date] += ", " + value;
@@ -764,12 +762,9 @@ namespace IL2DCE
             for (int i = 0; i < lines; i++)
             {
                 careerFile.get(SectionKillsGroundResult, i, out key, out value);
-                if (DateTime.TryParse(key, out dt))
+                if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                // if (DateTime.TryParse(key, out dt))
                 {
-                    if (formattingDisplay)
-                    {
-                        value = FommatingDisplayKillsHistoryValue(value);
-                    }
                     if (KillsGroundHistory.ContainsKey(dt.Date))
                     {
                         KillsGroundHistory[dt.Date] += ", " + value;
@@ -784,28 +779,40 @@ namespace IL2DCE
 
         private string FommatingDisplayKillsHistoryValue(string val)
         {
-            string [] vals = val.Split(Config.SplitOr);
-            if (vals.Length >= 4)
+            StringBuilder sb = new StringBuilder();
+            string[] vals = val.Split(Config.SplitComma, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var item in vals)
             {
-                return string.Format("[{0}] {1} ({2}) {3}", vals[0], vals[1], vals[2], vals[3]);
+                if (sb.Length > 0)
+                {
+                    sb.AppendFormat("{0} ", Config.Comma);
+                }
+                string[] valOnes = item.Split(Config.SplitOr);
+                if (valOnes.Length >= 4)
+                {
+                    sb.AppendFormat("[{0}] {1} ({2}) {3}", valOnes[0], valOnes[1], valOnes[2], valOnes[3]);
+                }
+                else
+                {
+                    sb.Append(item);
+                }
             }
-
-            return val;
+            return sb.ToString();
         }
 
-        public void WriteResult(ISectionFile careerFile)
+        public void WriteResult(ISectionFile careerFile, int historyMax)
         {
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
-            foreach (var item in KillsHistory)
+            foreach (var item in KillsHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
             careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(KillsFormat, Config.Culture));
-            foreach (var item in KillsGroundHistory)
+            foreach (var item in KillsGroundHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }

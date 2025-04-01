@@ -16,18 +16,17 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
-using maddox.game.page;
 using maddox.game;
 using maddox.game.play;
-using static IL2DCE.MissionObjectModel.Spawn;
-using System.Globalization;
 using maddox.GP;
+using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Pages
 {
@@ -197,7 +196,6 @@ namespace IL2DCE.Pages
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxSelectionChangedEvent += new SelectionChangedEventHandler(GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxTextChangedEvent += new TextChangedEventHandler(GeneralSettingsGroupBox_ComboBoxTextChangedEvent);
             FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
-            // FrameworkElement.buttonMissionLoad.Visibility = Visibility.Hidden;
         }
 
         public override void _enter(maddox.game.IGame play, object arg)

@@ -25,7 +25,6 @@ using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.play;
 
 namespace IL2DCE
 {
@@ -347,7 +346,7 @@ namespace IL2DCE
             // Stop the preloaded battle to prevent a postload.
             game.gameInterface.BattleStop();
 
-            career.WriteTo(careerFile);
+            career.WriteTo(careerFile, Config.KillsHistoryMax);
             careerFile.save(careerFileName);
 
             return result;
@@ -433,7 +432,7 @@ namespace IL2DCE
         {
             string statsFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.StatsInfoFileName);
             ISectionFile statsFile = GamePlay.gpCreateSectionFile();
-            career.WriteResult(statsFile);
+            career.WriteResult(statsFile, Config.KillsHistoryMax);
             statsFile.save(statsFileName);
         }
 

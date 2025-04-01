@@ -29,6 +29,8 @@ namespace IL2DCE
 
         #region Definition
 
+        public static readonly char Comma = ',';
+        public static readonly char Or = '|';
         public static readonly char[] SplitSpace = new char[] { ' ' };
         public static readonly char[] SplitComma = new char[] { ',' };
         public static readonly char[] SplitOr = new char[] { '|' };
@@ -78,6 +80,7 @@ namespace IL2DCE
         public const string KeyEnableMissionMultiAssign = "EnableMissionMultiAssign";
         public const string KeyProcessTimeReArm = "ProcessTimeReArm";
         public const string KeyProcessTimeReFuel = "ProcessTimeReFuel";
+        public const string KeyKillsHistoryMax = "KillsHistoryMax";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Convert.log";
@@ -90,6 +93,7 @@ namespace IL2DCE
         public const int MinAdditionalGroundOperations = 10;
         public const int DefaultProcessTimeReArm = 300;
         public const int DefaultProcessTimeReFuel = 300;
+        public const int KillsHistoryMaxDefault = 1000;
 
         #endregion
 
@@ -257,6 +261,12 @@ namespace IL2DCE
         }
 
         public int ProcessTimeReFuel
+        {
+            get;
+            private set;
+        }
+
+        public int KillsHistoryMax
         {
             get;
             private set;
@@ -451,6 +461,8 @@ namespace IL2DCE
             }
 
             EnableMissionMultiAssign = confFile.get(SectionCore, KeyEnableMissionMultiAssign, 0) == 1;
+
+            KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, KillsHistoryMaxDefault);
         }
     }
 }

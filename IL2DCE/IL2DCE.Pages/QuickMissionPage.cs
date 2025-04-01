@@ -667,7 +667,7 @@ namespace IL2DCE
                 if (resultFile != null)
                 {
                     Career career = new Career(pilotName, -1, -1, -1);
-                    career.ReadResult(resultFile, true);
+                    career.ReadResult(resultFile);
                     TotalStatsWindow window = new TotalStatsWindow(career);
                     window.Title = "Dynamic Quick Mission Total Status [IL2DCE]";
                     window.ShowDialog();
@@ -1501,7 +1501,7 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectArmy, ((EArmy)career.ArmyIndex).ToString());
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, ((EArmy)career.ArmyIndex) == EArmy.Red ? ((EAirForceRed)career.AirForceIndex).ToDescription() : ((EAirForceBlue)career.AirForceIndex).ToDescription());
                 FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
-                EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo));
+                EnableSelectItem(FrameworkElement.comboBoxSelectAirGroup, CreateAirGroupContent(career.PlayerAirGroup, career.CampaignInfo, string.Empty));
                 EnableSelectItem(FrameworkElement.comboBoxSelectMissionType, career.MissionType != null ? career.MissionType.ToDescription() : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectFlight, Flight.CreateDisplayString(career.Flight));
                 EnableSelectItem(FrameworkElement.comboBoxSelectFormation, career.Formation.ToDescription());

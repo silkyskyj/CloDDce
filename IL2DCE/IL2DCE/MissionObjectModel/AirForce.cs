@@ -33,6 +33,10 @@ namespace IL2DCE.MissionObjectModel
         Pl = 5,
         [Description("Czechoslovak Air Force")]
         Cz = 6,
+        [Description("Royal Netherlands Air Force")]
+        Nl = 7,
+        [Description("Belgian Air Component")]
+        Be = 8,
     };
 
     public enum EAirForceBlue
@@ -61,6 +65,8 @@ namespace IL2DCE.MissionObjectModel
             "Ivanov Ivanovich",
             "Jan Kowalski" ,
             "Josef Janousek" ,
+            "Martijn Jansen" ,
+            "Gabriel Maes" ,
         };
         public static readonly string[] PilotNameBlueDefault = new string[] {
             "",
@@ -139,6 +145,10 @@ namespace IL2DCE.MissionObjectModel
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Pl], Rank.Pl));
             Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Cz, EAirForceRed.Cz.ToString(), EAirForceRed.Cz.ToDescription(),
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Cz], Rank.Cz));
+            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Nl, EAirForceRed.Nl.ToString(), EAirForceRed.Nl.ToDescription(),
+                            AirForce.PilotNameRedDefault[(int)EAirForceRed.Nl], Rank.Nl));
+            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Be, EAirForceRed.Be.ToString(), EAirForceRed.Be.ToDescription(),
+                            AirForce.PilotNameRedDefault[(int)EAirForceRed.Be], Rank.Be));
 
             // Blue Army
             Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Lw, EAirForceBlue.Lw.ToString(), EAirForceBlue.Lw.ToDescription(), 

@@ -76,21 +76,39 @@ namespace IL2DCE.MissionObjectModel
         };
 
         public static readonly string[] Pl = new string[] {
-            "podporucznik",
-            "porucznik",
-            "kapitan",
+            "Podporucznik",
+            "Porucznik",
+            "Kapitan",
             "Major",
-            "podpułkownik",
-            "pułkownik",
+            "Podpułkownik",
+            "Pułkownik",
         };
 
         public static readonly string[] Cz = new string[] {
-            "rotník",
-            "zástavník",
-            "porucík let.",
-            "nadporucík let.",
-            "stotník let.",
-            "major let.",
+            "Rotník",
+            "Zástavník",
+            "Porucík let.",
+            "Nadporucík let.",
+            "Stotník let.",
+            "Major let.",
+        };
+
+        public static readonly string[] Nl = new string[] {
+            "Sergeant",
+            "Sergeant-Majoor",
+            "Wachtmeester",
+            "Luitenant",
+            "Kapitein",
+            "Majoor",
+        };
+
+        public static readonly string[] Be = new string[] {
+            "Sergeant",
+            "Sergeant-Majoor",
+            "Onderluitenant",
+            "Luitenant",
+            "Kapitein",
+            "Majoor",
         };
 
         public static readonly string[] Hu = new string[] {
@@ -121,12 +139,12 @@ namespace IL2DCE.MissionObjectModel
         };
 
         public static readonly string[] Sv = new string[] {
-            "rotník",
-            "zástavník",
-            "porucík let.",
-            "nadporucík let.",
-            "stotník let.",
-            "major let.",
+            "Rotník",
+            "Zástavník",
+            "Porucík let.",
+            "Nadporucík let.",
+            "Stotník let.",
+            "Major let.",
         };
     }
 }

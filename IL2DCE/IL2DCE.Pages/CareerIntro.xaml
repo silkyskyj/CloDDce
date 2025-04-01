@@ -15,7 +15,7 @@
         <Label Content="Select Rank:" Height="50" HorizontalAlignment="Left" Margin="35,430,0,0" x:Name="labelSelectRank" VerticalAlignment="Top" Width="157" FontSize="28" Foreground="#B2FFFFFF" />
         <TextBox FontSize="28" Foreground="#FFA0854A" Height="50" HorizontalAlignment="Left" Margin="34,635,0,0" x:Name="textBoxPilotName" VerticalAlignment="Top" Width="618" TabIndex="8"/>
         <Label Content="Enter Pilot Name:" FontSize="28" Foreground="#B2FFFFFF" Height="50" HorizontalAlignment="Left" Margin="33,570,0,0" x:Name="labelEnterPilotName" VerticalAlignment="Top" Width="617" />
-        <ComboBox Height="47" HorizontalAlignment="Left" Margin="34,354,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="5"/>
+        <ComboBox Height="47" HorizontalAlignment="Left" Margin="34,354,0,0" x:Name="comboBoxSelectAirForce" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="5" MaxDropDownHeight="480"/>
         <Label Content="Select Air Force:" Height="50" Margin="34,290,1681,0" x:Name="labelSelectAirForce" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" />
         <Label x:Name="labelSelectCampaign" Width="300" VerticalAlignment="Top" Margin="700,150,0,0" Height="50" HorizontalAlignment="Left" FontSize="28" Foreground="#B2FFFFFF" Content="Select Campaign:"/>
         <Controls:FilterComboBox HorizontalAlignment="Left" Margin="700,214,0,0" x:Name="comboBoxSelectCampaign" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" Height="50" TabIndex="10" IsTabStop="True" IsEditable="False" MaxDropDownHeight="720"/>

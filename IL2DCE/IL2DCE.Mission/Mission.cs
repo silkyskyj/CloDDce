@@ -124,7 +124,7 @@ namespace IL2DCE
                     // TraceAirGroupInfo();
                     // TraceGameInfo();
                     ProcessLandedAircrafts();
-                    TimeGameLatest = Core.GamePlay.gpTime().current();
+                    TimeGameLatest = time.current();
                 }
             }
 
@@ -194,9 +194,9 @@ namespace IL2DCE
                 TraceGameInfo();
 #endif
                 Career career = Core.CurrentCareer;
-                if (!Game.gameInterface.TrackRecording() && career.TrackRecording)
+                if (career.TrackRecording && !Game.gameInterface.TrackRecording())
                 {
-                    string trackFile = string.Format("{0}/{1}_{2}{3}", Config.RecordFolder, Core.CurrentCareer.CampaignInfo.Id, DateTime.Now.ToString("yyyyMMdd_HHmmss"), Config.RecordExt);
+                    string trackFile = string.Format("{0}/{1}_{2}{3}", Config.RecordFolder, career.CampaignInfo.Id, DateTime.Now.ToString("yyyyMMdd_HHmmss"), Config.RecordExt);
                     Game.gameInterface.TrackRecordStart(Game.gameInterface.ToFileSystemPath(trackFile));
                 }
             }

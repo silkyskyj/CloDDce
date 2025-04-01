@@ -34,10 +34,12 @@
   BoB_RAF_B_40Sqn.11
   BoB_RAF_B_44Sqn.12
   BoB_RAF_F_29Sqn_Late.04
+  gb01_Late.14
   BoB_RAF_F_303_PL_Late.11
   BoB_RAF_F_310_CZ_Late.12
   BoB_RAF_F_87Sqn_Late.02
   BoB_RAF_F_92Sqn_Late.01
+  gb01_Late.21
   tobruk:Channel_AA_GCI3_SPA69.01
   tobruk:Tobruk_USAAF_F_64Sqn.04
   tobruk:Tobruk_USAAF_F_65Sqn.02
@@ -143,6 +145,21 @@
 [BoB_RAF_F_29Sqn_Late.04_Way]
   NORMFLY 67119.70 71707.01 2000.00 300.00
   NORMFLY 61647.71 68382.94 500.00 300.00
+[gb01_Late.14]
+  VirtualAirGroupKey BoB_RAF_F_322Sqn_Late
+  Flight2 21
+  Class tobruk:Aircraft.SpitfireMkVb
+  Formation LINEABREAST
+  CallSign 10
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
+  Aging 0
+  SetOnPark 0
+  Briefing gb01_Late.14
+[gb01_Late.14_Way]
+  NORMFLY 62854.04 73114.68 2000.00 300.00
+  NORMFLY 58149.87 69705.30 500.00 300.00
 [BoB_RAF_F_303_PL_Late.11]
   Flight0 1
   Class Aircraft.HurricaneMkI
@@ -197,6 +214,21 @@
   SetOnPark 0
   Briefing BoB_RAF_F_92Sqn_Late.01
 [BoB_RAF_F_92Sqn_Late.01_Way]
+  TAKEOFF 53907.75 37673.29 0 0
+  NORMFLY 53099.54 36763.17 500.00 300.00
+[gb01_Late.21]
+  VirtualAirGroupKey BoB_RAF_F_350Sqn_Late
+  Flight0 1
+  Class tobruk:Aircraft.SpitfireMkIIb
+  Formation FINGERFOUR
+  CallSign 14
+  Fuel 100
+  Weapons 1
+  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
+  Aging 0
+  SetOnPark 0
+  Briefing gb01_Late.21
+[gb01_Late.21_Way]
   TAKEOFF 53481.48 33875.90 0 0
   NORMFLY 52333.18 32538.93 500.00 300.00
 [tobruk:Channel_AA_GCI3_SPA69.01]
