@@ -41,16 +41,6 @@ namespace IL2DCE
             private const string MsgBulletsReArm = "Bullets re-Arm";
             private const string MsgReFuel = "re-Fuel";
             private const string MsgProcCompletedFormat = "Completed!";
-            public const char ActorDeadInfoSplitChar = '|';
-
-            public enum ActorDeadInfoKey
-            {
-                Army,
-                ActorType,
-                ActorName,
-                ActorTypeName,
-                Count,
-            }
 
             #endregion
 
@@ -319,9 +309,9 @@ namespace IL2DCE
                 if (actor is AiAircraft || actor is AiGroundActor)
                 {
                     string key = string.Format("{0}{1}{2}{3}{4}{5}{6}",
-                                                actor.Army(), ActorDeadInfoSplitChar,                   // Army
-                                                actor is AiAircraft ? 0 : 1, ActorDeadInfoSplitChar,    // ActorType
-                                                shortName, ActorDeadInfoSplitChar,                      // Actor Name
+                                                actor.Army(), PlayerStats.ActorDeadInfoSplitChar,                   // Army
+                                                actor is AiAircraft ? 0 : 1, PlayerStats.ActorDeadInfoSplitChar,    // ActorType
+                                                shortName, PlayerStats.ActorDeadInfoSplitChar,                      // Actor Name
                                                 (actor as AiCart).InternalTypeName());                  // Actor Type Name
                     if (ActorDead.ContainsKey(key))
                     {

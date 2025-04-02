@@ -251,14 +251,14 @@ namespace IL2DCE
                 {
                     CampaignInfo campaignInfo = career.CampaignInfo;
                     FrameworkElement.textBoxStatusCampaign.Text = campaignInfo.ToSummaryString();
-                    FrameworkElement.textBoxStatusCurrent.Text = career.ToCurrestStatusString();
-                    FrameworkElement.textBoxStatusTotal.Text = career.ToTotalResultString();
+                    FrameworkElement.textBoxStatusCurrent.Text = career.ToStringCurrestStatus();
+                    FrameworkElement.textBoxStatusTotal.Text = career.ToStringTotalResult();
                 }
                 else if (career != null)
                 {
                     FrameworkElement.textBoxStatusCampaign.Text = NoFileString;
-                    FrameworkElement.textBoxStatusCurrent.Text = career.ToCurrestStatusString();
-                    FrameworkElement.textBoxStatusTotal.Text = career.ToTotalResultString();
+                    FrameworkElement.textBoxStatusCurrent.Text = career.ToStringCurrestStatus();
+                    FrameworkElement.textBoxStatusTotal.Text = career.ToStringTotalResult();
                 }
                 else
                 {
@@ -294,6 +294,7 @@ namespace IL2DCE
                 }
                 comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
             }
+
             private void UpdateAirForceComboBoxInfo()
             {
                 ComboBox comboBox = FrameworkElement.comboBoxSelectAirForce;

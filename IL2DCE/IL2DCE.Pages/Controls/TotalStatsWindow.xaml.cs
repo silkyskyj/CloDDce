@@ -36,7 +36,7 @@ namespace IL2DCE.Pages.Controls
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("Total Status[{0}]\n{1}", career.PilotName, career.ToTotalResultString());
+            sb.AppendFormat("Total Status[{0}]\n{1}", career.PilotName, career.ToStringTotalResult());
 
             textBoxStats.Text = sb.ToString();
         }

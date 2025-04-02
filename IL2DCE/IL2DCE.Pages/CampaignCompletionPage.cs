@@ -57,8 +57,8 @@ namespace IL2DCE.Pages
 
             FrameworkElement.textBoxInfo.Text = campaignInfo.ToSummaryString();
             FrameworkElement.textBoxStatus.Text = string.Format("Current Status\n{0}\nTotal Result\n{1}\n",
-                                                                career.ToCurrestStatusString(),
-                                                                career.ToTotalResultString());
+                                                                career.ToStringCurrestStatus(),
+                                                                career.ToStringTotalResult());
 
             UpdateAircraftImage(career);
         }

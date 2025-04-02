@@ -35,7 +35,7 @@ namespace IL2DCE
                 }
             }
 
-            IGameSingle Game
+            new IGameSingle Game
             {
                 get
                 {

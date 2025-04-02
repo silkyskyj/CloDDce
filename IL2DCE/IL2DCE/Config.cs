@@ -29,8 +29,9 @@ namespace IL2DCE
 
         #region Definition
 
-        public static readonly char Comma = ',';
-        public static readonly char Or = '|';
+        public const char Comma = ',';
+        public const string CommaStr = ",";
+        public const char Or = '|';
         public static readonly char[] SplitSpace = new char[] { ' ' };
         public static readonly char[] SplitComma = new char[] { ',' };
         public static readonly char[] SplitOr = new char[] { '|' };
@@ -84,6 +85,9 @@ namespace IL2DCE
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Convert.log";
+
+        public const string DefaultFixedFontName = "Consolas";
+        public const string KillsFormat = "F0";
 
         public const int DefaultAdditionalAirOperations = 3;
         public const int MaxAdditionalAirOperations = 12;

@@ -25,7 +25,7 @@ using maddox.game;
 
 namespace IL2DCE
 {
-    public class Career
+    public class Career : IPlayerStats
     {
         #region Definition
 
@@ -58,7 +58,7 @@ namespace IL2DCE
         public const string KeyReArm = "ReArm";
         public const string KeyReFuel = "ReFuel";
         public const string KeyTrackRecording = "TrackRecording";
-        public const string KillsFormat = "F0";
+        // public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
 
         #endregion
@@ -519,7 +519,7 @@ namespace IL2DCE
             #endregion
         }
 
-        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile, Config config)
+        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile, Config config, string separator = Config.CommaStr)
         {
             _pilotName = pilotName;
 
@@ -608,7 +608,7 @@ namespace IL2DCE
                         value = VersionConverter.ReplaceKillsHistory(value);
                         if (KillsHistory.ContainsKey(dt.Date))
                         {
-                            KillsHistory[dt.Date] += ", " + value;
+                            KillsHistory[dt.Date] += separator + value;
                         }
                         else
                         {
@@ -628,7 +628,7 @@ namespace IL2DCE
                     {
                         if (KillsGroundHistory.ContainsKey(dt.Date))
                         {
-                            KillsGroundHistory[dt.Date] += ", " + value;
+                            KillsGroundHistory[dt.Date] += separator + value;
                         }
                         else
                         {
@@ -712,19 +712,19 @@ namespace IL2DCE
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(Config.KillsFormat, Config.Culture));
             foreach (var item in KillsHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
-            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(Config.KillsFormat, Config.Culture));
             foreach (var item in KillsGroundHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
         }
 
-        public void ReadResult(ISectionFile careerFile)
+        public void ReadResult(ISectionFile careerFile, string separator = Config.CommaStr)
         {
             Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
             Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -747,7 +747,7 @@ namespace IL2DCE
                 {
                     if (KillsHistory.ContainsKey(dt.Date))
                     {
-                        KillsHistory[dt.Date] += ", " + value;
+                        KillsHistory[dt.Date] += separator + value;
                     }
                     else
                     {
@@ -767,7 +767,7 @@ namespace IL2DCE
                 {
                     if (KillsGroundHistory.ContainsKey(dt.Date))
                     {
-                        KillsGroundHistory[dt.Date] += ", " + value;
+                        KillsGroundHistory[dt.Date] += separator + value;
                     }
                     else
                     {
@@ -777,85 +777,48 @@ namespace IL2DCE
             }
         }
 
-        private string FommatingDisplayKillsHistoryValue(string val)
-        {
-            StringBuilder sb = new StringBuilder();
-            string[] vals = val.Split(Config.SplitComma, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var item in vals)
-            {
-                if (sb.Length > 0)
-                {
-                    sb.AppendFormat("{0} ", Config.Comma);
-                }
-                string[] valOnes = item.Split(Config.SplitOr);
-                if (valOnes.Length >= 4)
-                {
-                    sb.AppendFormat("[{0}] {1} ({2}) {3}", valOnes[0], valOnes[1], valOnes[2], valOnes[3]);
-                }
-                else
-                {
-                    sb.Append(item);
-                }
-            }
-            return sb.ToString();
-        }
-
         public void WriteResult(ISectionFile careerFile, int historyMax)
         {
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyKills, Kills.ToString(KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(Config.KillsFormat, Config.Culture));
             foreach (var item in KillsHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
-            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(Config.KillsFormat, Config.Culture));
             foreach (var item in KillsGroundHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
                 careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
         }
 
-        public string ToCurrestStatusString()
-        {
-            return String.Format(" Date:       {0}\n Army:       {1}\n AirForce:   {2}\n Rank:       {3}\n AirGroup:   {4}\n Aircraft:   {5}\n Experience: {6}\n",
-                                    Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo),
-                                    ((EArmy)ArmyIndex).ToString(),
-                                    ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription() : ((EAirForceBlue)AirForceIndex).ToDescription(),
-                                    AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex],
-                                    string.IsNullOrEmpty(AirGroupDisplay) ? AirGroup : AirGroupDisplay,
-                                    Aircraft,
-                                    Experience);
-        }
+        public const string PlayerCurrentStatusFormat = "{0,10}: {1}";
 
-        public string ToTotalResultString()
+        public string ToStringCurrestStatus()
         {
             StringBuilder sb = new StringBuilder();
-            List<DateTime> dtList = KillsHistory.Keys.ToList();
-            dtList.AddRange(KillsGroundHistory.Keys);
-            var orderd = dtList.OrderByDescending(x => x.Date);
-            foreach (var item in orderd)
-            {
-                if (KillsHistory.ContainsKey(item))
-                {
-                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), FommatingDisplayKillsHistoryValue(KillsHistory[item]));
-                }
-                if (KillsGroundHistory.ContainsKey(item))
-                {
-                    sb.AppendFormat("    {0} {1}\n", item.ToString("d", DateTimeFormatInfo.InvariantInfo), FommatingDisplayKillsHistoryValue(KillsGroundHistory[item]));
-                }
-            }
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo));
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Army", ((EArmy)ArmyIndex).ToString());
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "AirForce", ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription() : ((EAirForceBlue)AirForceIndex).ToDescription());
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Rank", AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex]);
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "AirGroup", string.IsNullOrEmpty(AirGroupDisplay) ? AirGroup : AirGroupDisplay);
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Aircraft", Aircraft);
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Experience", Experience);
+            return sb.ToString();
+        }
 
-            return String.Format(" Takeoffs:          {0,3}\n Landings:          {1,3}\n Deaths:            {2,3}\n Bails:             {3,3}\n Kills[Aircraft]:   {4,3}\n Kills[GroundUnit]: {5,3}\n Kills History:\n{6,3}\n",
-                                    Takeoffs,
-                                    Landings,
-                                    Deaths,
-                                    Bails,
-                                    Kills.ToString(KillsFormat, Config.Culture),
-                                    KillsGround.ToString(KillsFormat, Config.Culture),
-                                    sb.ToString());
+        public string ToStringTotalResult()
+        {
+            return PlayerStats.ToStringTotalResult(this, PlayerStats.PlayerStatTotalFormat, " {0:d}\n  {1}", "\n  ");
         }
     }
 }

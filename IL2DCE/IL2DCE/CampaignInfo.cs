@@ -349,10 +349,7 @@ namespace IL2DCE
 
         public string ToSummaryString()
         {
-            return string.Format(" Name: {0}\n StartDate: {1,-12}\n   EndDate: {2,-12}\n",
-                                Name,
-                                StartDate.ToString("d", DateTimeFormatInfo.InvariantInfo),
-                                EndDate.ToString("d", DateTimeFormatInfo.InvariantInfo));
+            return string.Format(DateTimeFormatInfo.InvariantInfo, "Name: {0}\nStartDate: {1,-12:d}\n  EndDate: {2,-12:d}\n", Name, StartDate, EndDate);
         }
 
          /// <summary>
@@ -376,12 +373,12 @@ namespace IL2DCE
             }
         }
 
-        public void Write(ISectionFile file)
+        public void Write(ISectionFile file, string separator = Config.CommaStr)
         {
             SilkySkyCloDFile.Write(file, SectionMain, KeyName, name, true);
             SilkySkyCloDFile.Write(file, SectionMain, KeyEnvironmentTemplate, EnvironmentTemplateFile, true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyStaticTemplate, string.Join(",", StaticTemplateFiles), true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(",", InitialMissionTemplateFiles), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyStaticTemplate, string.Join(separator, StaticTemplateFiles), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(separator, InitialMissionTemplateFiles), true);
             SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName, true);
             SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
             SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
