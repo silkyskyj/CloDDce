@@ -429,7 +429,7 @@ namespace IL2DCE.Generator
 
             GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Config, Random, campaignInfo, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries, missionTemplateFile.FrontMarkers);
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
-            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionTemplateFile.AirGroups, airGroup);
+            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Config, Random, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionTemplateFile.AirGroups, airGroup, Career.AISkill);
 
             if (Career.AdditionalAirGroups)
             {
@@ -440,17 +440,11 @@ namespace IL2DCE.Generator
             }
 
             // Load the environment template file for the generated mission.
-            missionFile = GamePlay.gpLoadSectionFile(environmentTemplateFile);
+            missionFile = GetEnvironmenMissionTemplateFile(environmentTemplateFile);
             briefingFile = new BriefingFile();
 
             briefingFile.MissionName = missionId;
             briefingFile.MissionDescription = string.Empty;
-
-            // Delete things from the template file.
-
-            // It is not necessary to delete air groups and ground groups from the missionFile as it 
-            // is based on the environment template. If there is anything in it (air groups, ...) it is intentional.
-            SilkySkyCloDFile.Delete(missionFile, MissionFile.SectionMain, MissionFile.KeyPlayer);
 
             // Add things to the template file.
             double time = Career.Time == (int)MissionTime.Random ? Random.Next((int)MissionTime.Begin, (int)MissionTime.End + 1) : Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
@@ -577,6 +571,39 @@ namespace IL2DCE.Generator
 #if DEBUG
             GeneratorAirOperation.TraceAssignedAirGroups();
 #endif
+        }
+
+        private ISectionFile GetEnvironmenMissionTemplateFile(string environmentTemplateFile)
+        {
+            // Load the environment template file for the generated mission.
+            ISectionFile missionFile = GamePlay.gpLoadSectionFile(environmentTemplateFile);
+
+            // Delete things from the template file.
+
+            // It is not necessary to delete air groups and ground groups from the missionFile as it 
+            // is based on the environment template. If there is anything in it (air groups, ...) it is intentional.
+            SilkySkyCloDFile.Delete(missionFile, MissionFile.SectionMain, MissionFile.KeyPlayer);
+#if false
+            int i = 0;
+            string esction;
+            while (missionFile.exist(esction = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i++)))
+            {
+                missionFile.delete(esction);
+            }
+#endif
+            missionFile.delete(MissionFile.SectionSplines);
+            SilkySkyCloDFile.DeleteSectionAndSubSection(missionFile, MissionFile.SectionAirGroups, new string[] { MissionFile.SectionWay });
+            SilkySkyCloDFile.DeleteSectionAndSubSection(missionFile, MissionFile.SectionChiefs, new string[] { MissionFile.SectionRoad });
+            SilkySkyCloDFile.DeleteSectionAndSubSection(missionFile, MissionFile.SectionCustomChiefs);
+            missionFile.delete(MissionFile.SectionStationary);
+            missionFile.delete(MissionFile.SectionBuildings);
+            missionFile.delete(MissionFile.SectionBuildingsLinks);
+            missionFile.delete(MissionFile.SectionFrontMarker);
+            missionFile.delete(MissionFile.SectionTrigger);
+            missionFile.delete(MissionFile.SectionAction);
+            missionFile.delete(MissionFile.SectionAirdromes);
+
+            return missionFile;
         }
 
         private void GetRandomAircraftList(MissionFile missionFile, out IEnumerable<string> aircraftsRed, out IEnumerable<string> aircraftsBlue)

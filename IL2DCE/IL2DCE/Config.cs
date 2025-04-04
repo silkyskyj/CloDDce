@@ -99,6 +99,11 @@ namespace IL2DCE
         public const int DefaultProcessTimeReFuel = 300;
         public const int KillsHistoryMaxDefault = 1000;
 
+        public const int RankupExp = 1000;
+        public const int ExpSuccess = 200;
+        public const int ExpFail = 0;
+        public const int ExpDraw = 100;
+
         #endregion
 
         public string CampaignsFolder
@@ -404,12 +409,26 @@ namespace IL2DCE
                     confFile.get(SectionSkill, i, out key, out value);
                     System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value ?? string.Empty);
                     // if you need delete default defined skill, please write no value key in ini file.
-                    var delSkills = this.Skills.Where(x => string.Compare(x.Name, key, true) == 0);
-                    if (delSkills.Any())
+                    var targetSkills = Skills.Where(x => string.Compare(x.Name, key, true) == 0).ToArray();
+                    if (targetSkills.Any())
                     {
-                        foreach (var item in delSkills)
+                        if (string.IsNullOrEmpty(value))
                         {
-                            this.Skills.Remove(item);
+                            foreach (var item in targetSkills)
+                            {
+                                Skills.Remove(item);
+                            }
+                        }
+                        else
+                        {
+                            Skill skill;
+                            if (Skill.TryParse(value, out skill))
+                            {
+                                foreach (var item in targetSkills)
+                                {
+                                    item.Skills = skill.Skills;
+                                }
+                            }
                         }
                     }
                     else

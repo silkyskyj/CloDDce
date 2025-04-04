@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using IL2DCE.Generator;
@@ -203,6 +204,11 @@ namespace IL2DCE.Util
             {
                 ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionMain));
             }
+            int i = 0;
+            while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
+            {
+                i++;
+            }
 
             // 6. Create Mission staticTemplate File
             ISectionFile fileMissionStatic = gameInterface.SectionFileCreate();
@@ -210,7 +216,10 @@ namespace IL2DCE.Util
             string filePathMissionStatic = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionStatic);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionParts);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionMain);
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", MissionFile.SectionGlobalWind, "0"));
+            //while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
+            //{
+            //    i++;
+            //}
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionSplines);
             IEnumerable<string> countries = Country.ToStrings().Select(x => string.Format(" {0} ", x));
             string replaceCountry = string.Format(" {0} ", ECountry.nn.ToString());

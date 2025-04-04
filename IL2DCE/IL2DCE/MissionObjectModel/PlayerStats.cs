@@ -36,7 +36,7 @@ namespace IL2DCE.MissionObjectModel
         Count,
     }
 
-    public interface IPlayerStats
+    public interface IPlayerStatTotal
     {
         int Takeoffs
         {
@@ -403,7 +403,7 @@ namespace IL2DCE.MissionObjectModel
             return ToString(killsFliendlyGroundUnit, separator);
         }
 
-        public void UpdatePlayerStatsDefaultAPI(IPlayerStats playerStats, DateTime dt, string separator = Config.CommaStr)
+        public void UpdatePlayerStatsDefaultAPI(IPlayerStatTotal playerStats, DateTime dt, string separator = Config.CommaStr)
         {
             IGameSingle game = (Game as IGameSingle);
             IPlayer player = game.gameInterface.Player();
@@ -428,111 +428,111 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void UpdatePlayerStat(EPlayerStatsType statType, IPlayerStats playerStats, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
+        public void UpdatePlayerStat(EPlayerStatsType statType, IPlayerStatTotal playerStatTotal, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
         {
             if (statType == EPlayerStatsType.Api)
             {
-                UpdatePlayerStatsDefaultAPI(playerStats, dt);
+                UpdatePlayerStatsDefaultAPI(playerStatTotal, dt);
             }
             else
             {
                 IPlayerStat st = Game.gameInterface.Player().GetBattleStat();
-                playerStats.Takeoffs += st.takeoffs;
-                playerStats.Landings += st.landings;
-                playerStats.Bails += st.bails;
-                playerStats.Deaths += st.deaths;
-                playerStats.Kills += KillsAircraftTotal;
+                playerStatTotal.Takeoffs += st.takeoffs;
+                playerStatTotal.Landings += st.landings;
+                playerStatTotal.Bails += st.bails;
+                playerStatTotal.Deaths += st.deaths;
+                playerStatTotal.Kills += KillsAircraftTotal;
                 string killsTypes = KillsAircraftToStrings(separator);
                 if (!string.IsNullOrEmpty(killsTypes))
                 {
                     if (string.IsNullOrEmpty(valueSummary))
                     {
-                        if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                        if (playerStatTotal.KillsHistory.ContainsKey(dt.Date))
                         {
-                            playerStats.KillsHistory[dt.Date] += separator + killsTypes;
+                            playerStatTotal.KillsHistory[dt.Date] += separator + killsTypes;
                         }
                         else
                         {
-                            playerStats.KillsHistory.Add(dt.Date, killsTypes);
+                            playerStatTotal.KillsHistory.Add(dt.Date, killsTypes);
                         }
                     }
                     else
                     {
                         string val = string.Format("{0}|{1}", valueSummary, killsTypes);
-                        if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                        if (playerStatTotal.KillsHistory.ContainsKey(dt.Date))
                         {
-                            playerStats.KillsHistory[dt.Date] += separator + val;
+                            playerStatTotal.KillsHistory[dt.Date] += separator + val;
                         }
                         else
                         {
-                            playerStats.KillsHistory.Add(dt.Date, val);
+                            playerStatTotal.KillsHistory.Add(dt.Date, val);
                         }
                     }
                 }
 
-                playerStats.KillsGround += KillsGroundUnitTotal;
+                playerStatTotal.KillsGround += KillsGroundUnitTotal;
                 killsTypes = KillsGroundUnitToStrings();
                 if (!string.IsNullOrEmpty(killsTypes))
                 {
                     if (string.IsNullOrEmpty(valueSummary))
                     {
-                        if (playerStats.KillsGroundHistory.ContainsKey(dt.Date))
+                        if (playerStatTotal.KillsGroundHistory.ContainsKey(dt.Date))
                         {
-                            playerStats.KillsGroundHistory[dt.Date] += separator + killsTypes;
+                            playerStatTotal.KillsGroundHistory[dt.Date] += separator + killsTypes;
                         }
                         else
                         {
-                            playerStats.KillsGroundHistory.Add(dt.Date, killsTypes);
+                            playerStatTotal.KillsGroundHistory.Add(dt.Date, killsTypes);
                         }
                     }
                     else
                     {
                         string val = string.Format("{0}|{1}", valueSummary, killsTypes);
-                        if (playerStats.KillsGroundHistory.ContainsKey(dt.Date))
+                        if (playerStatTotal.KillsGroundHistory.ContainsKey(dt.Date))
                         {
-                            playerStats.KillsGroundHistory[dt.Date] += separator + val;
+                            playerStatTotal.KillsGroundHistory[dt.Date] += separator + val;
                         }
                         else
                         {
-                            playerStats.KillsGroundHistory.Add(dt.Date, val);
+                            playerStatTotal.KillsGroundHistory.Add(dt.Date, val);
                         }
                     }
                 }
             }
         }
 
-        public static string ToStringTotalResult(IPlayerStats playerStats, string format = PlayerStatTotalFormat, string formatHistory = PlayerStatKillsHistoryFormat, string separator = Config.CommaStr)
+        public static string ToStringTotalResult(IPlayerStatTotal playerStatTotal, string format = PlayerStatTotalFormat, string formatHistory = PlayerStatKillsHistoryFormat, string separator = Config.CommaStr)
         {
             StringBuilder sbHistory = new StringBuilder();
-            List<DateTime> dtList = playerStats.KillsHistory.Keys.ToList();
-            dtList.AddRange(playerStats.KillsGroundHistory.Keys);
+            List<DateTime> dtList = playerStatTotal.KillsHistory.Keys.ToList();
+            dtList.AddRange(playerStatTotal.KillsGroundHistory.Keys);
             var orderd = dtList.OrderByDescending(x => x.Date);
             foreach (var item in orderd)
             {
-                if (playerStats.KillsHistory.ContainsKey(item))
+                if (playerStatTotal.KillsHistory.ContainsKey(item))
                 {
-                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, FormatingDisplayKillsHistoryValue(playerStats.KillsHistory[item], separator));
+                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, FormatingDisplayKillsHistoryValue(playerStatTotal.KillsHistory[item], separator));
                     sbHistory.AppendLine();
                 }
-                if (playerStats.KillsGroundHistory.ContainsKey(item))
+                if (playerStatTotal.KillsGroundHistory.ContainsKey(item))
                 {
-                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, FormatingDisplayKillsHistoryValue(playerStats.KillsGroundHistory[item], separator));
+                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, FormatingDisplayKillsHistoryValue(playerStatTotal.KillsGroundHistory[item], separator));
                     sbHistory.AppendLine();
                 }
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(format, KeyTakeoff, playerStats.Takeoffs);
+            sb.AppendFormat(format, KeyTakeoff, playerStatTotal.Takeoffs);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyLandings, playerStats.Landings);
+            sb.AppendFormat(format, KeyLandings, playerStatTotal.Landings);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyDeaths, playerStats.Deaths);
+            sb.AppendFormat(format, KeyDeaths, playerStatTotal.Deaths);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyBails, playerStats.Kills);
+            sb.AppendFormat(format, KeyBails, playerStatTotal.Kills);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyAircraftKills, playerStats.Kills.ToString(Config.KillsFormat, Config.Culture));
+            sb.AppendFormat(format, KeyAircraftKills, playerStatTotal.Kills.ToString(Config.KillsFormat, Config.Culture));
             sb.AppendLine();
-            sb.AppendFormat(format, KeyGroundUnitKills, playerStats.KillsGround.ToString(Config.KillsFormat, Config.Culture));
+            sb.AppendFormat(format, KeyGroundUnitKills, playerStatTotal.KillsGround.ToString(Config.KillsFormat, Config.Culture));
             sb.AppendLine();
             sb.AppendLine();
             sb.AppendFormat("{0}:", KeyKillsHistory);

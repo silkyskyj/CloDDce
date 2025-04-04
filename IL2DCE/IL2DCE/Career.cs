@@ -25,7 +25,7 @@ using maddox.game;
 
 namespace IL2DCE
 {
-    public class Career : IPlayerStats
+    public class Career : IPlayerStatTotal
     {
         #region Definition
 
@@ -58,8 +58,10 @@ namespace IL2DCE
         public const string KeyReArm = "ReArm";
         public const string KeyReFuel = "ReFuel";
         public const string KeyTrackRecording = "TrackRecording";
+        public const string KeyAISkill = "AISkill";
         // public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
+        public const string PlayerCurrentStatusFormat = "{0,10}: {1}";
 
         #endregion
 
@@ -295,6 +297,12 @@ namespace IL2DCE
             set;
         }
 
+        public ESkillSet AISkill
+        {
+            get;
+            set;
+        }
+
         #region Status
 
         public int Takeoffs
@@ -512,6 +520,8 @@ namespace IL2DCE
             ReArmTime = -1;
             ReFuelTime = -1;
 
+            AISkill = ESkillSet.Random;
+
             #region Quick Mission Info 
 
             InitQuickMssionInfo();
@@ -576,6 +586,9 @@ namespace IL2DCE
                 ReFuelTime = careerFile.get(SectionCampaign, KeyReFuel, false) ? Config.DefaultProcessTimeReFuel : -1;
 
                 TrackRecording = careerFile.get(SectionCampaign, KeyTrackRecording, false);
+
+                string val = careerFile.get(SectionCampaign, KeyAISkill, string.Empty);
+                AISkill = (Enum.IsDefined(typeof(ESkillSet), val)) ? (ESkillSet)Enum.Parse(typeof(ESkillSet), val) : ESkillSet.Random;
 
                 Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
@@ -707,6 +720,7 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyReArm, ReArmTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
+            careerFile.add(SectionCampaign, KeyAISkill, AISkill.ToString());
 
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
@@ -794,8 +808,6 @@ namespace IL2DCE
                 careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
             }
         }
-
-        public const string PlayerCurrentStatusFormat = "{0,10}: {1}";
 
         public string ToStringCurrestStatus()
         {

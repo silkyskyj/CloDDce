@@ -308,7 +308,7 @@ namespace IL2DCE.Generator
                 result = true;
             }
             else
-            {
+            {     // Vehicle Armor Unknown
                 IEnumerable<Point3d> friendlyMarkers = FrontMarkers.Where(x => x.z == groundGroup.Army);
                 if (friendlyMarkers.Any())
                 {

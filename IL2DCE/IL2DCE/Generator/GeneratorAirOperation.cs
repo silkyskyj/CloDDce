@@ -101,6 +101,19 @@ namespace IL2DCE.Generator
             }
         }
 
+        private ESkillSet AISkill
+        {
+            get;
+            set;
+        }
+
+        private Skills AISkills
+        {
+            get;
+            set;
+        }
+        
+
         //public IEnumerable<AirGroup> AssignedAirGroups
         //{
         //    get
@@ -125,7 +138,7 @@ namespace IL2DCE.Generator
 
         #region Constructor
 
-        public GeneratorAirOperation(IGamePlay gamePlay, Config config, IRandom random, GeneratorGroundOperation generatorGroundOperation, GeneratorBriefing generatorBriefing, CampaignInfo campaignInfo, IEnumerable<AirGroup> airGroups, AirGroup airGroupPalyer)
+        public GeneratorAirOperation(IGamePlay gamePlay, Config config, IRandom random, GeneratorGroundOperation generatorGroundOperation, GeneratorBriefing generatorBriefing, CampaignInfo campaignInfo, IEnumerable<AirGroup> airGroups, AirGroup airGroupPalyer, ESkillSet aISkill)
         {
             GamePlay = gamePlay;
             Config = config;
@@ -139,6 +152,40 @@ namespace IL2DCE.Generator
             SetRange(AvailableAirGroups.Select(x => x.Position));
 
             AirGroupPlayer = airGroupPalyer;
+            AISkill = aISkill;
+            AISkills = CreateAISkills(aISkill);
+        }
+
+        private Skills CreateAISkills(ESkillSet aISkill)
+        {
+            Skills skills;
+            if (aISkill == ESkillSet.Default)
+            {
+                skills = new Skills();
+            }
+            else if (aISkill == ESkillSet.Random)
+            {
+                skills = new Skills(Skill.TweakedSkills);
+            }
+            else if (aISkill == ESkillSet.UserSettings)
+            {
+                skills = new Skills(Config.Skills.Except(Skill.TweakedSkills).Except(Skill.SystemSkills));
+            }
+            else
+            {
+                skills = Skills.Create(aISkill);
+            }
+
+            foreach (var item in Config.Skills)
+            {
+                var changed = skills.Where(x => string.Compare(x.Name, item.Name) == 0 && !Skill.EqualsValue(x.Skills, item.Skills));
+                foreach (var change in changed)
+                {
+                    change.Skills = item.Skills;
+                }
+            }
+
+            return skills;
         }
 
         #endregion
@@ -223,32 +270,37 @@ namespace IL2DCE.Generator
 
         private string getTweakedSkill(EAircraftType aircraftType, int level)
         {
+            int levelIdx = (int)ETweakedAircraftType.count * level;
             if (aircraftType == EAircraftType.Fighter)
             {
                 // Fighter
-                return Skill.TweakedSkills[level].ToString();
+                return AISkills[levelIdx + (int)ETweakedAircraftType.Fighter].ToString();
             }
             else if (aircraftType == EAircraftType.FighterBomber || aircraftType == EAircraftType.Bomber)
             {
                 // Fighter Bomber
-                return Skill.TweakedSkills[(int)ETweakedType.FighterBomberRookie + level].ToString();
+                return AISkills[levelIdx + (int)ETweakedAircraftType.FighterBomber].ToString();
             }
             else if (aircraftType == EAircraftType.BomberSub || aircraftType == EAircraftType.FighterSub ||
                 aircraftType == EAircraftType.FighterBomberSub || aircraftType == EAircraftType.OtherSub)
             {
                 // Bomber
-                return Skill.TweakedSkills[(int)ETweakedType.BomberRookie + level].ToString();
+                return AISkills[levelIdx +(int)ETweakedAircraftType.Bomber].ToString();
             }
 
-            // return Skill.TweakedSkills[level].ToString();
-            return Skill.TweakedSkills[(int)ETweakedType.BomberRookie + level].ToString();
+            return AISkills[levelIdx + (int)ETweakedAircraftType.Bomber].ToString();
         }
 
         private string getRandomSkill(EAircraftType aircraftType)
         {
-            int randomLevel = Random.Next(0, (int)ESystemType.Count);
-
+            int randomLevel = Random.Next(0, AISkills.Count / (int)ETweakedAircraftType.count);
             return getTweakedSkill(aircraftType, randomLevel);
+        }
+
+        private string getRandomSkill()
+        {
+            int randomIdx = Random.Next(0, AISkills.Count);
+            return AISkills[randomIdx].ToString();
         }
 
         private AirGroup getRandomAirGroupBasedOnDistance(IEnumerable<AirGroup> availableAirGroups, AirGroup referenceAirGroup)
@@ -413,7 +465,7 @@ namespace IL2DCE.Generator
             return null;
         }
 
-        #endregion
+#endregion
 
         #region Create air Operation
 
@@ -1413,8 +1465,20 @@ namespace IL2DCE.Generator
             }
             else
             {
-                airGroup.Skill = getRandomSkill(aircraftType);
-                airGroup.Skills.Clear();
+                if (AISkill == ESkillSet.Default)
+                {
+                    ;
+                }
+                else if (AISkill >= ESkillSet.Rookie && AISkill <= ESkillSet.Ace || AISkill == ESkillSet.UserSettings)
+                {
+                    airGroup.Skill = getRandomSkill();
+                    airGroup.Skills.Clear();
+                }
+                else/* if (AISkill == ESkillSet.Random)*/
+                {
+                    airGroup.Skill = getRandomSkill(aircraftType);
+                    airGroup.Skills.Clear();
+                }
             }
         }
 

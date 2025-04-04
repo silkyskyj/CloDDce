@@ -721,8 +721,8 @@ namespace IL2DCE
                     career.CloudAltitude = SelectedCloudAltitude;
                     career.PlayerAirGroup = airGroup;
                     career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
-                    career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperationsComboBox;
-                    career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
+                    career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperations;
+                    career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperations;
                     career.AdditionalAirGroups = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirGroups;
                     career.SpawnRandomLocationFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationFriendly;
                     career.SpawnRandomLocationEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationEnemy;
@@ -731,11 +731,12 @@ namespace IL2DCE
                     career.SpawnRandomAltitudeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomAltitudeEnemy;
                     career.SpawnRandomTimeFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
                     career.SpawnRandomTimeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy;
-                    career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
-                    career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
+                    career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBegin;
+                    career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEnd;
                     career.ReArmTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
                     career.ReFuelTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
                     career.TrackRecording = FrameworkElement.GeneralSettingsGroupBox.SelectedTrackRecoding;
+                    career.AISkill = FrameworkElement.GeneralSettingsGroupBox.SelecteAISkill;
 
                     Game.Core.CurrentCareer = career;
 
@@ -1485,9 +1486,9 @@ namespace IL2DCE
 
             private void UpdateButtonStatus()
             {
-                int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
-                int timeBegin = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
-                int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
+                int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperations;
+                int timeBegin = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBegin;
+                int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEnd;
                 bool timeEnable = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy || FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
                 FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
                                                     SelectedAirGroup != null && SelectedRank != -1 &&
@@ -1527,6 +1528,7 @@ namespace IL2DCE
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxAutoReArm.IsChecked = career.ReArmTime >= 0;
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxAutoReFuel.IsChecked = career.ReFuelTime >= 0;
                 FrameworkElement.GeneralSettingsGroupBox.checkBoxTrackRecording.IsChecked = career.TrackRecording;
+                EnableSelectItem(FrameworkElement.GeneralSettingsGroupBox.comboBoxSelectAISkill, career.AISkill.ToDescription());
             }
 
             private void UpdateAircraftImage()

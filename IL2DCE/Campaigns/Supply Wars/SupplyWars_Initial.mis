@@ -25,12 +25,6 @@
   CloudsHeight 1000
   BreezeActivity 10
   ThermalActivity 10
-[GlobalWind_0]
-  Power 3.000 0.000 0.000
-  BottomBound 0.00
-  TopBound 1500.00
-  GustPower 0
-  GustAngle 45
 [splines]
 [AirGroups]
   BoB_LW_KG53_II.11

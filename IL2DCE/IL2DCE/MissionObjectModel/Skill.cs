@@ -16,9 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -36,6 +38,14 @@ namespace IL2DCE.MissionObjectModel
             Veteran,
             Ace,
             Count,
+        }
+
+        public enum ETweakedAircraftType
+        {
+            Fighter,
+            Bomber,
+            FighterBomber,
+            count,
         }
 
         public enum ETweakedType
@@ -132,6 +142,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static readonly Skill Default = new Skill();
         public static readonly Skill Random = new Skill();
+        public static readonly Skill MissionTypeDefault = new Skill();
 
         public float[] Skills
         {
@@ -391,7 +402,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static Skill GetDefaultTyped()
         {
-            return TweakedSkills[(int)ETweakedType.BomberAvarage]; 
+            return TweakedSkills[(int)ETweakedType.BomberAvarage];
         }
 
         public string GetTypedName()
@@ -498,7 +509,7 @@ namespace IL2DCE.MissionObjectModel
             return true;
         }
 
-        public static bool EqualsValue(float [] a, float[] b)
+        public static bool EqualsValue(float[] a, float[] b)
         {
             if ((object)a == b)
             {
@@ -525,7 +536,6 @@ namespace IL2DCE.MissionObjectModel
 
             return true;
         }
-
     }
 
     public class Skills : List<Skill>
@@ -542,12 +552,273 @@ namespace IL2DCE.MissionObjectModel
 
         }
 
+        public Skills(IEnumerable<Skill> collection)
+            : base (collection)
+        {
+
+        }
+
         public static Skills CreateDefault()
         {
             Skills skills = new Skills();
             skills.AddRange(Skill.SystemSkills);
             skills.AddRange(Skill.TweakedSkills);
             return skills;
+        }
+
+        public static Skills Create(ESkillSet skillSet)
+        {
+            Skills skills = new Skills();
+
+            switch (skillSet)
+            {
+                case ESkillSet.Rookie:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Rookie]);
+                    break;
+                case ESkillSet.RookieAvarage:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Rookie]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
+                    break;
+                case ESkillSet.RookieVeteran:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Rookie]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
+                    break;
+                case ESkillSet.Avarage:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
+                    break;
+                case ESkillSet.AvarageVeteran:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
+                    break;
+                case ESkillSet.AvarageAce:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Ace]);
+                    break;
+                case ESkillSet.Veteran:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
+                    break;
+                case ESkillSet.VeteranAce:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Ace]);
+                    break;
+                case ESkillSet.Ace:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Ace]);
+                    break;
+
+                case ESkillSet.TweakedRookie:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberRookie]);
+                    break;
+                case ESkillSet.TweakedRookieAvarage:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    break;
+                case ESkillSet.TweakedRookieExperienced:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    break;
+                case ESkillSet.TweakedRookieVeteran:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberRookie]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAce]);
+                    break;
+                case ESkillSet.TweakedAvarage:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    break;
+                case ESkillSet.TweakedAvarageExperienced:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    break;
+                case ESkillSet.TweakedAvarageVeteran:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberVeteran]);
+                    break;
+                case ESkillSet.TweakedAvarageAce:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAvarage]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAce]);
+                    break;
+                case ESkillSet.TweakedExperienced:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    break;
+                case ESkillSet.TweakedExperiencedVeteran:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberVeteran]);
+                    break;
+                case ESkillSet.TweakedExperiencedAce:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberExperienced]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAce]);
+                    break;
+                case ESkillSet.TweakedVeteran:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberVeteran]);
+                    break;
+                case ESkillSet.TweakedVeteranAce:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberVeteran]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAce]);
+                    break;
+                case ESkillSet.TweakedAce:
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.BomberAce]);
+                    skills.Add(Skill.TweakedSkills[(int)ETweakedType.FighterBomberAce]);
+                    break;
+
+                case ESkillSet.Default:
+                case ESkillSet.Random:
+                default:
+                    break;
+            }
+
+            return skills;
+        }
+    }
+
+    public enum ESkillSet
+    {
+        [Description("[Random] Tweaked Rookie - Ace")]
+        Random = -2,
+        [Description("Mission Default")]
+        Default = -1,
+        [Description("Rookie")]
+        Rookie,
+        [Description("Rookie - Avarage")]
+        RookieAvarage,
+        [Description("Rookie - Veteran")]
+        RookieVeteran,
+        [Description("Rookie - Ace")]
+        RookieAce,
+        [Description("Avarage")]
+        Avarage,
+        [Description("Avarage - Veteran")]
+        AvarageVeteran,
+        [Description("Avarage - Ace")]
+        AvarageAce,
+        [Description("Veteran")]
+        Veteran,
+        [Description("Veteran - Ace")]
+        VeteranAce,
+        [Description("Ace")]
+        Ace,
+        [Description("Tweaked Rookie")]
+        TweakedRookie,
+        [Description("Tweaked Rookie - Avarage")]
+        TweakedRookieAvarage,
+        [Description("Tweaked Rookie - Experienced")]
+        TweakedRookieExperienced,
+        [Description("Tweaked Rookie - Veteran")]
+        TweakedRookieVeteran,
+        [Description("Tweaked Avarage")]
+        TweakedAvarage,
+        [Description("Tweaked Avarage - Experienced")]
+        TweakedAvarageExperienced,
+        [Description("Tweaked Avarage - Veteran")]
+        TweakedAvarageVeteran,
+        [Description("Tweaked Avarage - Ace")]
+        TweakedAvarageAce,
+        [Description("Tweaked Experienced")]
+        TweakedExperienced,
+        [Description("Tweaked Experienced - Veteran")]
+        TweakedExperiencedVeteran,
+        [Description("Tweaked Experienced - Ace")]
+        TweakedExperiencedAce,
+        [Description("Tweaked Veteran")]
+        TweakedVeteran,
+        [Description("Tweaked Veteran - Ace")]
+        TweakedVeteranAce,
+        [Description("Tweaked Ace")]
+        TweakedAce,
+        [Description("User Settings")]
+        UserSettings,
+
+        Count,
+    }
+
+    public class SkillSet
+    {
+        public Skill[] Player
+        {
+            get;
+            set;
+        }
+
+        public Skill Friendly
+        {
+            get;
+            set;
+        }
+
+        public Skill Enemy
+        {
+            get;
+            set;
+        }
+
+        public SkillSet()
+        {
+
         }
     }
 }

@@ -137,6 +137,14 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
+#if false
+        public IEnumerable<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>> GlobalWind
+        {
+            get;
+            private set;
+        }
+#endif
+
         public List<Groundway> Roads
         {
             get;
@@ -215,7 +223,7 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        #endregion
+#endregion
 
         private AirGroupInfos airGroupInfos;
 
@@ -262,12 +270,33 @@ namespace IL2DCE.MissionObjectModel
             WeatherIndex = file.get(SectionMain, KeyWeatherIndex, DefaulWeatherIndex);
             CloudsHeight = file.get(SectionMain, KeyCloudsHeight, DefaulCloudsHeight);
 
-            // Stationary
-            int lines = file.lines(SectionStationary);
-            for (int i = 0; i < lines; i++)
+            string key;
+            string value;
+            int lines;
+            int i = 0;
+
+#if false
+            // GlobalWind
+            List<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>> globalWindList = new List<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>>();
+            string esction;
+            while (file.exist(esction = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i++)))
             {
-                string key;
-                string value;
+                List<KeyValuePair<string, string>> keyValueList = new List<KeyValuePair<string, string>>();
+                lines = file.lines(esction);
+                for (i = 0; i < lines; i++)
+                {
+                    file.get(SectionStationary, i, out key, out value);
+                    keyValueList.Add(new KeyValuePair<string, string>(key, value));
+                }
+                globalWindList.Add(new KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>(esction, keyValueList));
+            }
+            GlobalWind = globalWindList;
+#endif
+
+            // Stationary
+            lines = file.lines(SectionStationary);
+            for (i = 0; i < lines; i++)
+            {
                 file.get(SectionStationary, i, out key, out value);
 
                 Stationary stationary = Stationary.Create(file, key);
@@ -297,42 +326,20 @@ namespace IL2DCE.MissionObjectModel
 
             // Buildings
             lines = file.lines(SectionBuildings);
-            for (int i = 0; i < lines; i++)
+            for (i = 0; i < lines; i++)
             {
-                string key;
-                string value;
                 file.get(SectionBuildings, i, out key, out value);
-#if true
                 Building building = Building.Create(key, value);
                 if (building != null)
                 {
                     Depots.Add(building);
                 }
-#else
-                string[] valueParts = value.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
-                if (valueParts.Length > 4)
-                {
-                    // Depots
-                    if (valueParts[0] == "buildings.House$Oil_Bunker-Small" || valueParts[0] == "buildings.House$Oil_Bunker-Middle" || valueParts[0] == "buildings.House$Oil_Bunker-Big")
-                    {
-                        Building building = Building.Create(file, key);
-                        if (building != null)
-                        {
-                            _depots.Add(building);
-                        }
-                    }
-
-                    // Other buldings ...
-                }
-#endif
             }
 
             // FrontMaker
             lines = file.lines(SectionFrontMarker);
-            for (int i = 0; i < lines; i++)
+            for (i = 0; i < lines; i++)
             {
-                string key;
-                string value;
                 file.get(SectionFrontMarker, i, out key, out value);
 
                 string[] valueParts = value.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries);
@@ -355,10 +362,8 @@ namespace IL2DCE.MissionObjectModel
 
             // AirGroups
             lines = file.lines(SectionAirGroups);
-            for (int i = 0; i < lines; i++)
+            for (i = 0; i < lines; i++)
             {
-                string key;
-                string value;
                 file.get(SectionAirGroups, i, out key, out value);
 
                 AirGroup airGroup = new AirGroup(file, key);
@@ -386,10 +391,8 @@ namespace IL2DCE.MissionObjectModel
 
             // Chiefs
             lines = file.lines(SectionChiefs);
-            for (int i = 0; i < lines; i++)
+            for (i = 0; i < lines; i++)
             {
-                string key;
-                string value;
                 file.get(SectionChiefs, i, out key, out value);
 
                 GroundGroup groundGroup = GroundGroup.Create(file, key);
@@ -421,10 +424,8 @@ namespace IL2DCE.MissionObjectModel
             // Trigger & Action  (Support: Time & Spawn only)
             IList<AirGroup> airGroups = AirGroups;
             lines = file.lines(SectionAction);
-            for (int i = 0; i < lines; i++)
+            for (i = 0; i < lines; i++)
             {
-                string key;
-                string value;
                 file.get(SectionAction, i, out key, out value);
                 if (file.exist(SectionTrigger, key) && !string.IsNullOrEmpty(value))
                 {
@@ -450,7 +451,7 @@ namespace IL2DCE.MissionObjectModel
             // Aircraft (Random)
             if (file.exist(Config.SectionAircraft, Config.KeyRandomRed))
             {
-                string value = file.get(Config.SectionAircraft, Config.KeyRandomRed);
+                value = file.get(Config.SectionAircraft, Config.KeyRandomRed);
                 AircraftRandomRed = value.Split(Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
             }
             else
@@ -460,7 +461,7 @@ namespace IL2DCE.MissionObjectModel
 
             if (file.exist(Config.SectionAircraft, Config.KeyRandomBlue))
             {
-                string value = file.get(Config.SectionAircraft, Config.KeyRandomBlue);
+                value = file.get(Config.SectionAircraft, Config.KeyRandomBlue);
                 AircraftRandomBlue = value.Split(Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
             }
             else

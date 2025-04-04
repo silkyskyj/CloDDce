@@ -238,7 +238,7 @@ namespace IL2DCE
             {
                 // It is the first mission.
                 career.Date = career.CampaignInfo.StartDate;
-                career.Experience = career.RankIndex * 1000;
+                career.Experience = career.RankIndex * Config.RankupExp;
 
                 // Generate the initial mission tempalte
                 generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
@@ -251,15 +251,15 @@ namespace IL2DCE
                     IGameSingle gameSingle = game as IGameSingle;
                     if (gameSingle.BattleSuccess == EBattleResult.SUCCESS)
                     {
-                        career.Experience += 200;
+                        career.Experience += Config.ExpSuccess;
                     }
                     else if (gameSingle.BattleSuccess == EBattleResult.DRAW)
                     {
-                        career.Experience += 100;
+                        career.Experience += Config.ExpDraw;
                     }
                 }
 
-                if (career.RankIndex < Rank.RankMax && career.Experience >= (career.RankIndex + 1) * 1000)
+                if (career.RankIndex < Rank.RankMax && career.Experience >= (career.RankIndex + 1) * Config.RankupExp)
                 {
                     career.RankIndex += 1;
                 }
@@ -297,11 +297,11 @@ namespace IL2DCE
 
             if (result != CampaignStatus.DateEnd)
             {
-                string missionId = string.Format("{0}_{1}-{2}-{3}",
+                string missionId = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}-{2}-{3}",
                                                     campaignInfo.Id,
-                                                    career.Date.Value.Year.ToString(CultureInfo.InvariantCulture.NumberFormat),
-                                                    career.Date.Value.Month.ToString(CultureInfo.InvariantCulture.NumberFormat),
-                                                    career.Date.Value.Day.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                                    career.Date.Value.Year,
+                                                    career.Date.Value.Month,
+                                                    career.Date.Value.Day);
                 string missionFileName = string.Format("{0}/{1}/{2}.mis", Config.UserMissionFolder, career.PilotName, missionId);
                 career.MissionFileName = missionFileName;
 
@@ -359,7 +359,7 @@ namespace IL2DCE
             CampaignInfo campaignInfo = career.CampaignInfo;
 
             career.Date = career.CampaignInfo.StartDate;
-            career.Experience = career.RankIndex * 1000;
+            career.Experience = career.RankIndex * Config.RankupExp;
 
             ISectionFile initialMissionTemplateFile = null;
             generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);

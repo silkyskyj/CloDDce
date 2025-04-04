@@ -404,8 +404,8 @@ namespace IL2DCE.Pages
                 career.Aircraft = aircraftInfo.DisplayName;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
-                career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperationsComboBox;
-                career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
+                career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperations;
+                career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperations;
                 career.AdditionalAirGroups = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirGroups;
                 career.SpawnRandomLocationFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationFriendly;
                 career.SpawnRandomLocationEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationEnemy;
@@ -414,11 +414,12 @@ namespace IL2DCE.Pages
                 career.SpawnRandomAltitudeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomAltitudeEnemy;
                 career.SpawnRandomTimeFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
                 career.SpawnRandomTimeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy;
-                career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
-                career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
+                career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBegin;
+                career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEnd;
                 career.ReArmTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
                 career.ReFuelTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
                 career.TrackRecording = FrameworkElement.GeneralSettingsGroupBox.SelectedTrackRecoding;
+                career.AISkill = FrameworkElement.GeneralSettingsGroupBox.SelecteAISkill;
 
                 Game.Core.AvailableCareers.Add(career);
                 Game.Core.CurrentCareer = career;
@@ -687,9 +688,9 @@ namespace IL2DCE.Pages
             // string pilotName = FrameworkElement.textBoxPilotName.Text;
             DatePicker datePickerStart = FrameworkElement.datePickerStart;
             DatePicker datePickerEnd = FrameworkElement.datePickerEnd;
-            int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperationsComboBox;
-            int timeBegin = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBeginComboBox;
-            int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEndComboBox;
+            int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperations;
+            int timeBegin = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBegin;
+            int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEnd;
             bool timeEnable = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy || FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
             FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 && 
                                                 !IsErrorPilotName/*!Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0)*/ &&

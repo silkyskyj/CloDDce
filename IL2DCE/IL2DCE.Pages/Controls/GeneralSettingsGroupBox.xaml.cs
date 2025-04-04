@@ -33,7 +33,7 @@ namespace IL2DCE.Pages.Controls
 
         #region Property
 
-        public int SelectedAdditionalAirOperationsComboBox
+        public int SelectedAdditionalAirOperations
         {
             get
             {
@@ -47,7 +47,7 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
-        public int SelectedAdditionalGroundOperationsComboBox
+        public int SelectedAdditionalGroundOperations
         {
             get
             {
@@ -184,7 +184,7 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
-        public int SelectedRandomTimeBeginComboBox
+        public int SelectedRandomTimeBegin
         {
             get
             {
@@ -209,7 +209,7 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
-        public int SelectedRandomTimeEndComboBox
+        public int SelectedRandomTimeEnd
         {
             get
             {
@@ -276,6 +276,20 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
+        public ESkillSet SelecteAISkill
+        {
+            get
+            {
+                ComboBoxItem selected = comboBoxSelectAISkill.SelectedItem as ComboBoxItem;
+                if (selected != null && selected.Tag != null)
+                {
+                    return (ESkillSet)selected.Tag;
+                }
+
+                return ESkillSet.Random;
+            }
+        }
+
         #endregion
 
         public GeneralSettingsGroupBox()
@@ -293,11 +307,12 @@ namespace IL2DCE.Pages.Controls
             checkBoxSpawnRandomTimeFriendly.Unchecked += new RoutedEventHandler(checkBoxSpawnRandomTime_CheckedChange);
             checkBoxSpawnRandomTimeEnemy.Checked += new RoutedEventHandler(checkBoxSpawnRandomTime_CheckedChange);
             checkBoxSpawnRandomTimeEnemy.Unchecked += new RoutedEventHandler(checkBoxSpawnRandomTime_CheckedChange);
-
+            comboBoxSelectAISkill.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelect_SelectionChanged);
             UpdateSelectAdditionalAirOperationsComboBox();
             UpdateSelectAdditionalGroundOperationsComboBox();
             UpdateSelectRandomTimeBeginComboBox();
             UpdateSelectRandomTimeEndComboBox();
+            UpdateSelectAISkillComboBox();
         }
 
         private void GroupBox_Loaded(object sender, System.Windows.RoutedEventArgs e)
@@ -385,6 +400,16 @@ namespace IL2DCE.Pages.Controls
             comboBox.IsEnabled = SelectedSpawnRandomTimeFriendly || SelectedSpawnRandomTimeEnemy;
         }
 
+        public void UpdateSelectAISkillComboBox()
+        {
+            ComboBox comboBox = comboBoxSelectAISkill;
+            for (ESkillSet i = ESkillSet.Random; i < ESkillSet.Count; i++)
+            {
+                comboBox.Items.Add(new ComboBoxItem() { Tag =i, Content = i.ToDescription() });
+            }
+            comboBox.Text = ESkillSet.Random.ToDescription();
+        }
+
         private void buttonRandomizeAllCheck_Click(object sender, RoutedEventArgs e)
         {
             checkBoxSpawnRandomLocationFriendly.IsChecked = true;
@@ -427,6 +452,8 @@ namespace IL2DCE.Pages.Controls
             checkBoxAutoReArm.IsChecked = false;
             checkBoxAutoReFuel.IsChecked = false;
             checkBoxTrackRecording.IsChecked = false;
+
+            comboBoxSelectAISkill.Text = ESkillSet.Random.ToDescription();
         }
     }
 }

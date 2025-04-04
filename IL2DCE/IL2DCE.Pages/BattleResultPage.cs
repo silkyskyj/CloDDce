@@ -83,14 +83,23 @@ namespace IL2DCE.Pages
             Config config = Game.Core.Config;
             Career career = Game.Core.CurrentCareer;
             Mission.Mission mission = Game.Core.Mission as Mission.Mission;
-            PlayerStat = new PlayerStats(Game, career.ArmyIndex, mission != null ? mission.PlayerActorName : string.Empty, config.StatKillsOver);
-            EPlayerStatsType type = Enum.IsDefined(typeof(EPlayerStatsType), config.StatType) ? (EPlayerStatsType)config.StatType: EPlayerStatsType.Api;
+            try
+            {
+                PlayerStat = new PlayerStats(Game, career.ArmyIndex, mission != null ? mission.PlayerActorName : string.Empty, config.StatKillsOver);
+                EPlayerStatsType type = Enum.IsDefined(typeof(EPlayerStatsType), config.StatType) ? (EPlayerStatsType)config.StatType : EPlayerStatsType.Api;
+                StatType = PlayerStat.Create(type, mission != null ? mission.ActorDead : null);
 
-            StatType = PlayerStat.Create(type, mission != null ? mission.ActorDead: null);
-
-            string result = GetResultSummary() + GetPlayerStat();
-            textBoxDescription.Text = result;
-            textBoxSlide.Text = GetTotalPlayerStat();
+                string result = GetResultSummary() + GetPlayerStat();
+                textBoxDescription.Text = result;
+                textBoxSlide.Text = GetTotalPlayerStat();
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("{0} - {1} {2} {3} {4} {5}", "BattleResultPage._enter", 
+                    ex.Message, career.PilotName, career.CampaignInfo.Id, mission != null && mission.ActorDead != null ? mission.ActorDead.Count: -1, ex.StackTrace);
+                Core.WriteLog(message);
+                MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public override void _leave(maddox.game.IGame play, object arg)
@@ -125,28 +134,37 @@ namespace IL2DCE.Pages
         protected void Fly_Click(object sender, RoutedEventArgs e)
         {
             Career career = Game.Core.CurrentCareer;
-            if (career.BattleType == EBattleType.QuickMission)
+            try
             {
-                string valueSummary = string.Format("{0}|{1}|{2}", 
-                    career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft);
-                PlayerStat.UpdatePlayerStat(StatType, career, DateTime.Now, valueSummary);
-
-                Game.Core.UpdateResult(career);
-                Game.gameInterface.PageChange(new QuickMissionPage(), null);
-            }
-            else 
-            {
-                PlayerStat.UpdatePlayerStat(StatType, career, career.Date.Value);
-
-                CampaignStatus status = Game.Core.AdvanceCampaign(Game);
-                if (status != CampaignStatus.DateEnd)
+                if (career.BattleType == EBattleType.QuickMission)
                 {
-                    Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                    string valueSummary = string.Format("{0}|{1}|{2}",
+                        career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft);
+                    PlayerStat.UpdatePlayerStat(StatType, career, DateTime.Now, valueSummary);
+
+                    Game.Core.UpdateResult(career);
+                    Game.gameInterface.PageChange(new QuickMissionPage(), null);
                 }
                 else
                 {
-                    Game.gameInterface.PageChange(new CampaignCompletionPage(), null);
+                    PlayerStat.UpdatePlayerStat(StatType, career, career.Date.Value);
+
+                    CampaignStatus status = Game.Core.AdvanceCampaign(Game);
+                    if (status != CampaignStatus.DateEnd)
+                    {
+                        Game.gameInterface.PageChange(new BattleIntroPage(), null);
+                    }
+                    else
+                    {
+                        Game.gameInterface.PageChange(new CampaignCompletionPage(), null);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("{0} - {1} {2} {3} {4}", "BattleResultPage.Fly_Click", ex.Message, career.PilotName, career.CampaignInfo.Id, ex.StackTrace);
+                Core.WriteLog(message);
+                MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -161,17 +179,17 @@ namespace IL2DCE.Pages
             IGameSingle game = Game as IGameSingle;
             Career career = game.Core.CurrentCareer;
             int exp = career.Experience;
-            int exp2 = game.BattleSuccess == EBattleResult.DRAW ? 100 : game.BattleSuccess == EBattleResult.SUCCESS ? 200: 0;
+            int exp2 = game.BattleSuccess == EBattleResult.DRAW ? Config.ExpDraw : game.BattleSuccess == EBattleResult.SUCCESS ? Config.ExpSuccess: Config.ExpFail;
             int rank = career.RankIndex;
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, "Date: {0:d} - {1}", career.Date.Value, game.BattleSuccess.ToString());
             sb.AppendLine();
             // Before + Add Now [Next Rank]
             sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, "Exp: {0} + {1} [Next Rank {2}]", 
-                            exp, exp2, rank < Rank.RankMax ? ((rank + 1) * 1000).ToString(CultureInfo.InvariantCulture.NumberFormat) : " - ");
+                            exp, exp2, rank < Rank.RankMax ? ((rank + 1) * Config.RankupExp).ToString(CultureInfo.InvariantCulture.NumberFormat) : " - ");
             sb.AppendLine();
             // Rank Up
-            sb.AppendFormat(rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * 1000) ? "Promition!" : string.Empty);
+            sb.AppendFormat(rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * Config.RankupExp) ? "Promition!" : string.Empty);
             sb.AppendLine();
             return sb.ToString();
         }

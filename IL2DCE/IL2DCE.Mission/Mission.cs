@@ -406,7 +406,11 @@ namespace IL2DCE
                     var result = AircraftLanded.Where(x => string.Compare(aircraft.Name(), x.Aircraft.Name(), true) == 0);
                     if (result.Any())
                     {
-                        result.Select(x => x.IsLanded = true);
+                        // result.Select(x => x.IsLanded = true);
+                        foreach (var item in result)
+                        {
+                            item.IsLanded = true;
+                        }
                     }
                     else
                     {
