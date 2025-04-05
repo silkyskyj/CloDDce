@@ -70,7 +70,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public bool IsRandomizeFliendly
+            public bool IsRandomizeFriendly
             {
                 get;
                 set;
@@ -82,10 +82,10 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public SpawnLocation(bool isRandomizePlayer = false, bool isRandomizeFliendly = false, bool isRandomizeEnemy = false)
+            public SpawnLocation(bool isRandomizePlayer = false, bool isRandomizeFriendly = false, bool isRandomizeEnemy = false)
             {
                 IsRandomizePlayer = isRandomizePlayer;
-                IsRandomizeFliendly = isRandomizeFliendly;
+                IsRandomizeFriendly = isRandomizeFriendly;
                 IsRandomizeEnemy = isRandomizeEnemy;
             }
         }
@@ -186,7 +186,7 @@ namespace IL2DCE.MissionObjectModel
             protected set;
         }
 
-		public bool IsRandomizeTimeFliendly
+		public bool IsRandomizeTimeFriendly
 		{
 			get;
 			set;
@@ -198,7 +198,7 @@ namespace IL2DCE.MissionObjectModel
 			set;
 		}
 
-		public bool IsRandomizeAltitudeFliendly
+		public bool IsRandomizeAltitudeFriendly
 		{
 			get;
 			set;
@@ -219,7 +219,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public Spawn(int altitude, bool isRandomizeAltitudeFliendly = false, bool isRandomizeAltitudeEnemy = false, SpawnLocation location = null, bool isRandomizeTimeFliendly = false, bool isRandomizeTimeEnemy = false, SpawnTime spawnTime = null)
+        public Spawn(int altitude, bool isRandomizeAltitudeFriendly = false, bool isRandomizeAltitudeEnemy = false, SpawnLocation location = null, bool isRandomizeTimeFriendly = false, bool isRandomizeTimeEnemy = false, SpawnTime spawnTime = null)
         {
             if (altitude >= (int)ESpawn.Parked && altitude <= (int)ESpawn.Scramble)
             {
@@ -259,12 +259,12 @@ namespace IL2DCE.MissionObjectModel
                 Type = ESpawn.Default;
                 Altitude = altitude;
             }
-			IsRandomizeAltitudeFliendly = isRandomizeAltitudeFliendly;
+			IsRandomizeAltitudeFriendly = isRandomizeAltitudeFriendly;
 			IsRandomizeAltitudeEnemy = isRandomizeAltitudeEnemy;
 
 			Location = location != null ? location: new SpawnLocation();
 
-            IsRandomizeTimeFliendly = isRandomizeTimeFliendly;
+            IsRandomizeTimeFriendly = isRandomizeTimeFriendly;
 			IsRandomizeTimeEnemy = isRandomizeTimeEnemy;
 			Time = spawnTime != null ? spawnTime : new SpawnTime();
         }
@@ -294,7 +294,7 @@ namespace IL2DCE.MissionObjectModel
 
 		public static Spawn Create(int altitude, Spawn spawn)
         {
-            return new Spawn(altitude, spawn.IsRandomizeAltitudeFliendly, spawn.IsRandomizeAltitudeEnemy, spawn.Location, spawn.IsRandomizeTimeFliendly, spawn.IsRandomizeTimeEnemy, spawn.Time.Clone());
+            return new Spawn(altitude, spawn.IsRandomizeAltitudeFriendly, spawn.IsRandomizeAltitudeEnemy, spawn.Location, spawn.IsRandomizeTimeFriendly, spawn.IsRandomizeTimeEnemy, spawn.Time.Clone());
         }
 
         public static string CreateDisplayString(int altitude)

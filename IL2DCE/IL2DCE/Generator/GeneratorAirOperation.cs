@@ -1621,7 +1621,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    return airGroup.ArmyIndex == AirGroupPlayer.ArmyIndex ? spawnLocation.IsRandomizeFliendly : spawnLocation.IsRandomizeEnemy;
+                    return airGroup.ArmyIndex == AirGroupPlayer.ArmyIndex ? spawnLocation.IsRandomizeFriendly : spawnLocation.IsRandomizeEnemy;
                 }
             }
             Debug.Assert(false);
@@ -1638,7 +1638,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    return airGroup.ArmyIndex == AirGroupPlayer.ArmyIndex ? spawn.IsRandomizeTimeFliendly : spawn.IsRandomizeTimeEnemy;
+                    return airGroup.ArmyIndex == AirGroupPlayer.ArmyIndex ? spawn.IsRandomizeTimeFriendly : spawn.IsRandomizeTimeEnemy;
                 }
             }
             Debug.Assert(false);
@@ -1656,7 +1656,7 @@ namespace IL2DCE.Generator
                 }
                 else
                 {
-                    return airGroup.ArmyIndex == AirGroupPlayer.ArmyIndex ? spawn.IsRandomizeAltitudeFliendly : spawn.IsRandomizeAltitudeEnemy;
+                    return airGroup.ArmyIndex == AirGroupPlayer.ArmyIndex ? spawn.IsRandomizeAltitudeFriendly : spawn.IsRandomizeAltitudeEnemy;
                 }
             }
             Debug.Assert(false);

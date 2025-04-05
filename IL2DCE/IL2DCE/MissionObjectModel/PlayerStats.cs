@@ -170,19 +170,19 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public int KillsFliendlyAircraftTotal
+        public int KillsFriendlyAircraftTotal
         {
             get
             {
-                return killsFliendlyAircraft.Sum(x => x.Value);
+                return killsFriendlyAircraft.Sum(x => x.Value);
             }
         }
 
-        public int KillsFliendlyGroundUnitTotal
+        public int KillsFriendyGroundUnitTotal
         {
             get
             {
-                return killsFliendlyGroundUnit.Sum(x => x.Value);
+                return killsFriendlyGroundUnit.Sum(x => x.Value);
             }
         }
 
@@ -191,9 +191,9 @@ namespace IL2DCE.MissionObjectModel
         #region Variable
 
         private Dictionary<string, int> killsAircraft = new Dictionary<string, int>();
-        private Dictionary<string, int> killsFliendlyAircraft = new Dictionary<string, int>();
+        private Dictionary<string, int> killsFriendlyAircraft = new Dictionary<string, int>();
         private Dictionary<string, int> killsGroundUnit = new Dictionary<string, int>();
-        private Dictionary<string, int> killsFliendlyGroundUnit = new Dictionary<string, int>();
+        private Dictionary<string, int> killsFriendlyGroundUnit = new Dictionary<string, int>();
 
         #endregion
 
@@ -309,7 +309,7 @@ namespace IL2DCE.MissionObjectModel
                             }
                             else
                             {
-                                AiDamageInitiator initiator = GetMaxDamagedInitiator(item.Value);
+                                AiDamageInitiator initiator = GetHighestDamagedInitiator(item.Value);
                                 if (initiator != null && initiator.Player != null)
                                 {
                                     Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
@@ -344,7 +344,7 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
-                    AiDamageInitiator initiator = GetMaxDamagedInitiator(damages);
+                    AiDamageInitiator initiator = GetHighestDamagedInitiator(damages);
                     if (initiator != null && initiator.Player != null)
                     {
                         AddKillsCount(actor);
@@ -353,18 +353,18 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private AiDamageInitiator GetMaxDamagedInitiator(IEnumerable<DamagerScore> damages)
+        private AiDamageInitiator GetHighestDamagedInitiator(IEnumerable<DamagerScore> damages)
         {
             AiDamageInitiator initiator = null;
-            double maxScore = 0;
+            double scoreHighest = 0;
             IEnumerable<string> actors = damages.Where(x => !string.IsNullOrEmpty(GetName(x.initiator))).Select(x => x.initiator.Actor.Name()).Distinct();
             foreach (string actor in actors)
             {
                 var damageScores = damages.Where(x => string.Compare(x.initiator.Actor.Name(), actor) == 0);
                 double score = damageScores.Sum(x => x.score);
-                if (score > maxScore)
+                if (score > scoreHighest)
                 {
-                    maxScore = score;
+                    scoreHighest = score;
                     initiator = damageScores.FirstOrDefault().initiator;
                 }
             }
@@ -389,7 +389,7 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
-                    AddKillsCount(killsFliendlyAircraft, aiAircraft.InternalTypeName());
+                    AddKillsCount(killsFriendlyAircraft, aiAircraft.InternalTypeName());
                 }
             }
             else if (actor is AiGroundActor)
@@ -402,7 +402,7 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
-                    AddKillsCount(killsFliendlyGroundUnit, aiGroundActor.InternalTypeName());
+                    AddKillsCount(killsFriendlyGroundUnit, aiGroundActor.InternalTypeName());
                 }
             }
         }
@@ -424,11 +424,11 @@ namespace IL2DCE.MissionObjectModel
             {   // Friendly kill
                 if (actorType == 0)
                 {
-                    AddKillsCount(killsFliendlyAircraft, typeName);
+                    AddKillsCount(killsFriendlyAircraft, typeName);
                 }
                 else
                 {
-                    AddKillsCount(killsFliendlyGroundUnit, typeName);
+                    AddKillsCount(killsFriendlyGroundUnit, typeName);
                 }
             }
         }
@@ -461,14 +461,14 @@ namespace IL2DCE.MissionObjectModel
             return ToString(killsGroundUnit, separator);
         }
 
-        public string KillsFliendlyAircraftToStrings(string separator = Config.CommaStr)
+        public string KillsFriendlyAircraftToStrings(string separator = Config.CommaStr)
         {
-            return ToString(killsFliendlyAircraft, separator);
+            return ToString(killsFriendlyAircraft, separator);
         }
 
-        public string KillsFliendlyGroundUnitToStrings(string separator = Config.CommaStr)
+        public string KillsFriendlyGroundUnitToStrings(string separator = Config.CommaStr)
         {
-            return ToString(killsFliendlyGroundUnit, separator);
+            return ToString(killsFriendlyGroundUnit, separator);
         }
 
         public void UpdatePlayerStatsDefaultAPI(IPlayerStatTotal playerStats, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
@@ -658,9 +658,9 @@ namespace IL2DCE.MissionObjectModel
             sb.AppendLine();
             sb.AppendFormat(format, KeyEnemyGroundUnit, KillsGroundUnitTotal);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyFriendlyAircraft, KillsFliendlyAircraftTotal);
+            sb.AppendFormat(format, KeyFriendlyAircraft, KillsFriendlyAircraftTotal);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyFriendlyGroundUnit, KillsFliendlyGroundUnitTotal);
+            sb.AppendFormat(format, KeyFriendlyGroundUnit, KillsFriendyGroundUnitTotal);
             sb.AppendLine();
             return sb.ToString();
         }
@@ -672,9 +672,9 @@ namespace IL2DCE.MissionObjectModel
             sb.AppendLine();
             sb.AppendFormat(format, KeyEnemyGroundUnit, KillsGroundUnitToStrings(separator));
             sb.AppendLine();
-            sb.AppendFormat(format, KeyFriendlyAircraft, KillsFliendlyAircraftToStrings(separator));
+            sb.AppendFormat(format, KeyFriendlyAircraft, KillsFriendlyAircraftToStrings(separator));
             sb.AppendLine();
-            sb.AppendFormat(format, KeyFriendlyGroundUnit, KillsFliendlyGroundUnitToStrings(separator));
+            sb.AppendFormat(format, KeyFriendlyGroundUnit, KillsFriendlyGroundUnitToStrings(separator));
             sb.AppendLine();
             return sb.ToString();
         }
