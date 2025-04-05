@@ -611,7 +611,7 @@ namespace IL2DCE.MissionObjectModel
             sb.AppendLine();
             sb.AppendFormat(format, KeyDeaths, playerStatTotal.Deaths);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyBails, playerStatTotal.Kills);
+            sb.AppendFormat(format, KeyBails, playerStatTotal.Bails);
             sb.AppendLine();
             sb.AppendFormat(format, KeyAircraftKills, playerStatTotal.Kills.ToString(Config.KillsFormat, Config.Culture));
             sb.AppendLine();
