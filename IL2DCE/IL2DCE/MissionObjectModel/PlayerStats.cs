@@ -29,10 +29,11 @@ namespace IL2DCE.MissionObjectModel
 {
     public enum EPlayerStatsType
     {
-        ActorDead = 0,
+        ActorDeadKillsScoreOver = 0,
         Api = 1,
-        DamageVictims = 2,
-        DamageVictimsNew = 3,
+        DamageVictimsKillsScoreOver = 2,
+        ActorDeadKillsHighestScore = 3,
+        DamageVictimsHighestScore = 4,
         Count,
     }
 
@@ -89,17 +90,21 @@ namespace IL2DCE.MissionObjectModel
 
     public class PlayerStats
     {
+        #region definition
+
         public const char ActorDeadInfoSplitChar = '|';
 
         public const string PlayerStatFormat = "{0,19}: {1,2}";
         public const string PlayerStatTotalFormat = "{0,17}: {1,5}";
-        public const string PlayerStatKillsHistoryFormat = " {0:d} {1}";
+        public const string PlayerStatKillsHistoryFormat = " {0:d} {1} {2}";
         public const string PlayerStatKillsTypeFormat = "{0,19}: {1}";
 
         private const string KeyTakeoff = "Takeoffs";
         private const string KeyLandings = "Landings";
         private const string KeyDeaths = "Deaths";
         private const string KeyBails = "Bails";
+        private const string KeyAircraft = "Aircraft";
+        private const string KeyGroundUnit = "GroundUnit";
         private const string KeyAircraftKills = "Aircraft Kills";
         private const string KeyGroundUnitKills = "GroundUnit Kills";
         private const string KeyEnemyAircraft = "Enemy Aircraft";
@@ -120,6 +125,10 @@ namespace IL2DCE.MissionObjectModel
             ActorTypeName,
             Count,
         }
+
+        #endregion
+
+        #region Property
 
         public IGame Game
         {
@@ -177,10 +186,16 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        #endregion
+
+        #region Variable
+
         private Dictionary<string, int> killsAircraft = new Dictionary<string, int>();
         private Dictionary<string, int> killsFliendlyAircraft = new Dictionary<string, int>();
         private Dictionary<string, int> killsGroundUnit = new Dictionary<string, int>();
         private Dictionary<string, int> killsFliendlyGroundUnit = new Dictionary<string, int>();
+
+        #endregion
 
         public PlayerStats(IGame game, int army, string playerActorName, double killsScoreOver)
         {
@@ -194,50 +209,13 @@ namespace IL2DCE.MissionObjectModel
         {
             switch (statType)
             {
-                case EPlayerStatsType.Api: // DefaultAPI
-                    {
-                        ;
-                    }
-                    break;
-
-                case EPlayerStatsType.DamageVictims: // Battle's DamageInfo 
-                    {
-                        ArrayList battleDamageVictims = Game.battleGetDamageVictims();
-                        if (battleDamageVictims != null)
-                        {
-                            CreatePlayerStat(battleDamageVictims);
-                        }
-                        else
-                        {
-                            Debug.Assert(false, "battleDamageVictims is nul");
-                            statType = EPlayerStatsType.Api;
-                        }
-                    }
-                    break;
-
-                case EPlayerStatsType.DamageVictimsNew: // Battle's DamageInfo (Linq)
-                    {
-                        ArrayList battleDamageVictims = Game.battleGetDamageVictims();
-                        if (battleDamageVictims != null)
-                        {
-                            CreatePlayerStatLinq(battleDamageVictims);
-                        }
-                        else
-                        {
-                            Debug.Assert(false, "battleDamageVictims is nul");
-                            statType = EPlayerStatsType.Api;
-                        }
-                    }
-                    break;
-
-                case EPlayerStatsType.ActorDead: // Check Mission OnActorDead method score value
-                default:
+                case EPlayerStatsType.ActorDeadKillsScoreOver: // Check Mission OnActorDead method score value (KillsScoreOver)
                     {
                         // Check Type 2: 
                         Dictionary<string, List<DamagerScore>> actorDead = data as Dictionary<string, List<DamagerScore>>;
                         if (actorDead != null && !string.IsNullOrEmpty(PlayerActorName))
                         {
-                            CreatePlayerStat(actorDead);
+                            CreatePlayerStat(actorDead, true);
                         }
                         else
                         {
@@ -246,75 +224,63 @@ namespace IL2DCE.MissionObjectModel
                         }
                     }
                     break;
+
+                case EPlayerStatsType.Api: // DefaultAPI
+                    {
+                        ;
+                    }
+                    break;
+
+                case EPlayerStatsType.DamageVictimsKillsScoreOver: // Battle's DamageInfo (KillsScoreOver)
+                    {
+                        ArrayList battleDamageVictims = Game.battleGetDamageVictims();
+                        if (battleDamageVictims != null)
+                        {
+                            CreatePlayerStat(battleDamageVictims, true);
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "battleDamageVictims is nul");
+                            statType = EPlayerStatsType.Api;
+                        }
+                    }
+                    break;
+
+                case EPlayerStatsType.ActorDeadKillsHighestScore: // Check Mission OnActorDead method score value (HighestScore)
+                    {
+                        Dictionary<string, List<DamagerScore>> actorDead = data as Dictionary<string, List<DamagerScore>>;
+                        if (actorDead != null && !string.IsNullOrEmpty(PlayerActorName))
+                        {
+                            CreatePlayerStat(actorDead, false);
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "Mission is null or PlayerActorName is empty");
+                            statType = EPlayerStatsType.Api;
+                        }
+                    }
+                    break;
+
+                case EPlayerStatsType.DamageVictimsHighestScore: // Battle's DamageInfo (HighestScore)
+                    {
+                        ArrayList battleDamageVictims = Game.battleGetDamageVictims();
+                        if (battleDamageVictims != null)
+                        {
+                            CreatePlayerStat(battleDamageVictims, false);
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "battleDamageVictims is nul");
+                            statType = EPlayerStatsType.Api;
+                        }
+                    }
+                    break;
+
             }
             return statType;
         }
 
-        private void CreatePlayerStat(ArrayList battleDamageVictims)
-        {
-            foreach (var item in battleDamageVictims)
-            {
-                if (item is AiActor)
-                {
-                    AiActor actor = item as AiActor;
-                    Debug.WriteLine("battleGetDamageVictims Actor.IsValid: {0}={1} IsAlive={2}", actor.Name(), actor.IsValid(), actor.IsAlive());
-                    ArrayList damageInitiatorsArray = Game.battleGetDamageInitiators(actor);
-                    foreach (var initiator in damageInitiatorsArray)
-                    {
-                        if (initiator is DamagerScore)
-                        {
-                            DamagerScore score = initiator as DamagerScore;
-                            if (score.initiator.Actor != null)
-                            {
-                                Debug.WriteLine("Actor.IsValid: {0}={1} IsAlive={2}", score.initiator.Actor.Name(), score.initiator.Actor.IsValid(), score.initiator.Actor.IsAlive());
-                                if (score.score > KillsScoreOver && score.initiator != null && score.initiator.Player != null)
-                                {
-                                    int armyActor = actor.Army();
-                                    if (actor is AiAircraft)
-                                    {
-                                        AiAircraft aiAircraft = item as AiAircraft;
-                                        Debug.WriteLine("AiAircraft: {0}={1}", aiAircraft.InternalTypeName(), aiAircraft.Group().Name());
-                                        if (armyActor != Army)
-                                        {
-                                            AddKillsCount(killsAircraft, aiAircraft.InternalTypeName());
-                                        }
-                                        else
-                                        {
-                                            AddKillsCount(killsFliendlyAircraft, aiAircraft.InternalTypeName());
-                                        }
-                                    }
-                                    else if (actor is AiGroundActor)
-                                    {
-                                        AiGroundActor aiGroundActor = item as AiGroundActor;
-                                        Debug.WriteLine("AiGroundActor: {0}={1}", aiGroundActor.InternalTypeName(), aiGroundActor.Group().Name());
-                                        if (armyActor != Army)
-                                        {
-                                            AddKillsCount(killsAircraft, aiGroundActor.InternalTypeName());
-                                        }
-                                        else
-                                        {
-                                            AddKillsCount(killsFliendlyAircraft, aiGroundActor.InternalTypeName());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void CreatePlayerStatLinq(ArrayList battleDamageVictims)
-        {
-            var damageInitiatorsArray = battleDamageVictims.ToArray().Where(x => x is AiActor).Select(x => Game.battleGetDamageInitiators(x as AiActor));
-            var playerDamageScores = damageInitiatorsArray.Select(x => x.ToArray().Where(y => y is DamagerScore && (y as DamagerScore).initiator != null && (y as DamagerScore).initiator.Player != null)).Select(z => z as DamagerScore);
-            var playerKillsAircraft = playerDamageScores.Where(x => x.initiator.Actor != null && x.initiator.Actor is AiAircraft && x.score > KillsScoreOver);
-            var playerKillsGround = playerDamageScores.Where(x => x.initiator.Actor != null && x.initiator.Actor is AiGroundActor && x.score > KillsScoreOver);
-            var playerDamageAircraft = playerDamageScores.Where(x => x.initiator.Actor != null && x.initiator.Actor is AiAircraft && x.score < KillsScoreOver);
-            var playerDamageGround = playerDamageScores.Where(x => x.initiator.Actor != null && x.initiator.Actor is AiGroundActor && x.score < KillsScoreOver);
-        }
-
-        private void CreatePlayerStat(Dictionary<string, List<DamagerScore>> actorDead)
+        private void CreatePlayerStat(Dictionary<string, List<DamagerScore>> actorDead, bool calcKillsScoreOver)
         {
             char[] split = new char[] { ActorDeadInfoSplitChar };
             var playerDamegedActor = actorDead.Where(x => x.Value.ToArray().Any(y => y.initiator != null && y.initiator.Player != null));
@@ -332,35 +298,137 @@ namespace IL2DCE.MissionObjectModel
                         {
                             double totalScore = item.Value.Sum(x => x.score);
                             double playerScore = item.Value.Where(x => x.initiator != null && x.initiator.Player != null).Sum(x => x.score);
-                            if (playerScore > totalScore * KillsScoreOver)
+                            if (calcKillsScoreOver)
                             {
-                                Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
-                                string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
-                                if (armyActor != Army)
-                                {   // Enemy kill
-                                    if (actorType == 0)
-                                    {
-                                        AddKillsCount(killsAircraft, typeName);
-                                    }
-                                    else
-                                    {
-                                        AddKillsCount(killsGroundUnit, typeName);
-                                    }
+                                if (playerScore > totalScore * KillsScoreOver)
+                                {
+                                    Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
+                                    string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
+                                    AddKillsCount(armyActor, actorType, typeName);
                                 }
-                                else
-                                {   // Friendly kill
-                                    if (actorType == 0)
-                                    {
-                                        AddKillsCount(killsFliendlyAircraft, typeName);
-                                    }
-                                    else
-                                    {
-                                        AddKillsCount(killsFliendlyGroundUnit, typeName);
-                                    }
+                            }
+                            else
+                            {
+                                AiDamageInitiator initiator = GetMaxDamagedInitiator(item.Value);
+                                if (initiator != null && initiator.Player != null)
+                                {
+                                    Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
+                                    string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
+                                    AddKillsCount(armyActor, actorType, typeName);
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+
+        private void CreatePlayerStat(ArrayList battleDamageVictims, bool calcKillsScoreOver)
+        {
+            Debug.WriteLine(string.Format("CreatePlayerStatKillsScoreOver(Count={0})", battleDamageVictims.Count));
+            IEnumerable<AiActor> actorDamageInitiatorsArray = battleDamageVictims.ToArray().Where(x => x is AiActor && !(x as AiActor).IsAlive()).Select(x => x as AiActor);
+            foreach (AiActor actor in actorDamageInitiatorsArray)
+            {
+                Debug.WriteLine("battleGetDamageVictims Actor={0} Army={1} IsValid={2} IsAlive={3}", actor.Army(), actor.Name(), actor.IsValid(), actor.IsAlive());
+                IEnumerable<DamagerScore> damages = Game.battleGetDamageInitiators(actor).ToArray().Where(x => x is DamagerScore).Select(x => x as DamagerScore);
+
+                if (calcKillsScoreOver)
+                {
+                    double totalScore = damages.Sum(x => x.score);
+                    double playerScore = damages.Where(x => x.initiator != null && x.initiator.Player != null).Sum(x => x.score);
+                    Debug.WriteLine("   PaylerScore/TotalScore=[{0}/{1}]", playerScore, totalScore);
+                    if (playerScore > totalScore * KillsScoreOver)
+                    {
+                        AddKillsCount(actor);
+                    }
+                }
+                else
+                {
+                    AiDamageInitiator initiator = GetMaxDamagedInitiator(damages);
+                    if (initiator != null && initiator.Player != null)
+                    {
+                        AddKillsCount(actor);
+                    }
+                }
+            }
+        }
+
+        private AiDamageInitiator GetMaxDamagedInitiator(IEnumerable<DamagerScore> damages)
+        {
+            AiDamageInitiator initiator = null;
+            double maxScore = 0;
+            IEnumerable<string> actors = damages.Where(x => !string.IsNullOrEmpty(GetName(x.initiator))).Select(x => x.initiator.Actor.Name()).Distinct();
+            foreach (string actor in actors)
+            {
+                var damageScores = damages.Where(x => string.Compare(x.initiator.Actor.Name(), actor) == 0);
+                double score = damageScores.Sum(x => x.score);
+                if (score > maxScore)
+                {
+                    maxScore = score;
+                    initiator = damageScores.FirstOrDefault().initiator;
+                }
+            }
+            return initiator;
+        }
+
+        private string GetName(AiDamageInitiator initiator)
+        {
+            return initiator.Actor != null ? initiator.Actor.Name() : initiator.Person != null ? initiator.Person.Name() : initiator.Player != null ? initiator.Player.Name() : initiator.Tool != null ? initiator.Tool.Name : string.Empty;
+        }
+
+        private void AddKillsCount(AiActor actor)
+        {
+            int armyActor = actor.Army();
+            if (actor is AiAircraft)
+            {
+                AiAircraft aiAircraft = actor as AiAircraft;
+                Debug.WriteLine("  AiAircraft: {0}={1}", aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name(): string.Empty);
+                if (armyActor != Army)
+                {
+                    AddKillsCount(killsAircraft, aiAircraft.InternalTypeName());
+                }
+                else
+                {
+                    AddKillsCount(killsFliendlyAircraft, aiAircraft.InternalTypeName());
+                }
+            }
+            else if (actor is AiGroundActor)
+            {
+                AiGroundActor aiGroundActor = actor as AiGroundActor;
+                Debug.WriteLine("  AiGroundActor: {0}={1}", aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name(): string.Empty);
+                if (armyActor != Army)
+                {
+                    AddKillsCount(killsGroundUnit, aiGroundActor.InternalTypeName());
+                }
+                else
+                {
+                    AddKillsCount(killsFliendlyGroundUnit, aiGroundActor.InternalTypeName());
+                }
+            }
+        }
+
+        private void AddKillsCount(int armyActor, int actorType, string typeName)
+        {
+            if (armyActor != Army)
+            {   // Enemy kill
+                if (actorType == 0)
+                {
+                    AddKillsCount(killsAircraft, typeName);
+                }
+                else
+                {
+                    AddKillsCount(killsGroundUnit, typeName);
+                }
+            }
+            else
+            {   // Friendly kill
+                if (actorType == 0)
+                {
+                    AddKillsCount(killsFliendlyAircraft, typeName);
+                }
+                else
+                {
+                    AddKillsCount(killsFliendlyGroundUnit, typeName);
                 }
             }
         }
@@ -403,7 +471,7 @@ namespace IL2DCE.MissionObjectModel
             return ToString(killsFliendlyGroundUnit, separator);
         }
 
-        public void UpdatePlayerStatsDefaultAPI(IPlayerStatTotal playerStats, DateTime dt, string separator = Config.CommaStr)
+        public void UpdatePlayerStatsDefaultAPI(IPlayerStatTotal playerStats, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
         {
             IGameSingle game = (Game as IGameSingle);
             IPlayer player = game.gameInterface.Player();
@@ -417,13 +485,28 @@ namespace IL2DCE.MissionObjectModel
             string killsTypes = ToStringkillsTypes(st.killsTypes, separator);
             if (!string.IsNullOrEmpty(killsTypes))
             {
-                if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                if (string.IsNullOrEmpty(valueSummary))
                 {
-                    playerStats.KillsHistory[dt.Date] += separator + killsTypes;
+                    if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                    {
+                        playerStats.KillsHistory[dt.Date] += separator + killsTypes;
+                    }
+                    else
+                    {
+                        playerStats.KillsHistory.Add(dt.Date, killsTypes);
+                    }
                 }
                 else
                 {
-                    playerStats.KillsHistory.Add(dt.Date, killsTypes);
+                    string val = string.Format("{0}|{1}", valueSummary, killsTypes);
+                    if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                    {
+                        playerStats.KillsHistory[dt.Date] += separator + val;
+                    }
+                    else
+                    {
+                        playerStats.KillsHistory.Add(dt.Date, val);
+                    }
                 }
             }
         }
@@ -432,7 +515,7 @@ namespace IL2DCE.MissionObjectModel
         {
             if (statType == EPlayerStatsType.Api)
             {
-                UpdatePlayerStatsDefaultAPI(playerStatTotal, dt);
+                UpdatePlayerStatsDefaultAPI(playerStatTotal, dt, valueSummary, separator);
             }
             else
             {
@@ -506,17 +589,17 @@ namespace IL2DCE.MissionObjectModel
             StringBuilder sbHistory = new StringBuilder();
             List<DateTime> dtList = playerStatTotal.KillsHistory.Keys.ToList();
             dtList.AddRange(playerStatTotal.KillsGroundHistory.Keys);
-            var orderd = dtList.OrderByDescending(x => x.Date);
+            var orderd = dtList.Distinct().OrderByDescending(x => x.Date);
             foreach (var item in orderd)
             {
                 if (playerStatTotal.KillsHistory.ContainsKey(item))
                 {
-                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, FormatingDisplayKillsHistoryValue(playerStatTotal.KillsHistory[item], separator));
+                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, KeyAircraft, FormatingDisplayKillsHistoryValue(playerStatTotal.KillsHistory[item], separator));
                     sbHistory.AppendLine();
                 }
                 if (playerStatTotal.KillsGroundHistory.ContainsKey(item))
                 {
-                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, FormatingDisplayKillsHistoryValue(playerStatTotal.KillsGroundHistory[item], separator));
+                    sbHistory.AppendFormat(DateTimeFormatInfo.InvariantInfo, formatHistory, item, KeyGroundUnit, FormatingDisplayKillsHistoryValue(playerStatTotal.KillsGroundHistory[item], separator));
                     sbHistory.AppendLine();
                 }
             }

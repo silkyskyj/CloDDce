@@ -63,28 +63,29 @@ namespace IL2DCE.Pages
 
             _game = play as IGame;
 
-            (FE.FindName("Back") as Button).Click += new RoutedEventHandler(Back_Click);
-            (FE.FindName("ReFly") as Button).Click += new RoutedEventHandler(ReFly_Click);
-            (FE.FindName("Fly") as Button).Click += new RoutedEventHandler(Fly_Click);
-
-            TextBox textBoxDescription = FE.FindName("textBoxDescription") as TextBox;
-            TextBox textBoxSlide = FE.FindName("textBoxSlide") as TextBox;
-            FontFamily fontFamiry = new FontFamily(Config.DefaultFixedFontName);
-            textBoxDescription.FontFamily = fontFamiry;
-            textBoxDescription.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            textBoxDescription.MinHeight = 800;
-            textBoxDescription.UpdateLayout();
-            textBoxSlide.FontFamily = fontFamiry;
-            textBoxSlide.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            textBoxSlide.MinWidth = 940;
-            textBoxSlide.MinHeight = 940;
-            textBoxSlide.UpdateLayout();
-
             Config config = Game.Core.Config;
             Career career = Game.Core.CurrentCareer;
             Mission.Mission mission = Game.Core.Mission as Mission.Mission;
+
             try
             {
+                (FE.FindName("Back") as Button).Click += new RoutedEventHandler(Back_Click);
+                (FE.FindName("ReFly") as Button).Click += new RoutedEventHandler(ReFly_Click);
+                (FE.FindName("Fly") as Button).Click += new RoutedEventHandler(Fly_Click);
+
+                TextBox textBoxDescription = FE.FindName("textBoxDescription") as TextBox;
+                TextBox textBoxSlide = FE.FindName("textBoxSlide") as TextBox;
+                FontFamily fontFamiry = new FontFamily(Config.DefaultFixedFontName);
+                textBoxDescription.FontFamily = fontFamiry;
+                textBoxDescription.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                textBoxDescription.MinHeight = 800;
+                textBoxDescription.UpdateLayout();
+                textBoxSlide.FontFamily = fontFamiry;
+                textBoxSlide.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                textBoxSlide.MinWidth = 940;
+                textBoxSlide.MinHeight = 940;
+                textBoxSlide.UpdateLayout();
+
                 PlayerStat = new PlayerStats(Game, career.ArmyIndex, mission != null ? mission.PlayerActorName : string.Empty, config.StatKillsOver);
                 EPlayerStatsType type = Enum.IsDefined(typeof(EPlayerStatsType), config.StatType) ? (EPlayerStatsType)config.StatType : EPlayerStatsType.Api;
                 StatType = PlayerStat.Create(type, mission != null ? mission.ActorDead : null);

@@ -123,6 +123,11 @@ namespace IL2DCE.MissionObjectModel
             PilotNameDefault = pilotDefaultname;
             Ranks = ranks;
         }
+
+        public static bool IsTrust(int army, int airForce)
+        {
+            return airForce >= 1 && ((army == (int)EArmy.Red && airForce <= (int)EAirForceRed.Usaaf) || (army == (int)EArmy.Blue && airForce <= (int)EAirForceBlue.Ra));
+        }
     }
 
     public class AirForces : List<AirForce>

@@ -214,7 +214,7 @@
   SetOnPark 0
   Briefing BoB_RAF_F_92Sqn_Late.01
 [BoB_RAF_F_92Sqn_Late.01_Way]
-  TAKEOFF 53907.75 37673.29 0 0
+  NORMFLY 53907.75 37673.29 500.00 300.00
   NORMFLY 53099.54 36763.17 500.00 300.00
 [gb01_Late.21]
   VirtualAirGroupKey BoB_RAF_F_350Sqn_Late
@@ -516,4 +516,4 @@
   NORMFLY 16555.71 42022.70 500.00 300.00
 [Aircraft]
   RandomRed Aircraft.AnsonMkI Aircraft.DefiantMkI Aircraft.SunderlandMkI Aircraft.WalrusMkI tobruk:Aircraft.SunderlandMkI_Trop tobruk:Aircraft.WalrusMkI_Trop
-  RandomBlue Aircraft.Bf-108B-2 Aircraft.Do-17Z-1 Aircraft.Do-17Z-2 Aircraft.Do-215B-1 Aircraft.FW-200C-1 Aircraft.He-115B-2 tobruk:Aircraft.Bf-108B-2_Trop
+  RandomBlue Aircraft.Do-17Z-1 Aircraft.Do-17Z-2 Aircraft.Do-215B-1 Aircraft.FW-200C-1 Aircraft.He-115B-2

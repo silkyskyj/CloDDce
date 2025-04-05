@@ -830,7 +830,7 @@ namespace IL2DCE
 
         public string ToStringTotalResult()
         {
-            return PlayerStats.ToStringTotalResult(this, PlayerStats.PlayerStatTotalFormat, " {0:d}\n  {1}", "\n  ");
+            return PlayerStats.ToStringTotalResult(this, PlayerStats.PlayerStatTotalFormat, " {0:d} {1}\n  {2}", "\n  ");
         }
     }
 }

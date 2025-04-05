@@ -81,7 +81,7 @@ Sample mission (7 mission files)
 [*]Requires Tobruk DLC
 
 I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
-OS: Windows 10 X64 Home (Development) latest official MS patch
+OS: Windows 10 x64 Home (Development) latest official MS patch
     Windows 11 Home (Test & Play) latest official MS patch
 Software: IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings(DLC) - English Langauage
 Display Resolution: 1920x1080
@@ -103,7 +103,7 @@ History
   Ver      Date       Comment
 
   0.5.10   04/05/2025 Added: AI Air Group Skill selection. Stats view in Dynamic Quick Mission Page. Royal Netherlands Air Force and Belgian Air Component in Select AirForce. 
-                      Fixed: if ther aircraft moves while stopped at the airport, the time until re-fuel(re-arm) is shorter. If an exception occurs while displaying Result page, game cannot be continued. Changed: Stats display Format.
+                      Fixed: if ther aircraft moves while stopped at the airport, the time until re-fuel(re-arm) is shorter. If an exception occurs while displaying Result page, game cannot be continued. Changed: Stats display Format & Option(conf.ini).
   0.5.9    03/30/2025 Fixed: After the change in v0.5.6, the speed becomes 0 when starting with AirStart. Reviewed the logic of Ground Operation and fixed related items in mission import.
   0.5.8    03/30/2025 Fixed: The name of Blue amry Armor replaced by default was incorrect. when use PreLoad button, the page to become unstable. Stats are not displayed with statType option 1.
   0.5.7    03/29/2025 Fixed: Fixed: Depending on the position of the FrontMarker, the random spawn localtion may continue to process infinitely.

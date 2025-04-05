@@ -302,7 +302,11 @@ namespace IL2DCE
                 Debug.WriteLine("Mission.OnActorDead({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6}))",
                     missionNumber, shortName, actor.Name(),
                         // string.Join("|", damages.Where(x => x.initiator != null && x.initiator.Player != null).Select(x => string.Format("{0}[{1}]", x.score, x.initiator.Player.Name()))),
-                        string.Join("|", damages.Where(x => x.initiator != null).Select(x => string.Format("{0}[{1}]", x.score, x.initiator.Player != null ? x.initiator.Player.Name() : x.initiator.Person != null ? x.initiator.Person.Name() : string.Empty))),
+                        string.Join("|", damages.Where(x => x.initiator != null).Select(x => string.Format("{0}[Actor={1}, Player={2}, Person={3}, Tool={4}]", x.score, 
+                                                                                                                                x.initiator.Actor != null ? x.initiator.Actor.Name(): string.Empty, 
+                                                                                                                                x.initiator.Player != null ? x.initiator.Player.Name() : string.Empty, 
+                                                                                                                                x.initiator.Person != null ? x.initiator.Person.Name() : string.Empty,
+                                                                                                                                x.initiator.Tool != null ? x.initiator.Tool.Name: string.Empty))),
                         actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete());
                 base.OnActorDead(missionNumber, shortName, actor, damages);
 
@@ -312,7 +316,7 @@ namespace IL2DCE
                                                 actor.Army(), PlayerStats.ActorDeadInfoSplitChar,                   // Army
                                                 actor is AiAircraft ? 0 : 1, PlayerStats.ActorDeadInfoSplitChar,    // ActorType
                                                 shortName, PlayerStats.ActorDeadInfoSplitChar,                      // Actor Name
-                                                (actor as AiCart).InternalTypeName());                  // Actor Type Name
+                                                (actor as AiCart).InternalTypeName());                              // Actor Type Name
                     if (ActorDead.ContainsKey(key))
                     {
                         ActorDead[key].AddRange(damages);

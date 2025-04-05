@@ -1798,8 +1798,8 @@ namespace IL2DCE.Generator
                     AircraftParametersInfo aircraftParametersInfo = aircraftParametersInfos[Random.Next(aircraftParametersInfos.Count)];
                     AircraftLoadoutInfo aircraftLoadoutInfo = aircraftInfo.GetAircraftLoadoutInfo(aircraftParametersInfo.LoadoutId);
                     IEnumerable<AirGroupInfo> airGroupInfos =
-                        (airGroupInfos = airGroupInfosLocal != null ? airGroupInfosLocal.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army) : new AirGroupInfo[0]).Any() ?
-                            airGroupInfos : AirGroupInfos.Default.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army);
+                        (airGroupInfos = airGroupInfosLocal != null ? airGroupInfosLocal.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army && AirForce.IsTrust(x.ArmyIndex, x.AirForceIndex)) : new AirGroupInfo[0]).Any() ?
+                            airGroupInfos : AirGroupInfos.Default.GetAirGroupInfoAircraft(aircrftClass).Where(x => x.ArmyIndex == army && AirForce.IsTrust(x.ArmyIndex, x.AirForceIndex));
                     if (airGroupInfos.Any())
                     {
                         AirGroupInfo airGroupInfo = airGroupInfos.ElementAt(Random.Next(airGroupInfos.Count()));
