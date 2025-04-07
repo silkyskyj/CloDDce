@@ -633,8 +633,15 @@ namespace IL2DCE
                         Skill skill;
                         if (Skill.TryParse(value, out skill))
                         {
-                            skill.Name = key;
-                            skills.Add(skill);
+                            if (Skill.EqualsValue(skill, Skill.Default))
+                            {
+                                skills.Add(Skill.Default);
+                            }
+                            else if (!Skill.EqualsValue(skill, Skill.Random))
+                            {
+                                skill.Name = key;
+                                skills.Add(skill);
+                            }
                         }
                     }
                     PlayerAirGroupSkill = skills.ToArray();
@@ -731,7 +738,7 @@ namespace IL2DCE
                 int i = 0;
                 foreach (var item in PlayerAirGroupSkill)
                 {
-                    careerFile.add(SectionSkill, string.IsNullOrWhiteSpace(item.Name) ? string.Format(Config.NumberFormat, "{0}{1}", SectionSkill, i++) : item.Name, item.ToString());
+                    careerFile.add(SectionSkill, string.Format(Config.NumberFormat, "{0}{1}", SectionSkill, i++), item.ToString());
                 }
             }
         }

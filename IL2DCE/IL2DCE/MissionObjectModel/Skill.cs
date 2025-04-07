@@ -84,6 +84,9 @@ namespace IL2DCE.MissionObjectModel
             Count,
         }
 
+        public static readonly float[] DefaultValue = new float[] { -2.0f, -2.0f, -2.0f, -2.0f, -2.0f, -2.0f, -2.0f, -2.0f, };
+        public static readonly float[] RandomValue = new float[] { -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, };
+
         public static readonly float[][] SystemSkillValue = new float[(int)ESystemType.Count][]
         {
             new float [] { 0.79f, 0.26f, 0.26f, 0.16f, 0.16f, 0.26f, 0.37f, 0.26f, },    // Rookie 
@@ -116,8 +119,8 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
         };
 
-        public static readonly Skill Default = new Skill() { Name = SkillNameDefault };
-        public static readonly Skill Random = new Skill() { Name = SkillNameRandom };
+        public static readonly Skill Default = new Skill(DefaultValue, SkillNameDefault);
+        public static readonly Skill Random = new Skill(RandomValue, SkillNameRandom);
 
         public static readonly Skill[] SystemSkills = new Skill[(int)ESystemType.Count]
         {
