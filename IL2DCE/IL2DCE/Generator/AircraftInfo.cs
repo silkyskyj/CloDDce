@@ -167,8 +167,8 @@ namespace IL2DCE.Generator
         public void Write(ISectionFile file)
         {
             SilkySkyCloDFile.Write(file, SectionMain, Aircraft, string.Empty, true);
-            SilkySkyCloDFile.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(CultureInfo.InvariantCulture.NumberFormat), true);
-            SilkySkyCloDFile.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(CultureInfo.InvariantCulture.NumberFormat), true);
+            SilkySkyCloDFile.Write(file, Aircraft, KeyPlayer, (IsFlyable ? 1 : 0).ToString(Config.NumberFormat), true);
+            SilkySkyCloDFile.Write(file, Aircraft, KeyType, ((int)AircraftType).ToString(Config.NumberFormat), true);
             int lines = _aircraftInfoFile.lines(Aircraft);
             for (int i = 0; i < lines; i++)
             {

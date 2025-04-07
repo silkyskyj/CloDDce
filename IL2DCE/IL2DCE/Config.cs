@@ -61,7 +61,9 @@ namespace IL2DCE
         public const string DebugMissionFileName = "IL2DCEDebug.mis";
         public const string DebugBriefingFileName = "IL2DCEDebug.briefing";
         public const string DebugMissionScriptFileName = "IL2DCEDebug.cs";
-        public const string RecordExt = ".trk";
+        public const string RecordFileExt = ".trk";
+        public const string MissionFileExt = ".mis";
+        public const string ScriptFileExt = ".cs";
 
         public const string SectionMain = "Main";
         public const string SectionCore = "Core";
@@ -82,6 +84,8 @@ namespace IL2DCE
         public const string KeyProcessTimeReArm = "ProcessTimeReArm";
         public const string KeyProcessTimeReFuel = "ProcessTimeReFuel";
         public const string KeyKillsHistoryMax = "KillsHistoryMax";
+        public const string KeyRandomTimeBegin = "RandomTimeBegin";
+        public const string KeyRandomTimeEnd = "RandomTimeEnd";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Convert.log";
@@ -281,9 +285,22 @@ namespace IL2DCE
             private set;
         }
 
-        public static CultureInfo Culture = new CultureInfo("en-US", true);
-        public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
+        public int RandomTimeBegin
+        {
+            get;
+            private set;
+        }
 
+        public int RandomTimeEnd
+        {
+            get;
+            private set;
+        }
+
+        // public static CultureInfo Culture = new CultureInfo("en-US", true);
+        public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
+        public static DateTimeFormatInfo DateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
+        
         public static Version Version
         {
             get;
@@ -327,43 +344,43 @@ namespace IL2DCE
             if (confFile.exist(SectionCore, "additionalAirOperations"))
             {
                 string value = confFile.get(SectionCore, "additionalAirOperations");
-                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _additionalAirOperations);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _additionalAirOperations);
             }
 
             if (confFile.exist(SectionCore, "additionalGroundOperations"))
             {
                 string value = confFile.get(SectionCore, "additionalGroundOperations");
-                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _additionalGroundOperations);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _additionalGroundOperations);
             }
 
             if (confFile.exist(SectionCore, "flightSize"))
             {
                 string value = confFile.get(SectionCore, "flightSize");
-                double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _flightSize);
+                double.TryParse(value, NumberStyles.Float, NumberFormat, out _flightSize);
             }
 
             if (confFile.exist(SectionCore, "flightCount"))
             {
                 string value = confFile.get(SectionCore, "flightCount");
-                double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _flightCount);
+                double.TryParse(value, NumberStyles.Float, NumberFormat, out _flightCount);
             }
 
             if (confFile.exist(SectionCore, "debug"))
             {
                 string value = confFile.get(SectionCore, "debug");
-                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _debug);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _debug);
             }
 
             if (confFile.exist(SectionCore, "statType"))
             {
                 string value = confFile.get(SectionCore, "statType");
-                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _statType);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _statType);
             }
 
             if (confFile.exist(SectionCore, "statKillsOver"))
             {
                 string value = confFile.get(SectionCore, "statKillsOver");
-                double.TryParse(value, NumberStyles.Any, Culture, out _statKillsOver);
+                double.TryParse(value, NumberStyles.Float, NumberFormat, out _statKillsOver);
             }
 
             ProcessTimeReArm = confFile.get(SectionCore, KeyProcessTimeReArm, DefaultProcessTimeReArm);
@@ -372,7 +389,7 @@ namespace IL2DCE
             if (confFile.exist(SectionCore, "statType"))
             {
                 string value = confFile.get(SectionCore, "statType");
-                int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out _statType);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _statType);
             }
 
             if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFileName))
@@ -486,6 +503,8 @@ namespace IL2DCE
             EnableMissionMultiAssign = confFile.get(SectionCore, KeyEnableMissionMultiAssign, 0) == 1;
 
             KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, KillsHistoryMaxDefault);
+            RandomTimeBegin = confFile.get(SectionCore, KeyRandomTimeBegin, (int)MissionTime.Begin);
+            RandomTimeEnd = confFile.get(SectionCore, KeyRandomTimeEnd, (int)MissionTime.End);
         }
     }
 }

@@ -16,13 +16,13 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
+using IL2DCE.Pages.Controls;
 using maddox.game;
 using maddox.game.play;
 using maddox.GP;
@@ -33,6 +33,8 @@ namespace IL2DCE.Pages
     public class CareerIntroPage : PageDefImpl
     {
         #region Definition
+
+        private const string MissionDefaultFormat = "Mission Default: {0}";
 
         public class PageArgs
         {
@@ -169,6 +171,34 @@ namespace IL2DCE.Pages
             set;
         }
 
+        private Skill SelectedSkill
+        {
+            get
+            {
+                ComboBoxItem selected = FrameworkElement.comboBoxSelectSkill.SelectedItem as ComboBoxItem;
+                if (selected != null && selected.Tag != null)
+                {
+                    return (Skill)selected.Tag;
+                }
+
+                return null;
+            }
+        }
+
+        private ECampaignProgress SelectedProgress
+        {
+            get
+            {
+                ComboBoxItem selected = FrameworkElement.comboBoxSelectProgress.SelectedItem as ComboBoxItem;
+                if (selected != null)
+                {
+                    return (ECampaignProgress)selected.Tag;
+                }
+
+                return ECampaignProgress.Daily;
+            }
+        }
+
         #endregion
 
         #region Variable
@@ -190,9 +220,10 @@ namespace IL2DCE.Pages
             FrameworkElement.textBoxPilotName.TextChanged += new TextChangedEventHandler(textBoxPilotName_TextChanged);
             FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
             FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
-            FrameworkElement.comboBoxSelectAirGroup.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirGroup_SelectionChanged);
+            FrameworkElement.comboBoxSelectSkill.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectSkill_SelectionChanged);
             FrameworkElement.datePickerStart.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerStart_SelectedDateChanged);
             FrameworkElement.datePickerEnd.SelectedDateChanged += new System.EventHandler<SelectionChangedEventArgs>(datePickerEnd_SelectedDateChanged);
+            FrameworkElement.comboBoxSelectProgress.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectProgress_SelectionChanged);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxSelectionChangedEvent += new SelectionChangedEventHandler(GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxTextChangedEvent += new TextChangedEventHandler(GeneralSettingsGroupBox_ComboBoxTextChangedEvent);
             FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
@@ -213,6 +244,7 @@ namespace IL2DCE.Pages
             UpdateAirForceComboBoxInfo(pageArgs != null ? pageArgs.AirForce : -1);
             UpdateCampaignComboBoxInfo();
             UpdateCampaignComboBoxFilter();
+            UpdateProgressComboBoxInfo();
         }
 
         public override void _leave(maddox.game.IGame play, object arg)
@@ -276,8 +308,19 @@ namespace IL2DCE.Pages
 
         private void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            UpdateSkillComboBoxInfo();
+            UpdateSkillComboBoxSkillValueInfo();
             UpdateAircraftImage();
             UpdateButtonStatus();
+        }
+
+
+        private void comboBoxSelectSkill_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // if (e.AddedItems.Count > 0)
+            {
+                UpdateSkillComboBoxSkillValueInfo();
+            }
         }
 
         private void GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent(object sender, SelectionChangedEventArgs e)
@@ -294,6 +337,13 @@ namespace IL2DCE.Pages
             {
                 UpdateButtonStatus();
             }
+        }
+
+        private void comboBoxSelectProgress_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.Visibility 
+                = SelectedProgress == ECampaignProgress.AnyTime || SelectedProgress == ECampaignProgress.AnyDayAnyTime ? Visibility.Hidden: Visibility.Visible;
+            UpdateButtonStatus();
         }
 
         #endregion
@@ -392,6 +442,7 @@ namespace IL2DCE.Pages
             int rankIndex = SelectedRank;
             CampaignInfo campaign = SelectedCampaign;
             AirGroup airGroup = SelectedAirGroup;
+            GeneralSettingsGroupBox generalSettings = FrameworkElement.GeneralSettingsGroupBox;
 
             try
             {
@@ -402,24 +453,26 @@ namespace IL2DCE.Pages
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
                 career.Aircraft = aircraftInfo.DisplayName;
+                career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? new Skill[] { SelectedSkill } : null;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
-                career.AdditionalAirOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirOperations;
-                career.AdditionalGroundOperations = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperations;
-                career.AdditionalAirGroups = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalAirGroups;
-                career.SpawnRandomLocationFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationFriendly;
-                career.SpawnRandomLocationEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationEnemy;
-                career.SpawnRandomLocationPlayer = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomLocationPlayer;
-                career.SpawnRandomAltitudeFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomAltitudeFriendly;
-                career.SpawnRandomAltitudeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomAltitudeEnemy;
-                career.SpawnRandomTimeFriendly = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
-                career.SpawnRandomTimeEnemy = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy;
-                career.SpawnRandomTimeBeginSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBegin;
-                career.SpawnRandomTimeEndSec = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEnd;
-                career.ReArmTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
-                career.ReFuelTime = FrameworkElement.GeneralSettingsGroupBox.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
-                career.TrackRecording = FrameworkElement.GeneralSettingsGroupBox.SelectedTrackRecoding;
-                career.AISkill = FrameworkElement.GeneralSettingsGroupBox.SelecteAISkill;
+                career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
+                career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
+                career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
+                career.SpawnRandomLocationFriendly = generalSettings.SelectedSpawnRandomLocationFriendly;
+                career.SpawnRandomLocationEnemy = generalSettings.SelectedSpawnRandomLocationEnemy;
+                career.SpawnRandomLocationPlayer = generalSettings.checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible ? generalSettings.SelectedSpawnRandomLocationPlayer: false;
+                career.SpawnRandomAltitudeFriendly = generalSettings.SelectedSpawnRandomAltitudeFriendly;
+                career.SpawnRandomAltitudeEnemy = generalSettings.SelectedSpawnRandomAltitudeEnemy;
+                career.SpawnRandomTimeFriendly = generalSettings.SelectedSpawnRandomTimeFriendly;
+                career.SpawnRandomTimeEnemy = generalSettings.SelectedSpawnRandomTimeEnemy;
+                career.SpawnRandomTimeBeginSec = generalSettings.SelectedRandomTimeBegin;
+                career.SpawnRandomTimeEndSec = generalSettings.SelectedRandomTimeEnd;
+                career.ReArmTime = generalSettings.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
+                career.ReFuelTime = generalSettings.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
+                career.TrackRecording = generalSettings.SelectedTrackRecoding;
+                career.AISkill = generalSettings.SelecteAISkill;
+                career.CampaignProgress = SelectedProgress;
 
                 Game.Core.AvailableCareers.Add(career);
                 Game.Core.CurrentCareer = career;
@@ -662,9 +715,68 @@ namespace IL2DCE.Pages
             {
                 aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
             }
-            return string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} ({1}){2}{3}",
+            return string.Format(Config.NumberFormat, "{0} ({1}){2}{3}",
                     airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]" : string.IsNullOrEmpty(airportName) ? string.Empty : string.Format(" [{0}]", airportName),
-                    distance >= 0 ? string.Format(CultureInfo.InvariantCulture.NumberFormat, " {0:F2}km", distance / 1000) : string.Empty);
+                    distance >= 0 ? string.Format(Config.NumberFormat, " {0:F2}km", distance / 1000) : string.Empty);
+        }
+
+        private void UpdateSkillComboBoxInfo()
+        {
+            ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
+            string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+
+            if (comboBox.Items.Count == 0)
+            {
+                comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Default, Content = Skill.Default.Name });
+                comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Random, Content = Skill.Random.Name });
+                Config config = Game.Core.Config;
+                config.Skills.ForEach(x => comboBox.Items.Add(new ComboBoxItem() { Tag = x, Content = x.Name }));
+            }
+
+            string defaultString = string.Empty;
+            if (SelectedAirGroup != null)
+            {
+                AirGroup airGroup = SelectedAirGroup;
+                Skill skill = string.IsNullOrEmpty(airGroup.Skill) ? null : Skill.Parse(airGroup.Skill);
+                defaultString = string.Format(MissionDefaultFormat, airGroup.Skills != null && airGroup.Skills.Count > 0 ?
+                                Skill.SkillNameMulti : skill != null ? skill.IsTyped() ? skill.GetTypedName() : Skill.SkillNameCustom : string.Empty);
+            }
+            FrameworkElement.labelDefaultSkill.Content = defaultString;
+
+            EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
+        }
+
+        private void UpdateSkillComboBoxSkillValueInfo()
+        {
+            ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
+            ToolTip toolTip = comboBox.ToolTip as ToolTip;
+            if (toolTip == null)
+            {
+                comboBox.ToolTip = toolTip = new ToolTip();
+                toolTip.FontFamily = new FontFamily("Consolas");
+            }
+            string str = string.Empty;
+            Skill skill = SelectedSkill;
+            if (skill != null)
+            {
+                if (skill == Skill.Default)
+                {
+                    AirGroup airGroup = SelectedAirGroup;
+                    if (airGroup != null)
+                    {
+                        str = airGroup.Skills.Count > 0 ? string.Join("\n\n", airGroup.Skills.Values.Select(x => Skill.ToDetailString(x))) : airGroup.Skill != null ? Skill.ToDetailString(airGroup.Skill) : string.Empty;
+                    }
+                }
+                else if (skill == Skill.Random)
+                {
+                    str = "Randomly determined";
+                }
+                else
+                {
+                    str = skill.ToDetailString();
+                }
+            }
+            toolTip.Content = str;
         }
 
         private void UpdateDataPicker()
@@ -677,21 +789,55 @@ namespace IL2DCE.Pages
             }
         }
 
+        private void UpdateProgressComboBoxInfo()
+        {
+            ComboBox comboBox = FrameworkElement.comboBoxSelectProgress;
+            for (ECampaignProgress i = ECampaignProgress.Daily; i < ECampaignProgress.Count; i++)
+            {
+                comboBox.Items.Add(
+                    new ComboBoxItem()
+                    {
+                        Tag = i,
+                        Content = i.ToDescription(),
+                    });
+            }
+            comboBox.Text = ECampaignProgress.AnyDayAnyTime.ToDescription();
+        }
+
         private void UpdateAircraftImage()
         {
             AirGroup airGroup = SelectedAirGroup;
             FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
         }
 
+        private void EnableSelectItem(ComboBox comboBox, string selected, bool forceDisable = false)
+        {
+            if (!forceDisable && comboBox.Items.Count > 0)
+            {
+                comboBox.IsEnabled = true;
+                comboBox.Text = selected;
+                if (!comboBox.IsEditable && comboBox.SelectedIndex == -1)
+                {
+                    comboBox.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                comboBox.IsEnabled = false;
+                comboBox.SelectedIndex = -1;
+            }
+        }
+
         private void UpdateButtonStatus()
         {
+            GeneralSettingsGroupBox generalSettings = FrameworkElement.GeneralSettingsGroupBox;
             // string pilotName = FrameworkElement.textBoxPilotName.Text;
             DatePicker datePickerStart = FrameworkElement.datePickerStart;
             DatePicker datePickerEnd = FrameworkElement.datePickerEnd;
-            int addGroundOpe = FrameworkElement.GeneralSettingsGroupBox.SelectedAdditionalGroundOperations;
-            int timeBegin = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeBegin;
-            int timeEnd = FrameworkElement.GeneralSettingsGroupBox.SelectedRandomTimeEnd;
-            bool timeEnable = FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeEnemy || FrameworkElement.GeneralSettingsGroupBox.SelectedSpawnRandomTimeFriendly;
+            int addGroundOpe = generalSettings.SelectedAdditionalGroundOperations;
+            int timeBegin = generalSettings.SelectedRandomTimeBegin;
+            int timeEnd = generalSettings.SelectedRandomTimeEnd;
+            bool timeEnable = generalSettings.SelectedSpawnRandomTimeEnemy || generalSettings.SelectedSpawnRandomTimeFriendly;
             FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 && 
                                                 !IsErrorPilotName/*!Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0)*/ &&
                                                 SelectedCampaign != null && SelectedAirGroup != null &&

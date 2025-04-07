@@ -75,10 +75,10 @@ namespace IL2DCE.MissionObjectModel
                         double y;
                         double z;
                         double v;
-                        if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
-                            double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
-                            double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z) &&
-                            double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
+                        if (double.TryParse(key, NumberStyles.Float, Config.NumberFormat, out x) &&
+                            double.TryParse(match.Groups[1].Value, NumberStyles.Float, Config.NumberFormat, out y) &&
+                            double.TryParse(match.Groups[2].Value, NumberStyles.Float, Config.NumberFormat, out z) &&
+                            double.TryParse(match.Groups[5].Value, NumberStyles.Float, Config.NumberFormat, out v))
                         {
                             return new GroundGroupWaypointLine(x, y, z, v);
                         }
@@ -92,9 +92,9 @@ namespace IL2DCE.MissionObjectModel
                         double x;
                         double y;
                         double z;
-                        if (double.TryParse(key, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
-                            double.TryParse(match.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
-                            double.TryParse(match.Groups[2].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out z))
+                        if (double.TryParse(key, NumberStyles.Float, Config.NumberFormat, out x) &&
+                            double.TryParse(match.Groups[1].Value, NumberStyles.Float, Config.NumberFormat, out y) &&
+                            double.TryParse(match.Groups[2].Value, NumberStyles.Float, Config.NumberFormat, out z))
                         {
                             return new GroundGroupWaypointLine(x, y, z, null);
                         }

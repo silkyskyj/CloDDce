@@ -31,7 +31,7 @@ namespace IL2DCE.Generator
 {
     class GeneratorAirOperation
     {
-        #region definition
+        #region Definition
 
         private const float SpawnRangeInflateRate = 1.33f;
         private const int MaxSpawnDifDistanceAirstart = 500;
@@ -1435,7 +1435,7 @@ namespace IL2DCE.Generator
 
         private void SetSkill(AirGroup airGroup, EAircraftType aircraftType, Skill[] skill)
         {
-            if (skill != null)
+            if (skill != null && skill.Length > 0)
             {
                 if (skill.Length == 1)
                 {
@@ -1448,6 +1448,7 @@ namespace IL2DCE.Generator
                 else
                 {
                     airGroup.Skill = string.Empty;
+                    airGroup.Skills.Clear();
                     int s = 0;
                     for (int i = 0; i < airGroup.Flights.Count(); i++)
                     {
@@ -1809,11 +1810,11 @@ namespace IL2DCE.Generator
                         {
                             string airGroupKey = airGroupInfo.AirGroupKeys[Random.Next(airGroupInfo.AirGroupKeys.Count)];
                             int airSquadron = Random.Next(airGroupInfo.SquadronCount);
-                            airGroupSquadron = string.Format(CultureInfo.InvariantCulture.NumberFormat, AirGroup.SquadronFormat, airGroupKey, airSquadron);
+                            airGroupSquadron = string.Format(Config.NumberFormat, AirGroup.SquadronFormat, airGroupKey, airSquadron);
                         }
                         while (airGroups.Any(x => string.Compare(x.ToString(), airGroupSquadron) == 0) && reTry++ <= MaxRetryCreateOneAirGroup);
                         reTries += reTry;
-                        string id = string.Format("{0}{1}", airGroupSquadron, 0.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                        string id = string.Format("{0}{1}", airGroupSquadron, 0.ToString(Config.NumberFormat));
                         Point3d point = CreateRandomPoint(ref (army == (int)EArmy.Red ? ref rangeRed : ref rangeBlue),
                                                             aircraftParametersInfo.MinAltitude != null ? (int)aircraftParametersInfo.MinAltitude.Value : Spawn.SelectStartAltitude,
                                                             aircraftParametersInfo.MaxAltitude != null ? (int)aircraftParametersInfo.MaxAltitude.Value : Spawn.SelectEndAltitude);

@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using IL2DCE.MissionObjectModel;
@@ -33,7 +32,7 @@ namespace IL2DCE
         abstract public class Mission : AMission
         {
 
-            #region definition 
+            #region Definition 
 
             private const int ProcSecInterval = 25;
             private const string MsgProcFormat = "{0}{1} {2}";
@@ -186,7 +185,7 @@ namespace IL2DCE
                 Career career = Core.CurrentCareer;
                 if (career.TrackRecording && !Game.gameInterface.TrackRecording())
                 {
-                    string trackFile = string.Format("{0}/{1}_{2}{3}", Config.RecordFolder, career.CampaignInfo.Id, DateTime.Now.ToString("yyyyMMdd_HHmmss"), Config.RecordExt);
+                    string trackFile = string.Format("{0}/{1}_{2}{3}", Config.RecordFolder, career.CampaignInfo.Id, DateTime.Now.ToString("yyyyMMdd_HHmmss"), Config.RecordFileExt);
                     Game.gameInterface.TrackRecordStart(Game.gameInterface.ToFileSystemPath(trackFile));
                 }
             }
@@ -557,7 +556,7 @@ namespace IL2DCE
                                         }
                                         else
                                         {
-                                            msg.AppendFormat(CultureInfo.InvariantCulture.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgBulletsReArm, waitSec);
+                                            msg.AppendFormat(Config.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgBulletsReArm, waitSec);
                                         }
 
                                         int minFuelPer = aircraft.GetMinimumFuelInPercent();
@@ -571,7 +570,7 @@ namespace IL2DCE
                                             }
                                             else
                                             {
-                                                msg.AppendFormat(CultureInfo.InvariantCulture.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgReFuel, waitSec);
+                                                msg.AppendFormat(Config.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgReFuel, waitSec);
                                             }
                                         }
 

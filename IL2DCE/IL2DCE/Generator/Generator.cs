@@ -207,7 +207,7 @@ namespace IL2DCE.Generator
                 // For waterways only the end must be in friendly territory.
                 if (army == (int)EArmy.Red)
                 {
-                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(Config.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For red army        // Armor.Cruiser_Mk_IVA nn /num_units 8
@@ -216,7 +216,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue)
                 {
-                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(Config.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For blue army        // Armor.Pz_35t nn /num_units 8
@@ -237,7 +237,7 @@ namespace IL2DCE.Generator
                 // For waterways only the end must be in friendly territory.
                 if (army == (int)EArmy.Red)
                 {
-                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(Config.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For red army
@@ -246,7 +246,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue)
                 {
-                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(Config.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For blue army
@@ -267,7 +267,7 @@ namespace IL2DCE.Generator
                 // For railways the start and the end must be in friendly territory.
                 if (army == (int)EArmy.Red && army2 == (int)EArmy.Red)
                 {
-                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(Config.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For red army
@@ -276,7 +276,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue && army2 == (int)EArmy.Blue)
                 {
-                    string id = chiefIndex.ToString(CultureInfo.InvariantCulture.NumberFormat) + "_Chief";
+                    string id = chiefIndex.ToString(Config.NumberFormat) + "_Chief";
                     chiefIndex++;
 
                     // For blue army
@@ -296,7 +296,7 @@ namespace IL2DCE.Generator
                 // For depots the position must be in friendly territory.
                 if (army == (int)EArmy.Red)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
@@ -305,7 +305,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -325,7 +325,7 @@ namespace IL2DCE.Generator
                 // For aircraft the position must be in friendly territory.
                 if (army == (int)EArmy.Red)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
@@ -334,7 +334,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -354,7 +354,7 @@ namespace IL2DCE.Generator
                 // For artillery the position must be in friendly territory.
                 if (army == (int)EArmy.Red)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
@@ -363,7 +363,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -383,7 +383,7 @@ namespace IL2DCE.Generator
                 // For artillery the position must be in friendly territory.
                 if (army == (int)EArmy.Red)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For red army
@@ -392,7 +392,7 @@ namespace IL2DCE.Generator
                 }
                 else if (army == (int)EArmy.Blue)
                 {
-                    string id = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Static{0:D}", stationaryIndex);
+                    string id = string.Format(Config.NumberFormat, "Static{0:D}", stationaryIndex);
                     stationaryIndex++;
 
                     // For blue army
@@ -409,8 +409,8 @@ namespace IL2DCE.Generator
             int i = 0;
             foreach (Point3d point in staticTemplateFile.FrontMarkers)
             {
-                string key = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
-                string value = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
+                string key = string.Format(Config.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
+                string value = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
                 missionTemplateFile.add(MissionFile.SectionFrontMarker, key, value);
                 i++;
             }
@@ -447,14 +447,14 @@ namespace IL2DCE.Generator
             briefingFile.MissionDescription = string.Empty;
 
             // Add things to the template file.
-            double time = Career.Time == (int)MissionTime.Random ? Random.Next((int)MissionTime.Begin, (int)MissionTime.End + 1) : Career.Time < 0 ? missionTemplateFile.Time : Career.Time;
-            missionFile.set(MissionFile.SectionMain, MissionFile.KeyTime, time.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            double time = MissionTime.OptimizeTime(Random, (Career.Time == (int)MissionTime.Random ? Random.Next(Config.RandomTimeBegin, Config.RandomTimeEnd + 1) : Career.Time < 0 ? missionTemplateFile.Time : Career.Time), 0.25);
+            missionFile.set(MissionFile.SectionMain, MissionFile.KeyTime, time.ToString(Config.NumberFormat));
 
             int weatherIndex = Career.Weather == (int)EWeather.Random ? Random.Next((int)EWeather.Clear, (int)EWeather.Count) : Career.Weather < 0 ? missionTemplateFile.WeatherIndex: (int)Career.Weather;
-            missionFile.set(MissionFile.SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set(MissionFile.SectionMain, MissionFile.KeyWeatherIndex, weatherIndex.ToString(Config.NumberFormat));
 
             int cloudsHeight = Career.CloudAltitude == (int)CloudAltitude.Random ? Random.Next(CloudAltitude.Min / 100, CloudAltitude.Max / 100 + 1) * 100: Career.CloudAltitude < 0 ? missionTemplateFile.CloudsHeight: Career.CloudAltitude;
-            missionFile.set(MissionFile.SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            missionFile.set(MissionFile.SectionMain, MissionFile.KeyCloudsHeight, cloudsHeight.ToString(Config.NumberFormat));
 
             string weatherString = string.Empty;
             if (weatherIndex == (int)EWeather.Clear)
@@ -463,11 +463,11 @@ namespace IL2DCE.Generator
             }
             else if (weatherIndex == (int)EWeather.LightClouds)
             {
-                weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Light clouds at {0}m", cloudsHeight);
+                weatherString = string.Format(Config.NumberFormat, "Light clouds at {0}m", cloudsHeight);
             }
             else if (weatherIndex == (int)EWeather.MediumClouds)
             {
-                weatherString = string.Format(CultureInfo.InvariantCulture.NumberFormat, "Medium clouds at {0}m", cloudsHeight);
+                weatherString = string.Format(Config.NumberFormat, "Medium clouds at {0}m", cloudsHeight);
             }
 
             briefingFile.MissionDescription = string.Format("{0}\nDate: {1}\nTime: {2}\nWeather: {3}", 
@@ -562,8 +562,8 @@ namespace IL2DCE.Generator
             i = 0;
             foreach (Point3d point in missionTemplateFile.FrontMarkers)
             {
-                string key = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
-                string value = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
+                string key = string.Format(Config.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
+                string value = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
                 missionFile.add(MissionFile.SectionFrontMarker, key, value);
                 i++;
             }
@@ -586,7 +586,7 @@ namespace IL2DCE.Generator
 #if false
             int i = 0;
             string esction;
-            while (missionFile.exist(esction = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i++)))
+            while (missionFile.exist(esction = string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i++)))
             {
                 missionFile.delete(esction);
             }
@@ -643,7 +643,7 @@ namespace IL2DCE.Generator
                     {
                         if (airGroup.Flights[key].Count > i)
                         {
-                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(Config.NumberFormat) + i.ToString(Config.NumberFormat));
                         }
                     }
 
@@ -651,7 +651,7 @@ namespace IL2DCE.Generator
                     {
                         if (airGroup.Flights[key].Count > i + 3)
                         {
-                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + (i + 3).ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(Config.NumberFormat) + (i + 3).ToString(Config.NumberFormat));
                         }
                     }
                 }
@@ -664,7 +664,7 @@ namespace IL2DCE.Generator
                     {
                         if (airGroup.Flights[key].Count > i)
                         {
-                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + i.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(Config.NumberFormat) + i.ToString(Config.NumberFormat));
                         }
                     }
 
@@ -672,7 +672,7 @@ namespace IL2DCE.Generator
                     {
                         if (airGroup.Flights[key].Count > i + 2)
                         {
-                            aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + (i + 2).ToString(CultureInfo.InvariantCulture.NumberFormat));
+                            aircraftOrder.Add(key.ToString(Config.NumberFormat) + (i + 2).ToString(Config.NumberFormat));
                         }
                     }
                 }
@@ -683,7 +683,7 @@ namespace IL2DCE.Generator
                 {
                     if (airGroup.Flights[key].Count == 1)
                     {
-                        aircraftOrder.Add(key.ToString(CultureInfo.InvariantCulture.NumberFormat) + "0");
+                        aircraftOrder.Add(key.ToString(Config.NumberFormat) + "0");
                     }
                 }
             }

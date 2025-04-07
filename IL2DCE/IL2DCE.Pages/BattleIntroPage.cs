@@ -60,7 +60,7 @@ namespace IL2DCE
                 if (Game is IGameSingle)
                 {
                     IGameSingle gameSingle = Game as IGameSingle;
-                    gameSingle.BattleSuccess = EBattleResult.NONE;
+                    gameSingle.BattleResult = EBattleResult.NONE;
                 }
 
                 Game.gameInterface.PageChange(new BattlePage(), null);
@@ -95,7 +95,7 @@ namespace IL2DCE
                 if (Game is IGameSingle)
                 {
                     IGameSingle gameSingle = Game as IGameSingle;
-                    gameSingle.BattleSuccess = EBattleResult.DRAW;
+                    gameSingle.BattleResult = EBattleResult.DRAW;
                 }
 
                 Game.gameInterface.PageChange(new BattlePage(), null);

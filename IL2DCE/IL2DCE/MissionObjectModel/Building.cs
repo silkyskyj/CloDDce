@@ -17,7 +17,6 @@
 using System;
 using System.Globalization;
 using maddox.game;
-using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -86,10 +85,10 @@ namespace IL2DCE.MissionObjectModel
                     double y;
                     double direction;
                     int status;
-                    if (int.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out status) &&
-                        double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
-                        double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
-                        double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out direction))
+                    if (int.TryParse(valueParts[1], NumberStyles.Integer, Config.NumberFormat, out status) &&
+                        double.TryParse(valueParts[2], NumberStyles.Float, Config.NumberFormat, out x) &&
+                        double.TryParse(valueParts[3], NumberStyles.Float, Config.NumberFormat, out y) &&
+                        double.TryParse(valueParts[4], NumberStyles.Float, Config.NumberFormat, out direction))
                     {
                         return new Building(id, valueParts[0], status, x, y, direction);
                     }
@@ -100,7 +99,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2}", Class, Status, X, Y, Direction);
+            string value = string.Format(Config.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2}", Class, Status, X, Y, Direction);
             sectionFile.add(MissionFile.SectionBuildings, Id, value);
         }
     }

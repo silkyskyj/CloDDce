@@ -31,7 +31,7 @@ namespace IL2DCE
             }
             private Core _core;
 
-            public EBattleResult BattleSuccess
+            public EBattleResult BattleResult
             {
                 get
                 {

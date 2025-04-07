@@ -162,12 +162,12 @@ namespace IL2DCE.Generator
         public void Write(ISectionFile file, string airGroupKey = null, string aircraftClass = null)
         {
             SilkySkyCloDFile.Write(file, SectionMain, Name, string.Empty, true);
-            SilkySkyCloDFile.Write(file, Name, KeySquadronCount, SquadronCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SilkySkyCloDFile.Write(file, Name, KeyFlightCount, FlightCount.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SilkySkyCloDFile.Write(file, Name, KeyFlightSize, FlightSize.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SilkySkyCloDFile.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SilkySkyCloDFile.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
-            SilkySkyCloDFile.Write(file, Name, KeyFormationsType, FormationsType.ToString(CultureInfo.InvariantCulture.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeySquadronCount, SquadronCount.ToString(Config.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyFlightCount, FlightCount.ToString(Config.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyFlightSize, FlightSize.ToString(Config.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyArmyIndex, ArmyIndex.ToString(Config.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyAirForceIndex, AirForceIndex.ToString(Config.NumberFormat), false);
+            SilkySkyCloDFile.Write(file, Name, KeyFormationsType, FormationsType.ToString(Config.NumberFormat), false);
             if (string.IsNullOrEmpty(aircraftClass))
             {
                 Aircrafts.ForEach(x => SilkySkyCloDFile.Write(file, string.Format("{0}.{1}", Name, SectionAircrafts), x, string.Empty, false)); // All

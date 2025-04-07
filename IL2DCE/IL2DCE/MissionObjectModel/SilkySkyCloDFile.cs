@@ -178,7 +178,7 @@ namespace IL2DCE.MissionObjectModel
         {
             string result = Get(section, key);
             float val;
-            if (!string.IsNullOrEmpty(result) && float.TryParse(result, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out val))
+            if (!string.IsNullOrEmpty(result) && float.TryParse(result, NumberStyles.Float, Config.NumberFormat, out val))
             {
                 return val;
             }
@@ -189,7 +189,7 @@ namespace IL2DCE.MissionObjectModel
         {
             string result = Get(section, key);
             int val;
-            if (!string.IsNullOrEmpty(result) && int.TryParse(result, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out val))
+            if (!string.IsNullOrEmpty(result) && int.TryParse(result, NumberStyles.Integer, Config.NumberFormat, out val))
             {
                 return val;
             }
@@ -225,17 +225,17 @@ namespace IL2DCE.MissionObjectModel
 
         public void Set(string section, string key, int value)
         {
-            Set(section, key, value.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            Set(section, key, value.ToString(Config.NumberFormat));
         }
 
         public void Set(string section, string key, float value)
         {
-            Set(section, key, value.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            Set(section, key, value.ToString(Config.NumberFormat));
         }
 
         public void Set(string section, string key, bool value)
         {
-            Set(section, key, value.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            Set(section, key, value.ToString(Config.NumberFormat));
         }
 
         public bool Exist(string section)

@@ -314,9 +314,9 @@ namespace IL2DCE.MissionObjectModel
                         double x;
                         double y;
                         double direction;
-                        if (double.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
-                            double.TryParse(valueParts[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) &&
-                            double.TryParse(valueParts[4], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out direction))
+                        if (double.TryParse(valueParts[2], NumberStyles.Float, Config.NumberFormat, out x) &&
+                            double.TryParse(valueParts[3], NumberStyles.Float, Config.NumberFormat, out y) &&
+                            double.TryParse(valueParts[4], NumberStyles.Float, Config.NumberFormat, out direction))
                         {
                             StringBuilder options = new StringBuilder();
                             if (valueParts.Length > 5)
@@ -410,7 +410,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void WriteTo(ISectionFile sectionFile)
         {
-            string value = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2} {5}", Class, Country.ToString(), X, Y, Direction, Options ?? string.Empty);
+            string value = string.Format(Config.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2} {5}", Class, Country.ToString(), X, Y, Direction, Options ?? string.Empty);
             sectionFile.add("Stationary", Id, value.TrimEnd());
         }
     }

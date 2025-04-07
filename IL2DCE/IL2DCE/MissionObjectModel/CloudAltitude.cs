@@ -29,7 +29,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static string CreateDisplayString(int alt)
         {
-            return alt.ToString("#####", CultureInfo.InvariantCulture.NumberFormat);
+            return alt.ToString("#####", Config.NumberFormat);
         }
     }
 }

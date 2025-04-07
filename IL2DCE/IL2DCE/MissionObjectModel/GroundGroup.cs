@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using maddox.game;
 using maddox.GP;
@@ -257,8 +256,8 @@ namespace IL2DCE.MissionObjectModel
                     {
                         if (Waypoints[i].V.HasValue)
                         {
-                            sectionFile.add(section, Waypoints[i].X.ToString("F2", CultureInfo.InvariantCulture.NumberFormat),
-                                            string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}",
+                            sectionFile.add(section, Waypoints[i].X.ToString("F2", Config.NumberFormat),
+                                            string.Format(Config.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}",
                                                             Waypoints[i].Y,
                                                             (Waypoints[i] as GroundGroupWaypointLine).Z,
                                                             (Waypoints[i].SubWaypoints.Count + 2),
@@ -270,7 +269,7 @@ namespace IL2DCE.MissionObjectModel
                         if (Waypoints[i].V.HasValue)
                         {
                             sectionFile.add(section, "S",
-                                            string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}  0 {3} {4:F2}",
+                                            string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}  0 {3} {4:F2}",
                                                             (Waypoints[i] as GroundGroupWaypointSpline).S,
                                                             Waypoints[i].X,
                                                             Waypoints[i].Y,
@@ -283,13 +282,13 @@ namespace IL2DCE.MissionObjectModel
                     {
                         if (subWaypoint is GroundGroupWaypointLine)
                         {
-                            sectionFile.add(section, subWaypoint.X.ToString("F2", CultureInfo.InvariantCulture.NumberFormat),
-                                string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2}", subWaypoint.Y, (subWaypoint as GroundGroupWaypointLine).Z));
+                            sectionFile.add(section, subWaypoint.X.ToString("F2", Config.NumberFormat),
+                                string.Format(Config.NumberFormat, "{0:F2} {1:F2}", subWaypoint.Y, (subWaypoint as GroundGroupWaypointLine).Z));
                         }
                         else if (subWaypoint is GroundGroupWaypointSpline)
                         {
                             sectionFile.add(section, "S",
-                                string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}",
+                                string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}",
                                 (subWaypoint as GroundGroupWaypointSpline).S, subWaypoint.X, subWaypoint.Y));
                         }
                     }
@@ -299,14 +298,14 @@ namespace IL2DCE.MissionObjectModel
                 GroundGroupWaypoint wayPointLast = Waypoints.Last();
                 if (wayPointLast is GroundGroupWaypointLine)
                 {
-                    sectionFile.add(section, wayPointLast.X.ToString(CultureInfo.InvariantCulture.NumberFormat),
-                                    string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2}",
+                    sectionFile.add(section, wayPointLast.X.ToString(Config.NumberFormat),
+                                    string.Format(Config.NumberFormat, "{0:F2} {1:F2}",
                                                             wayPointLast.Y, (wayPointLast as GroundGroupWaypointLine).Z));
                 }
                 else if (wayPointLast is GroundGroupWaypointSpline)
                 {
                     sectionFile.add(section, "S",
-                                    string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} P {1:F2} {2:F2}",
+                                    string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}",
                                                             (wayPointLast as GroundGroupWaypointSpline).S, wayPointLast.X, wayPointLast.Y));
                 }
 

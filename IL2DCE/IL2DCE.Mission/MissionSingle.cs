@@ -55,11 +55,11 @@ namespace IL2DCE
                 {
                     if (success == true)
                     {
-                        Game.BattleSuccess = EBattleResult.SUCCESS;
+                        Game.BattleResult = EBattleResult.SUCCESS;
                     }
                     else
                     {
-                        Game.BattleSuccess = EBattleResult.FAIL;
+                        Game.BattleResult = EBattleResult.FAIL;
                     }
                 }
             }

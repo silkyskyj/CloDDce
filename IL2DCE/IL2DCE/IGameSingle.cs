@@ -26,7 +26,7 @@ namespace IL2DCE
 
     public interface IGameSingle : maddox.game.IGameSingle, IGame
     {
-        EBattleResult BattleSuccess
+        EBattleResult BattleResult
         {
             get;
             set;

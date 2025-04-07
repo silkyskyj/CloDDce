@@ -70,12 +70,12 @@ namespace IL2DCE.Generator
                 {
                     if (waypoint.Type == AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY)
                     {
-                        sb.AppendFormat(CultureInfo.InvariantCulture.NumberFormat, "{0,2}. {1,4}", i, GamePlay.gpSectorName(waypoint.X, waypoint.Y));
+                        sb.AppendFormat(Config.NumberFormat, "{0,2}. {1,4}", i, GamePlay.gpSectorName(waypoint.X, waypoint.Y));
                         sb.AppendLine();
                     }
                     else
                     {
-                        sb.AppendFormat(CultureInfo.InvariantCulture.NumberFormat, "{0,2}. {1,4} {2}", i, GamePlay.gpSectorName(waypoint.X, waypoint.Y), waypoint.Type.ToString());
+                        sb.AppendFormat(Config.NumberFormat, "{0,2}. {1,4} {2}", i, GamePlay.gpSectorName(waypoint.X, waypoint.Y), waypoint.Type.ToString());
                         sb.AppendLine();
                     }
                     i++;

@@ -15,7 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
 using System.Reflection;
+using IL2DCE.MissionObjectModel;
 
 namespace IL2DCE.Util
 {
@@ -74,6 +76,14 @@ namespace IL2DCE.Util
 
             return string.Empty;
 #endif
+        }
+
+        public static void OptimizeSorties(IPlayerStatTotal playerStatTotal)
+        {
+            if (playerStatTotal.Sorties == 0)
+            {
+                playerStatTotal.Sorties = new int[] { playerStatTotal.Takeoffs, playerStatTotal.Landings, playerStatTotal.Bails, playerStatTotal.Deaths }.Max(); 
+            }
         }
     }
 }

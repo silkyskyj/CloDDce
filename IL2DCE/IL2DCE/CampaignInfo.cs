@@ -38,7 +38,7 @@ namespace IL2DCE
     public class CampaignInfo
     {
 
-        #region definition
+        #region Definition
 
         public const string SectionMain = "Main";
         public const string KeyName = "name";

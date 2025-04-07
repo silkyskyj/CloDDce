@@ -194,7 +194,7 @@ namespace IL2DCE.Util
 
             // 5. Create Mission environmentTemplate File
             ISectionFile fileMissionEnvironment = gameInterface.SectionFileCreate();
-            string fileNameMissionEnvironment = string.Format("{0}_Environment.mis", fileName);
+            string fileNameMissionEnvironment = string.Format("{0}_Environment{1}", fileName, Config.MissionFileExt);
             string filePathMissionEnvironment = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionEnvironment);
             if (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionParts) == 0)
             {
@@ -205,18 +205,18 @@ namespace IL2DCE.Util
                 ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionMain));
             }
             int i = 0;
-            while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
+            while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
             {
                 i++;
             }
 
             // 6. Create Mission staticTemplate File
             ISectionFile fileMissionStatic = gameInterface.SectionFileCreate();
-            string fileNameMissionStatic = string.Format("{0}_Static.mis", fileName);
+            string fileNameMissionStatic = string.Format("{0}_Static{1}", fileName, Config.MissionFileExt);
             string filePathMissionStatic = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionStatic);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionParts);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionMain);
-            //while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
+            //while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
             //{
             //    i++;
             //}
@@ -251,7 +251,7 @@ namespace IL2DCE.Util
 
             // 7. Create Mission initialTemplate File
             ISectionFile fileMissionInitial = gameInterface.SectionFileCreate();
-            string fileNameMissionInitial = string.Format("{0}_Initial.mis", fileName);
+            string fileNameMissionInitial = string.Format("{0}_Initial{1}", fileName, Config.MissionFileExt);
             string filePathMissionInitial = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionInitial);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionParts);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionMain);

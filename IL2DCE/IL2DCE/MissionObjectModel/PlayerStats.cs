@@ -39,6 +39,12 @@ namespace IL2DCE.MissionObjectModel
 
     public interface IPlayerStatTotal
     {
+        int Sorties
+        {
+            get;
+            set;
+        }
+
         int Takeoffs
         {
             get;
@@ -90,7 +96,7 @@ namespace IL2DCE.MissionObjectModel
 
     public class PlayerStats
     {
-        #region definition
+        #region Definition
 
         public const char ActorDeadInfoSplitChar = '|';
 
@@ -99,6 +105,7 @@ namespace IL2DCE.MissionObjectModel
         public const string PlayerStatKillsHistoryFormat = " {0:d} {1} {2}";
         public const string PlayerStatKillsTypeFormat = "{0,19}: {1}";
 
+        private const string KeySorties = "Sorties";
         private const string KeyTakeoff = "Takeoffs";
         private const string KeyLandings = "Landings";
         private const string KeyDeaths = "Deaths";
@@ -365,7 +372,7 @@ namespace IL2DCE.MissionObjectModel
                 if (score > scoreHighest)
                 {
                     scoreHighest = score;
-                    initiator = damageScores.FirstOrDefault().initiator;
+                    initiator = damageScores.First().initiator;
                 }
             }
             return initiator;
@@ -471,41 +478,42 @@ namespace IL2DCE.MissionObjectModel
             return ToString(killsFriendlyGroundUnit, separator);
         }
 
-        public void UpdatePlayerStatsDefaultAPI(IPlayerStatTotal playerStats, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
+        public void UpdatePlayerStatsDefaultAPI(IPlayerStatTotal playerStatTotal, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
         {
             IGameSingle game = (Game as IGameSingle);
             IPlayer player = game.gameInterface.Player();
             IPlayerStat st = player.GetBattleStat();
 
-            playerStats.Takeoffs += st.takeoffs;
-            playerStats.Landings += st.landings;
-            playerStats.Bails += st.bails;
-            playerStats.Deaths += st.deaths;
-            playerStats.Kills += ((int)(st.kills * 100)) / 100.0;
+            playerStatTotal.Sorties += 1;
+            playerStatTotal.Takeoffs += st.takeoffs;
+            playerStatTotal.Landings += st.landings;
+            playerStatTotal.Bails += st.bails;
+            playerStatTotal.Deaths += st.deaths;
+            playerStatTotal.Kills += ((int)(st.kills * 100)) / 100.0;
             string killsTypes = ToStringkillsTypes(st.killsTypes, separator);
             if (!string.IsNullOrEmpty(killsTypes))
             {
                 if (string.IsNullOrEmpty(valueSummary))
                 {
-                    if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                    if (playerStatTotal.KillsHistory.ContainsKey(dt.Date))
                     {
-                        playerStats.KillsHistory[dt.Date] += separator + killsTypes;
+                        playerStatTotal.KillsHistory[dt.Date] += separator + killsTypes;
                     }
                     else
                     {
-                        playerStats.KillsHistory.Add(dt.Date, killsTypes);
+                        playerStatTotal.KillsHistory.Add(dt.Date, killsTypes);
                     }
                 }
                 else
                 {
                     string val = string.Format("{0}|{1}", valueSummary, killsTypes);
-                    if (playerStats.KillsHistory.ContainsKey(dt.Date))
+                    if (playerStatTotal.KillsHistory.ContainsKey(dt.Date))
                     {
-                        playerStats.KillsHistory[dt.Date] += separator + val;
+                        playerStatTotal.KillsHistory[dt.Date] += separator + val;
                     }
                     else
                     {
-                        playerStats.KillsHistory.Add(dt.Date, val);
+                        playerStatTotal.KillsHistory.Add(dt.Date, val);
                     }
                 }
             }
@@ -520,6 +528,7 @@ namespace IL2DCE.MissionObjectModel
             else
             {
                 IPlayerStat st = Game.gameInterface.Player().GetBattleStat();
+                playerStatTotal.Sorties += 1;
                 playerStatTotal.Takeoffs += st.takeoffs;
                 playerStatTotal.Landings += st.landings;
                 playerStatTotal.Bails += st.bails;
@@ -605,6 +614,8 @@ namespace IL2DCE.MissionObjectModel
             }
 
             StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(format, KeySorties, playerStatTotal.Sorties);
+            sb.AppendLine();
             sb.AppendFormat(format, KeyTakeoff, playerStatTotal.Takeoffs);
             sb.AppendLine();
             sb.AppendFormat(format, KeyLandings, playerStatTotal.Landings);
@@ -613,9 +624,9 @@ namespace IL2DCE.MissionObjectModel
             sb.AppendLine();
             sb.AppendFormat(format, KeyBails, playerStatTotal.Bails);
             sb.AppendLine();
-            sb.AppendFormat(format, KeyAircraftKills, playerStatTotal.Kills.ToString(Config.KillsFormat, Config.Culture));
+            sb.AppendFormat(format, KeyAircraftKills, playerStatTotal.Kills.ToString(Config.KillsFormat, Config.NumberFormat));
             sb.AppendLine();
-            sb.AppendFormat(format, KeyGroundUnitKills, playerStatTotal.KillsGround.ToString(Config.KillsFormat, Config.Culture));
+            sb.AppendFormat(format, KeyGroundUnitKills, playerStatTotal.KillsGround.ToString(Config.KillsFormat, Config.NumberFormat));
             sb.AppendLine();
             sb.AppendLine();
             sb.AppendFormat("{0}:", KeyKillsHistory);
@@ -696,9 +707,9 @@ namespace IL2DCE.MissionObjectModel
             sb.AppendLine();
             if (AddKills)
             {
-                sb.AppendFormat(format, KeyKills, stat.kills.ToString(Config.KillsFormat, Config.Culture));
+                sb.AppendFormat(format, KeyKills, stat.kills.ToString(Config.KillsFormat, Config.NumberFormat));
                 sb.AppendLine();
-                sb.AppendFormat(format, KeyFriendlyKills, stat.fkills.ToString(Config.KillsFormat, Config.Culture));
+                sb.AppendFormat(format, KeyFriendlyKills, stat.fkills.ToString(Config.KillsFormat, Config.NumberFormat));
                 sb.AppendLine();
             }
             return sb.ToString();
@@ -711,7 +722,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static string ToStringkillsTypes(Dictionary<string, double> dic, string separator = Config.CommaStr)
         {
-            return string.Join(separator, dic.Select(x => string.Format("{0} {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Config.KillsFormat, Config.Culture))));
+            return string.Join(separator, dic.Select(x => string.Format("{0} {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Config.KillsFormat, Config.NumberFormat))));
         }
 
         private DamagerScore[] GetPlayerDamageScore(ArrayList listDamage)

@@ -26,7 +26,12 @@ namespace IL2DCE.MissionObjectModel
 
         public static string ToString(double d)
         {
-            return string.Format("{0:D2}:{1:D2}", (int)d, (((int)(d * 100)) % 100) * 60 / 100);
+            return string.Format(Config.NumberFormat, "{0:D2}:{1:D2}", (int)d, (((int)(d * 100)) % 100) * 60 / 100);
+        }
+
+        public static double OptimizeTime(IRandom random, double time, double range)
+        {
+            return time + random.Next((int)(range * -100), (int)(range * 100)) / 100.0;
         }
     }
 }

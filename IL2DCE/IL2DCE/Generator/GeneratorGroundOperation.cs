@@ -192,7 +192,7 @@ namespace IL2DCE.Generator
 
                 if (pathParams.State == RecalcPathState.SUCCESS)
                 {
-                    //Game.gpLogServer(new Player[] { Game.gpPlayer() }, "Path found (" + pathParams.Path.Length.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat) + ").", null);
+                    //Game.gpLogServer(new Player[] { Game.gpPlayer() }, "Path found (" + pathParams.Path.Length.ToString(System.Globalization.Config.NumberFormat) + ").", null);
 
                     List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
                     GroundGroupWaypoint lastGroundGroupWaypoint = null;
@@ -211,7 +211,7 @@ namespace IL2DCE.Generator
                             {
                                 // TODO: Fix calculated param
 
-                                //string s = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2}", 
+                                //string s = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2}", 
                                 //    aiGroundWayPoint.P.x, aiGroundWayPoint.P.y, aiGroundWayPoint.P.z, aiGroundWayPoint.roadWidth);
 
                                 GroundGroupWaypoint groundGroupSubWaypoint = new GroundGroupWaypointLine(aiGroundWayPoint.P.x, aiGroundWayPoint.P.x, aiGroundWayPoint.P.z, null);
@@ -427,7 +427,7 @@ namespace IL2DCE.Generator
                 wayPointLast.X -= xOffset;
                 wayPointLast.Y -= yOffset;
 
-                groundGroup.Id = groundGroupId + "." + i.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                groundGroup.Id = groundGroupId + "." + i.ToString(Config.NumberFormat);
 
                 groundGroup.WriteTo(missionFile);
             }

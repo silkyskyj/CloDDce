@@ -47,8 +47,8 @@ namespace IL2DCE.MissionObjectModel
 
         public const int DefaultTakeoffZ = 0;
         public const int DefaultTakeoffV = 0;
-        public const int DefaultNormaflyZ = 500;
-        public const int DefaultNormaflyV = 300;
+        public const int DefaultNormalflyZ = 500;
+        public const int DefaultNormalflyV = 300;
         public const int DefaultLandingZ = 0;
         public const int DefaultLandingV = 0;
         public const int DefaultFlyV = 300;
@@ -128,10 +128,10 @@ namespace IL2DCE.MissionObjectModel
                     double dY;
                     double dZ;
                     double dV;
-                    if (double.TryParse(valueList[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dX) &&
-                        double.TryParse(valueList[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dY) &&
-                        double.TryParse(valueList[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dZ) &&
-                        double.TryParse(valueList[3], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out dV))
+                    if (double.TryParse(valueList[0], NumberStyles.Float, Config.NumberFormat, out dX) &&
+                        double.TryParse(valueList[1], NumberStyles.Float, Config.NumberFormat, out dY) &&
+                        double.TryParse(valueList[2], NumberStyles.Float, Config.NumberFormat, out dZ) &&
+                        double.TryParse(valueList[3], NumberStyles.Float, Config.NumberFormat, out dV))
                     {
                         return new AirGroupWaypoint(type, dX, dY, dZ, dV);
                     }

@@ -14,17 +14,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.ComponentModel;
+
 namespace IL2DCE.MissionObjectModel
 {
-    public class Fuel
-    {
-        public const int SelectMinFuel = 10;
-        public const int SelectMaxFuel = 100;
-        public const int SelectStepFuel = 5;
 
-        public static string CreateDisplayString(int fuel)
-        {
-            return fuel.ToString("###", Config.NumberFormat);
-        }
+    public enum ECampaignProgress
+    {
+        [Description("Daily")]
+        Daily,          // 1Day
+
+        [Description("Any Day (1 - 5days)")]
+        AnyDay,         // 1 - 5days
+
+        [Description("Any Time (3 - 16hours)")]
+        AnyTime,        // 3 - 16hours(0 - 1Day)
+
+        [Description("Any Day Any Time")]
+        AnyDayAnyTime,  // 3 - 136
+
+        Count,
+    }
+
+    public class CampaignProgress
+    {
+        public const int DailyDay = 1;
+        public const int AnyDayBebin = 1;
+        public const int AnyDayEnd = 5;
+        public const int AnyTimeBebin = 3;
+        public const int AnyTimeEnd = 16;
+        public const int AnyDayAnyTimeBebin = AnyTimeBebin;
+        public const int AnyDayAnyTimeEnd = AnyDayEnd * 24 + AnyTimeEnd;
     }
 }

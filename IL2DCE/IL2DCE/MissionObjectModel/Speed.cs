@@ -26,7 +26,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static string CreateDisplayString(int speed)
         {
-            return speed.ToString("###", CultureInfo.InvariantCulture.NumberFormat);
+            return speed.ToString("###", Config.NumberFormat);
         }
     }
 }

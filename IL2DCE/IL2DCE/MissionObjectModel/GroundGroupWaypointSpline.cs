@@ -67,9 +67,9 @@ namespace IL2DCE.MissionObjectModel
                         double x;
                         double y;
                         double v;
-                        if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) && 
-                            double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y) && 
-                            double.TryParse(match.Groups[9].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out v))
+                        if (double.TryParse(match.Groups[5].Value, NumberStyles.Float, Config.NumberFormat, out x) && 
+                            double.TryParse(match.Groups[6].Value, NumberStyles.Float, Config.NumberFormat, out y) && 
+                            double.TryParse(match.Groups[9].Value, NumberStyles.Float, Config.NumberFormat, out v))
                         {
                             return new GroundGroupWaypointSpline(x, y, v, 
                                 string.Format("{0} {1} {2} {3}", match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value)); 
@@ -83,8 +83,8 @@ namespace IL2DCE.MissionObjectModel
                     {
                         double x;
                         double y;
-                        if (double.TryParse(match.Groups[5].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x) &&
-                            double.TryParse(match.Groups[6].Value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y))
+                        if (double.TryParse(match.Groups[5].Value, NumberStyles.Float, Config.NumberFormat, out x) &&
+                            double.TryParse(match.Groups[6].Value, NumberStyles.Float, Config.NumberFormat, out y))
                         {
                             return new GroundGroupWaypointSpline(x, y, null,
                                 string.Format("{0} {1} {2} {3}", match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value));

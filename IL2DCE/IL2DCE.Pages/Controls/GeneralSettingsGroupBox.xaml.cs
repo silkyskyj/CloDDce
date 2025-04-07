@@ -62,7 +62,7 @@ namespace IL2DCE.Pages.Controls
                     if (!string.IsNullOrEmpty(text))
                     {
                         int num;
-                        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out num))
+                        if (int.TryParse(text, NumberStyles.Integer, Config.NumberFormat, out num))
                         {
                             return num;
                         }
@@ -199,7 +199,7 @@ namespace IL2DCE.Pages.Controls
                     if (!string.IsNullOrEmpty(text))
                     {
                         int num;
-                        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out num))
+                        if (int.TryParse(text, NumberStyles.Integer, Config.NumberFormat, out num))
                         {
                             return num;
                         }
@@ -224,7 +224,7 @@ namespace IL2DCE.Pages.Controls
                     if (!string.IsNullOrEmpty(text))
                     {
                         int num;
-                        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out num))
+                        if (int.TryParse(text, NumberStyles.Integer, Config.NumberFormat, out num))
                         {
                             return num;
                         }

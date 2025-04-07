@@ -16,7 +16,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -89,7 +88,7 @@ namespace IL2DCE.MissionObjectModel
             }
             else
             {
-                return string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0} x {1}", Count(value), Size(value));
+                return string.Format(Config.NumberFormat, "{0} x {1}", Count(value), Size(value));
             }
         }
 

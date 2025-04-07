@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.ComponentModel;
-using System.Globalization;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -56,7 +55,7 @@ namespace IL2DCE.MissionObjectModel
 
     public class Spawn
     {
-        #region definition
+        #region Definition
 
         public const int SelectStartAltitude = 500;
         public const int SelectEndAltitude = 10000;
@@ -305,7 +304,7 @@ namespace IL2DCE.MissionObjectModel
             }
             else if (altitude >= SelectStartAltitude && altitude <= SelectEndAltitude)
             {
-                return altitude.ToString(CultureInfo.InvariantCulture.NumberFormat);
+                return altitude.ToString(Config.NumberFormat);
             }
 
             return string.Empty;

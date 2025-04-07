@@ -38,6 +38,7 @@
     <Compile Include="MissionObjectModel\AircraftState.cs" />
     <Compile Include="MissionObjectModel\AirForce.cs" />
     <Compile Include="MissionObjectModel\Army.cs" />
+    <Compile Include="MissionObjectModel\CampaignProgress.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
     <Compile Include="MissionObjectModel\EBattleType.cs" />
     <Compile Include="MissionObjectModel\Flight.cs" />

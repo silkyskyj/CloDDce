@@ -47,9 +47,9 @@ namespace IL2DCE
                 {
                     IGameSingle gameSingle = Game as IGameSingle;
 
-                    if (gameSingle.BattleSuccess == EBattleResult.NONE)
+                    if (gameSingle.BattleResult == EBattleResult.NONE)
                     {
-                        gameSingle.BattleSuccess = EBattleResult.DRAW;
+                        gameSingle.BattleResult = EBattleResult.DRAW;
 
                         string missionFileName = Game.Core.CurrentCareer.MissionFileName;
                         if (missionFileName != null)
@@ -60,15 +60,15 @@ namespace IL2DCE
                     }
                     else
                     {
-                        if (gameSingle.BattleSuccess == EBattleResult.SUCCESS)
+                        if (gameSingle.BattleResult == EBattleResult.SUCCESS)
                         {
                             Game.gameInterface.PageChange(new BattleSuccessPage(), null);
                         }
-                        else if (gameSingle.BattleSuccess == EBattleResult.DRAW)
+                        else if (gameSingle.BattleResult == EBattleResult.DRAW)
                         {
                             Game.gameInterface.PageChange(new BattleSuccessPage(), null);
                         }
-                        else if (gameSingle.BattleSuccess == EBattleResult.FAIL)
+                        else if (gameSingle.BattleResult == EBattleResult.FAIL)
                         {
                             Game.gameInterface.PageChange(new BattleFailurePage(), null);
                         }

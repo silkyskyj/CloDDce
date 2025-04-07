@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,6 +29,7 @@ namespace IL2DCE
 {
     public class Core
     {
+        private const string LogDateTimeFormat = "yyyy/MM/dd HH:mm:ss.fff";
 
         #region Property
 
@@ -220,7 +220,7 @@ namespace IL2DCE
         public void ResetCampaign(IGame game)
         {
             // Reset campaign state
-            CurrentCareer.Date = null;
+            CurrentCareer.InitializeDateTime();
 
             AdvanceCampaign(game);
         }
@@ -228,40 +228,27 @@ namespace IL2DCE
         public CampaignStatus AdvanceCampaign(IGame game)
         {
             CampaignStatus result;
-            Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, CurrentCareer);
-
             Career career = CurrentCareer;
+            Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, career);
             CampaignInfo campaignInfo = career.CampaignInfo;
 
             ISectionFile initialMissionTemplateFile = null;
-            if (!CurrentCareer.Date.HasValue)
+            if (!career.Date.HasValue)
             {
+                result = CampaignStatus.Empty;
                 // It is the first mission.
-                career.Date = career.CampaignInfo.StartDate;
-                career.Experience = career.RankIndex * Config.RankupExp;
+                career.InitializeDateTime(Config, Random);
+                career.InitializeExperience();
 
                 // Generate the initial mission tempalte
                 generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
-                result = CampaignStatus.Empty;
             }
             else
             {
                 if (game is IGameSingle)
                 {
                     IGameSingle gameSingle = game as IGameSingle;
-                    if (gameSingle.BattleSuccess == EBattleResult.SUCCESS)
-                    {
-                        career.Experience += Config.ExpSuccess;
-                    }
-                    else if (gameSingle.BattleSuccess == EBattleResult.DRAW)
-                    {
-                        career.Experience += Config.ExpDraw;
-                    }
-                }
-
-                if (career.RankIndex < Rank.RankMax && career.Experience >= (career.RankIndex + 1) * Config.RankupExp)
-                {
-                    career.RankIndex += 1;
+                    career.UpdateExperience(gameSingle.BattleResult);
                 }
 
                 if (career.Date >= campaignInfo.EndDate)
@@ -271,10 +258,11 @@ namespace IL2DCE
                 else
                 {
                     result = CampaignStatus.InProgress;
-                    career.Date = career.Date.Value.Add(new TimeSpan(1, 0, 0, 0));
-                }
+                    career.ProgressDateTime(Config, Random);
 
-                initialMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
+                    // Read latest mission tempalte
+                    initialMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
+                }
             }
 
             string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
@@ -283,26 +271,24 @@ namespace IL2DCE
                 Directory.CreateDirectory(missionFolderSystemPath);
             }
 
+            ISectionFile careerFile = GamePlay.gpCreateSectionFile();
+            string careerFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.CareerInfoFileName);
+
             if (game.gameInterface.BattleIsRun())
             {
                 // Stop the currntly running battle.
                 game.gameInterface.BattleStop();
             }
 
-            // Preload mission file for path calculation.
-            game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
-
-            ISectionFile careerFile = GamePlay.gpCreateSectionFile();
-            string careerFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.CareerInfoFileName);
-
             if (result != CampaignStatus.DateEnd)
             {
-                string missionId = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}-{2}-{3}",
-                                                    campaignInfo.Id,
-                                                    career.Date.Value.Year,
-                                                    career.Date.Value.Month,
-                                                    career.Date.Value.Day);
-                string missionFileName = string.Format("{0}/{1}/{2}.mis", Config.UserMissionFolder, career.PilotName, missionId);
+                // Preload mission file for path calculation.
+                game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
+
+                DateTime dt = career.Date.Value;
+                string missionId = string.Format(Config.NumberFormat, 
+                                            "{0}_{1:d4}-{2:d2}-{3:d2}_{4:d2}", campaignInfo.Id, dt.Year, dt.Month, dt.Day, dt.Hour);
+                string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
                 career.MissionFileName = missionFileName;
 
                 // Generate the template for the next mission
@@ -320,7 +306,7 @@ namespace IL2DCE
 
                 // Copy mission script file
                 string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", _campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
-                string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}.cs", _careersFolderSystemPath, career.PilotName, missionId);
+                string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", _careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
                 File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
                 // Save briefing file
@@ -358,8 +344,8 @@ namespace IL2DCE
 
             CampaignInfo campaignInfo = career.CampaignInfo;
 
-            career.Date = career.CampaignInfo.StartDate;
-            career.Experience = career.RankIndex * Config.RankupExp;
+            career.InitializeDateTime(Config);
+            career.InitializeExperience();
 
             ISectionFile initialMissionTemplateFile = null;
             generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
@@ -380,7 +366,7 @@ namespace IL2DCE
             game.gameInterface.BattleStop();
 
             string missionId = campaignInfo.Id;
-            string missionFileName = string.Format("{0}/{1}/{2}.mis", Config.UserMissionFolder, career.PilotName, missionId);
+            string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
             career.MissionFileName = missionFileName;
 
             // Generate the template for the next mission
@@ -398,7 +384,7 @@ namespace IL2DCE
 
             // Copy mission script file
             string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", _campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
-            string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}.cs", _careersFolderSystemPath, career.PilotName, missionId);
+            string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", _careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
             File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
             // Save briefing file
@@ -496,7 +482,7 @@ namespace IL2DCE
             Debug.WriteLine(message);
             lock (writerLogObject)
             {
-                writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff", Config.Culture), message.Replace("\"", "\"\"").Replace("\n", "|"));
+                writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString(LogDateTimeFormat, Config.DateTimeFormat), message.Replace("\"", "\"\"").Replace("\n", "|"));
             }
         }
     }

@@ -29,6 +29,9 @@ namespace IL2DCE.MissionObjectModel
         public const string SkillFormat = "F2";
         public const string SkillNameCustom = "Custom";
         public const string SkillNameMulti = "Different";
+        public const string SkillNameRandom = "[Random] Tweaked Rookie - Ace";
+        public const string SkillNameDefault = "Mission Default";
+
         public static readonly char[] SplitChar = new char[] { ' ', };
 
         public enum ESystemType
@@ -89,14 +92,6 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 1.00f, 0.95f, 0.95f, 0.84f, 0.84f, 0.95f, 0.89f, 0.89f, },    // Ace
         };
 
-        public static readonly Skill[] SystemSkills = new Skill[(int)ESystemType.Count]
-        {
-             new Skill(ESystemType.Rookie),
-             new Skill(ESystemType.Avarage),
-             new Skill(ESystemType.Veteran),
-             new Skill(ESystemType.Ace),
-        };
-
         /// <summary>
         /// Tweaked AI settings http://bobgamehub.blogspot.de/2012/03/ai-settings-in-cliffs-of-dover.html
         /// </summary>
@@ -121,6 +116,17 @@ namespace IL2DCE.MissionObjectModel
             new float [] { 0.93f, 0.15f, 0.96f, 0.92f, 0.84f, 1.00f, 1.00f, 0.51f, },    // Ace
         };
 
+        public static readonly Skill Default = new Skill() { Name = SkillNameDefault };
+        public static readonly Skill Random = new Skill() { Name = SkillNameRandom };
+
+        public static readonly Skill[] SystemSkills = new Skill[(int)ESystemType.Count]
+        {
+             new Skill(ESystemType.Rookie),
+             new Skill(ESystemType.Avarage),
+             new Skill(ESystemType.Veteran),
+             new Skill(ESystemType.Ace),
+        };
+
         public static readonly Skill[] TweakedSkills = new Skill[(int)ETweakedType.Count]
         {
              new Skill(ETweakedType.FighterRookie),
@@ -139,10 +145,6 @@ namespace IL2DCE.MissionObjectModel
              new Skill(ETweakedType.FighterBomberVeteran),
              new Skill(ETweakedType.FighterBomberAce),
         };
-
-        public static readonly Skill Default = new Skill();
-        public static readonly Skill Random = new Skill();
-        public static readonly Skill MissionTypeDefault = new Skill();
 
         public float[] Skills
         {
@@ -202,7 +204,7 @@ namespace IL2DCE.MissionObjectModel
 
         public override string ToString()
         {
-            return string.Join(" ", Skills.Select(x => x.ToString(SkillFormat, Config.Culture)));
+            return string.Join(" ", Skills.Select(x => x.ToString(SkillFormat, Config.NumberFormat)));
         }
 
         public string ToDetailString(char splitCharLabelValue = ' ')
@@ -213,7 +215,7 @@ namespace IL2DCE.MissionObjectModel
                 // var types = Enum.GetNames(typeof(ESkilType));
                 for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    sb.AppendFormat("{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, Skills[(int)type].ToString(SkillFormat, Config.Culture));
+                    sb.AppendFormat("{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, Skills[(int)type].ToString(SkillFormat, Config.NumberFormat));
                     sb.AppendLine();
                 }
                 return sb.ToString();
@@ -435,7 +437,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     if (provider == null)
                     {
-                        provider = Config.Culture.NumberFormat;
+                        provider = Config.NumberFormat;
                     }
                     float[] val = new float[(int)ESkilType.Count];
                     int i;
@@ -738,9 +740,9 @@ namespace IL2DCE.MissionObjectModel
 
     public enum ESkillSet
     {
-        [Description("[Random] Tweaked Rookie - Ace")]
+        [Description(SkillNameRandom)]
         Random = -2,
-        [Description("Mission Default")]
+        [Description(SkillNameDefault)]
         Default = -1,
         [Description("Rookie")]
         Rookie,

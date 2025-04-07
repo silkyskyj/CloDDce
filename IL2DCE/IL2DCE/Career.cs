@@ -29,12 +29,24 @@ namespace IL2DCE
     {
         #region Definition
 
-        public const string KeyVersion = "Ver";
         public const string SectionMain = "Main";
         public const string SectionCampaign = "Campaign";
         public const string SectionStat = "Stat";
         public const string SectionKillsResult = "KillsResult";
         public const string SectionKillsGroundResult = "KillsGroundResult";
+        public const string SectionSkill = "Skill";
+        public const string KeyVersion = "Ver";
+        public const string KeyArmyIndex = "armyIndex";
+        public const string KeyAirForceIndex = "airForceIndex";
+        public const string KeyRankIndex = "rankIndex";
+        public const string KeyExperience = "experience";
+        public const string KeyDate = "date";
+        public const string KeyTime = "time";
+        public const string KeyAirGroup = "airGroup";
+        public const string KeyMissionFile = "missionFile";
+        public const string KeyId = "id";
+
+        public const string KeySorties = "Sorties";
         public const string KeyTakeoffs = "Takeoffs";
         public const string KeyLandings = "Landings";
         public const string KeyBails = "Bails";
@@ -59,6 +71,7 @@ namespace IL2DCE
         public const string KeyReFuel = "ReFuel";
         public const string KeyTrackRecording = "TrackRecording";
         public const string KeyAISkill = "AISkill";
+        public const string KeyCampaignProgress = "CampaignProgress";
         // public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
         public const string PlayerCurrentStatusFormat = "{0,10}: {1}";
@@ -69,131 +82,65 @@ namespace IL2DCE
 
         public string PilotName
         {
-            get
-            {
-                return _pilotName;
-            }
-            set
-            {
-                _pilotName = value;
-            }
+            get;
+            private set;
         }
-        private string _pilotName;
 
         public int ArmyIndex
         {
-            get
-            {
-                return _armyIndex;
-            }
-            set
-            {
-                _armyIndex = value;
-            }
+            get;
+            private set;
         }
-        private int _armyIndex;
 
         public int AirForceIndex
         {
-            get
-            {
-                return _airForceIndex;
-            }
-            set
-            {
-                _airForceIndex = value;
-            }
+            get;
+            private set;
         }
-        private int _airForceIndex;
 
         public int RankIndex
         {
-            get
-            {
-                return _rankIndex;
-            }
-            set
-            {
-                if (value <= MissionObjectModel.Rank.RankMax)
-                {
-                    _rankIndex = value;
-                }
-            }
+            get;
+            private set;
         }
-        private int _rankIndex;
 
         public int Experience
         {
-            get
-            {
-                return _experience;
-            }
-            set
-            {
-                _experience = value;
-            }
+            get;
+            private set;
         }
-        private int _experience;
 
         public CampaignInfo CampaignInfo
         {
-            get
-            {
-                return _campaignInfo;
-            }
-            set
-            {
-                _campaignInfo = value;
-            }
+            get;
+            set;
         }
-        private CampaignInfo _campaignInfo;
 
         public DateTime? Date
         {
-            get
-            {
-                return _date;
-            }
-            set
-            {
-                _date = value;
-            }
+            get;
+            private set;
         }
-        DateTime? _date;
 
         public string MissionFileName
         {
-            get
-            {
-                return _missionFileName;
-            }
-            set
-            {
-                _missionFileName = value;
-            }
+            get;
+            set;
         }
-        private string _missionFileName;
 
         public string MissionTemplateFileName
         {
             get
             {
-                return MissionFileName.Replace(".mis", "_Template.mis");
+                return MissionFileName.Replace(Config.MissionFileExt, "_Template.mis");
             }
         }
 
         public string AirGroup
         {
-            get
-            {
-                return _airGroup;
-            }
-            set
-            {
-                _airGroup = value;
-            }
+            get;
+            set;
         }
-        private string _airGroup;
 
         public string Aircraft
         {
@@ -303,7 +250,19 @@ namespace IL2DCE
             set;
         }
 
-        #region Status
+        public ECampaignProgress CampaignProgress
+        {
+            get;
+            set;
+        }
+
+        #region Stats
+
+        public int Sorties
+        {
+            get;
+            set;
+        }
 
         public int Takeoffs
         {
@@ -485,16 +444,16 @@ namespace IL2DCE
 
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
         {
-            _pilotName = pilotName;
-            _armyIndex = armyIndex;
-            _airForceIndex = airForceIndex;
-            _rankIndex = rankIndex;
-            _experience = 0;
+            PilotName = pilotName;
+            ArmyIndex = armyIndex;
+            AirForceIndex = airForceIndex;
+            RankIndex = rankIndex;
+            Experience = 0;
 
-            _campaignInfo = null;
-            _date = null;
-            _airGroup = null;
-            _missionFileName = null;
+            CampaignInfo = null;
+            Date = null;
+            AirGroup = null;
+            MissionFileName = null;
             AirGroupDisplay = null;
 
             Aircraft = string.Empty;
@@ -521,6 +480,7 @@ namespace IL2DCE
             ReFuelTime = -1;
 
             AISkill = ESkillSet.Random;
+            CampaignProgress = ECampaignProgress.Daily;
 
             #region Quick Mission Info 
 
@@ -531,41 +491,42 @@ namespace IL2DCE
 
         public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile, Config config, string separator = Config.CommaStr)
         {
-            _pilotName = pilotName;
+            PilotName = pilotName;
+
+            #region Quick Mission Info 
+
+            InitQuickMssionInfo();
+
+            #endregion
 
             string ver = careerFile.exist(SectionMain, KeyVersion) ? careerFile.get(SectionMain, KeyVersion) : string.Empty;
 
-            if (careerFile.exist(SectionMain, "armyIndex")
-                && careerFile.exist(SectionMain, "rankIndex")
-                && careerFile.exist(SectionMain, "experience"))
+            if (careerFile.exist(SectionMain, KeyArmyIndex)
+                && careerFile.exist(SectionMain, KeyAirForceIndex)
+                && careerFile.exist(SectionMain, KeyRankIndex)
+                && careerFile.exist(SectionMain, KeyExperience))
             {
-                _armyIndex = int.Parse(careerFile.get(SectionMain, "armyIndex"));
-                _airForceIndex = int.Parse(careerFile.get(SectionMain, "airForceIndex"));
-                _rankIndex = int.Parse(careerFile.get(SectionMain, "rankIndex"));
-                _experience = int.Parse(careerFile.get(SectionMain, "experience"));
+                ArmyIndex = int.Parse(careerFile.get(SectionMain, KeyArmyIndex));
+                AirForceIndex = int.Parse(careerFile.get(SectionMain, KeyAirForceIndex));
+                RankIndex = int.Parse(careerFile.get(SectionMain, KeyRankIndex));
+                Experience = int.Parse(careerFile.get(SectionMain, KeyExperience));
             }
             else
             {
                 throw new FormatException(string.Format("Career File Format Error[{0}]", "armyIndex/rankIndex/experience"));
             }
 
-            if (careerFile.exist(SectionCampaign, "date")
-                && careerFile.exist(SectionCampaign, "id")
-                && careerFile.exist(SectionCampaign, "airGroup")
-                && careerFile.exist(SectionCampaign, "missionFile"))
+            if (careerFile.exist(SectionCampaign, KeyDate)
+                && careerFile.exist(SectionCampaign, KeyId)
+                && careerFile.exist(SectionCampaign, KeyAirGroup)
+                && careerFile.exist(SectionCampaign, KeyMissionFile))
             {
-                string id = careerFile.get(SectionCampaign, "id");
-                foreach (CampaignInfo campaignInfo in campaignInfos)
-                {
-                    if (string.Compare(campaignInfo.Id, id, true) == 0)
-                    {
-                        CampaignInfo = campaignInfo;
-                        break;
-                    }
-                }
-                _date = DateTime.Parse(careerFile.get(SectionCampaign, "date"));
-                _airGroup = careerFile.get(SectionCampaign, "airGroup");
-                _missionFileName = careerFile.get(SectionCampaign, "missionFile");
+                string id = careerFile.get(SectionCampaign, KeyId);
+                CampaignInfo = campaignInfos.Where(x => string.Compare(x.Id, id, true) == 0).FirstOrDefault();
+                Time = careerFile.get(SectionCampaign, KeyTime, 0);
+                Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
+                AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
+                MissionFileName = careerFile.get(SectionCampaign, KeyMissionFile);
                 Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
 
                 AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
@@ -590,6 +551,12 @@ namespace IL2DCE
                 string val = careerFile.get(SectionCampaign, KeyAISkill, string.Empty);
                 AISkill = (Enum.IsDefined(typeof(ESkillSet), val)) ? (ESkillSet)Enum.Parse(typeof(ESkillSet), val) : ESkillSet.Random;
 
+                val = careerFile.get(SectionCampaign, KeyCampaignProgress, string.Empty);
+                CampaignProgress = (Enum.IsDefined(typeof(ECampaignProgress), val)) ? (ECampaignProgress)Enum.Parse(typeof(ECampaignProgress), val) : ECampaignProgress.Daily;
+
+                #region Stats
+
+                Sorties = careerFile.get(SectionStat, KeySorties, 0);
                 Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
                 Landings = careerFile.get(SectionStat, KeyLandings, 0);
                 Bails = careerFile.get(SectionStat, KeyBails, 0);
@@ -598,12 +565,13 @@ namespace IL2DCE
                 {
                     string temp = careerFile.get(SectionStat, KeyKills);
                     double d;
-                    Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, Config.Culture, out d) ? d : 0;
+                    Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, Config.NumberFormat, out d) ? d : 0;
                 }
                 else
                 {
                     Kills = careerFile.get(SectionStat, KeyKills, 0f);
                 }
+                VersionConverter.OptimizeSorties(this);
 
                 string key;
                 string value;
@@ -615,7 +583,7 @@ namespace IL2DCE
                 for (int i = 0; i < lines; i++)
                 {
                     careerFile.get(SectionKillsResult, i, out key, out value);
-                    if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                    if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
                     // if (DateTime.TryParse(key, out dt))
                     {
                         value = VersionConverter.ReplaceKillsHistory(value);
@@ -636,7 +604,7 @@ namespace IL2DCE
                 for (int i = 0; i < lines; i++)
                 {
                     careerFile.get(SectionKillsGroundResult, i, out key, out value);
-                    if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                    if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
                     // if (DateTime.TryParse(key, out dt))
                     {
                         if (KillsGroundHistory.ContainsKey(dt.Date))
@@ -649,6 +617,30 @@ namespace IL2DCE
                         }
                     }
                 }
+
+                #endregion
+
+                #region Skill
+
+                if (careerFile.exist(SectionSkill))
+                {
+                    Skills skills = new Skills();
+                    lines = careerFile.lines(SectionSkill);
+                    for (int i = 0; i < lines; i++)
+                    {
+                        careerFile.get(SectionSkill, i, out key, out value);
+                        System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value ?? string.Empty);
+                        Skill skill;
+                        if (Skill.TryParse(value, out skill))
+                        {
+                            skill.Name = key;
+                            skills.Add(skill);
+                        }
+                    }
+                    PlayerAirGroupSkill = skills.ToArray();
+                }
+
+                #endregion
             }
             else
             {
@@ -656,12 +648,6 @@ namespace IL2DCE
             }
 
             AllowDefensiveOperation = true;
-
-            #region Quick Mission Info 
-
-            InitQuickMssionInfo();
-
-            #endregion
         }
 
         #endregion
@@ -694,18 +680,19 @@ namespace IL2DCE
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
 
-            careerFile.add(SectionMain, "armyIndex", ArmyIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionMain, "airForceIndex", AirForceIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionMain, "rankIndex", RankIndex.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionMain, "experience", Experience.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionMain, KeyArmyIndex, ArmyIndex.ToString(Config.NumberFormat));
+            careerFile.add(SectionMain, KeyAirForceIndex, AirForceIndex.ToString(Config.NumberFormat));
+            careerFile.add(SectionMain, KeyRankIndex, RankIndex.ToString(Config.NumberFormat));
+            careerFile.add(SectionMain, KeyExperience, Experience.ToString(Config.NumberFormat));
 
-            careerFile.add(SectionCampaign, "date", Date.Value.Year.ToString(Config.Culture) + "-" + Date.Value.Month.ToString(Config.Culture) + "-" + Date.Value.Day.ToString(Config.Culture.NumberFormat));
-            careerFile.add(SectionCampaign, "airGroup", AirGroup);
-            careerFile.add(SectionCampaign, "missionFile", MissionFileName);
-            careerFile.add(SectionCampaign, "id", CampaignInfo.Id);
+            careerFile.add(SectionCampaign, KeyDate, Date.Value.Year.ToString(Config.NumberFormat) + "-" + Date.Value.Month.ToString(Config.NumberFormat) + "-" + Date.Value.Day.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyTime, ((int)Time).ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAirGroup, AirGroup);
+            careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
+            careerFile.add(SectionCampaign, KeyId, CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
-            careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalAirGroups, AdditionalAirGroups ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay ?? string.Empty);
             careerFile.add(SectionCampaign, KeySpawnRandomLocationPlayer, SpawnRandomLocationPlayer ? "1" : "0");
@@ -715,36 +702,49 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeySpawnRandomAltitudeEnemy, SpawnRandomAltitudeEnemy ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomTimeFriendly, SpawnRandomTimeFriendly ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEnemy, SpawnRandomTimeEnemy ? "1" : "0");
-            careerFile.add(SectionCampaign, KeySpawnRandomTimeBeginSec, SpawnRandomTimeBeginSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionCampaign, KeySpawnRandomTimeEndSec, SpawnRandomTimeEndSec.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            careerFile.add(SectionCampaign, KeySpawnRandomTimeBeginSec, SpawnRandomTimeBeginSec.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeySpawnRandomTimeEndSec, SpawnRandomTimeEndSec.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyReArm, ReArmTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAISkill, AISkill.ToString());
+            careerFile.add(SectionCampaign, KeyCampaignProgress, CampaignProgress.ToString());
 
-            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyKills, Kills.ToString(Config.KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeySorties, Sorties.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyBails, Bails.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(Config.KillsFormat, Config.NumberFormat));
             foreach (var item in KillsHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
-                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.DateTimeFormat), item.Value);
             }
-            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(Config.KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(Config.KillsFormat, Config.NumberFormat));
             foreach (var item in KillsGroundHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
-                careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+                careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.DateTimeFormat), item.Value);
+            }
+
+            if (PlayerAirGroupSkill != null)
+            {
+                int i = 0;
+                foreach (var item in PlayerAirGroupSkill)
+                {
+                    careerFile.add(SectionSkill, string.IsNullOrWhiteSpace(item.Name) ? string.Format(Config.NumberFormat, "{0}{1}", SectionSkill, i++) : item.Name, item.ToString());
+                }
             }
         }
 
         public void ReadResult(ISectionFile careerFile, string separator = Config.CommaStr)
         {
+            Sorties = careerFile.get(SectionStat, KeySorties, 0);
             Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
             Landings = careerFile.get(SectionStat, KeyLandings, 0);
             Bails = careerFile.get(SectionStat, KeyBails, 0);
             Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
             Kills = careerFile.get(SectionStat, KeyKills, 0f);
+            VersionConverter.OptimizeSorties(this);
 
             string key;
             string value;
@@ -756,7 +756,7 @@ namespace IL2DCE
             for (int i = 0; i < lines; i++)
             {
                 careerFile.get(SectionKillsResult, i, out key, out value);
-                if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
                 // if (DateTime.TryParse(key, out dt))
                 {
                     if (KillsHistory.ContainsKey(dt.Date))
@@ -776,7 +776,7 @@ namespace IL2DCE
             for (int i = 0; i < lines; i++)
             {
                 careerFile.get(SectionKillsGroundResult, i, out key, out value);
-                if (DateTime.TryParseExact(key, DateFormat, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
                 // if (DateTime.TryParse(key, out dt))
                 {
                     if (KillsGroundHistory.ContainsKey(dt.Date))
@@ -793,26 +793,27 @@ namespace IL2DCE
 
         public void WriteResult(ISectionFile careerFile, int historyMax)
         {
-            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyLandings, Landings.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyBails, Bails.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(CultureInfo.InvariantCulture.NumberFormat));
-            careerFile.add(SectionStat, KeyKills, Kills.ToString(Config.KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeySorties, Sorties.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyLandings, Landings.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyBails, Bails.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyDeaths, Deaths.ToString(Config.NumberFormat));
+            careerFile.add(SectionStat, KeyKills, Kills.ToString(Config.KillsFormat, Config.NumberFormat));
             foreach (var item in KillsHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
-                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+                careerFile.add(SectionKillsResult, item.Key.ToString(DateFormat, Config.DateTimeFormat), item.Value);
             }
-            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(Config.KillsFormat, Config.Culture));
+            careerFile.add(SectionStat, KeyKillsGround, KillsGround.ToString(Config.KillsFormat, Config.NumberFormat));
             foreach (var item in KillsGroundHistory.OrderByDescending(x => x.Key).Take(historyMax))
             {
-                careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.Culture), item.Value);
+                careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.DateTimeFormat), item.Value);
             }
         }
 
         public string ToStringCurrestStatus()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString("d", DateTimeFormatInfo.InvariantInfo));
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString(Date.Value.Hour != 0 ? "M/d/yyyy h tt": "M/d/yyyy", DateTimeFormatInfo.InvariantInfo));
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Army", ((EArmy)ArmyIndex).ToString());
             sb.AppendLine();
@@ -820,7 +821,7 @@ namespace IL2DCE
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Rank", AirForces.Default.Where(x => x.ArmyIndex == ArmyIndex && x.AirForceIndex == AirForceIndex).FirstOrDefault().Ranks[RankIndex]);
             sb.AppendLine();
-            sb.AppendFormat(PlayerCurrentStatusFormat, "AirGroup", string.IsNullOrEmpty(AirGroupDisplay) ? AirGroup : AirGroupDisplay);
+            sb.AppendFormat(PlayerCurrentStatusFormat, "AirGroup", string.IsNullOrEmpty(AirGroupDisplay) ? MissionObjectModel.AirGroup.CreateDisplayName(AirGroup) : AirGroupDisplay);
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Aircraft", Aircraft);
             sb.AppendLine();
@@ -831,6 +832,93 @@ namespace IL2DCE
         public string ToStringTotalResult()
         {
             return PlayerStats.ToStringTotalResult(this, PlayerStats.PlayerStatTotalFormat, " {0:d} {1}\n  {2}", "\n  ");
+        }
+
+        public void InitializeExperience()
+        {
+            Experience = RankIndex * Config.RankupExp;
+        }
+
+        public void UpdateExperience(EBattleResult result)
+        {
+            if (result == EBattleResult.SUCCESS)
+            {
+                Experience += Config.ExpSuccess;
+            }
+            else if (result == EBattleResult.DRAW)
+            {
+                Experience += Config.ExpDraw;
+            }
+
+            if (RankIndex < Rank.RankMax && Experience >= (RankIndex + 1) * Config.RankupExp)
+            {
+                RankIndex += 1;
+            }
+        }
+
+        public void InitializeDateTime(Config config = null, IRandom random = null)
+        {
+            if (config != null && random != null)
+            {
+                Time = random.Next(config.RandomTimeBegin, config.RandomTimeEnd + 1);
+                Date = CampaignInfo.StartDate.AddHours(Time);
+            }
+            else if (config != null)
+            {
+                Date = CampaignInfo.StartDate;
+            }
+            else
+            {
+                Date = null;
+            }
+        }
+
+        public void ProgressDateTime(Config config, IRandom random)
+        {
+            if (Date.Value.Hour == 0)
+            {
+                Date = Date.Value.AddHours(config.RandomTimeEnd);
+            }
+            DateTime dt;
+            switch (CampaignProgress)
+            {
+                case ECampaignProgress.AnyDay:
+                    dt = Date.Value.Add(new TimeSpan(
+                                                    random.Next(MissionObjectModel.CampaignProgress.AnyDayBebin, MissionObjectModel.CampaignProgress.AnyDayEnd + 1) , 
+                                                    random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1) - Date.Value.Hour, 
+                                                    0, 0));
+                    break;
+
+                case ECampaignProgress.AnyTime:
+                    dt = Date.Value.AddHours(random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1));
+                    break;
+
+                case ECampaignProgress.AnyDayAnyTime:
+                    dt = Date.Value.AddHours(random.Next(MissionObjectModel.CampaignProgress.AnyDayAnyTimeBebin, MissionObjectModel.CampaignProgress.AnyDayAnyTimeEnd + 1));
+                    break;
+
+                case ECampaignProgress.Daily:
+                default:
+                    dt = Date.Value.Add(new TimeSpan(
+                                                    MissionObjectModel.CampaignProgress.DailyDay, 
+                                                    random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1) - Date.Value.Hour, 
+                                                    0, 0));
+                    break;
+            }
+            if (dt.Date > CampaignInfo.EndDate)
+            {
+                CampaignInfo.EndDate = dt.Date;
+            }
+            if (dt.Hour < config.RandomTimeBegin)
+            {
+                dt = dt.AddHours(config.RandomTimeBegin - dt.Hour);
+            }
+            else if (dt.Hour > config.RandomTimeEnd)
+            {
+                dt = dt.AddHours(dt.Date < CampaignInfo.EndDate ? config.RandomTimeBegin + 24 - dt.Hour: config.RandomTimeEnd - dt.Hour);
+            }
+            Date = dt;
+            Time = dt.Hour;
         }
     }
 }

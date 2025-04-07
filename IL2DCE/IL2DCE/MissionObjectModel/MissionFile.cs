@@ -279,7 +279,7 @@ namespace IL2DCE.MissionObjectModel
             // GlobalWind
             List<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>> globalWindList = new List<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>>();
             string esction;
-            while (file.exist(esction = string.Format(CultureInfo.InvariantCulture.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i++)))
+            while (file.exist(esction = string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i++)))
             {
                 List<KeyValuePair<string, string>> keyValueList = new List<KeyValuePair<string, string>>();
                 lines = file.lines(esction);
@@ -348,9 +348,9 @@ namespace IL2DCE.MissionObjectModel
                     double x;
                     double y;
                     int army;
-                    if (double.TryParse(valueParts[0], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out x)
-                        && double.TryParse(valueParts[1], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out y)
-                        && int.TryParse(valueParts[2], NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out army))
+                    if (double.TryParse(valueParts[0], NumberStyles.Float, Config.NumberFormat, out x)
+                        && double.TryParse(valueParts[1], NumberStyles.Float, Config.NumberFormat, out y)
+                        && int.TryParse(valueParts[2], NumberStyles.Integer, Config.NumberFormat, out army))
                     {
                         if (!FrontMarkers.Any(a => a.x == x && a.y == y && a.z == army))
                         {
