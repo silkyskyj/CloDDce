@@ -108,18 +108,18 @@
   Static74 Stationary.Radar.EnglishRadar1 nn 47401.98 11646.75 0.00
   Static75 Stationary.Radar.EnglishRadar1 nn 47828.60 11732.08 0.00
   Static76 Stationary.Radar.EnglishRadar1 nn 48383.21 12201.36 0.00
-  Static18 Artillery.Flak30 nn 15649.58 12958.75 0.00 /timeout 0/radinn_hinn 0
+  Static18 Artillery.Flak30 nn 15649.58 12958.75 0.00 /timeout 0/radius_hide 0
   Static77 Stationary.Radar.EnglishRadar1 nn 48852.49 12585.32 0.00
-  Static9 Artillery.Flak30 nn 14951.73 13176.83 0.00 /timeout 0/radinn_hinn 0
-  Static17 Artillery.Flak30 nn 16151.16 13209.54 0.00 /timeout 0/radinn_hinn 0
+  Static9 Artillery.Flak30 nn 14951.73 13176.83 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Flak30 nn 16151.16 13209.54 0.00 /timeout 0/radius_hide 0
   Static78 Stationary.Radar.EnglishRadar1 nn 49321.77 12713.31 0.00
   Static119 Stationary.Bofors_ENG_Transport nn 50046.83 12755.70 0.00
-  Static10 Artillery.Flak30 nn 14809.98 13460.33 0.00 /timeout 0/radinn_hinn 0
-  Static16 Artillery.Flak30 nn 16282.01 13494.86 0.00 /timeout 0/radinn_hinn 0
+  Static10 Artillery.Flak30 nn 14809.98 13460.33 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Flak30 nn 16282.01 13494.86 0.00 /timeout 0/radius_hide 0
   Static120 Stationary.Bofors_ENG_Transport nn 50516.11 12969.00 0.00
   Static121 Stationary.Bofors_ENG_Transport nn 50985.38 13267.63 0.00
-  Static15 Artillery.Flak30 nn 16272.92 13894.67 0.00 /timeout 0/radinn_hinn 0
-  Static11 Artillery.Flak30 nn 14806.34 13994.62 0.00 /timeout 0/radinn_hinn 0
+  Static15 Artillery.Flak30 nn 16272.92 13894.67 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Flak30 nn 14806.34 13994.62 0.00 /timeout 0/radius_hide 0
   Static139 Stationary.Bf-109E-1 nn 15636.52 14010.12 0.00
   Static140 Stationary.Bf-109E-1 nn 15672.13 14010.12 0.00
   Static141 Stationary.Bf-109E-1 nn 15718.69 14015.60 0.00
@@ -127,31 +127,31 @@
   Static137 Stationary.Bf-109E-1 nn 15644.73 14064.91 0.00
   Static138 Stationary.Bf-109E-1 nn 15707.74 14067.65 0.00
   Static122 Stationary.Bofors_ENG_Transport nn 51625.30 13523.60 0.00
-  Static14 Artillery.Flak30 nn 16183.87 14372.62 0.00 /timeout 0/radinn_hinn 0
-  Static12 Artillery.Flak30 nn 15026.24 14485.30 0.00 /timeout 0/radinn_hinn 0
-  Static13 Artillery.Flak30 nn 15580.52 14570.71 0.00 /timeout 0/radinn_hinn 0
+  Static14 Artillery.Flak30 nn 16183.87 14372.62 0.00 /timeout 0/radius_hide 0
+  Static12 Artillery.Flak30 nn 15026.24 14485.30 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Flak30 nn 15580.52 14570.71 0.00 /timeout 0/radius_hide 0
   Static123 Stationary.Bofors_ENG_Transport nn 52179.89 14078.19 0.00
-  Static60 Artillery.Bofors nn 66950.45 13987.57 0.00 /timeout 0/radinn_hinn 0
-  Static61 Artillery.Bofors nn 67782.21 14033.18 0.00 /timeout 0/radinn_hinn 0
-  Static135 Stationary.SpnnnnreMkI nn 67234.92 14297.79 0.00
-  Static134 Stationary.SpnnnnreMkI nn 67239.13 14350.48 0.00
-  Static133 Stationary.SpnnnnreMkI nn 67245.45 14396.84 0.00
-  Static132 Stationary.SpnnnnreMkI nn 67241.24 14449.53 0.00
-  Static131 Stationary.SpnnnnreMkI nn 67247.56 14483.24 0.00
-  Static130 Stationary.SpnnnnreMkI nn 67243.35 14512.75 0.00
-  Static62 Artillery.Bofors nn 66944.19 14752.13 0.00 /timeout 0/radinn_hinn 0
-  Static63 Artillery.Bofors nn 67765.49 14756.28 0.00 /timeout 0/radinn_hinn 0
-  Static58 Artillery.Bofors nn 66948.37 15207.53 0.00 /timeout 0/radinn_hinn 0
-  Static59 Artillery.Bofors nn 67370.34 15220.06 0.00 /timeout 0/radinn_hinn 0
-  Static57 Artillery.Bofors nn 66821.01 15497.61 0.00 /timeout 0/radinn_hinn 0
-  Static56 Artillery.Bofors nn 67577.15 15591.90 0.00 /timeout 0/radinn_hinn 0
-  Static55 Artillery.Bofors nn 67412.12 15673.37 0.00 /timeout 0/radinn_hinn 0
-  Static54 Artillery.Bofors nn 67182.33 15748.58 0.00 /timeout 0/radinn_hinn 0
-  Static8 Artillery.Flak30 nn 39612.34 20618.68 0.00 /timeout 0/radinn_hinn 0
-  Static4 Artillery.Flak30 nn 39633.40 20830.63 0.00 /timeout 0/radinn_hinn 0
-  Static5 Artillery.Flak30 nn 39736.08 21061.00 0.00 /timeout 0/radinn_hinn 0
-  Static6 Artillery.Flak30 nn 39920.39 21217.66 0.00 /timeout 0/radinn_hinn 0
-  Static7 Artillery.Flak30 nn 40138.91 21283.48 0.00 /timeout 0/radinn_hinn 0
+  Static60 Artillery.Bofors nn 66950.45 13987.57 0.00 /timeout 0/radius_hide 0
+  Static61 Artillery.Bofors nn 67782.21 14033.18 0.00 /timeout 0/radius_hide 0
+  Static135 Stationary.SpitfireMkI nn 67234.92 14297.79 0.00
+  Static134 Stationary.SpitfireMkI nn 67239.13 14350.48 0.00
+  Static133 Stationary.SpitfireMkI nn 67245.45 14396.84 0.00
+  Static132 Stationary.SpitfireMkI nn 67241.24 14449.53 0.00
+  Static131 Stationary.SpitfireMkI nn 67247.56 14483.24 0.00
+  Static130 Stationary.SpitfireMkI nn 67243.35 14512.75 0.00
+  Static62 Artillery.Bofors nn 66944.19 14752.13 0.00 /timeout 0/radius_hide 0
+  Static63 Artillery.Bofors nn 67765.49 14756.28 0.00 /timeout 0/radius_hide 0
+  Static58 Artillery.Bofors nn 66948.37 15207.53 0.00 /timeout 0/radius_hide 0
+  Static59 Artillery.Bofors nn 67370.34 15220.06 0.00 /timeout 0/radius_hide 0
+  Static57 Artillery.Bofors nn 66821.01 15497.61 0.00 /timeout 0/radius_hide 0
+  Static56 Artillery.Bofors nn 67577.15 15591.90 0.00 /timeout 0/radius_hide 0
+  Static55 Artillery.Bofors nn 67412.12 15673.37 0.00 /timeout 0/radius_hide 0
+  Static54 Artillery.Bofors nn 67182.33 15748.58 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak30 nn 39612.34 20618.68 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Flak30 nn 39633.40 20830.63 0.00 /timeout 0/radius_hide 0
+  Static5 Artillery.Flak30 nn 39736.08 21061.00 0.00 /timeout 0/radius_hide 0
+  Static6 Artillery.Flak30 nn 39920.39 21217.66 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Flak30 nn 40138.91 21283.48 0.00 /timeout 0/radius_hide 0
   Static113 Stationary.Bofors_ENG_Transport nn 58195.49 25939.15 0.00
   Static112 Stationary.Bofors_ENG_Transport nn 58238.15 26877.72 0.00
   Static111 Stationary.Bofors_ENG_Transport nn 58024.84 27688.30 0.00
@@ -167,14 +167,14 @@
   Static84 Stationary.Radar.Wotan_II nn 45652.73 32251.86 0.00
   Static85 Stationary.Radar.Wotan_II nn 46335.31 32209.20 0.00
   Static86 Stationary.Radar.Wotan_II nn 47145.87 32209.20 0.00
-  Static53 Artillery.Bofors nn 52998.73 32922.09 0.00 /timeout 0/radinn_hinn 0
+  Static53 Artillery.Bofors nn 52998.73 32922.09 0.00 /timeout 0/radius_hide 0
   Static73 Stationary.Radar.EnglishRadar1 nn 33323.28 33330.41 0.00
   Static72 Stationary.Radar.EnglishRadar1 nn 32896.65 33373.07 0.00
-  Static52 Artillery.Bofors nn 53318.11 33143.78 0.00 /timeout 0/radinn_hinn 0
-  Static49 Artillery.Bofors nn 52682.86 33474.11 0.00 /timeout 0/radinn_hinn 0
+  Static52 Artillery.Bofors nn 53318.11 33143.78 0.00 /timeout 0/radius_hide 0
+  Static49 Artillery.Bofors nn 52682.86 33474.11 0.00 /timeout 0/radius_hide 0
   Static71 Stationary.Radar.EnglishRadar1 nn 32427.35 33842.37 0.00
-  Static51 Artillery.Bofors nn 53509.96 33569.89 0.00 /timeout 0/radinn_hinn 0
-  Static50 Artillery.Bofors nn 52879.15 33770.44 0.00 /timeout 0/radinn_hinn 0
+  Static51 Artillery.Bofors nn 53509.96 33569.89 0.00 /timeout 0/radius_hide 0
+  Static50 Artillery.Bofors nn 52879.15 33770.44 0.00 /timeout 0/radius_hide 0
   Static70 Stationary.Radar.EnglishRadar1 nn 31872.73 34439.65 0.00
   Static69 Stationary.Radar.EnglishRadar1 nn 31531.43 34823.62 0.00
   Static79 Stationary.Radar.Wotan_II nn 35755.00 46630.67 0.00
@@ -186,68 +186,68 @@
   Static65 Stationary.Radar.EnglishRadar1 nn 43220.95 50822.52 0.00
   Static66 Stationary.Radar.EnglishRadar1 nn 43690.20 51291.77 0.00
   Static67 Stationary.Radar.EnglishRadar1 nn 44116.79 51974.32 0.00
-  Static38 Artillery.Bofors nn 52583.94 52346.29 0.00 /timeout 0/radinn_hinn 0
-  Static37 Artillery.Bofors nn 52858.98 52496.07 0.00 /timeout 0/radinn_hinn 0
+  Static38 Artillery.Bofors nn 52583.94 52346.29 0.00 /timeout 0/radius_hide 0
+  Static37 Artillery.Bofors nn 52858.98 52496.07 0.00 /timeout 0/radius_hide 0
   Static68 Stationary.Radar.EnglishRadar1 nn 44671.36 52784.85 0.00
-  Static34 Artillery.Bofors nn 52164.57 52765.66 0.00 /timeout 0/radinn_hinn 0
-  Static36 Artillery.Bofors nn 53131.30 52839.18 0.00 /timeout 0/radinn_hinn 0
-  Static35 Artillery.Bofors nn 52499.52 53239.49 0.00 /timeout 0/radinn_hinn 0
+  Static34 Artillery.Bofors nn 52164.57 52765.66 0.00 /timeout 0/radius_hide 0
+  Static36 Artillery.Bofors nn 53131.30 52839.18 0.00 /timeout 0/radius_hide 0
+  Static35 Artillery.Bofors nn 52499.52 53239.49 0.00 /timeout 0/radius_hide 0
   Static94 Stationary.Bofors_GER_Transport nn 40414.03 54576.54 0.00
-  Static19 Artillery.Flak30 nn 29238.01 54781.53 0.00 /timeout 0/radinn_hinn 0
-  Static20 Artillery.Flak30 nn 28953.22 54959.54 0.00 /timeout 0/radinn_hinn 0
+  Static19 Artillery.Flak30 nn 29238.01 54781.53 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Flak30 nn 28953.22 54959.54 0.00 /timeout 0/radius_hide 0
   Static95 Stationary.Bofors_GER_Transport nn 40149.95 54875.84 0.00
   Static96 Stationary.Bofors_GER_Transport nn 39797.84 55051.89 0.00
-  Static21 Artillery.Flak30 nn 28690.56 55257.81 0.00 /timeout 0/radinn_hinn 0
-  Static23 Artillery.Flak30 nn 29602.00 55309.58 0.00 /timeout 0/radinn_hinn 0
+  Static21 Artillery.Flak30 nn 28690.56 55257.81 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.Flak30 nn 29602.00 55309.58 0.00 /timeout 0/radius_hide 0
   Static97 Stationary.Bofors_GER_Transport nn 39428.12 55351.18 0.00
-  Static22 Artillery.Flak30 nn 29290.06 55523.01 0.00 /timeout 0/radinn_hinn 0
+  Static22 Artillery.Flak30 nn 29290.06 55523.01 0.00 /timeout 0/radius_hide 0
   Static98 Stationary.Bofors_GER_Transport nn 39023.20 55562.45 0.00
   Static114 Stationary.Bofors_ENG_Transport nn 51582.41 59856.15 0.00
   Static115 Stationary.Bofors_ENG_Transport nn 52179.65 60240.09 0.00
   Static116 Stationary.Bofors_ENG_Transport nn 52520.93 60538.71 0.00
   Static117 Stationary.Bofors_ENG_Transport nn 52947.54 60752.02 0.00
   Static118 Stationary.Bofors_ENG_Transport nn 53374.14 61050.64 0.00
-  Static2 ShipUnnn.Tanker_Medium1 nn 55804.50 63620.23 0.00 /sleep 0/nnill 2/slownnre 1
-  Static1 ShipUnnn.Tanker_Medium2 nn 25006.42 64558.67 0.00 /sleep 0/nnill 2/slownnre 1
-  Static3 ShipUnnn.Tanker_Medium1 nn 56657.64 64985.24 0.00 /sleep 0/nnill 2/slownnre 1
-  Static0 ShipUnnn.Tanker_Medium2 nn 24622.51 65710.40 0.00 /sleep 0/nnill 2/slownnre 10
-  Static26 Artillery.Flak30 nn 14158.27 66611.76 0.00 /timeout 0/radinn_hinn 0
-  Static25 Artillery.Flak30 nn 13794.60 66807.25 0.00 /timeout 0/radinn_hinn 0
-  Static31 Artillery.Flak30 nn 14860.13 66851.10 0.00 /timeout 0/radinn_hinn 0
-  Static24 Artillery.Flak30 nn 13536.04 67044.79 0.00 /timeout 0/radinn_hinn 0
+  Static2 ShipUnit.Tanker_Medium1 nn 55804.50 63620.23 0.00 /sleep 0/skill 2/slowfire 1
+  Static1 ShipUnit.Tanker_Medium2 nn 25006.42 64558.67 0.00 /sleep 0/skill 2/slowfire 1
+  Static3 ShipUnit.Tanker_Medium1 nn 56657.64 64985.24 0.00 /sleep 0/skill 2/slowfire 1
+  Static0 ShipUnit.Tanker_Medium2 nn 24622.51 65710.40 0.00 /sleep 0/skill 2/slowfire 10
+  Static26 Artillery.Flak30 nn 14158.27 66611.76 0.00 /timeout 0/radius_hide 0
+  Static25 Artillery.Flak30 nn 13794.60 66807.25 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Flak30 nn 14860.13 66851.10 0.00 /timeout 0/radius_hide 0
+  Static24 Artillery.Flak30 nn 13536.04 67044.79 0.00 /timeout 0/radius_hide 0
   Static147 Stationary.Bf-109E-1 nn 13823.51 67192.51 0.00
   Static143 Stationary.Bf-109E-1 nn 13703.34 67245.30 0.00
   Static144 Stationary.Bf-109E-1 nn 13741.58 67232.56 0.00
   Static145 Stationary.Bf-109E-1 nn 13767.07 67214.35 0.00
   Static146 Stationary.Bf-109E-1 nn 13790.74 67207.07 0.00
   Static142 Stationary.Bf-109E-1 nn 13674.21 67268.98 0.00
-  Static33 Artillery.Flak30 nn 14145.72 67319.67 0.00 /timeout 0/radinn_hinn 0
-  Static30 Artillery.Flak30 nn 15181.30 67418.25 0.00 /timeout 0/radinn_hinn 0
-  Static32 Artillery.Flak30 nn 13622.16 67601.49 0.00 /timeout 0/radinn_hinn 0
-  Static29 Artillery.Flak30 nn 14809.70 67834.50 0.00 /timeout 0/radinn_hinn 0
-  Static28 Artillery.Flak30 nn 14542.85 67956.37 0.00 /timeout 0/radinn_hinn 0
-  Static27 Artillery.Flak30 nn 14105.64 68023.88 0.00 /timeout 0/radinn_hinn 0
-  Static42 Artillery.Bofors nn 67285.79 68131.08 0.00 /timeout 0/radinn_hinn 0
+  Static33 Artillery.Flak30 nn 14145.72 67319.67 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Flak30 nn 15181.30 67418.25 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Flak30 nn 13622.16 67601.49 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Flak30 nn 14809.70 67834.50 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Flak30 nn 14542.85 67956.37 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.Flak30 nn 14105.64 68023.88 0.00 /timeout 0/radius_hide 0
+  Static42 Artillery.Bofors nn 67285.79 68131.08 0.00 /timeout 0/radius_hide 0
   Static89 Stationary.Radar.Wotan_II nn 25987.53 68854.44 0.00
-  Static43 Artillery.Bofors nn 67867.34 68225.96 0.00 /timeout 0/radinn_hinn 0
+  Static43 Artillery.Bofors nn 67867.34 68225.96 0.00 /timeout 0/radius_hide 0
   Static90 Stationary.Radar.Wotan_II nn 26499.41 69110.38 0.00
-  Static41 Artillery.Bofors nn 66679.77 68556.43 0.00 /timeout 0/radinn_hinn 0
-  Static47 Artillery.Bofors nn 67249.25 68691.15 0.00 /timeout 0/radinn_hinn 0
-  Static44 Artillery.Bofors nn 68057.12 68691.21 0.00 /timeout 0/radinn_hinn 0
+  Static41 Artillery.Bofors nn 66679.77 68556.43 0.00 /timeout 0/radius_hide 0
+  Static47 Artillery.Bofors nn 67249.25 68691.15 0.00 /timeout 0/radius_hide 0
+  Static44 Artillery.Bofors nn 68057.12 68691.21 0.00 /timeout 0/radius_hide 0
   Static91 Stationary.Radar.Wotan_II nn 27053.94 69579.60 0.00
-  Static40 Artillery.Bofors nn 66658.32 69040.15 0.00 /timeout 0/radinn_hinn 0
-  Static39 Artillery.Bofors nn 66734.88 69367.80 0.00 /timeout 0/radinn_hinn 0
-  Static45 Artillery.Bofors nn 67925.50 69327.86 0.00 /timeout 0/radinn_hinn 0
-  Static129 Stationary.SpnnnnreMkI nn 67113.80 69382.29 0.00
-  Static127 Stationary.SpnnnnreMkI nn 67126.40 69432.69 0.00
+  Static40 Artillery.Bofors nn 66658.32 69040.15 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.Bofors nn 66734.88 69367.80 0.00 /timeout 0/radius_hide 0
+  Static45 Artillery.Bofors nn 67925.50 69327.86 0.00 /timeout 0/radius_hide 0
+  Static129 Stationary.SpitfireMkI nn 67113.80 69382.29 0.00
+  Static127 Stationary.SpitfireMkI nn 67126.40 69432.69 0.00
   Static92 Stationary.Radar.Wotan_II nn 27907.07 70048.83 0.00
-  Static128 Stationary.SpnnnnreMkI nn 67118.00 69459.98 0.00
-  Static126 Stationary.SpnnnnreMkI nn 67118.00 69497.78 0.00
-  Static125 Stationary.SpnnnnreMkI nn 67118.00 69531.38 0.00
-  Static124 Stationary.SpnnnnreMkI nn 67118.00 69564.98 0.00
+  Static128 Stationary.SpitfireMkI nn 67118.00 69459.98 0.00
+  Static126 Stationary.SpitfireMkI nn 67118.00 69497.78 0.00
+  Static125 Stationary.SpitfireMkI nn 67118.00 69531.38 0.00
+  Static124 Stationary.SpitfireMkI nn 67118.00 69564.98 0.00
   Static93 Stationary.Radar.Wotan_II nn 28760.21 70262.11 0.00
-  Static46 Artillery.Bofors nn 67221.70 69689.27 0.00 /timeout 0/radinn_hinn 0
-  Static48 Artillery.Bofors nn 67735.73 69649.25 0.00 /timeout 0/radinn_hinn 0
+  Static46 Artillery.Bofors nn 67221.70 69689.27 0.00 /timeout 0/radius_hide 0
+  Static48 Artillery.Bofors nn 67735.73 69649.25 0.00 /timeout 0/radius_hide 0
 [FrontMarker]
   FrontMarker0 41215.98 53212.51 2
   FrontMarker1 44758.25 32693.76 2

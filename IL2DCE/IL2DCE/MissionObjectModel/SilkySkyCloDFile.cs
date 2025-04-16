@@ -20,6 +20,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using IL2DCE.Util;
 using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
@@ -199,10 +200,13 @@ namespace IL2DCE.MissionObjectModel
         public bool Get(string section, string key, bool def)
         {
             string result = Get(section, key);
-            bool val;
-            if (!string.IsNullOrEmpty(result) && bool.TryParse(result, out val))
+            if (!string.IsNullOrEmpty(result))
             {
-                return val;
+                bool val;
+                if (Variable.TryParse(result, out val))
+                {
+                    return val;
+                }
             }
             return def;
         }

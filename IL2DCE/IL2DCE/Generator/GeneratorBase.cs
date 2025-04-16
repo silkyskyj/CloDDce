@@ -14,27 +14,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-using System;
+using maddox.game;
 
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE.Generator
 {
-    public sealed class MissionTime
+    internal class GeneratorBase
     {
-        public const double Default = -2;
-        public const double Random = -1;
-
-        public const double Begin = 5.0;
-        public const double End = 21.0;
-
-        public static string ToString(double d)
+        protected IGamePlay GamePlay
         {
-            return string.Format(Config.NumberFormat, "{0:D2}:{1:D2}", (int)d, (int)((((d * 100)) % 100) * 60 / 100));
+            get;
+            set;
         }
 
-        public static double OptimizeTime(IRandom random, double time, double range)
+        protected IRandom Random
         {
-            return time + random.Next((int)(range * -100), (int)(range * 100)) / 100.0;
+            get;
+            set;
+        }
+
+        protected Config Config
+        {
+            get;
+            set;
+        }
+
+        internal GeneratorBase(IGamePlay gamePlay, IRandom random, Config config)
+        {
+            GamePlay = gamePlay;
+            Random = random;
+            Config = config;
         }
     }
 }

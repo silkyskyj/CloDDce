@@ -16,6 +16,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 namespace IL2DCE.Util
 {
@@ -37,6 +38,11 @@ namespace IL2DCE.Util
                 Core.WriteLog(message);
             }
             return false;
+        }
+
+        public static string AsciitoUtf8String(string str)
+        {
+            return Encoding.UTF8.GetString(Encoding.ASCII.GetBytes(str));
         }
     }
 }

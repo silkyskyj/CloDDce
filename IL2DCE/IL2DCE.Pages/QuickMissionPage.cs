@@ -24,7 +24,6 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
@@ -331,6 +330,9 @@ namespace IL2DCE
 
                 _game = play as IGame;
 
+                FrameworkElement.GeneralSettingsGroupBox.GameInterface = play.gameInterface;
+                FrameworkElement.GeneralSettingsGroupBox.Config = Game.Core.Config;
+
                 if (Game.Core.CurrentCareer != null)
                 {
                     hookComboSelectionChanged = true;
@@ -407,7 +409,7 @@ namespace IL2DCE
                     UpdateFormationComboBoxInfo();
                     UpdateFormationDefaultLabel();
                     UpdateSkillComboBoxInfo();
-                    UpdateSkillComboBoxSkillValueInfo();
+                    GeneralSettingsGroupBox.UpdateSkillComboBoxSkillValueInfo(FrameworkElement.comboBoxSelectSkill, SelectedSkill, SelectedAirGroup, Game.Core.Config.Skills);
                     UpdateFuelComboBoxInfo();
                 }
 
@@ -419,41 +421,8 @@ namespace IL2DCE
             {
                 // if (e.AddedItems.Count > 0)
                 {
-                    UpdateSkillComboBoxSkillValueInfo();
+                    GeneralSettingsGroupBox.UpdateSkillComboBoxSkillValueInfo(FrameworkElement.comboBoxSelectSkill, SelectedSkill, SelectedAirGroup, Game.Core.Config.Skills);
                 }
-            }
-
-            private void UpdateSkillComboBoxSkillValueInfo()
-            {
-                ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
-                ToolTip toolTip = comboBox.ToolTip as ToolTip;
-                if (toolTip == null)
-                {
-                    comboBox.ToolTip = toolTip = new ToolTip();
-                    toolTip.FontFamily = new FontFamily("Consolas");
-                }
-                string str = string.Empty;
-                Skill skill = SelectedSkill;
-                if (skill != null)
-                {
-                    if (skill == Skill.Default)
-                    {
-                        AirGroup airGroup = SelectedAirGroup;
-                        if (airGroup != null)
-                        {
-                            str = airGroup.Skills.Count > 0 ? string.Join("\n\n", airGroup.Skills.Values.Select(x => Skill.ToDetailString(x))) : airGroup.Skill != null ? Skill.ToDetailString(airGroup.Skill) : string.Empty;
-                        }
-                    }
-                    else if (skill == Skill.Random)
-                    {
-                        str = "Randomly determined";
-                    }
-                    else
-                    {
-                        str = skill.ToDetailString();
-                    }
-                }
-                toolTip.Content = str;
             }
 
             private void comboBoxSelectMissionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -519,7 +488,7 @@ namespace IL2DCE
                     UpdateFormationComboBoxInfo();
                     UpdateFormationDefaultLabel();
                     UpdateSkillComboBoxInfo();
-                    UpdateSkillComboBoxSkillValueInfo();
+                    GeneralSettingsGroupBox.UpdateSkillComboBoxSkillValueInfo(FrameworkElement.comboBoxSelectSkill, SelectedSkill, SelectedAirGroup, Game.Core.Config.Skills);
                     UpdateFuelComboBoxInfo();
                 }
             }
@@ -726,6 +695,8 @@ namespace IL2DCE
                     career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
                     career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
                     career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
+                    career.AdditionalGroundGroups= generalSettings.SelectedAdditionalGroundGroups;
+                    career.AdditionalStationaries = generalSettings.SelectedAdditionalStasionaries;
                     career.SpawnRandomLocationFriendly = generalSettings.SelectedSpawnRandomLocationFriendly;
                     career.SpawnRandomLocationEnemy = generalSettings.SelectedSpawnRandomLocationEnemy;
                     career.SpawnRandomLocationPlayer = generalSettings.SelectedSpawnRandomLocationPlayer;
@@ -735,10 +706,20 @@ namespace IL2DCE
                     career.SpawnRandomTimeEnemy = generalSettings.SelectedSpawnRandomTimeEnemy;
                     career.SpawnRandomTimeBeginSec = generalSettings.SelectedRandomTimeBegin;
                     career.SpawnRandomTimeEndSec = generalSettings.SelectedRandomTimeEnd;
+                    career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
+                    career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
+                    career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;
+                    career.StationaryGenerateType = generalSettings.SelectedStationaryGeneric ? EStationaryGenerateType.Generic : EStationaryGenerateType.Default;
+                    career.AISkill = generalSettings.SelecteAISkill;
+                    career.ArtilleryTimeout = generalSettings.SelectedArtilleryTimeout;
+                    career.ArtilleryRHide = generalSettings.SelectedArtilleryRHide;
+                    career.ArtilleryZOffset = generalSettings.SelectedArtilleryZOffset;
+                    career.ShipSleep = generalSettings.SelectedShipSleep;
+                    career.ShipSkill = generalSettings.SelectedShipSkill;
+                    career.ShipSlowfire = generalSettings.SelectedShipSlowfire;
                     career.ReArmTime = generalSettings.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
                     career.ReFuelTime = generalSettings.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
                     career.TrackRecording = generalSettings.SelectedTrackRecoding;
-                    career.AISkill = generalSettings.SelecteAISkill;
 
                     Game.Core.CurrentCareer = career;
 
@@ -1504,15 +1485,17 @@ namespace IL2DCE
                 EnableSelectItem(FrameworkElement.comboBoxSelectFlight, Flight.CreateDisplayString(career.Flight));
                 EnableSelectItem(FrameworkElement.comboBoxSelectFormation, career.Formation.ToDescription());
                 EnableSelectItem(FrameworkElement.comboBoxSpawn, Spawn.CreateDisplayString(career.Spawn));
-                EnableSelectItem(FrameworkElement.comboBoxSpeed, career.Speed.ToString());
-                EnableSelectItem(FrameworkElement.comboBoxFuel, career.Fuel.ToString());
+                EnableSelectItem(FrameworkElement.comboBoxSpeed, Speed.CreateDisplayString(career.Speed));
+                EnableSelectItem(FrameworkElement.comboBoxFuel, Fuel.CreateDisplayString(career.Fuel));
                 EnableSelectItem(FrameworkElement.comboBoxSelectSkill, career.PlayerAirGroupSkill != null && career.PlayerAirGroupSkill.Length > 0 ? career.PlayerAirGroupSkill.First().Name : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectTime, career.Time >= 0 ? MissionTime.ToString(career.Time) : string.Empty);
                 EnableSelectItem(FrameworkElement.comboBoxSelectWeather, (int)career.Weather >= 0 ? ((EWeather)career.Weather).ToDescription() : string.Empty);
-                EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude >= 0 ? career.CloudAltitude.ToString() : string.Empty);
+                EnableSelectItem(FrameworkElement.comboBoxSelectCloudAltitude, career.CloudAltitude >= 0 ? CloudAltitude.CreateDisplayString(career.CloudAltitude) : string.Empty);
                 EnableSelectItem(generalSettings.comboBoxSelectAdditionalAirOperations, career.AdditionalAirOperations >= 0 ? career.AdditionalAirOperations.ToString() : string.Empty);
                 EnableSelectItem(generalSettings.comboBoxSelectAdditionalGroundOperations, career.AdditionalGroundOperations >= 0 ? career.AdditionalGroundOperations.ToString() : string.Empty);
-                generalSettings.checkBoxAdditionalAirgroups.IsChecked = career.AdditionalAirGroups;
+                generalSettings.checkBoxAdditionalAirGroups.IsChecked = career.AdditionalAirGroups;
+                generalSettings.checkBoxAdditionalGroundGroups.IsChecked = career.AdditionalGroundGroups;
+                generalSettings.checkBoxAdditionalStationaryUnits.IsChecked = career.AdditionalStationaries;
                 generalSettings.checkBoxSpawnRandomLocationFriendly.IsChecked = career.SpawnRandomLocationFriendly;
                 generalSettings.checkBoxSpawnRandomLocationEnemy.IsChecked = career.SpawnRandomLocationEnemy;
                 generalSettings.checkBoxSpawnRandomLocationPlayer.IsChecked = career.SpawnRandomLocationPlayer;
@@ -1522,10 +1505,20 @@ namespace IL2DCE
                 EnableSelectItem(generalSettings.comboBoxSelectRandomTimeEnd, career.SpawnRandomTimeEndSec >= 0 ? career.SpawnRandomTimeEndSec.ToString() : string.Empty);
                 generalSettings.checkBoxSpawnRandomTimeFriendly.IsChecked = career.SpawnRandomTimeFriendly;
                 generalSettings.checkBoxSpawnRandomTimeEnemy.IsChecked = career.SpawnRandomTimeEnemy;
+                EnableSelectItem(generalSettings.comboBoxSelectUnitNumsArmor, career.ArmorUnitNumsSet.ToDescription());
+                EnableSelectItem(generalSettings.comboBoxSelectUnitNumsShip, career.ShipUnitNumsSet.ToDescription());
+                generalSettings.checkBoxGroundGroupGeneric.IsChecked = career.GroundGroupGenerateType == EGroundGroupGenerateType.Generic;
+                generalSettings.checkBoxStatiomaryGeneric.IsChecked = career.StationaryGenerateType == EStationaryGenerateType.Generic;
+                EnableSelectItem(generalSettings.comboBoxSelectAISkill, career.AISkill.ToDescription());
+                EnableSelectItem(generalSettings.comboBoxSelectArtilleryTimeout, ArtilleryOption.CreateDisplayStringTimeout(career.ArtilleryTimeout));
+                EnableSelectItem(generalSettings.comboBoxSelectArtilleryRhide, ArtilleryOption.CreateDisplayStringRHide(career.ArtilleryRHide));
+                EnableSelectItem(generalSettings.comboBoxSelectArtilleryZOffset, ArtilleryOption.CreateDisplayStringZOffsete(career.ArtilleryZOffset));
+                EnableSelectItem(generalSettings.comboBoxSelectShipSkill, career.ShipSkill.ToDescription());
+                EnableSelectItem(generalSettings.comboBoxSelectShipSleep, ShipOption.CreateDisplayStringSleep(career.ShipSleep));
+                EnableSelectItem(generalSettings.comboBoxSelectShipSlowfire, ShipOption.CreateDisplayStringSlowfire(career.ShipSlowfire));
                 generalSettings.checkBoxAutoReArm.IsChecked = career.ReArmTime >= 0;
                 generalSettings.checkBoxAutoReFuel.IsChecked = career.ReFuelTime >= 0;
                 generalSettings.checkBoxTrackRecording.IsChecked = career.TrackRecording;
-                EnableSelectItem(generalSettings.comboBoxSelectAISkill, career.AISkill.ToDescription());
             }
 
             private void UpdateAircraftImage()

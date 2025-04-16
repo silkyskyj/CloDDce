@@ -27,20 +27,18 @@ using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public class AirGroup
+    public class AirGroup : MissionObject
     {
         public const string SquadronFormat = "{0}.{1:D}";
         public const string SquadronValueFormat = "D";
         public const int FlightCount = 4;
         public const string DefaultFormation = "LINEABREAST"; // "Line Abreast" or "Line Astern" is All Flight Group & All Country
 
-        #region Public properties
+        private const int CoverRange = 20000;
+        private const int ReconRange = 20000;
+        private const int GroundAttackRange = 20000;
 
-        public string Id
-        {
-            get;
-            private set;
-        }
+        #region Public properties
 
         public int ArmyIndex
         {
@@ -67,12 +65,6 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public Dictionary<int, IList<string>> Flights
-        {
-            get;
-            private set;
-        }
-
-        public string Class
         {
             get;
             private set;
@@ -205,13 +197,13 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public Stationary TargetStationary
+        internal Stationary TargetStationary
         {
             get;
             private set;
         }
 
-        public GroundGroup TargetGroundGroup
+        internal GroundGroup TargetGroundGroup
         {
             get;
             private set;
@@ -271,6 +263,7 @@ namespace IL2DCE.MissionObjectModel
         #region Public constructors
 
         public AirGroup(ISectionFile sectionFile, string id)
+            : base(id, string.Empty, (int)EArmy.None, ECountry.nn)
         {
             // airGroupId = <airGroupKey>.<squadronIndex><flightMask>
 
@@ -432,6 +425,7 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public AirGroup(string id, AircraftInfo aircraftInfo, Point3d point, AircraftLoadoutInfo aircraftLoadoutInfo)
+            : base(id, string.Empty, (int)EArmy.None, ECountry.nn)
         {
             // AirGroupKey
             AirGroupKey = id.Substring(0, id.IndexOf("."));
@@ -704,7 +698,7 @@ namespace IL2DCE.MissionObjectModel
             MissionType = EMissionType.TRANSFER;
         }
 
-        public void Cover(AirGroup offensiveAirGroup, double altitude, AiAirport landingAirport = null)
+        public void Cover(AirGroup offensiveAirGroup, double altitude, AiAirport landingAirport = null, int coverRange = CoverRange)
         {
             reset();
             Altitude = altitude;
@@ -718,14 +712,16 @@ namespace IL2DCE.MissionObjectModel
                 if (groundGroup.Waypoints.Count > 0)
                 {
                     GroundGroupWaypoint way = groundGroup.Waypoints.First();
-                    position = new Point3d(way.Position.x, way.Position.y, altitude);
+                    Point2d post = way.Position;
+                    position = new Point3d(post.x, post.y, altitude);
                 }
             }
             else if (offensiveAirGroup.TargetStationary != null)
             {
                 Stationary stationary = offensiveAirGroup.TargetStationary;
                 TargetStationary = stationary;
-                position = new Point3d(stationary.Position.x, stationary.Position.y, altitude);
+                Point2d pos = stationary.Position;
+                position = new Point3d(pos.x, pos.y, altitude);
             }
 
             if (position.HasValue)
@@ -738,12 +734,13 @@ namespace IL2DCE.MissionObjectModel
 
                 AirGroupWaypoint start = Waypoints.Last();
 
-                while (distanceBetween(start, Waypoints.Last()) < 200000.0)
+                int rangePlus = coverRange / 4;
+                while (distanceBetween(start, Waypoints.Last()) < coverRange)
                 {
-                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + 5000.0, position.Value.y + 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
-                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + 5000.0, position.Value.y - 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
-                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - 5000.0, position.Value.y - 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
-                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - 5000.0, position.Value.y + 5000.0, altitude, AirGroupWaypoint.DefaultFlyV));
+                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + rangePlus, position.Value.y + rangePlus, altitude, AirGroupWaypoint.DefaultFlyV));
+                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x + rangePlus, position.Value.y - rangePlus, altitude, AirGroupWaypoint.DefaultFlyV));
+                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - rangePlus, position.Value.y - rangePlus, altitude, AirGroupWaypoint.DefaultFlyV));
+                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.COVER, position.Value.x - rangePlus, position.Value.y + rangePlus, altitude, AirGroupWaypoint.DefaultFlyV));
                 }
 
                 createEndInbetweenPoints(position.Value, landingAirport);
@@ -771,7 +768,7 @@ namespace IL2DCE.MissionObjectModel
             MissionType = EMissionType.HUNTING;
         }
 
-        public void GroundAttack(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
+        internal void GroundAttack(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
         {
             reset();
             Altitude = altitude;
@@ -807,7 +804,7 @@ namespace IL2DCE.MissionObjectModel
             MissionType = EMissionType.ATTACK_ARTILLERY;
         }
 
-        public void GroundAttack(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
+        internal void GroundAttack(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null, int groundAttackRange = GroundAttackRange)
         {
             reset();
             Altitude = altitude;
@@ -851,7 +848,7 @@ namespace IL2DCE.MissionObjectModel
                     }
                     else
                     {
-                        if (distanceBetween(start, Waypoints.Last()) > 20000.0)
+                        if (distanceBetween(start, Waypoints.Last()) > groundAttackRange)
                         {
                             break;
                         }
@@ -860,7 +857,8 @@ namespace IL2DCE.MissionObjectModel
 
                 if (lastGroundGroupWaypoint != null)
                 {
-                    Point3d pEnd = new Point3d(lastGroundGroupWaypoint.Position.x, lastGroundGroupWaypoint.Position.y, altitude);
+                    Point2d pos = lastGroundGroupWaypoint.Position;
+                    Point3d pEnd = new Point3d(pos.x, pos.y, altitude);
                     createEndInbetweenPoints(pEnd, landingAirport);
                 }
 
@@ -870,7 +868,7 @@ namespace IL2DCE.MissionObjectModel
             MissionType = EMissionType.ATTACK_ARMOR;
         }
 
-        public void Recon(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
+        internal void Recon(Stationary targetStationary, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
         {
             reset();
             Altitude = altitude;
@@ -906,7 +904,7 @@ namespace IL2DCE.MissionObjectModel
             MissionType = EMissionType.RECON;
         }
 
-        public void Recon(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null)
+        internal void Recon(GroundGroup targetGroundGroup, double altitude, AirGroup escortAirGroup = null, AiAirport landingAirport = null, int reconRange = ReconRange)
         {
             reset();
             Altitude = altitude;
@@ -925,15 +923,16 @@ namespace IL2DCE.MissionObjectModel
                 GroundGroupWaypoint way = targetWaypoints.First();
                 createStartWaypoints();
 
+                Point2d pos = way.Position;
                 if (rendevouzPosition != null && rendevouzPosition.HasValue)
                 {
                     Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY, rendevouzPosition.Value, AirGroupWaypoint.DefaultNormalflyV));
-                    Point3d pStart = new Point3d(way.Position.x, way.Position.y, altitude);
+                    Point3d pStart = new Point3d(pos.x, pos.y, altitude);
                     createInbetweenWaypoints(rendevouzPosition.Value, pStart, true);
                 }
                 else
                 {
-                    Point3d pStart = new Point3d(way.Position.x, way.Position.y, altitude);
+                    Point3d pStart = new Point3d(pos.x, pos.y, altitude);
                     createStartInbetweenPoints(pStart, true);
                 }
 
@@ -950,7 +949,7 @@ namespace IL2DCE.MissionObjectModel
                     }
                     else
                     {
-                        if (distanceBetween(start, Waypoints.Last()) > 20000.0)
+                        if (distanceBetween(start, Waypoints.Last()) > reconRange)
                         {
                             break;
                         }
@@ -959,7 +958,8 @@ namespace IL2DCE.MissionObjectModel
 
                 if (lastGroundGroupWaypoint != null)
                 {
-                    Point3d pEnd = new Point3d(lastGroundGroupWaypoint.Position.x, lastGroundGroupWaypoint.Position.y, altitude);
+                    pos = lastGroundGroupWaypoint.Position;
+                    Point3d pEnd = new Point3d(pos.x, pos.y, altitude);
                     createEndInbetweenPoints(pEnd, landingAirport, true);
                 }
 
@@ -1164,6 +1164,12 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public void GetFlight(out int flightCount, out int flightSize)
+        {
+            flightCount = Flights.Count;
+            flightSize = (Flights.Count > 0) ? Flights[0].Count : 0;
+        }
+
         public void SetFormation(EFormation formation)
         {
             if (formation == EFormation.Random)
@@ -1357,7 +1363,6 @@ namespace IL2DCE.MissionObjectModel
                     }
                 }
             }
-
             return distance;
         }
 

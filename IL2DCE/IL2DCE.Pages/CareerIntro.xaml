@@ -22,7 +22,7 @@
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,354,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="15" MaxDropDownHeight="640"/>
         <Label Content="Select Air Group:" HorizontalAlignment="Left" Margin="700,290,0,0" x:Name="labelSelectAirGroup" VerticalAlignment="Top" Width="214" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
         <Label Content="Select Period:" HorizontalAlignment="Left" Margin="700,570,0,0" x:Name="labelSelectPeriod" VerticalAlignment="Top" Width="617" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
-        <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="700,634,0,0" VerticalAlignment="Top" FontSize="30" SelectedDateFormat="Long" Width="380" Background="#FFA0854A" IsTodayHighlighted="True" Foreground="#FFA0854A" TabIndex="19" IsTabStop="True">
+        <DatePicker x:Name="datePickerStart" HorizontalAlignment="Left" Margin="700,634,0,0" VerticalAlignment="Top" FontSize="30" SelectedDateFormat="Long" Width="380" Background="#FFA0854A" IsTodayHighlighted="True" Foreground="#FFA0854A" TabIndex="21" IsTabStop="True">
             <DatePicker.CalendarStyle>
                 <Style TargetType="{x:Type Calendar}">
                     <Setter Property="LayoutTransform">
@@ -33,7 +33,7 @@
                 </Style>
             </DatePicker.CalendarStyle>
         </DatePicker>
-        <DatePicker x:Name="datePickerEnd" HorizontalAlignment="Left" Margin="1122,634,0,0" VerticalAlignment="Top" Width="380" FontSize="30" SelectedDateFormat="Long" Background="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="20">
+        <DatePicker x:Name="datePickerEnd" HorizontalAlignment="Left" Margin="1122,634,0,0" VerticalAlignment="Top" Width="380" FontSize="30" SelectedDateFormat="Long" Background="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="22">
             <DatePicker.CalendarStyle>
                 <Style TargetType="{x:Type Calendar}">
                     <Setter Property="LayoutTransform">
@@ -47,7 +47,7 @@
         <Label Content=" - " HorizontalAlignment="Left" Margin="1073,617,0,0" x:Name="labelSelectPeriodRange" VerticalAlignment="Top" Width="62" FontSize="48" Foreground="#B2FFFFFF" RenderTransformOrigin="2.623,0.795" />
         <Controls:VersionLabel HorizontalAlignment="Left" Margin="1500,54,0,0" x:Name="labelVersion" VerticalAlignment="Top" FontSize="20" Foreground="#BF791313" Width="390" RenderTransformOrigin="3.24,0.832" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" />
         <Controls:AboutButton x:Name="buttonAbout" Content="?" HorizontalAlignment="Left" Margin="1892,62,0,0" VerticalAlignment="Top" Width="25" Height="25" TabIndex="1000"/>
-        <Controls:GeneralSettingsGroupBox x:Name="GeneralSettingsGroupBox" Header="GroupBox" Height="230" Width="1856" Margin="34,740,30,110" BorderBrush="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="50" />
+        <Controls:GeneralSettingsGroupBox x:Name="GeneralSettingsGroupBox" Header="GroupBox" Height="240" Width="1856" Margin="34,732,30,108" BorderBrush="#FFA0854A" Foreground="#FFA0854A" IsTabStop="True" TabIndex="50" />
         <Controls:AircraftImageBorder x:Name="borderImage" BorderBrush="#FFA0854A" Margin="1630,214,30,684" Width="260" Height="182" Background="#20F7F2F2" Opacity="1" BorderThickness="2,2,2,2" />
         <Controls:HelpButton x:Name="helpButtonAirForce" Content="?" HorizontalAlignment="Left" Margin="244,305,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="You can select the Air Group defined in both the mission file and each setting file, and the AirForce to which the AirCraft belongs. *Setting files AircraftInfo.ini &amp; AirgroupInfo.ini\nIf the files exist in each campaign folder, those files will be prioritized." TabIndex="3"/>
         <Controls:HelpButton x:Name="helpButtonRank" Content="?" HorizontalAlignment="Left" Margin="196,445,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="The selection you make here will affect the position of the flight within the Air Group." TabIndex="6"/>
@@ -55,10 +55,13 @@
         <Button x:Name="buttonMissionLoad" Content="PreLoad" HorizontalAlignment="Left" Margin="1230,272,0,0" VerticalAlignment="Top" Background="#00000000" Foreground="#B2FFFFFF" TabIndex="11" Height="25" Width="60"/>
         <Controls:HelpButton x:Name="helpButtonPreLoadMission" Content="?" HorizontalAlignment="Left" Margin="1293,272,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="When you preload a mission, the [Select Air Group] list will display the spawn airport and the distance [km] from the front line.\nPreloading must be done separately for each campaign.\n[Warn!]*However, we have confirmed that using this function too much can cause the page to become unstable.\nIf the page becomes unstable, please use the Back button to leave this page." TabIndex="12"/>
         <Label Content="Progress:" HorizontalAlignment="Left" Margin="1550,570,0,0" x:Name="labelSelectProgress" VerticalAlignment="Top" Width="160" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="1550,635,0,0" x:Name="comboBoxSelectProgress" VerticalAlignment="Top" Width="340" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="21"/>
+        <ComboBox Height="50" HorizontalAlignment="Left" Margin="1550,634,0,0" x:Name="comboBoxSelectProgress" VerticalAlignment="Top" Width="340" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="23"/>
         <Label Content="Air Group Skill:" Height="50" HorizontalAlignment="Left" Margin="700,430,0,0" x:Name="labelSelectSkill" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Width="190" />
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,495,0,0" x:Name="comboBoxSelectSkill" VerticalAlignment="Top" Width="380" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="18" MaxDropDownHeight="720"/>
         <Label x:Name="labelDefaultSkill" Content="Mission Default: Custom" Margin="700,541,0,0" VerticalAlignment="Top" Foreground="#B2FFFFFF" HorizontalAlignment="Left" Width="320"/>
         <Controls:HelpButton x:Name="helpButtonSkill" Content="?" HorizontalAlignment="Left" Margin="900,445,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="If you want to use user-defined skills, set them in the conf.ini file.\nAlso, if there is a default skill that you want to delete, just set the skill name in the same ini file with an empty value.\nIf you want to change the skill value, set it with the same name.\nYou can check each skill value by hovering the mouse(ToolTip)." TabIndex="17"/>
+        <CheckBox x:Name="checkBoxSpawnParked" Content="Spawn Parked" HorizontalAlignment="Left" Margin="1430,406,0,0" VerticalAlignment="Top" FontSize="24" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" VerticalContentAlignment="Center" TabIndex="16" IsChecked="False" Width="170" Height="32"/>
+        <CheckBox x:Name="checkBoxStrictMode" Content=" Strict Mode " HorizontalAlignment="Left" Margin="1550,496,0,0" VerticalAlignment="Top" FontSize="36" Background="White" Foreground="#B2FFFFFF" BorderBrush="#FF707070" TabIndex="19" IsChecked="False" RenderTransformOrigin="2.147,-13.281" VerticalContentAlignment="Center"/>
+        <Controls:HelpButton x:Name="helpButtonStrictMode" Content="?" HorizontalAlignment="Left" Margin="1780,510,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="If you want to use user-defined skills, set them in the conf.ini file.\nAlso, if there is a default skill that you want to delete, just set the skill name in the same ini file with an empty value.\nIf you want to change the skill value, set it with the same name.\nYou can check each skill value by hovering the mouse(ToolTip)." TabIndex="20"/>
     </Grid>
 </UserControl>

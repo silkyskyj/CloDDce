@@ -22,6 +22,7 @@ using System.Linq;
 using IL2DCE.Generator;
 using maddox.game;
 using maddox.GP;
+using XLAND;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -46,6 +47,8 @@ namespace IL2DCE.MissionObjectModel
         public const string SectionAction = "Action";
         public const string SectionAirdromes = "Airdromes";
         public const string SectionWay = "Way";
+        public const string KeyMap = "MAP";
+        public const string KeyBattleArea = "BattleArea";
         public const string KeyRunways = "Runways";
         public const string KeyWeatherIndex = "WeatherIndex";
         public const string KeyCloudsHeight = "CloudsHeight";
@@ -70,6 +73,8 @@ namespace IL2DCE.MissionObjectModel
         public const string KeyBriefing = "Briefing";
         public const string ValueTTime = "TTime";
         public const string ValueASpawnGroup = "ASpawnGroup";
+        public const string KeyChief = "Chief";
+        public const string KeyStatic = "Static";
         public const string KeyPartsCore = "core.100";
         public const string KeyPartsBob = "bob.100";
         public const string KeyPartsTobruk = "tobruk.100";
@@ -119,6 +124,25 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public string Map
+        {
+            get;
+            private set;
+        }
+
+        public wRECTF BattleArea
+        {
+            get;
+            private set;
+        }
+
+        public int Sector
+        {
+            get;
+            private set;
+        }
+
+
         public float Time
         {
             get;
@@ -145,6 +169,24 @@ namespace IL2DCE.MissionObjectModel
         }
 #endif
 
+        public List<AirGroup> AirGroups
+        {
+            get;
+            private set;
+        }
+
+        internal List<GroundGroup> GroundGroups
+        {
+            get;
+            private set;
+        }
+
+        internal List<Stationary> Stationaries
+        {
+            get;
+            private set;
+        }
+
         public List<Groundway> Roads
         {
             get;
@@ -163,49 +205,19 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public List<Building> Depots
+        internal List<Building> Depots
         {
             get;
             private set;
         }
 
-        public List<Stationary> Radars
-        {
-            get;
-            private set;
-        }
-
-        public List<Stationary> Aircrafts
-        {
-            get;
-            private set;
-        }
-
-        public List<Stationary> Artilleries
+        internal List<Stationary> OtherStationaries
         {
             get;
             private set;
         }
 
         public List<Point3d> FrontMarkers
-        {
-            get;
-            private set;
-        }
-
-        public List<AirGroup> AirGroups
-        {
-            get;
-            private set;
-        }
-
-        public List<GroundGroup> GroundGroups
-        {
-            get;
-            private set;
-        }
-
-        public List<Stationary> Stationaries
         {
             get;
             private set;
@@ -248,30 +260,49 @@ namespace IL2DCE.MissionObjectModel
 
         private void init()
         {
+            AirGroups = new List<AirGroup>();
+            GroundGroups = new List<GroundGroup>();
+            Stationaries = new List<Stationary>();
+
             Roads = new List<Groundway>();
             Waterways = new List<Groundway>();
             Railways = new List<Groundway>();
             Depots = new List<Building>();
-            Radars = new List<Stationary>();
-            Aircrafts = new List<Stationary>();
-            Artilleries = new List<Stationary>();
+            OtherStationaries = new List<Stationary>();
 
             FrontMarkers = new List<Point3d>();
-            AirGroups = new List<AirGroup>();
-            GroundGroups = new List<GroundGroup>();
-            Stationaries = new List<Stationary>();
         }
 
         private void load(ISectionFile file)
         {
-            // Main
+            // Parts
             Parts = SilkySkyCloDFile.ReadSectionKeies(file, SectionParts);
+            // Main
+            Map = file.get(SectionMain, KeyMap, string.Empty);
+            string value = file.get(SectionMain, KeyBattleArea, string.Empty);
+            string[] values = value.Split(SplitChars);
+            if (values.Length >= 5)
+            {
+                int x;
+                int y;
+                int w;
+                int h;
+                int sector;
+                if (int.TryParse(values[0], NumberStyles.Integer, Config.NumberFormat, out x) &&
+                    int.TryParse(values[1], NumberStyles.Integer, Config.NumberFormat, out y) &&
+                    int.TryParse(values[2], NumberStyles.Integer, Config.NumberFormat, out w) &&
+                    int.TryParse(values[3], NumberStyles.Integer, Config.NumberFormat, out h) &&
+                    int.TryParse(values[4], NumberStyles.Integer, Config.NumberFormat, out sector))
+                {
+                    BattleArea = new wRECTF() { x1 = x, x2 = x + w - 1, y1 = y, y2 = y + h - 1, };
+                    Sector = sector;
+                }
+            }
             Time = file.get(SectionMain, KeyTime, DefaultTime);
             WeatherIndex = file.get(SectionMain, KeyWeatherIndex, DefaulWeatherIndex);
             CloudsHeight = file.get(SectionMain, KeyCloudsHeight, DefaulCloudsHeight);
 
             string key;
-            string value;
             int lines;
             int i = 0;
 
@@ -302,24 +333,14 @@ namespace IL2DCE.MissionObjectModel
                 Stationary stationary = Stationary.Create(file, key);
                 if (stationary != null)
                 {
-                    if (stationary.Army != (int)EArmy.None)
+                    if (stationary.Army == (int)EArmy.Red || stationary.Army == (int)EArmy.Blue)
                     {
                         Stationaries.Add(stationary);
                     }
                     else
-                    {
-                        if (stationary.Type == EStationaryType.Radar)
-                        {
-                            Radars.Add(stationary);
-                        }
-                        else if (stationary.Type == EStationaryType.Artillery)
-                        {
-                            Artilleries.Add(stationary);
-                        }
-                        else if (stationary.Type == EStationaryType.Aircraft)
-                        {
-                            Aircrafts.Add(stationary);
-                        }
+                    {   // Army = none
+                        OtherStationaries.Add(stationary);
+                        // Debug.WriteLine("Stationary Type={0}, ID={1}, Army={2}, Country={3}, Class={4}", stationary.Type, stationary.Id, stationary.Army, stationary.Country, stationary.Class);
                     }
                 }
             }
@@ -373,7 +394,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
                     airGroup.SetAirGroupInfo(airGroupInfoTarget);
-                    if (airGroup.ArmyIndex != (int)EArmy.None)
+                    if (airGroup.ArmyIndex == (int)EArmy.Red || airGroup.ArmyIndex == (int)EArmy.Blue)
                     {
                         AirGroups.Add(airGroup);
                     }
@@ -396,12 +417,12 @@ namespace IL2DCE.MissionObjectModel
                 file.get(SectionChiefs, i, out key, out value);
 
                 GroundGroup groundGroup = GroundGroup.Create(file, key);
-                if (groundGroup != null && groundGroup.Army != (int)EArmy.None)
+                if (groundGroup != null && (groundGroup.Army == (int)EArmy.Red || groundGroup.Army == (int)EArmy.Blue))
                 {
                     GroundGroups.Add(groundGroup);
                 }
                 else
-                {
+                {   // Army = none
                     Groundway road = Groundway.Create(file, key);
                     if (road != null)
                     {

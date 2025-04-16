@@ -359,9 +359,10 @@ namespace IL2DCE
 
             private void UpdateButtonStatus()
             {
-                Career careea = SelectedCareer;
-                FrameworkElement.Continue.IsEnabled = careea != null && careea.CampaignInfo != null && careea.Date < careea.CampaignInfo.EndDate;
-                FrameworkElement.Delete.IsEnabled = careea != null;
+                Career career = SelectedCareer;
+                FrameworkElement.Continue.IsEnabled = career != null && career.CampaignInfo != null && career.Date < career.CampaignInfo.EndDate && 
+                                                    ((career.StrictMode && career.Status == (int)EPlayerStatus.Alive) || !career.StrictMode);
+                FrameworkElement.Delete.IsEnabled = career != null;
             }
         }
     }

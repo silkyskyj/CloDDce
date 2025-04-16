@@ -17,10 +17,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using IL2DCE.Generator;
 using maddox.game;
 using maddox.game.world;
@@ -37,8 +39,25 @@ namespace IL2DCE.MissionObjectModel
         Count,
     }
 
+    public enum EPlayerStatus
+    {
+        [Description("alive")]
+        Alive = 0,
+
+        [Description("dead")]
+        Dead = 1,
+
+        count,
+    }
+
     public interface IPlayerStatTotal
     {
+        long FlyingTime
+        {
+            get;
+            set;
+        }
+
         int Sorties
         {
             get;
@@ -104,7 +123,10 @@ namespace IL2DCE.MissionObjectModel
         public const string PlayerStatTotalFormat = "{0,17}: {1,5}";
         public const string PlayerStatKillsHistoryFormat = " {0:d} {1} {2}";
         public const string PlayerStatKillsTypeFormat = "{0,19}: {1}";
+        public const string PlayerStatTimeSpanShortFormat = "hh\\:mm\\:ss";
+        public const string PlayerStatTimeSpanLongFormat = "d\\.hh\\:mm\\:ss";
 
+        private const string KeyFlyingTime = "FlyingTime";
         private const string KeySorties = "Sorties";
         private const string KeyTakeoff = "Takeoffs";
         private const string KeyLandings = "Landings";
@@ -484,6 +506,7 @@ namespace IL2DCE.MissionObjectModel
             IPlayer player = game.gameInterface.Player();
             IPlayerStat st = player.GetBattleStat();
 
+            playerStatTotal.FlyingTime += (long)st.tTotalTypes.Sum(x => x.Value);
             playerStatTotal.Sorties += 1;
             playerStatTotal.Takeoffs += st.takeoffs;
             playerStatTotal.Landings += st.landings;
@@ -528,6 +551,7 @@ namespace IL2DCE.MissionObjectModel
             else
             {
                 IPlayerStat st = Game.gameInterface.Player().GetBattleStat();
+                playerStatTotal.FlyingTime += (long)st.tTotalTypes.Sum(x => x.Value);
                 playerStatTotal.Sorties += 1;
                 playerStatTotal.Takeoffs += st.takeoffs;
                 playerStatTotal.Landings += st.landings;
@@ -593,7 +617,33 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public static string ToStringTotalResult(IPlayerStatTotal playerStatTotal, string format = PlayerStatTotalFormat, string formatHistory = PlayerStatKillsHistoryFormat, string separator = Config.CommaStr)
+        public int Digit()
+        {
+            return Digit(this);
+        }
+
+        public static int Digit(PlayerStats playerStats)
+        {
+            int max = (new int[] { playerStats.KillsAircraftTotal, playerStats.KillsGroundUnitTotal, playerStats.KillsFriendlyAircraftTotal, 
+                                                                                                        playerStats.KillsFriendyGroundUnitTotal,}).Max();
+            return max > 0 ? (int)Math.Ceiling(Math.Log10(max)) : 1;
+        }
+
+        public static int Digit(IPlayerStatTotal playerStatTotal)
+        {
+            int max = (new int[] { playerStatTotal.Sorties, playerStatTotal.Takeoffs, playerStatTotal.Landings, playerStatTotal.Deaths,
+                                                                playerStatTotal.Bails, (int)playerStatTotal.Kills, (int)playerStatTotal.KillsGround, }).Max();
+            return max > 0 ? (int)Math.Ceiling(Math.Log10(max)): 1;
+        }
+
+        public static int Digit(IPlayerStat playerStat, bool AddKills)
+        {
+            int[] target = new int[] { playerStat.takeoffs, playerStat.landings, playerStat.deaths, playerStat.bails, playerStat.ditches, playerStat.planesWrittenOff, };
+            int max = (AddKills ? target.Concat(new int[] { (int)playerStat.kills, (int)playerStat.fkills, }) : target).Max();
+            return max > 0 ? (int)Math.Ceiling(Math.Log10(max)) : 1;
+        }
+
+        public static string ToStringTotalResult(IPlayerStatTotal playerStatTotal, string format = PlayerStatTotalFormat, string formatHistory = PlayerStatKillsHistoryFormat, string separator = Config.CommaStr, bool optimizeDigit = false)
         {
             StringBuilder sbHistory = new StringBuilder();
             List<DateTime> dtList = playerStatTotal.KillsHistory.Keys.ToList();
@@ -613,7 +663,15 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
+            if (optimizeDigit)
+            {
+                int digit = Digit(playerStatTotal);
+                format = Regex.Replace(format, @"\{1,\d}", "{1," + digit.ToString(Config.NumberFormat) + "}");
+            }
+
             StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(format, KeyFlyingTime, ToStringFlyingTime(playerStatTotal.FlyingTime));
+            sb.AppendLine();
             sb.AppendFormat(format, KeySorties, playerStatTotal.Sorties);
             sb.AppendLine();
             sb.AppendFormat(format, KeyTakeoff, playerStatTotal.Takeoffs);
@@ -690,8 +748,14 @@ namespace IL2DCE.MissionObjectModel
             return sb.ToString();
         }
 
-        public static string ToStringSummary(IPlayerStat stat, bool AddKills = true, string format = PlayerStatFormat)
+        public static string ToStringSummary(IPlayerStat stat, bool AddKills = true, string format = PlayerStatFormat, bool optimizeDigit = false)
         {
+            if (optimizeDigit)
+            {
+                int digit = Digit(stat, optimizeDigit);
+                format = Regex.Replace(format, @"\{1,\d}", "{1," + digit.ToString(Config.NumberFormat) + "}");
+            }
+
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(format, KeyTakeoff, stat.takeoffs);
             sb.AppendLine();
@@ -725,9 +789,21 @@ namespace IL2DCE.MissionObjectModel
             return string.Join(separator, dic.Select(x => string.Format("{0} {1}", AircraftInfo.CreateDisplayName(x.Key), x.Value.ToString(Config.KillsFormat, Config.NumberFormat))));
         }
 
+        public static string ToStringFlyingTime(long time)
+        {
+            TimeSpan tm = new TimeSpan(0, 0, (int)time);
+            return tm.Days < 1 ? tm.ToString(PlayerStatTimeSpanShortFormat, Config.DateTimeFormat): tm.ToString(PlayerStatTimeSpanLongFormat, Config.DateTimeFormat);
+        }
+
         private DamagerScore[] GetPlayerDamageScore(ArrayList listDamage)
         {
             return listDamage.ToArray().Where(x => x is DamagerScore && (x as DamagerScore).initiator.Player != null).ToArray() as DamagerScore[];
+        }
+
+        public bool IsPlayerAlive()
+        {
+            IPlayer player = (Game as IGameSingle).gameInterface.Player();
+            return player.PersonPrimary() != null && player.PersonPrimary().IsAlive();
         }
     }
 }

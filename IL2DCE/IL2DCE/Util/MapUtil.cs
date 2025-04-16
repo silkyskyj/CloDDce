@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using maddox.GP;
 using XLAND;
@@ -76,8 +77,46 @@ namespace IL2DCE.Util
                 }
             }
 #endif
-            return range; 
+            return range;
         }
 
+        public static wRECTF GetRange(IEnumerable<Point2d> points)
+        {
+#if false
+            wRECTF range = new wRECTF();
+            range.x1 = (float)points.Min(x => x.x);
+            range.x2 = (float)points.Max(x => x.x);
+            range.y1 = (float)points.Min(x => x.y);
+            range.y2 = (float)points.Max(x => x.y);
+#else
+            wRECTF range = new wRECTF() { x1 = float.MaxValue, x2 = float.MinValue, y1 = float.MaxValue, y2 = float.MinValue };
+            foreach (var item in points)
+            {
+                if (item.x < range.x1)
+                {
+                    range.x1 = (float)item.x;
+                }
+                if (item.x > range.x2)
+                {
+                    range.x2 = (float)item.x;
+                }
+                if (item.y < range.y1)
+                {
+                    range.y1 = (float)item.y;
+                }
+                if (item.y > range.y2)
+                {
+                    range.y2 = (float)item.y;
+                }
+            }
+#endif
+            return range;
+        }
+
+
+        public static wRECTF Sum(wRECTF rect1, wRECTF rect2)
+        {
+            return new wRECTF() { x1 = Math.Min(rect1.x1, rect2.x1), x2 = Math.Max(rect1.x2, rect2.x2), y1 = Math.Min(rect1.y1, rect2.y1), y2 = Math.Max(rect1.y2, rect2.y2) };
+        }
     }
 }

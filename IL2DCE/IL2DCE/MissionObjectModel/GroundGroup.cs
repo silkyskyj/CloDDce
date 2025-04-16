@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using maddox.game;
-using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -30,62 +29,78 @@ namespace IL2DCE.MissionObjectModel
         Ship,
         Train,
         Unknown,
+        Count,
     }
 
-    public class GroundGroup
+    public enum EGroundGroupGenerateType
     {
+        Random = -2,
+        Default = -1,
+        Generic,
+        User,
+        Couunt,
+    }
+
+    public class GroundGroup : GroundObject
+    {
+        public const float DefaultNormalMoveZ = 38.40f;
+
+        public static readonly string[][] DefaultClasses = new string[(int)EGroundGroupType.Count][]
+        {
+            new string [] { "Vehicle.Morris_CS", "Vehicle.Ford_G917", "/num_units 8", }, // Vehicle
+            new string [] { "Armor.Cruiser_Mk_IVA", "Armor.Pz_38t", "/num_units 8", }, // Armor
+            new string [] { "Ship.Tanker_Medium1", "Ship.Tanker_Medium2", "/sleep 0/skill 2/slowfire 1", }, // Ship
+            new string [] { "Train.57xx_0-6-0PT_c0", "Train.BR56-00_c2", "", }, // Train
+            new string [] { "", "", "",}, // Unknown
+        };
+
         public EGroundGroupType Type
         {
             get;
             private set;
         }
 
-        public Point2d Position
+        public override double X
         {
             get
             {
-                return new Point2d(Waypoints[0].X, Waypoints[0].Y);
+                return Waypoints != null && Waypoints.Any() ? Waypoints[0].X: -1;
+            }
+            protected set
+            {
+                if (value != -1 && Waypoints != null && Waypoints.Any())
+                {
+                    Waypoints[0].X = value;
+                }
             }
         }
 
-        public string Id
+        public override double Y
         {
-            get;
-            set;
+            get
+            {
+                return Waypoints != null && Waypoints.Any() ? Waypoints[0].Y: -1;
+            }
+            protected set
+            {
+                if (value != -1 && Waypoints != null && Waypoints.Any())
+                {
+                    Waypoints[0].Y = value;
+                }
+            }
         }
 
-        public string Class
+        public virtual string Options
         {
             get;
-            private set;
-        }
-
-        public ECountry Country
-        {
-            get;
-            private set;
-        }
-
-        public int Army
-        {
-            get;
-            private set;
-        }
-
-        public string Options
-        {
-            get;
-            private set;
+            protected set;
         }
 
         public List<GroundGroupWaypoint> Waypoints
         {
-            get
-            {
-                return _waypoints;
-            }
+            get;
+            private set;
         }
-        private List<GroundGroupWaypoint> _waypoints = new List<GroundGroupWaypoint>();
 
         public string CustomChief
         {
@@ -108,14 +123,11 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public GroundGroup(string id, string @class, int army, ECountry country, string options, List<GroundGroupWaypoint> waypoints, string customChief = null, IEnumerable<string> customChiefValues = null)
+            : base(id, @class, army, country, -1, -1, -1)
         {
-            Id = id;
-            Class = @class;
             Type = ParseType(Class);
-            Country = country;
-            Army = army;
             Options = options;
-            Waypoints.AddRange(waypoints);
+            Waypoints = waypoints;
             CustomChief = customChief;
             CustomChiefValues = customChiefValues;
         }
@@ -144,47 +156,7 @@ namespace IL2DCE.MissionObjectModel
                     string options = value.Trim();
 
                     // Waypoints
-                    List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
-                    GroundGroupWaypoint lastWaypoint = null;
-                    string section = string.Format("{0}_{1}", id, MissionFile.SectionRoad);
-                    int lines = sectionFile.lines(section);
-                    for (int i = 0; i < lines; i++)
-                    {
-                        string key;
-                        sectionFile.get(section, i, out key, out value);
-
-                        GroundGroupWaypoint waypoint = null;
-                        if (!key.Contains("S"))
-                        {
-                            waypoint = GroundGroupWaypointLine.Create(sectionFile, id, i);
-                        }
-                        else if (key.Contains("S"))
-                        {
-                            waypoint = GroundGroupWaypointSpline.Create(sectionFile, id, i);
-                        }
-
-                        if (waypoint != null)
-                        {
-                            // Check if it's a subwaypoint or the last waypoint (which looks like a subwaypoint but is none).
-                            if (waypoint.IsSubWaypoint(sectionFile, id, i) && i < lines - 1)
-                            {
-                                if (lastWaypoint != null)
-                                {
-                                    lastWaypoint.SubWaypoints.Add(waypoint);
-                                }
-                                else
-                                {
-                                    // Debug.Assert(false, string.Format("no GroundGroup sub Waypoint[{0}]", id));
-                                    // throw new FormatException(string.Format("no GroundGroup sub Waypoint[{0}]", id));
-                                }
-                            }
-                            else
-                            {
-                                waypoints.Add(waypoint);
-                                lastWaypoint = waypoint;
-                            }
-                        }
-                    }
+                    Groundway groundway = Groundway.Create(sectionFile, id);
 
                     // CustomChiefs
                     string customChief = null;
@@ -194,7 +166,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         customChief = value;
                         customChiefValues = new List<string>();
-                        lines = sectionFile.lines(@class);
+                        int lines = sectionFile.lines(@class);
                         for (int i = 0; i < lines; i++)
                         {
                             string key;
@@ -203,9 +175,32 @@ namespace IL2DCE.MissionObjectModel
                         }
                     }
 
-                    if (waypoints.Count > 0)
+                    if (groundway != null)
                     {
-                        return new GroundGroup(id, @class, (int)army, country, options, waypoints, customChief, customChiefValues);
+                        EGroundGroupType type = GroundGroup.ParseType(@class);
+                        if (type == EGroundGroupType.Ship)
+                        {
+                            ShipOption shipOption = ShipOption.Create(options);
+                            if (shipOption != null)
+                            {
+                                return new ShipGroup(id, @class, (int)army, country, options, shipOption, groundway.Waypoints, customChief, customChiefValues);
+                            }
+                            else
+                            {
+                                string msg = string.Format("Invalid Ship Option", "Id={0} Option={1}", id, options);
+                                Core.WriteLog(msg);
+                                Debug.Assert(false, msg);
+                            }
+                        }
+                        else if (type == EGroundGroupType.Armor || type == EGroundGroupType.Vehicle)
+                        {
+                            ArmorOption armorOption = ArmorOption.Create(options);
+                            return new Armor(id, @class, (int)army, country, options, armorOption, groundway.Waypoints, customChief, customChiefValues);
+                        }
+                        else
+                        {
+                            return new GroundGroup(id, @class, (int)army, country, options, groundway.Waypoints, customChief, customChiefValues);
+                        }
                     }
                 }
             }
@@ -234,13 +229,44 @@ namespace IL2DCE.MissionObjectModel
             return EGroundGroupType.Unknown;
         }
 
-        public void UpdateArmy(int army)
+        public static LandTypes[] GetLandTypes(EGroundGroupType groupType)
         {
-            Debug.WriteLine("GroundGroup.UpdateArmy({0} -> {1})", Army, army);
-            Army = army;
+            if (groupType == EGroundGroupType.Vehicle || groupType == EGroundGroupType.Armor)
+            {
+                return new LandTypes[] { LandTypes.ROAD, LandTypes.HIGHWAY, LandTypes.RAIL, LandTypes.NONE, };
+            }
+            else if (groupType == EGroundGroupType.Ship)
+            {
+                return new LandTypes[] { LandTypes.WATER, };
+            }
+            else if (groupType == EGroundGroupType.Train)
+            {
+                return new LandTypes[] { LandTypes.RAIL, };
+            }
+            else/* if (groupType == EGroundGroupType.Unknown)*/
+            {
+                return new LandTypes[] { LandTypes.NONE, };
+            }
         }
 
-        public void WriteTo(ISectionFile sectionFile)
+        public void UpdateId(string id)
+        {
+            Debug.WriteLine("GroundGroup.UpdateId(Id:{0} -> {1})", Id, id);
+            Id = id;
+        }
+
+        public void UpdateIdArmy(int army, string id)
+        {
+            Debug.WriteLine("GroundGroup.UpdateArmy(Army:{0} -> {1}, Country:{2} Id:{3} -> {4})", Army, army, Country, Id, id);
+            Army = army;
+            if (army != (int)MissionObjectModel.Army.Parse(Country))
+            {
+                Country = MissionObjectModel.Army.DefaultCountry((EArmy)army);
+            }
+            Id = id;
+        }
+
+        public virtual void WriteTo(ISectionFile sectionFile)
         {
             if (Waypoints.Count > 1)
             {
@@ -256,7 +282,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         if (Waypoints[i].V.HasValue)
                         {
-                            sectionFile.add(section, Waypoints[i].X.ToString("F2", Config.NumberFormat),
+                            sectionFile.add(section, Waypoints[i].X.ToString(Config.PointValueFormat, Config.NumberFormat),
                                             string.Format(Config.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}",
                                                             Waypoints[i].Y,
                                                             (Waypoints[i] as GroundGroupWaypointLine).Z,
@@ -282,7 +308,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         if (subWaypoint is GroundGroupWaypointLine)
                         {
-                            sectionFile.add(section, subWaypoint.X.ToString("F2", Config.NumberFormat),
+                            sectionFile.add(section, subWaypoint.X.ToString(Config.PointValueFormat, Config.NumberFormat),
                                 string.Format(Config.NumberFormat, "{0:F2} {1:F2}", subWaypoint.Y, (subWaypoint as GroundGroupWaypointLine).Z));
                         }
                         else if (subWaypoint is GroundGroupWaypointSpline)

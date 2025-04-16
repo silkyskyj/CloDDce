@@ -43,9 +43,10 @@ namespace IL2DCE
         public const string KeyDate = "date";
         public const string KeyTime = "time";
         public const string KeyAirGroup = "airGroup";
+        public const string KeyAirGroupDislplay = "AirGroupDisplay";
         public const string KeyMissionFile = "missionFile";
         public const string KeyId = "id";
-
+        public const string KeyFlyingTime = "FlyingTime";
         public const string KeySorties = "Sorties";
         public const string KeyTakeoffs = "Takeoffs";
         public const string KeyLandings = "Landings";
@@ -57,7 +58,13 @@ namespace IL2DCE
         public const string KeyAdditionalAirOperations = "AdditionalAirOperations";
         public const string KeyAdditionalGroundOperations = "AdditionalGroundOperations";
         public const string KeyAdditionalAirGroups = "AdditionalAirGroups";
-        public const string KeyAirGroupDislplay = "AirGroupDisplay";
+        public const string KeyAdditionalGroundGroups = "AdditionalGroundGroups";
+        public const string KeyAdditionalStationaries = "AdditionalStationaries";
+        public const string KeyStationaryGenerateType = "StationaryGenerateType";
+        public const string KeyGroundGroupGenerateType = "GroundGroupGenerateType";
+        public const string KeyArmorUnitNumsSet = "ArmorUnitNumstSet";
+        public const string KeyShipUnitNumsSet = "ShipUnitNumsSet";
+        public const string KeySpawnParked = "SpawnParked";
         public const string KeySpawnRandomLocationPlayer = "SpawnRandomLocationPlayer";
         public const string KeySpawnRandomLocationFriendly = "SpawnRandomLocationFriendly";
         public const string KeySpawnRandomLocationEnemy = "SpawnRandomLocationEnemy";
@@ -67,11 +74,20 @@ namespace IL2DCE
         public const string KeySpawnRandomTimeEndSec = "SpawnRandomTimeEndSec";
         public const string KeySpawnRandomAltitudeFriendly = "SpawnRandomAltitudeFriendly";
         public const string KeySpawnRandomAltitudeEnemy = "SpawnRandomAltitudeEnemy";
+        public const string KeyAISkill = "AISkill";
+        public const string KeyCampaignProgress = "CampaignProgress";
+        public const string KeyArtilleryTimeout = "ArtilleryTimeout";
+        public const string KeyArtilleryRHide = "ArtilleryRHide";
+        public const string KeyArtilleryZOffset = "ArtilleryZOffset";
+        public const string KeyShipSleep = "ShipSleep";
+        public const string KeyShipSkills = "ShipSkill";
+        public const string KeyShipSlowfires = "ShipSlowfire";
         public const string KeyReArm = "ReArm";
         public const string KeyReFuel = "ReFuel";
         public const string KeyTrackRecording = "TrackRecording";
-        public const string KeyAISkill = "AISkill";
-        public const string KeyCampaignProgress = "CampaignProgress";
+        public const string KeyStrictMode = "StrictMode";
+        public const string KeyStatus = "Status";
+
         // public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
         public const string PlayerCurrentStatusFormat = "{0,10}: {1}";
@@ -148,6 +164,12 @@ namespace IL2DCE
             set;
         }
 
+        public string AirGroupDisplay
+        {
+            get;
+            set;
+        }
+
         public int AdditionalAirOperations
         {
             get;
@@ -166,7 +188,37 @@ namespace IL2DCE
             set;
         }
 
-        public string AirGroupDisplay
+        public bool AdditionalGroundGroups
+        {
+            get;
+            set;
+        }
+
+        public bool AdditionalStationaries
+        {
+            get;
+            set;
+        }
+
+        public EGroundGroupGenerateType GroundGroupGenerateType
+        {
+            get;
+            set;
+        }
+
+        public EStationaryGenerateType StationaryGenerateType
+        {
+            get;
+            set;
+        }
+
+        public EArmorUnitNumsSet ArmorUnitNumsSet
+        {
+            get;
+            set;
+        }
+
+        public EShipUnitNumsSet ShipUnitNumsSet
         {
             get;
             set;
@@ -226,6 +278,54 @@ namespace IL2DCE
             set;
         }
 
+        public ESkillSet AISkill
+        {
+            get;
+            set;
+        }
+
+        public ECampaignProgress CampaignProgress
+        {
+            get;
+            set;
+        }
+
+        public int ArtilleryTimeout
+        {
+            get;
+            set;
+        }
+
+        public int ArtilleryRHide
+        {
+            get;
+            set;
+        }
+
+        public int ArtilleryZOffset
+        {
+            get;
+            set;
+        }
+
+        public int ShipSleep
+        {
+            get;
+            set;
+        }
+
+        public ESkillSetShip ShipSkill
+        {
+            get;
+            set;
+        }
+
+        public float ShipSlowfire
+        {
+            get;
+            set;
+        }
+
         public int ReArmTime
         {
             get;
@@ -244,19 +344,25 @@ namespace IL2DCE
             set;
         }
 
-        public ESkillSet AISkill
+        public bool StrictMode
         {
             get;
             set;
         }
 
-        public ECampaignProgress CampaignProgress
+        public int Status
         {
             get;
             set;
         }
 
         #region Stats
+
+        public long FlyingTime
+        {
+            get;
+            set;
+        }
 
         public int Sorties
         {
@@ -382,13 +488,13 @@ namespace IL2DCE
             set;
         }
 
-        public GroundGroup TargetGroundGroup
+        internal GroundGroup TargetGroundGroup
         {
             get;
             set;
         }
 
-        public Stationary TargetStationary
+        internal Stationary TargetStationary
         {
             get;
             set;
@@ -461,6 +567,12 @@ namespace IL2DCE
             AdditionalAirOperations = Config.DefaultAdditionalAirOperations;
             AdditionalGroundOperations = Config.DefaultAdditionalGroundOperations;
             AdditionalAirGroups = false;
+            AdditionalGroundGroups = false;
+            AdditionalStationaries = false;
+            GroundGroupGenerateType = EGroundGroupGenerateType.Default;
+            StationaryGenerateType = EStationaryGenerateType.Generic;
+            ArmorUnitNumsSet = EArmorUnitNumsSet.Random;
+            ShipUnitNumsSet = EShipUnitNumsSet.Random;
             SpawnRandomLocationPlayer = false;
             SpawnRandomLocationFriendly = false;
             SpawnRandomLocationEnemy = true;
@@ -476,11 +588,20 @@ namespace IL2DCE
 
             AllowDefensiveOperation = true;
 
-            ReArmTime = -1;
-            ReFuelTime = -1;
-
             AISkill = ESkillSet.Random;
             CampaignProgress = ECampaignProgress.Daily;
+            ArtilleryTimeout = ArtilleryOption.TimeoutMissionDefault;
+            ArtilleryRHide = ArtilleryOption.RHideMissionDefault;
+            ArtilleryZOffset = ArtilleryOption.ZOffsetMissionDefault;
+            ShipSleep = ShipOption.SleepMissionDefault;
+            ShipSkill =  ESkillSetShip.Random;
+            ShipSlowfire = ShipOption.SlowFireMissionDefault;
+
+            ReArmTime = -1;
+            ReFuelTime = -1;
+            TrackRecording = false;
+            StrictMode = false;
+            Status = 0;
 
             #region Quick Mission Info 
 
@@ -501,158 +622,179 @@ namespace IL2DCE
 
             string ver = careerFile.exist(SectionMain, KeyVersion) ? careerFile.get(SectionMain, KeyVersion) : string.Empty;
 
-            if (careerFile.exist(SectionMain, KeyArmyIndex)
-                && careerFile.exist(SectionMain, KeyAirForceIndex)
-                && careerFile.exist(SectionMain, KeyRankIndex)
-                && careerFile.exist(SectionMain, KeyExperience))
-            {
-                ArmyIndex = int.Parse(careerFile.get(SectionMain, KeyArmyIndex));
-                AirForceIndex = int.Parse(careerFile.get(SectionMain, KeyAirForceIndex));
-                RankIndex = int.Parse(careerFile.get(SectionMain, KeyRankIndex));
-                Experience = int.Parse(careerFile.get(SectionMain, KeyExperience));
-            }
-            else
+            if (!careerFile.exist(SectionMain, KeyArmyIndex)
+                || !careerFile.exist(SectionMain, KeyAirForceIndex)
+                || !careerFile.exist(SectionMain, KeyRankIndex)
+                || !careerFile.exist(SectionMain, KeyExperience))
             {
                 throw new FormatException(string.Format("Career File Format Error[{0}]", "armyIndex/rankIndex/experience"));
             }
 
-            if (careerFile.exist(SectionCampaign, KeyDate)
-                && careerFile.exist(SectionCampaign, KeyId)
-                && careerFile.exist(SectionCampaign, KeyAirGroup)
-                && careerFile.exist(SectionCampaign, KeyMissionFile))
-            {
-                string id = careerFile.get(SectionCampaign, KeyId);
-                CampaignInfo = campaignInfos.Where(x => string.Compare(x.Id, id, true) == 0).FirstOrDefault();
-                Time = careerFile.get(SectionCampaign, KeyTime, 0);
-                Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
-                AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
-                MissionFileName = careerFile.get(SectionCampaign, KeyMissionFile);
-                Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
+            ArmyIndex = int.Parse(careerFile.get(SectionMain, KeyArmyIndex));
+            AirForceIndex = int.Parse(careerFile.get(SectionMain, KeyAirForceIndex));
+            RankIndex = int.Parse(careerFile.get(SectionMain, KeyRankIndex));
+            Experience = int.Parse(careerFile.get(SectionMain, KeyExperience));
 
-                AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
-                AdditionalGroundOperations = careerFile.get(SectionCampaign, KeyAdditionalGroundOperations, config.AdditionalGroundOperations);
-                AdditionalAirGroups = careerFile.get(SectionCampaign, KeyAdditionalAirGroups, false);
-                AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
-                SpawnRandomLocationPlayer = careerFile.get(SectionCampaign, KeySpawnRandomLocationPlayer, false);
-                SpawnRandomLocationFriendly = careerFile.get(SectionCampaign, KeySpawnRandomLocationFriendly, false);
-                SpawnRandomLocationEnemy = careerFile.get(SectionCampaign, KeySpawnRandomLocationEnemy, true);
-                SpawnRandomAltitudeFriendly = careerFile.get(SectionCampaign, KeySpawnRandomAltitudeFriendly, false);
-                SpawnRandomAltitudeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomAltitudeEnemy, true);
-                SpawnRandomTimeFriendly = careerFile.get(SectionCampaign, KeySpawnRandomTimeFriendly, false);
-                SpawnRandomTimeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomTimeEnemy, true);
-                SpawnRandomTimeBeginSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeBeginSec, MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec);
-                SpawnRandomTimeEndSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeEndSec, MissionObjectModel.Spawn.SpawnTime.DefaultEndSec);
-
-                ReArmTime = careerFile.get(SectionCampaign, KeyReArm, false) ? Config.DefaultProcessTimeReArm : -1;
-                ReFuelTime = careerFile.get(SectionCampaign, KeyReFuel, false) ? Config.DefaultProcessTimeReFuel : -1;
-
-                TrackRecording = careerFile.get(SectionCampaign, KeyTrackRecording, false);
-
-                string val = careerFile.get(SectionCampaign, KeyAISkill, string.Empty);
-                AISkill = (Enum.IsDefined(typeof(ESkillSet), val)) ? (ESkillSet)Enum.Parse(typeof(ESkillSet), val) : ESkillSet.Random;
-
-                val = careerFile.get(SectionCampaign, KeyCampaignProgress, string.Empty);
-                CampaignProgress = (Enum.IsDefined(typeof(ECampaignProgress), val)) ? (ECampaignProgress)Enum.Parse(typeof(ECampaignProgress), val) : ECampaignProgress.Daily;
-
-                #region Stats
-
-                Sorties = careerFile.get(SectionStat, KeySorties, 0);
-                Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
-                Landings = careerFile.get(SectionStat, KeyLandings, 0);
-                Bails = careerFile.get(SectionStat, KeyBails, 0);
-                Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
-                if (string.IsNullOrEmpty(ver) && careerFile.exist(SectionStat, KeyKills))
-                {
-                    string temp = careerFile.get(SectionStat, KeyKills);
-                    double d;
-                    Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, Config.NumberFormat, out d) ? d : 0;
-                }
-                else
-                {
-                    Kills = careerFile.get(SectionStat, KeyKills, 0f);
-                }
-                VersionConverter.OptimizeSorties(this);
-
-                string key;
-                string value;
-                DateTime dt;
-                int lines;
-
-                KillsHistory = new Dictionary<DateTime, string>();
-                lines = careerFile.lines(SectionKillsResult);
-                for (int i = 0; i < lines; i++)
-                {
-                    careerFile.get(SectionKillsResult, i, out key, out value);
-                    if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
-                    // if (DateTime.TryParse(key, out dt))
-                    {
-                        value = VersionConverter.ReplaceKillsHistory(value);
-                        if (KillsHistory.ContainsKey(dt.Date))
-                        {
-                            KillsHistory[dt.Date] += separator + value;
-                        }
-                        else
-                        {
-                            KillsHistory.Add(dt.Date, value);
-                        }
-                    }
-                }
-
-                KillsGround = careerFile.get(SectionStat, KeyKillsGround, 0f);
-                KillsGroundHistory = new Dictionary<DateTime, string>();
-                lines = careerFile.lines(SectionKillsGroundResult);
-                for (int i = 0; i < lines; i++)
-                {
-                    careerFile.get(SectionKillsGroundResult, i, out key, out value);
-                    if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
-                    // if (DateTime.TryParse(key, out dt))
-                    {
-                        if (KillsGroundHistory.ContainsKey(dt.Date))
-                        {
-                            KillsGroundHistory[dt.Date] += separator + value;
-                        }
-                        else
-                        {
-                            KillsGroundHistory.Add(dt.Date, value);
-                        }
-                    }
-                }
-
-                #endregion
-
-                #region Skill
-
-                if (careerFile.exist(SectionSkill))
-                {
-                    Skills skills = new Skills();
-                    lines = careerFile.lines(SectionSkill);
-                    for (int i = 0; i < lines; i++)
-                    {
-                        careerFile.get(SectionSkill, i, out key, out value);
-                        System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value ?? string.Empty);
-                        Skill skill;
-                        if (Skill.TryParse(value, out skill))
-                        {
-                            if (Skill.EqualsValue(skill, Skill.Default))
-                            {
-                                skills.Add(Skill.Default);
-                            }
-                            else if (!Skill.EqualsValue(skill, Skill.Random))
-                            {
-                                skill.Name = key;
-                                skills.Add(skill);
-                            }
-                        }
-                    }
-                    PlayerAirGroupSkill = skills.ToArray();
-                }
-
-                #endregion
-            }
-            else
+            if (!careerFile.exist(SectionCampaign, KeyDate)
+                || !careerFile.exist(SectionCampaign, KeyId)
+                || !careerFile.exist(SectionCampaign, KeyAirGroup)
+                || !careerFile.exist(SectionCampaign, KeyMissionFile))
             {
                 throw new FormatException(string.Format("Career File Format Error[{0}]", "date/id/airGroup/missionFile"));
             }
+
+            #region Campaign
+
+            string id = careerFile.get(SectionCampaign, KeyId);
+            CampaignInfo = campaignInfos.Where(x => string.Compare(x.Id, id, true) == 0).FirstOrDefault();
+            Time = careerFile.get(SectionCampaign, KeyTime, 0);
+            Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
+            AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
+            AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
+            MissionFileName = careerFile.get(SectionCampaign, KeyMissionFile);
+            Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
+            Spawn = careerFile.get(SectionCampaign, KeySpawnParked, false) ? (int)ESpawn.Parked : (int)ESpawn.Default;
+
+            AdditionalAirOperations = careerFile.get(SectionCampaign, KeyAdditionalAirOperations, config.AdditionalAirOperations);
+            AdditionalGroundOperations = careerFile.get(SectionCampaign, KeyAdditionalGroundOperations, config.AdditionalGroundOperations);
+            AdditionalAirGroups = careerFile.get(SectionCampaign, KeyAdditionalAirGroups, false);
+            AdditionalGroundGroups = careerFile.get(SectionCampaign, KeyAdditionalGroundGroups, false);
+            AdditionalStationaries = careerFile.get(SectionCampaign, KeyAdditionalStationaries, false);
+
+            string val = careerFile.get(SectionCampaign, KeyGroundGroupGenerateType, string.Empty);
+            GroundGroupGenerateType = (Enum.IsDefined(typeof(EGroundGroupGenerateType), val)) ? (EGroundGroupGenerateType)Enum.Parse(typeof(EGroundGroupGenerateType), val) : EGroundGroupGenerateType.Default;
+            val = careerFile.get(SectionCampaign, KeyStationaryGenerateType, string.Empty);
+            StationaryGenerateType = (Enum.IsDefined(typeof(EStationaryGenerateType), val)) ? (EStationaryGenerateType)Enum.Parse(typeof(EStationaryGenerateType), val) : EStationaryGenerateType.Generic;
+            val = careerFile.get(SectionCampaign, KeyArmorUnitNumsSet, string.Empty);
+            ArmorUnitNumsSet = (Enum.IsDefined(typeof(EArmorUnitNumsSet), val)) ? (EArmorUnitNumsSet)Enum.Parse(typeof(EArmorUnitNumsSet), val) : EArmorUnitNumsSet.Default;
+            val = careerFile.get(SectionCampaign, KeyShipUnitNumsSet, string.Empty);
+            ShipUnitNumsSet = (Enum.IsDefined(typeof(EShipUnitNumsSet), val)) ? (EShipUnitNumsSet)Enum.Parse(typeof(EShipUnitNumsSet), val) : EShipUnitNumsSet.Random;
+
+            SpawnRandomLocationPlayer = careerFile.get(SectionCampaign, KeySpawnRandomLocationPlayer, false);
+            SpawnRandomLocationFriendly = careerFile.get(SectionCampaign, KeySpawnRandomLocationFriendly, false);
+            SpawnRandomLocationEnemy = careerFile.get(SectionCampaign, KeySpawnRandomLocationEnemy, true);
+            SpawnRandomAltitudeFriendly = careerFile.get(SectionCampaign, KeySpawnRandomAltitudeFriendly, false);
+            SpawnRandomAltitudeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomAltitudeEnemy, true);
+            SpawnRandomTimeFriendly = careerFile.get(SectionCampaign, KeySpawnRandomTimeFriendly, false);
+            SpawnRandomTimeEnemy = careerFile.get(SectionCampaign, KeySpawnRandomTimeEnemy, true);
+            SpawnRandomTimeBeginSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeBeginSec, MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec);
+            SpawnRandomTimeEndSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeEndSec, MissionObjectModel.Spawn.SpawnTime.DefaultEndSec);
+
+            val = careerFile.get(SectionCampaign, KeyAISkill, string.Empty);
+            AISkill = (Enum.IsDefined(typeof(ESkillSet), val)) ? (ESkillSet)Enum.Parse(typeof(ESkillSet), val) : ESkillSet.Random;
+            val = careerFile.get(SectionCampaign, KeyCampaignProgress, string.Empty);
+            CampaignProgress = (Enum.IsDefined(typeof(ECampaignProgress), val)) ? (ECampaignProgress)Enum.Parse(typeof(ECampaignProgress), val) : ECampaignProgress.Daily;
+            ArtilleryTimeout = careerFile.get(SectionCampaign, KeyArtilleryTimeout, ArtilleryOption.TimeoutMissionDefault);
+            ArtilleryRHide = careerFile.get(SectionCampaign, KeyArtilleryRHide, ArtilleryOption.RHideMissionDefault);
+            ArtilleryZOffset = careerFile.get(SectionCampaign, KeyArtilleryZOffset, ArtilleryOption.ZOffsetMissionDefault);
+            ShipSleep = careerFile.get(SectionCampaign, KeyShipSleep, ShipOption.SleepMissionDefault);
+            val = careerFile.get(SectionCampaign, KeyShipSkills, string.Empty);
+            ShipSkill = (Enum.IsDefined(typeof(ESkillSetShip), val)) ? (ESkillSetShip)Enum.Parse(typeof(ESkillSetShip), val) : ESkillSetShip.Random;
+            ShipSlowfire = careerFile.get(SectionCampaign, KeyShipSlowfires, ShipOption.SlowFireMissionDefault);
+
+            ReArmTime = careerFile.get(SectionCampaign, KeyReArm, false) ? Config.DefaultProcessTimeReArm : -1;
+            ReFuelTime = careerFile.get(SectionCampaign, KeyReFuel, false) ? Config.DefaultProcessTimeReFuel : -1;
+            TrackRecording = careerFile.get(SectionCampaign, KeyTrackRecording, false);
+            StrictMode = careerFile.get(SectionCampaign, KeyStrictMode, false);
+            Status = careerFile.get(SectionCampaign, KeyStatus, 0);
+
+            #endregion
+
+            #region Stat
+
+            FlyingTime = careerFile.get(SectionStat, KeyFlyingTime, 0);
+            Sorties = careerFile.get(SectionStat, KeySorties, 0);
+            Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
+            Landings = careerFile.get(SectionStat, KeyLandings, 0);
+            Bails = careerFile.get(SectionStat, KeyBails, 0);
+            Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
+            if (string.IsNullOrEmpty(ver) && careerFile.exist(SectionStat, KeyKills))
+            {
+                string temp = careerFile.get(SectionStat, KeyKills);
+                double d;
+                Kills = double.TryParse(temp.Replace(",", "."), NumberStyles.Float, Config.NumberFormat, out d) ? d : 0;
+            }
+            else
+            {
+                Kills = careerFile.get(SectionStat, KeyKills, 0f);
+            }
+            VersionConverter.OptimizePlayerStatTota(this);
+
+            string key;
+            string value;
+            DateTime dt;
+            int lines;
+
+            KillsHistory = new Dictionary<DateTime, string>();
+            lines = careerFile.lines(SectionKillsResult);
+            for (int i = 0; i < lines; i++)
+            {
+                careerFile.get(SectionKillsResult, i, out key, out value);
+                if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                // if (DateTime.TryParse(key, out dt))
+                {
+                    value = VersionConverter.ReplaceKillsHistory(value);
+                    if (KillsHistory.ContainsKey(dt.Date))
+                    {
+                        KillsHistory[dt.Date] += separator + value;
+                    }
+                    else
+                    {
+                        KillsHistory.Add(dt.Date, value);
+                    }
+                }
+            }
+
+            KillsGround = careerFile.get(SectionStat, KeyKillsGround, 0f);
+            KillsGroundHistory = new Dictionary<DateTime, string>();
+            lines = careerFile.lines(SectionKillsGroundResult);
+            for (int i = 0; i < lines; i++)
+            {
+                careerFile.get(SectionKillsGroundResult, i, out key, out value);
+                if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
+                // if (DateTime.TryParse(key, out dt))
+                {
+                    if (KillsGroundHistory.ContainsKey(dt.Date))
+                    {
+                        KillsGroundHistory[dt.Date] += separator + value;
+                    }
+                    else
+                    {
+                        KillsGroundHistory.Add(dt.Date, value);
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Skill
+
+            if (careerFile.exist(SectionSkill))
+            {
+                Skills skills = new Skills();
+                lines = careerFile.lines(SectionSkill);
+                for (int i = 0; i < lines; i++)
+                {
+                    careerFile.get(SectionSkill, i, out key, out value);
+                    System.Diagnostics.Debug.WriteLine("Skill[{0}] name={1} Value={2}", i, key, value ?? string.Empty);
+                    Skill skill;
+                    if (Skill.TryParse(value, out skill))
+                    {
+                        if (Skill.EqualsValue(skill, Skill.Default))
+                        {
+                            skills.Add(Skill.Default);
+                        }
+                        else if (!Skill.EqualsValue(skill, Skill.Random))
+                        {
+                            skill.Name = key;
+                            skills.Add(skill);
+                        }
+                    }
+                }
+                PlayerAirGroupSkill = skills.ToArray();
+            }
+
+            #endregion
 
             AllowDefensiveOperation = true;
         }
@@ -686,22 +828,30 @@ namespace IL2DCE
         public void WriteTo(ISectionFile careerFile, int historyMax)
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
-
             careerFile.add(SectionMain, KeyArmyIndex, ArmyIndex.ToString(Config.NumberFormat));
             careerFile.add(SectionMain, KeyAirForceIndex, AirForceIndex.ToString(Config.NumberFormat));
             careerFile.add(SectionMain, KeyRankIndex, RankIndex.ToString(Config.NumberFormat));
             careerFile.add(SectionMain, KeyExperience, Experience.ToString(Config.NumberFormat));
 
+            #region Campaign
+
             careerFile.add(SectionCampaign, KeyDate, Date.Value.Year.ToString(Config.NumberFormat) + "-" + Date.Value.Month.ToString(Config.NumberFormat) + "-" + Date.Value.Day.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyTime, ((int)Time).ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAirGroup, AirGroup);
+            careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay ?? string.Empty);
             careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
             careerFile.add(SectionCampaign, KeyId, CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
+            careerFile.add(SectionCampaign, KeySpawnParked, Spawn == (int)ESpawn.Parked ? "1": "0");
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalAirGroups, AdditionalAirGroups ? "1" : "0");
-            careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay ?? string.Empty);
+            careerFile.add(SectionCampaign, KeyAdditionalGroundGroups, AdditionalGroundGroups ? "1" : "0");
+            careerFile.add(SectionCampaign, KeyAdditionalStationaries, AdditionalStationaries ? "1" : "0");
+            careerFile.add(SectionCampaign, KeyStationaryGenerateType, StationaryGenerateType.ToString());
+            careerFile.add(SectionCampaign, KeyGroundGroupGenerateType, GroundGroupGenerateType.ToString());
+            careerFile.add(SectionCampaign, KeyArmorUnitNumsSet, ArmorUnitNumsSet.ToString());
+            careerFile.add(SectionCampaign, KeyShipUnitNumsSet, ShipUnitNumsSet.ToString());
             careerFile.add(SectionCampaign, KeySpawnRandomLocationPlayer, SpawnRandomLocationPlayer ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomLocationFriendly, SpawnRandomLocationFriendly ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomLocationEnemy, SpawnRandomLocationEnemy ? "1" : "0");
@@ -711,12 +861,25 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEnemy, SpawnRandomTimeEnemy ? "1" : "0");
             careerFile.add(SectionCampaign, KeySpawnRandomTimeBeginSec, SpawnRandomTimeBeginSec.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeySpawnRandomTimeEndSec, SpawnRandomTimeEndSec.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyAISkill, AISkill.ToString());
+            careerFile.add(SectionCampaign, KeyCampaignProgress, CampaignProgress.ToString());
+            careerFile.add(SectionCampaign, KeyArtilleryTimeout, ArtilleryTimeout.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyArtilleryRHide, ArtilleryRHide.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyArtilleryZOffset, ArtilleryZOffset.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyShipSleep, ShipSleep.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyShipSkills, ShipSkill.ToString());
+            careerFile.add(SectionCampaign, KeyShipSlowfires, ShipSlowfire.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyReArm, ReArmTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
-            careerFile.add(SectionCampaign, KeyAISkill, AISkill.ToString());
-            careerFile.add(SectionCampaign, KeyCampaignProgress, CampaignProgress.ToString());
+            careerFile.add(SectionCampaign, KeyStrictMode, StrictMode ? "1" : "0");
+            careerFile.add(SectionCampaign, KeyStatus, Status.ToString(Config.NumberFormat));
 
+            #endregion
+
+            #region Stat
+
+            careerFile.add(SectionStat, KeyFlyingTime, FlyingTime.ToString(Config.NumberFormat));
             careerFile.add(SectionStat, KeySorties, Sorties.ToString(Config.NumberFormat));
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Config.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(Config.NumberFormat));
@@ -733,6 +896,10 @@ namespace IL2DCE
                 careerFile.add(SectionKillsGroundResult, item.Key.ToString(DateFormat, Config.DateTimeFormat), item.Value);
             }
 
+            #endregion
+
+            #region Skill
+
             if (PlayerAirGroupSkill != null)
             {
                 int i = 0;
@@ -741,17 +908,20 @@ namespace IL2DCE
                     careerFile.add(SectionSkill, string.Format(Config.NumberFormat, "{0}{1}", SectionSkill, i++), item.ToString());
                 }
             }
+
+            #endregion
         }
 
         public void ReadResult(ISectionFile careerFile, string separator = Config.CommaStr)
         {
+            FlyingTime = careerFile.get(SectionStat, KeyFlyingTime, 0);
             Sorties = careerFile.get(SectionStat, KeySorties, 0);
             Takeoffs = careerFile.get(SectionStat, KeyTakeoffs, 0);
             Landings = careerFile.get(SectionStat, KeyLandings, 0);
             Bails = careerFile.get(SectionStat, KeyBails, 0);
             Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
             Kills = careerFile.get(SectionStat, KeyKills, 0f);
-            VersionConverter.OptimizeSorties(this);
+            VersionConverter.OptimizePlayerStatTota(this);
 
             string key;
             string value;
@@ -800,6 +970,7 @@ namespace IL2DCE
 
         public void WriteResult(ISectionFile careerFile, int historyMax)
         {
+            careerFile.add(SectionStat, KeyFlyingTime, FlyingTime.ToString(Config.NumberFormat));
             careerFile.add(SectionStat, KeySorties, Sorties.ToString(Config.NumberFormat));
             careerFile.add(SectionStat, KeyTakeoffs, Takeoffs.ToString(Config.NumberFormat));
             careerFile.add(SectionStat, KeyLandings, Landings.ToString(Config.NumberFormat));
@@ -833,12 +1004,18 @@ namespace IL2DCE
             sb.AppendFormat(PlayerCurrentStatusFormat, "Aircraft", Aircraft);
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Experience", Experience);
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Status", Status == 0 ? EPlayerStatus.Alive.ToString() : EPlayerStatus.Dead.ToString());
+            if (StrictMode)
+            {
+                sb.AppendFormat(" [{0}]", KeyStrictMode);
+            }
             return sb.ToString();
         }
 
         public string ToStringTotalResult()
         {
-            return PlayerStats.ToStringTotalResult(this, PlayerStats.PlayerStatTotalFormat, " {0:d} {1}\n  {2}", "\n  ");
+            return PlayerStats.ToStringTotalResult(this, PlayerStats.PlayerStatTotalFormat, " {0:d} {1}\n  {2}", "\n  ", true);
         }
 
         public void InitializeExperience()

@@ -20,52 +20,18 @@ using maddox.game;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public class Building
+    internal class Building : GroundObject
     {
-        public string Id
-        {
-            get;
-            private set;
-        }
-
-        public double X
-        {
-            get;
-            private set;
-        }
-
-        public double Y
-        {
-            get;
-            private set;
-        }
-
-        public double Direction
-        {
-            get;
-            private set;
-        }
-
         public int Status
         {
             get;
             private set;
         }
 
-        public string Class
-        {
-            get;
-            private set;
-        }
-
         public Building(string id, string @class, int status, double x, double y, double direction)
+            : base(id, @class, (int)EArmy.None, ECountry.nn, x, y, direction)
         {
-            Id = id;
-            Class = @class;
             Status = status;
-            X = x;
-            Y = y;
-            Direction = direction;
         }
 
         public static Building Create(ISectionFile sectionFile, string id)

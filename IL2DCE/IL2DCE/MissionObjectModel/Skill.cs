@@ -31,6 +31,8 @@ namespace IL2DCE.MissionObjectModel
         public const string SkillNameMulti = "Different";
         public const string SkillNameRandom = "[Random] Tweaked Rookie - Ace";
         public const string SkillNameDefault = "Mission Default";
+        public const string SkillNameRandomShip = "[Random]";
+        public const string SkillNameDefaultShip = "Default";
 
         public static readonly char[] SplitChar = new char[] { ' ', };
 
@@ -218,7 +220,7 @@ namespace IL2DCE.MissionObjectModel
                 // var types = Enum.GetNames(typeof(ESkilType));
                 for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    sb.AppendFormat("{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, Skills[(int)type].ToString(SkillFormat, Config.NumberFormat));
+                    sb.AppendFormat(Config.NumberFormat, "{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, Skills[(int)type]);
                     sb.AppendLine();
                 }
                 return sb.ToString();
@@ -226,21 +228,51 @@ namespace IL2DCE.MissionObjectModel
             return string.Empty;
         }
 
-        public static string ToDetailString(string skill, char splitCharLabelValue = ' ')
+        public static string ToDetailString(IEnumerable<string> skills, char splitCharLabelValue = ' ')
         {
-            if (!string.IsNullOrEmpty(skill))
+            if (skills != null && skills.Any())
             {
-                string[] str = skill.Split(SplitChar);
-                if (str.Length >= (int)ESkilType.Count)
+                IEnumerable<string []> skillsArray = skills.Select(x => x.Split(SplitChar));
+                StringBuilder sb = new StringBuilder();
+                // var types = Enum.GetNames(typeof(ESkilType));
+                for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    StringBuilder sb = new StringBuilder();
-                    for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
+                    sb.AppendFormat("{0,-15}{1}", type.ToString(), splitCharLabelValue);
+                    foreach (var item in skillsArray)
                     {
-                        sb.AppendFormat("{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, str[(int)type]);
-                        sb.AppendLine();
+                        float val;
+                        if (item.Length >= (int)type + 1 && float.TryParse(item[(int)type], NumberStyles.Float, Config.NumberFormat, out val))
+                        {
+                            sb.AppendFormat(Config.NumberFormat, "{0:F2}{1}", val, splitCharLabelValue);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("{0,4}{1}", "----", splitCharLabelValue);
+                        }
                     }
-                    return sb.ToString();
+                    sb.AppendLine();
                 }
+                return sb.ToString();
+            }
+            return string.Empty;
+        }
+
+        public static string ToDetailString(IEnumerable<Skill> skills, char splitCharLabelValue = ' ')
+        {
+            if (skills != null && skills.Any())
+            {
+                StringBuilder sb = new StringBuilder();
+                // var types = Enum.GetNames(typeof(ESkilType));
+                for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
+                {
+                    sb.AppendFormat("{0,-15}{1}", type.ToString(), splitCharLabelValue);
+                    foreach (var item in skills)
+                    {
+                        sb.AppendFormat(Config.NumberFormat, "{0:F2}{1}", item.Skills[(int)type], splitCharLabelValue);
+                    }
+                    sb.AppendLine();
+                }
+                return sb.ToString();
             }
             return string.Empty;
         }
@@ -589,6 +621,12 @@ namespace IL2DCE.MissionObjectModel
                     skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
                     skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
                     break;
+                case ESkillSet.RookieAce:
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Rookie]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Veteran]);
+                    skills.Add(Skill.SystemSkills[(int)ESystemType.Ace]);
+                    break;
                 case ESkillSet.Avarage:
                     skills.Add(Skill.SystemSkills[(int)ESystemType.Avarage]);
                     break;
@@ -739,6 +777,74 @@ namespace IL2DCE.MissionObjectModel
 
             return skills;
         }
+
+        public static IEnumerable<ESystemType> Create(ESkillSetShip skillSet)
+        {
+            List<ESystemType> skills = new List<ESystemType>();
+
+            switch (skillSet)
+            {
+                case ESkillSetShip.Rookie:
+                    skills.Add(ESystemType.Rookie);
+                    break;
+                case ESkillSetShip.RookieAvarage:
+                    skills.Add(ESystemType.Rookie);
+                    skills.Add(ESystemType.Avarage);
+                    break;
+                case ESkillSetShip.RookieVeteran:
+                    skills.Add(ESystemType.Rookie);
+                    skills.Add(ESystemType.Avarage);
+                    skills.Add(ESystemType.Veteran);
+                    break;
+                case ESkillSetShip.RookieAce:
+                    skills.Add(ESystemType.Rookie);
+                    skills.Add(ESystemType.Avarage);
+                    skills.Add(ESystemType.Veteran);
+                    skills.Add(ESystemType.Ace);
+                    break;
+                case ESkillSetShip.Avarage:
+                    skills.Add(ESystemType.Avarage);
+                    break;
+                case ESkillSetShip.AvarageVeteran:
+                    skills.Add(ESystemType.Avarage);
+                    skills.Add(ESystemType.Veteran);
+                    break;
+                case ESkillSetShip.AvarageAce:
+                    skills.Add(ESystemType.Avarage);
+                    skills.Add(ESystemType.Veteran);
+                    skills.Add(ESystemType.Ace);
+                    break;
+                case ESkillSetShip.Veteran:
+                    skills.Add(ESystemType.Veteran);
+                    break;
+                case ESkillSetShip.VeteranAce:
+                    skills.Add(ESystemType.Veteran);
+                    skills.Add(ESystemType.Ace);
+                    break;
+                case ESkillSetShip.Ace:
+                    skills.Add(ESystemType.Ace);
+                    break;
+
+                case ESkillSetShip.Default:
+                case ESkillSetShip.Random:
+                default:
+                    break;
+            }
+
+            return skills;
+        }
+
+        public static void UpdateSkillValue(Skills skillsUpdate, Skills skills)
+        {
+            foreach (var item in skills)
+            {
+                var changed = skillsUpdate.Where(x => string.Compare(x.Name, item.Name) == 0 && !Skill.EqualsValue(x.Skills, item.Skills));
+                foreach (var change in changed)
+                {
+                    change.Skills = item.Skills;
+                }
+            }
+        }
     }
 
     public enum ESkillSet
@@ -797,6 +903,36 @@ namespace IL2DCE.MissionObjectModel
         TweakedAce,
         [Description("User Settings")]
         UserSettings,
+
+        Count,
+    }
+
+    public enum ESkillSetShip
+    {
+        [Description(SkillNameRandomShip)]
+        Random = -2,
+        [Description(SkillNameDefaultShip)]
+        Default = -1,
+        [Description("Rookie")]
+        Rookie,
+        [Description("Rookie - Avarage")]
+        RookieAvarage,
+        [Description("Rookie - Veteran")]
+        RookieVeteran,
+        [Description("Rookie - Ace")]
+        RookieAce,
+        [Description("Avarage")]
+        Avarage,
+        [Description("Avarage - Veteran")]
+        AvarageVeteran,
+        [Description("Avarage - Ace")]
+        AvarageAce,
+        [Description("Veteran")]
+        Veteran,
+        [Description("Veteran - Ace")]
+        VeteranAce,
+        [Description("Ace")]
+        Ace,
 
         Count,
     }

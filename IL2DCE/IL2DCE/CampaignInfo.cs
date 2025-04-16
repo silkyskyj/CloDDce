@@ -24,11 +24,12 @@ using maddox.game;
 
 namespace IL2DCE
 {
-    public enum CampaignStatus
+    public enum ECampaignStatus
     {
         Empty,
         InProgress,
         DateEnd,
+        Dead,
         Count,
     };
 

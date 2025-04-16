@@ -14,27 +14,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-using System;
-
-namespace IL2DCE.MissionObjectModel
+namespace IL2DCE.Util
 {
-    public sealed class MissionTime
+    public class Variable
     {
-        public const double Default = -2;
-        public const double Random = -1;
-
-        public const double Begin = 5.0;
-        public const double End = 21.0;
-
-        public static string ToString(double d)
+        public static bool IsBoolValue(string val)
         {
-            return string.Format(Config.NumberFormat, "{0:D2}:{1:D2}", (int)d, (int)((((d * 100)) % 100) * 60 / 100));
+            return string.Compare(val, "0") == 0 || string.Compare(val, "1") == 0;
         }
 
-        public static double OptimizeTime(IRandom random, double time, double range)
+        public static bool TryParse(string val, out bool result)
         {
-            return time + random.Next((int)(range * -100), (int)(range * 100)) / 100.0;
+            if (bool.TryParse(val, out result))
+            {
+                return true;
+            }
+            else if (string.Compare(val, "1") == 0)
+            {
+                result = true;
+                return true;
+            }
+            else if (string.Compare(val, "0") == 0)
+            {
+                result = false;
+                return true;
+            }
+            result = false;
+            return false;
         }
     }
 }

@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using maddox.game;
-using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -29,6 +28,7 @@ namespace IL2DCE.MissionObjectModel
         Radar,
         Aircraft,
         Artillery,
+        Flak,
         Depot,
         Ship,
         Ammo,
@@ -36,11 +36,26 @@ namespace IL2DCE.MissionObjectModel
         Car,
         ConstCar,
         Environment,
+        Searchlight,
+        Aeroanchored,
+        Airfield,
         Unknown,
+        Count,
     }
 
-    public class Stationary
+    public enum EStationaryGenerateType
     {
+        Random = -2,
+        Default = -1,
+        Generic,
+        User,
+        Couunt,
+    }
+
+    public class Stationary : GroundObject
+    {
+        public const float DefaultSpawnZ = 0f;
+
         private static readonly List<string> Depots = new List<string>
         {
             "Stationary.Morris_CS8_tank",
@@ -211,49 +226,24 @@ namespace IL2DCE.MissionObjectModel
             "tobruk:Stationary.BR-20M_Trop"
         };
 
-        public string Id
+        public static readonly string[][] DefaultClasses = new string[(int)EStationaryType.Count][]
         {
-            get;
-            private set;
-        }
-
-        public double X
-        {
-            get;
-            private set;
-        }
-
-        public double Y
-        {
-            get;
-            private set;
-        }
-
-        public double Direction
-        {
-            get;
-            private set;
-        }
-
-        public string Class
-        {
-            get;
-            private set;
-        }
-
-        public ECountry Country
-        {
-            get;
-            private set;
-        }
-
-        public Point2d Position
-        {
-            get
-            {
-                return new Point2d(this.X, this.Y);
-            }
-        }
+            new string [] { "Stationary.Radar.EnglishRadar1", "Stationary.Radar.Wotan_II", "",}, // Radar
+            new string [] { "Stationary.HurricaneMkI_dH5-20", "Stationary.Bf-109E-1", "",}, // Aircraft
+            new string [] { "Artillery.Bofors", "Artillery.4_cm_Flak_28", "/timeout 0/radius_hide 0", }, // Artillery
+            new string [] { "Stationary.Bofors_ENG_Transport", "Stationary.Bofors_GER_Transport", "", }, // Flak
+            new string [] { "Stationary.Morris_CS8_tank", "Stationary.Opel_Blitz_fuel", "",}, // Depot
+            new string [] { "ShipUnit.Tanker_Medium1", "ShipUnit.Tanker_Medium2", "/sleep 0/skill 0/slowfire 1", }, // Ship
+            new string [] { "Stationary.Ammo_Vehicles.40mm_Bofors_UK1", "Stationary.Ammo_Vehicles.2cmFlack38_40_GER1", "",}, // Ammo
+            new string [] { "Stationary.Weapons_.Bomb_B_GP_500lb_MkIV", "Stationary.Weapons_.Bomb_B_SC-500_GradeIII_J", "",}, // Weapons 
+            new string [] { "Stationary.Austin_K2_Ambulance", "Stationary.BMW_R71_w_MG_34", "",}, // Car
+            new string [] { "Stationary.Fordson_N", "Stationary.Kubelwagen", "",}, // ConstCar
+            new string [] { "Stationary.Environment.Portable_Siren_UK1", "Stationary.Environment.TentZeltbahn_GER1", "",}, // Environment
+            new string [] { "Searchlight.90_cm_SearchLight_UK1", "Searchlight.60_cm_Flakscheinwerfer_GER1", "",}, // Searchlight
+            new string [] { "Aeroanchored.Balloon_winch_UK1", "Aeroanchored.Balloon_winch_GER1", "",}, // Aeroanchored
+            new string [] { "Stationary.Airfield.BombLoadingCart_UK1", "Stationary.Airfield.HydraulicBombLoader_GER1", "",}, // Airfield
+            new string [] { "Stationary.Environment.TentSmall_UK1", "Stationary.Environment.TentZeltbahn_GER1", "",}, // Unknown
+        };
 
         public EStationaryType Type
         {
@@ -261,16 +251,10 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public int Army
+        public virtual string Options
         {
             get;
-            private set;
-        }
-
-        public string Options
-        {
-            get;
-            private set;
+            protected set;
         }
 
         public string DisplayName
@@ -282,15 +266,9 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public Stationary(string id, string @class, int army, ECountry country, double x, double y, double direction, string options = null)
+            : base (id, @class, army, country, x, y, direction)
         {
-            Id = id;
-            Class = @class;
             Type = ParseType(Class);
-            Army = army;
-            Country = country;
-            X = x;
-            Y = y;
-            Direction = direction;
             Options = options;
         }
 
@@ -328,7 +306,33 @@ namespace IL2DCE.MissionObjectModel
                                 }
                             }
 
-                            return new Stationary(id, @class, (int)army, country, x ,y, direction, options.ToString().TrimEnd());
+                            string option = options.ToString();
+                            EStationaryType type = Stationary.ParseType(@class);
+                            if (type == EStationaryType.Ship && options.Length > 0)
+                            {
+                                ShipOption shipOption = ShipOption.Create(option);
+                                if (shipOption != null)
+                                {
+                                    return new ShipUnit(id, @class, (int)army, country, x, y, direction, option, shipOption);
+                                }
+                                else
+                                {
+                                    Debug.Assert(false, "Invalid Ship Option", "Id={0} Option={1}", id, options);
+                                    Debug.WriteLine("Invalid Ship Option", "Id={0} Option={1}", id, options);
+                                }
+                            }
+                            else
+                            {
+                                ArtilleryOption artilleryOption = ArtilleryOption.Create(option);
+                                if (artilleryOption != null)
+                                {
+                                    return new Artillery(id, @class, (int)army, country, x, y, direction, options.ToString().TrimEnd(), artilleryOption);
+                                }
+                                else
+                                {
+                                    return new Stationary(id, @class, (int)army, country, x, y, direction, options.ToString().TrimEnd());
+                                }
+                            }
                         }
                     }
                 }
@@ -361,6 +365,12 @@ namespace IL2DCE.MissionObjectModel
 
         public static EStationaryType ParseType(string classString)
         {
+            int idx = classString.IndexOf(":");
+            if (idx != -1)
+            {
+                classString = classString.Substring(idx + 1);
+            }
+
             if (classString.StartsWith("Stationary.Radar"))
             {
                 return EStationaryType.Radar;
@@ -368,6 +378,10 @@ namespace IL2DCE.MissionObjectModel
             else if (classString.StartsWith("Artillery"))
             {
                 return EStationaryType.Artillery;
+            }
+            else if (classString.StartsWith("Stationary.Bofors"))
+            {
+                return EStationaryType.Flak;
             }
             else if (Aircrafts.Contains(classString))
             {
@@ -396,7 +410,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 return EStationaryType.Car;
             }
-            else if (classString.StartsWith("Stationary.Unic") || classString.StartsWith("Stationary.Kubelwagen"))
+            else if (classString.StartsWith("Stationary.Fordson") || classString.StartsWith("Stationary.Unic") || classString.StartsWith("Stationary.Kubelwagen"))
             {
                 return EStationaryType.ConstCar;
             }
@@ -404,14 +418,53 @@ namespace IL2DCE.MissionObjectModel
             {
                 return EStationaryType.Environment;
             }
+            else if (classString.StartsWith("Searchlight"))
+            {
+                return EStationaryType.Searchlight;
+            }
+            else if (classString.StartsWith("Aeroanchored"))
+            {
+                return EStationaryType.Aeroanchored;
+            }
+            else if (classString.StartsWith("Airfield"))
+            {
+                return EStationaryType.Airfield;
+            }
 
             return EStationaryType.Unknown;
         }
 
-        public void WriteTo(ISectionFile sectionFile)
+        public static LandTypes[] GetLandTypes(EStationaryType type)
+        {
+            if (type == EStationaryType.Car || type == EStationaryType.ConstCar)
+            {
+                return new LandTypes[] { LandTypes.ROAD, LandTypes.HIGHWAY, LandTypes.NONE, };
+            }
+            else if (type == EStationaryType.Ship)
+            {
+                return new LandTypes[] { LandTypes.WATER, };
+            }
+            else/* if (groupType == EGroundGroupType.Unknown)*/
+            {
+                return new LandTypes[] { LandTypes.NONE, };
+            }
+        }
+
+        public void UpdateIdArmy(int army, string id)
+        {
+            Debug.WriteLine("Stationary.UpdateArmy(Army:{0} -> {1}, Country:{2} Id:{3} -> {4})", Army, army, Country, Id, id);
+            Army = army;
+            if (army != (int)MissionObjectModel.Army.Parse(Country))
+            {
+                Country = MissionObjectModel.Army.DefaultCountry((EArmy)army);
+            }
+            Id = id;
+        }
+
+        public virtual void WriteTo(ISectionFile sectionFile)
         {
             string value = string.Format(Config.NumberFormat, "{0} {1} {2:F2} {3:F2} {4:F2} {5}", Class, Country.ToString(), X, Y, Direction, Options ?? string.Empty);
             sectionFile.add("Stationary", Id, value.TrimEnd());
         }
     }
-}
+ }

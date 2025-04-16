@@ -55,10 +55,8 @@ namespace IL2DCE.Pages
             Career career = Game.Core.CurrentCareer;
             CampaignInfo campaignInfo = career.CampaignInfo;
 
-            FrameworkElement.textBoxInfo.Text = campaignInfo.ToSummaryString();
-            FrameworkElement.textBoxStatus.Text = string.Format("Current Status\n{0}\nTotal Result\n{1}\n",
-                                                                career.ToStringCurrestStatus(),
-                                                                career.ToStringTotalResult());
+            FrameworkElement.textBoxInfo.Text = string.Format("[Campaign]\n{0}\n\n[Current Status]\n{1}", campaignInfo.ToSummaryString(), career.ToStringCurrestStatus());
+            FrameworkElement.textBoxStatus.Text = string.Format("[Total Result]\n{0}", career.ToStringTotalResult());
 
             UpdateAircraftImage(career);
         }

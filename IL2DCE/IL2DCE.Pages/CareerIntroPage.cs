@@ -157,6 +157,20 @@ namespace IL2DCE.Pages
             }
         }
 
+        public bool SelectedSpawnParked
+        {
+            get
+            {
+                bool? isCheckd = FrameworkElement.checkBoxSpawnParked.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
         private string SelectedPilotName
         {
             get
@@ -199,6 +213,20 @@ namespace IL2DCE.Pages
             }
         }
 
+        public bool SelectedStrictMode
+        {
+            get
+            {
+                bool? isCheckd = FrameworkElement.checkBoxStrictMode.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
         #endregion
 
         #region Variable
@@ -227,6 +255,8 @@ namespace IL2DCE.Pages
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxSelectionChangedEvent += new SelectionChangedEventHandler(GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxTextChangedEvent += new TextChangedEventHandler(GeneralSettingsGroupBox_ComboBoxTextChangedEvent);
             FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
+            FrameworkElement.checkBoxStrictMode.Checked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
+            FrameworkElement.checkBoxStrictMode.Unchecked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
         }
 
         public override void _enter(maddox.game.IGame play, object arg)
@@ -236,6 +266,10 @@ namespace IL2DCE.Pages
             // FrameworkElement.comboBoxSelectArmy.Items.Clear();
 
             _game = play as IGame;
+
+            FrameworkElement.GeneralSettingsGroupBox.GameInterface = play.gameInterface;
+            FrameworkElement.GeneralSettingsGroupBox.Config = Game.Core.Config;
+
             PageArgs pageArgs = arg as PageArgs;
 
             hookComboSelectionChanged = true;
@@ -245,6 +279,15 @@ namespace IL2DCE.Pages
             UpdateCampaignComboBoxInfo();
             UpdateCampaignComboBoxFilter();
             UpdateProgressComboBoxInfo();
+
+#if false
+            DifficultySetting d = Game.gpDifficultyGet();
+            FrameworkElement.checkBoxStrictMode.IsChecked = 
+                FrameworkElement.checkBoxStrictMode.IsEnabled = d.Vulnerability && d.Realistic_Landings && d.Realistic_Gunnery && d.Realistic_Bombing && d.Limited_Ammo && 
+                                                            d.Limited_Fuel && d.NoAutopilot && d.Takeoff_N_Landing && d.Cockpit_Always_On && d.Head_Shake && d.Blackouts_N_Redouts && 
+                                                            d.No_Padlock &&  d.ComplexEManagement && d.Engine_Temperature_Effects && d.Wind_N_Turbulence && d.Flutter_Effect && 
+                                                            d.Torque_N_Gyro_Effects && d.Stalls_N_Spins && d.Clouds && d.No_Icons;
+#endif
         }
 
         public override void _leave(maddox.game.IGame play, object arg)
@@ -308,8 +351,9 @@ namespace IL2DCE.Pages
 
         private void comboBoxSelectAirGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            UpdateSpawnParkedInfo();
             UpdateSkillComboBoxInfo();
-            UpdateSkillComboBoxSkillValueInfo();
+            GeneralSettingsGroupBox.UpdateSkillComboBoxSkillValueInfo(FrameworkElement.comboBoxSelectSkill, SelectedSkill, SelectedAirGroup, Game.Core.Config.Skills);
             UpdateAircraftImage();
             UpdateButtonStatus();
         }
@@ -319,7 +363,7 @@ namespace IL2DCE.Pages
         {
             // if (e.AddedItems.Count > 0)
             {
-                UpdateSkillComboBoxSkillValueInfo();
+                GeneralSettingsGroupBox.UpdateSkillComboBoxSkillValueInfo(FrameworkElement.comboBoxSelectSkill, SelectedSkill, SelectedAirGroup, Game.Core.Config.Skills);
             }
         }
 
@@ -395,7 +439,24 @@ namespace IL2DCE.Pages
 
         #endregion
 
-        #region Button Click
+        #region CheckBox
+
+        private void checkBoxStrictMode_CheckedChange(object sender, RoutedEventArgs e)
+        {
+            bool strictMode = SelectedStrictMode;
+            if (strictMode)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+        #endregion
+
+            #region Button Click
 
         private void buttonMissionLoad_Click(object sender, RoutedEventArgs e)
         {
@@ -453,12 +514,16 @@ namespace IL2DCE.Pages
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
                 career.Aircraft = aircraftInfo.DisplayName;
+                career.Spawn = (int)(FrameworkElement.checkBoxSpawnParked.IsEnabled ? SelectedSpawnParked ? ESpawn.Parked : ESpawn.Idle: ESpawn.Default); 
                 career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? new Skill[] { SelectedSkill } : null;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
+                career.CampaignProgress = SelectedProgress;
                 career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
                 career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
                 career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
+                career.AdditionalGroundGroups = generalSettings.SelectedAdditionalAirGroups;
+                career.AdditionalStationaries = generalSettings.SelectedAdditionalAirGroups;
                 career.SpawnRandomLocationFriendly = generalSettings.SelectedSpawnRandomLocationFriendly;
                 career.SpawnRandomLocationEnemy = generalSettings.SelectedSpawnRandomLocationEnemy;
                 career.SpawnRandomLocationPlayer = generalSettings.checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible ? generalSettings.SelectedSpawnRandomLocationPlayer: false;
@@ -468,11 +533,18 @@ namespace IL2DCE.Pages
                 career.SpawnRandomTimeEnemy = generalSettings.SelectedSpawnRandomTimeEnemy;
                 career.SpawnRandomTimeBeginSec = generalSettings.SelectedRandomTimeBegin;
                 career.SpawnRandomTimeEndSec = generalSettings.SelectedRandomTimeEnd;
+                career.AISkill = generalSettings.SelecteAISkill;
+                career.ArtilleryTimeout = generalSettings.SelectedArtilleryTimeout;
+                career.ArtilleryRHide = generalSettings.SelectedArtilleryRHide;
+                career.ArtilleryZOffset = generalSettings.SelectedArtilleryZOffset;
+                career.ShipSleep = generalSettings.SelectedShipSleep;
+                career.ShipSkill = generalSettings.SelectedShipSkill;
+                career.ShipSlowfire = generalSettings.SelectedShipSlowfire;
                 career.ReArmTime = generalSettings.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
                 career.ReFuelTime = generalSettings.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
                 career.TrackRecording = generalSettings.SelectedTrackRecoding;
-                career.AISkill = generalSettings.SelecteAISkill;
-                career.CampaignProgress = SelectedProgress;
+
+                career.StrictMode = SelectedStrictMode;
 
                 Game.Core.AvailableCareers.Add(career);
                 Game.Core.CurrentCareer = career;
@@ -720,6 +792,24 @@ namespace IL2DCE.Pages
                     distance >= 0 ? string.Format(Config.NumberFormat, " {0:F2}km", distance / 1000) : string.Empty);
         }
 
+
+        private void UpdateSpawnParkedInfo()
+        {
+            AirGroup airGroup = SelectedAirGroup;
+            if (airGroup != null && !airGroup.Airstart)
+            {
+                FrameworkElement.checkBoxSpawnParked.IsChecked = airGroup.SetOnParked;
+                FrameworkElement.checkBoxSpawnParked.Visibility = Visibility.Visible;
+                FrameworkElement.checkBoxSpawnParked.IsEnabled = true;
+            }
+            else
+            {
+                FrameworkElement.checkBoxSpawnParked.IsChecked = false;
+                FrameworkElement.checkBoxSpawnParked.Visibility = Visibility.Hidden;
+                FrameworkElement.checkBoxSpawnParked.IsEnabled = false;
+            }
+        }
+
         private void UpdateSkillComboBoxInfo()
         {
             ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
@@ -744,39 +834,6 @@ namespace IL2DCE.Pages
             FrameworkElement.labelDefaultSkill.Content = defaultString;
 
             EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
-        }
-
-        private void UpdateSkillComboBoxSkillValueInfo()
-        {
-            ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
-            ToolTip toolTip = comboBox.ToolTip as ToolTip;
-            if (toolTip == null)
-            {
-                comboBox.ToolTip = toolTip = new ToolTip();
-                toolTip.FontFamily = new FontFamily("Consolas");
-            }
-            string str = string.Empty;
-            Skill skill = SelectedSkill;
-            if (skill != null)
-            {
-                if (skill == Skill.Default)
-                {
-                    AirGroup airGroup = SelectedAirGroup;
-                    if (airGroup != null)
-                    {
-                        str = airGroup.Skills.Count > 0 ? string.Join("\n\n", airGroup.Skills.Values.Select(x => Skill.ToDetailString(x))) : airGroup.Skill != null ? Skill.ToDetailString(airGroup.Skill) : string.Empty;
-                    }
-                }
-                else if (skill == Skill.Random)
-                {
-                    str = "Randomly determined";
-                }
-                else
-                {
-                    str = skill.ToDetailString();
-                }
-            }
-            toolTip.Content = str;
         }
 
         private void UpdateDataPicker()

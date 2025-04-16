@@ -29,8 +29,6 @@ namespace IL2DCE
 {
     public class Core
     {
-        private const string LogDateTimeFormat = "yyyy/MM/dd HH:mm:ss.fff";
-
         #region Property
 
         public Config Config
@@ -120,6 +118,8 @@ namespace IL2DCE
         {
             _gamePlay = game;
             _random = random;
+
+            Initialize();
 
             if (writerLog == null)
             {
@@ -212,7 +212,7 @@ namespace IL2DCE
                             string message = string.Format("Error: read & parse Career file [{0}] {1} {2}", path, ex.Message, ex.StackTrace);
                             WriteLog(message);
                         }
-                    }
+                    }                                                               
                 }
             }
         }
@@ -225,9 +225,9 @@ namespace IL2DCE
             AdvanceCampaign(game);
         }
 
-        public CampaignStatus AdvanceCampaign(IGame game)
+        public ECampaignStatus AdvanceCampaign(IGame game)
         {
-            CampaignStatus result;
+            ECampaignStatus result;
             Career career = CurrentCareer;
             Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, career);
             CampaignInfo campaignInfo = career.CampaignInfo;
@@ -235,12 +235,12 @@ namespace IL2DCE
             ISectionFile initialMissionTemplateFile = null;
             if (!career.Date.HasValue)
             {
-                result = CampaignStatus.Empty;
+                result = ECampaignStatus.Empty;
                 // It is the first mission.
                 career.InitializeDateTime(Config, Random);
                 career.InitializeExperience();
 
-                // Generate the initial mission tempalte
+                // Generate the initial mission tempalte   (Get AirGroup & GroundGroup from InitialMissionFile)
                 generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
             }
             else
@@ -251,16 +251,20 @@ namespace IL2DCE
                     career.UpdateExperience(gameSingle.BattleResult);
                 }
 
-                if (career.Date >= campaignInfo.EndDate)
+                if (career.StrictMode && career.Status == (int)EPlayerStatus.Dead)
                 {
-                    result = CampaignStatus.DateEnd;
+                    result = ECampaignStatus.Dead;
+                }
+                else if (career.Date >= campaignInfo.EndDate)
+                {
+                    result = ECampaignStatus.DateEnd;
                 }
                 else
                 {
-                    result = CampaignStatus.InProgress;
+                    result = ECampaignStatus.InProgress;
                     career.ProgressDateTime(Config, Random);
 
-                    // Read latest mission tempalte
+                    // Read latest mission tempalte     (Get AirGroup & GroundGroup & other from previosMissionTemplateFile)
                     initialMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
                 }
             }
@@ -280,7 +284,7 @@ namespace IL2DCE
                 game.gameInterface.BattleStop();
             }
 
-            if (result != CampaignStatus.DateEnd)
+            if (result != ECampaignStatus.DateEnd && result != ECampaignStatus.Dead)
             {
                 // Preload mission file for path calculation.
                 game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
@@ -291,7 +295,15 @@ namespace IL2DCE
                 string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
                 career.MissionFileName = missionFileName;
 
-                // Generate the template for the next mission
+                // Load MissionStatus
+                string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.MissionStatusResultFileName);
+                ISectionFile missionStatusFile = game.gameInterface.SectionFileLoad(missionStatusFileName);
+                MissionStatus missionStatus = MissionStatus.Create(missionStatusFile);
+
+                // ReinForce
+                generator.ReinForce(missionStatus, career.Date.Value);
+
+                // Generate the template for the next mission     (Merge StaticTemplateFile'GroundGroup & Static Stationary to InitialMissionFile/previosMissionTemplateFile)
                 ISectionFile missionTemplateFile = null;
                 generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, initialMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
                 missionTemplateFile.save(career.MissionTemplateFileName);
@@ -299,7 +311,7 @@ namespace IL2DCE
                 // Generate the next mission based on the new template.
                 ISectionFile missionFile = null;
                 BriefingFile briefingFile = null;
-                generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, out missionFile, out briefingFile);
+                generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, missionStatus, out missionFile, out briefingFile);
 
                 // Save mission file
                 missionFile.save(missionFileName);
@@ -377,7 +389,7 @@ namespace IL2DCE
             // Generate the next mission based on the new template.
             ISectionFile missionFile = null;
             BriefingFile briefingFile = null;
-            generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, out missionFile, out briefingFile);
+            generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, null, out missionFile, out briefingFile);
 
             // Save mission file
             missionFile.save(missionFileName);
@@ -412,6 +424,49 @@ namespace IL2DCE
             {
                 career.ReadResult(statsFile);
             }
+        }
+
+        public void SaveCurrentStatus(string fileName,string playerActorName, DateTime dateTime, bool forceCreate = false)
+        {
+            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
+            Career career = CurrentCareer;
+            string careersFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
+            string missionFolderSystemPath = string.Format("{0}\\{1}", careersFolderSystemPath, career.PilotName);
+            if (!Directory.Exists(missionFolderSystemPath))
+            {
+                Directory.CreateDirectory(missionFolderSystemPath);
+            }
+            // ISectionFile missionStatusFile = gameInterface.SectionFileCreate();
+            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, fileName);
+            ISectionFile missionStatusFile = forceCreate ? gameInterface.SectionFileCreate(): gameInterface.SectionFileLoad(missionStatusFileName);
+            // MissionStatus.Update(missionStatusFile, GamePlay as IGame, playerActorName);
+            MissionStatus missionStatus = new MissionStatus();
+            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime);
+            missionStatus.WriteTo(missionStatusFile);
+            missionStatusFile.save(missionStatusFileName);
+
+#if DEBUG
+            ISectionFile missionStatusFileLoad = gameInterface.SectionFileLoad(missionStatusFileName);
+            missionStatus = MissionStatus.Create(missionStatusFileLoad);
+            Debug.Assert(missionStatus != null);
+#endif
+
+        }
+
+        public void SaveMissionResult(MissionStatus missionStatus)
+        {
+            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
+            ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileCreate();
+            missionStatus.WriteTo(missionStatusFile);
+            missionStatusFile.save(missionStatusFileName);
+        }
+
+        public void UpdateMissionResult(MissionStatus missionStatus)
+        {
+            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
+            ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileLoad(missionStatusFileName);
+            missionStatus.UpdateWriteTo(missionStatusFile, Config.ReinForceDay);
+            missionStatusFile.save(missionStatusFileName);
         }
 
         public void UpdateResult(Career career)
@@ -462,6 +517,21 @@ namespace IL2DCE
             }
         }
 
+        private void Initialize()
+        {
+            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
+            string userMissionFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
+            if (!Directory.Exists(userMissionFolderSystemPath))
+            {
+                Directory.CreateDirectory(userMissionFolderSystemPath);
+            }
+            string userMissionsFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionsFolder);
+            if (!Directory.Exists(userMissionsFolderSystemPath))
+            {
+                Directory.CreateDirectory(userMissionsFolderSystemPath);
+            }
+        }
+
         private string CreatetLogFilePath()
         {
             const int MaxErrorCount = 10;
@@ -482,7 +552,7 @@ namespace IL2DCE
             Debug.WriteLine(message);
             lock (writerLogObject)
             {
-                writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString(LogDateTimeFormat, Config.DateTimeFormat), message.Replace("\"", "\"\"").Replace("\n", "|"));
+                writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString(Config.DateTimeDefaultLongLongFormat, Config.DateTimeFormat), message.Replace("\"", "\"\"").Replace("\n", "|"));
             }
         }
     }

@@ -78,12 +78,18 @@ namespace IL2DCE.Util
 #endif
         }
 
-        public static void OptimizeSorties(IPlayerStatTotal playerStatTotal)
+        public static void OptimizePlayerStatTota(IPlayerStatTotal playerStatTotal)
         {
             if (playerStatTotal.Sorties == 0)
             {
                 playerStatTotal.Sorties = new int[] { playerStatTotal.Takeoffs, playerStatTotal.Landings, playerStatTotal.Bails, playerStatTotal.Deaths }.Max(); 
             }
+
+            if (playerStatTotal.FlyingTime == 0)
+            {
+                playerStatTotal.FlyingTime = playerStatTotal.Sorties * 15 * 60; // 15min * Sorties
+            }
+
         }
     }
 }

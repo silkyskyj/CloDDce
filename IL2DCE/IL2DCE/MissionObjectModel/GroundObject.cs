@@ -14,27 +14,44 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-using System;
+using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public sealed class MissionTime
+    public class GroundObject : MissionObject
     {
-        public const double Default = -2;
-        public const double Random = -1;
-
-        public const double Begin = 5.0;
-        public const double End = 21.0;
-
-        public static string ToString(double d)
+        public virtual double X
         {
-            return string.Format(Config.NumberFormat, "{0:D2}:{1:D2}", (int)d, (int)((((d * 100)) % 100) * 60 / 100));
+            get;
+            protected set;
         }
 
-        public static double OptimizeTime(IRandom random, double time, double range)
+        public virtual double Y
         {
-            return time + random.Next((int)(range * -100), (int)(range * 100)) / 100.0;
+            get;
+            protected set;
+        }
+
+        public double Direction
+        {
+            get;
+            protected set;
+        }
+
+        public virtual Point2d Position
+        {
+            get
+            {
+                return new Point2d(this.X, this.Y);
+            }
+        }
+
+        public GroundObject(string id, string @class, int army, ECountry country, double x, double y, double direction)
+            : base(id, @class, army, country)
+        {
+            X = x;
+            Y = y;
+            Direction = direction;
         }
     }
 }

@@ -14,27 +14,41 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-using System;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public sealed class MissionTime
+    public class MissionObject
     {
-        public const double Default = -2;
-        public const double Random = -1;
-
-        public const double Begin = 5.0;
-        public const double End = 21.0;
-
-        public static string ToString(double d)
+        public string Id
         {
-            return string.Format(Config.NumberFormat, "{0:D2}:{1:D2}", (int)d, (int)((((d * 100)) % 100) * 60 / 100));
+            get;
+            protected set;
         }
 
-        public static double OptimizeTime(IRandom random, double time, double range)
+        public string Class
         {
-            return time + random.Next((int)(range * -100), (int)(range * 100)) / 100.0;
+            get;
+            protected set;
+        }
+
+        public int Army
+        {
+            get;
+            protected set;
+        }
+
+        public ECountry Country
+        {
+            get;
+            protected set;
+        }
+
+        public MissionObject(string id, string @class, int army, ECountry country)
+        {
+            Id = id;
+            Class = @class;
+            Army = army;
+            Country = country;
         }
     }
 }

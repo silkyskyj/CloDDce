@@ -61,9 +61,13 @@ namespace IL2DCE
         public const string DebugMissionFileName = "IL2DCEDebug.mis";
         public const string DebugBriefingFileName = "IL2DCEDebug.briefing";
         public const string DebugMissionScriptFileName = "IL2DCEDebug.cs";
+        public const string MissionStatusStartFileName = "MissionStatusStart.ini";
+        public const string MissionStatusEndFileName = "MissionStatusEnd.ini";
+        public const string MissionStatusResultFileName = "MissionStatusResult.ini";
         public const string RecordFileExt = ".trk";
         public const string MissionFileExt = ".mis";
         public const string ScriptFileExt = ".cs";
+        public const string IniFileExt = ".ini";
 
         public const string SectionMain = "Main";
         public const string SectionCore = "Core";
@@ -86,12 +90,20 @@ namespace IL2DCE
         public const string KeyKillsHistoryMax = "KillsHistoryMax";
         public const string KeyRandomTimeBegin = "RandomTimeBegin";
         public const string KeyRandomTimeEnd = "RandomTimeEnd";
+        public const string KeyGroupDisableRate = "GroupDisableRate";
+        public const string KeyReinForceDay = "ReinForceDay";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Convert.log";
 
+        public const string GeneralSettingsFileName = "GeneralSettings.ini";
+
         public const string DefaultFixedFontName = "Consolas";
         public const string KillsFormat = "F0";
+        public const string PointValueFormat = "F2";
+        public const string DateTimeDefaultLongFormat = "yyyyMMdd_HHmmss";
+        public const string DateTimeDefaultLongLongFormat = "yyyy/MM/dd HH:mm:ss.fff";
+
 
         public const int DefaultAdditionalAirOperations = 3;
         public const int MaxAdditionalAirOperations = 12;
@@ -103,10 +115,14 @@ namespace IL2DCE
         public const int DefaultProcessTimeReFuel = 300;
         public const int KillsHistoryMaxDefault = 1000;
 
+        public const int GroundGroupFormationCountDefault = 3;
+
         public const int RankupExp = 1000;
         public const int ExpSuccess = 200;
         public const int ExpFail = 0;
         public const int ExpDraw = 100;
+        public const float GroupDisableRateDefault = 0.25f;
+        public const int ReinForceDayDefault = 3;
 
         #endregion
 
@@ -297,6 +313,18 @@ namespace IL2DCE
             private set;
         }
 
+        public float GroupDisableRate
+        {
+            get;
+            private set;
+        }
+
+        public int ReinForceDay
+        {
+            get;
+            private set;
+        }
+
         // public static CultureInfo Culture = new CultureInfo("en-US", true);
         public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
         public static DateTimeFormatInfo DateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
@@ -318,6 +346,7 @@ namespace IL2DCE
 
         public Config(ISectionFile confFile)
         {
+            string value;
             if (confFile.exist(SectionMain, "campaignsFolder"))
             {
                 _campaignsFolder = confFile.get(SectionMain, "campaignsFolder");
@@ -330,7 +359,7 @@ namespace IL2DCE
             SpawnParked = false;
             if (confFile.exist(SectionCore, "forceSetOnPark"))
             {
-                string value = confFile.get(SectionCore, "forceSetOnPark");
+                value = confFile.get(SectionCore, "forceSetOnPark");
                 if (value == "1")
                 {
                     SpawnParked = true;
@@ -343,43 +372,43 @@ namespace IL2DCE
 
             if (confFile.exist(SectionCore, "additionalAirOperations"))
             {
-                string value = confFile.get(SectionCore, "additionalAirOperations");
+                value = confFile.get(SectionCore, "additionalAirOperations");
                 int.TryParse(value, NumberStyles.Integer, NumberFormat, out _additionalAirOperations);
             }
 
             if (confFile.exist(SectionCore, "additionalGroundOperations"))
             {
-                string value = confFile.get(SectionCore, "additionalGroundOperations");
+                value = confFile.get(SectionCore, "additionalGroundOperations");
                 int.TryParse(value, NumberStyles.Integer, NumberFormat, out _additionalGroundOperations);
             }
 
             if (confFile.exist(SectionCore, "flightSize"))
             {
-                string value = confFile.get(SectionCore, "flightSize");
+                value = confFile.get(SectionCore, "flightSize");
                 double.TryParse(value, NumberStyles.Float, NumberFormat, out _flightSize);
             }
 
             if (confFile.exist(SectionCore, "flightCount"))
             {
-                string value = confFile.get(SectionCore, "flightCount");
+                value = confFile.get(SectionCore, "flightCount");
                 double.TryParse(value, NumberStyles.Float, NumberFormat, out _flightCount);
             }
 
             if (confFile.exist(SectionCore, "debug"))
             {
-                string value = confFile.get(SectionCore, "debug");
+                value = confFile.get(SectionCore, "debug");
                 int.TryParse(value, NumberStyles.Integer, NumberFormat, out _debug);
             }
 
             if (confFile.exist(SectionCore, "statType"))
             {
-                string value = confFile.get(SectionCore, "statType");
+                value = confFile.get(SectionCore, "statType");
                 int.TryParse(value, NumberStyles.Integer, NumberFormat, out _statType);
             }
 
             if (confFile.exist(SectionCore, "statKillsOver"))
             {
-                string value = confFile.get(SectionCore, "statKillsOver");
+                value = confFile.get(SectionCore, "statKillsOver");
                 double.TryParse(value, NumberStyles.Float, NumberFormat, out _statKillsOver);
             }
 
@@ -388,14 +417,14 @@ namespace IL2DCE
 
             if (confFile.exist(SectionCore, "statType"))
             {
-                string value = confFile.get(SectionCore, "statType");
+                value = confFile.get(SectionCore, "statType");
                 int.TryParse(value, NumberStyles.Integer, NumberFormat, out _statType);
             }
 
             if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFileName))
             {
-                string str = confFile.get(SectionMissionFileConverter, KeySourceFolderFileName);
-                sorceFolderFileName = string.IsNullOrEmpty(str) ? new string[0] : str.Split(SplitComma, System.StringSplitOptions.RemoveEmptyEntries);
+                value = confFile.get(SectionMissionFileConverter, KeySourceFolderFileName);
+                sorceFolderFileName = string.IsNullOrEmpty(value) ? new string[0] : value.Split(SplitComma, System.StringSplitOptions.RemoveEmptyEntries);
             }
             else
             {
@@ -404,8 +433,8 @@ namespace IL2DCE
 
             if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFolderName))
             {
-                string str = confFile.get(SectionMissionFileConverter, KeySourceFolderFolderName);
-                sorceFolderFolderName = string.IsNullOrEmpty(str) ? new string[0] : str.Split(SplitComma, System.StringSplitOptions.RemoveEmptyEntries);
+                value = confFile.get(SectionMissionFileConverter, KeySourceFolderFolderName);
+                sorceFolderFolderName = string.IsNullOrEmpty(value) ? new string[0] : value.Split(SplitComma, System.StringSplitOptions.RemoveEmptyEntries);
             }
             else
             {
@@ -419,7 +448,6 @@ namespace IL2DCE
             if (confFile.exist(SectionSkill))
             {
                 string key;
-                string value;
                 int lines = confFile.lines(SectionSkill);
                 for (int i = 0; i < lines; i++)
                 {
@@ -462,7 +490,7 @@ namespace IL2DCE
 
             if (confFile.exist(SectionMissionType, KeyDisableMissionType))
             {
-                string value = confFile.get(SectionMissionType, KeyDisableMissionType);
+                value = confFile.get(SectionMissionType, KeyDisableMissionType);
                 string[] values = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
                 List<EMissionType> missionTypes = new List<EMissionType>();
                 foreach (var item in values)
@@ -482,7 +510,7 @@ namespace IL2DCE
 
             if (confFile.exist(SectionAircraft, KeyRandomRed))
             {
-                string value = confFile.get(SectionAircraft, KeyRandomRed);
+                value = confFile.get(SectionAircraft, KeyRandomRed);
                 AircraftRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
             }
             else
@@ -492,7 +520,7 @@ namespace IL2DCE
 
             if (confFile.exist(SectionAircraft, KeyRandomBlue))
             {
-                string value = confFile.get(SectionAircraft, KeyRandomBlue);
+                value = confFile.get(SectionAircraft, KeyRandomBlue);
                 AircraftRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
             }
             else
@@ -505,6 +533,11 @@ namespace IL2DCE
             KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, KillsHistoryMaxDefault);
             RandomTimeBegin = confFile.get(SectionCore, KeyRandomTimeBegin, (int)MissionTime.Begin);
             RandomTimeEnd = confFile.get(SectionCore, KeyRandomTimeEnd, (int)MissionTime.End);
+
+            value = confFile.get(SectionCore, KeyGroupDisableRate, string.Empty);
+            float fValue;
+            GroupDisableRate = float.TryParse(value, NumberStyles.Float, NumberFormat, out fValue) ? fValue : GroupDisableRateDefault;
+            ReinForceDay = confFile.get(SectionCore, KeyReinForceDay, ReinForceDayDefault);
         }
     }
 }

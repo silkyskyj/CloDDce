@@ -59,7 +59,7 @@ namespace IL2DCE
             public string PlayerActorName
             {
                 get;
-                set;
+                private set;
             }
 
             public Dictionary<string, List<DamagerScore>> ActorDead
@@ -70,6 +70,12 @@ namespace IL2DCE
             public List<AircraftState> AircraftLanded
             {
                 get;
+            }
+
+            public MissionStatus MissionStatus
+            {
+                get;
+                private set;
             }
 
 #if DEBUG
@@ -86,6 +92,8 @@ namespace IL2DCE
                 Debug.WriteLine("Mission.Mission()");
                 ActorDead = new Dictionary<string, List<DamagerScore>>();
                 AircraftLanded = new List<AircraftState>();
+
+                MissionStatus = new MissionStatus();
 #if DEBUG
                 AirGroups = new List<AiAirGroup>();
 #endif
@@ -179,13 +187,22 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.OnBattleStarted()");
                 base.OnBattleStarted();
+
+                Career career = Core.CurrentCareer;
+
 #if DEBUG
+                Trace(DataDictionary);
+                Core.SaveCurrentStatus(Config.MissionStatusStartFileName, PlayerActorName, career.Date.Value, true);
+#if false
                 TraceGameInfo();
 #endif
-                Career career = Core.CurrentCareer;
+#endif
+
+                MissionStatus.Update(Game, PlayerActorName, career.Date.Value);
+
                 if (career.TrackRecording && !Game.gameInterface.TrackRecording())
                 {
-                    string trackFile = string.Format("{0}/{1}_{2}{3}", Config.RecordFolder, career.CampaignInfo.Id, DateTime.Now.ToString("yyyyMMdd_HHmmss"), Config.RecordFileExt);
+                    string trackFile = string.Format("{0}/{1}_{2}{3}", Config.RecordFolder, career.CampaignInfo.Id, DateTime.Now.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat), Config.RecordFileExt);
                     Game.gameInterface.TrackRecordStart(Game.gameInterface.ToFileSystemPath(trackFile));
                 }
             }
@@ -199,6 +216,18 @@ namespace IL2DCE
                 {
                     Game.gameInterface.TrackRecordStop();
                 }
+
+                Career career = Core.CurrentCareer;
+                MissionStatus.Update(Game, PlayerActorName, career.Date.Value.AddSeconds(Core.GamePlay.gpTime().current()));
+
+#if DEBUG
+                Trace(DataDictionary);
+                Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Core.GamePlay.gpTime().current()));
+#if false
+                TraceGameInfo();
+#endif
+#endif
+
             }
 
             public override void OnMissionLoaded(int missionNumber)
@@ -213,7 +242,7 @@ namespace IL2DCE
                 base.OnSingleBattleSuccess(success);
             }
 
-            #endregion
+#endregion
 
             #region Player
 
@@ -250,6 +279,7 @@ namespace IL2DCE
                     if (idx != -1)
                     {
                         PlayerActorName = name.Substring(idx + 1);
+                        MissionStatus.Update(player, PlayerActorName);
                     }
                 }
             }
@@ -276,6 +306,8 @@ namespace IL2DCE
 #if DEBUG
                 TraceActorCreated(missionNumber, shortName, actor);
 #endif
+
+                MissionStatus.Update(actor);
             }
 
             public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
@@ -287,6 +319,7 @@ namespace IL2DCE
 #if DEBUG
                 TraceActorDestroyed(missionNumber, shortName, actor);
 #endif
+                MissionStatus.Update(actor);
             }
 
             public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
@@ -298,7 +331,7 @@ namespace IL2DCE
 
             public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
             {
-                Debug.WriteLine("Mission.OnActorDead({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6}))",
+                Debug.WriteLine("Mission.OnActorDead({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6}, Army={7}, Group={8}))",
                     missionNumber, shortName, actor.Name(),
                         // string.Join("|", damages.Where(x => x.initiator != null && x.initiator.Player != null).Select(x => string.Format("{0}[{1}]", x.score, x.initiator.Player.Name()))),
                         string.Join("|", damages.Where(x => x.initiator != null).Select(x => string.Format("{0}[Actor={1}, Player={2}, Person={3}, Tool={4}]", x.score, 
@@ -306,7 +339,7 @@ namespace IL2DCE
                                                                                                                                 x.initiator.Player != null ? x.initiator.Player.Name() : string.Empty, 
                                                                                                                                 x.initiator.Person != null ? x.initiator.Person.Name() : string.Empty,
                                                                                                                                 x.initiator.Tool != null ? x.initiator.Tool.Name: string.Empty))),
-                        actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete());
+                        actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete(), actor.Army(), actor.Group() != null ? actor.Group().Name(): string.Empty);
                 base.OnActorDead(missionNumber, shortName, actor, damages);
 
                 if (actor is AiAircraft || actor is AiGroundActor)
@@ -325,12 +358,16 @@ namespace IL2DCE
                         ActorDead.Add(key, damages);
                     }
                 }
+
+                MissionStatus.Update(actor);
             }
 
             public override void OnActorTaskCompleted(int missionNumber, string shortName, AiActor actor)
             {
                 Debug.WriteLine("Mission.OnActorTaskCompleted({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                 base.OnActorTaskCompleted(missionNumber, shortName, actor);
+
+                MissionStatus.Update(actor);
             }
 
             #endregion
@@ -440,21 +477,25 @@ namespace IL2DCE
 
             public override void OnPersonMoved(AiPerson person, AiActor fromCart, int fromPlaceIndex)
             {
+                Debug.WriteLine("Mission.OnPersonMoved({0}, {1}, {2})", person.Name(), fromCart != null ? fromCart.Name() : string.Empty, fromPlaceIndex);
                 base.OnPersonMoved(person, fromCart, fromPlaceIndex);
             }
 
             public override void OnPersonHealth(AiPerson person, AiDamageInitiator initiator, float deltaHealth)
             {
+                Debug.WriteLine("Mission.OnPersonHealth({0}, {1}, {2})", person.Name(), initiator != null && initiator.Actor != null ? initiator.Actor.Name() : string.Empty, deltaHealth);
                 base.OnPersonHealth(person, initiator, deltaHealth);
             }
 
             public override void OnPersonParachuteLanded(AiPerson person)
             {
+                Debug.WriteLine("Mission.OnPersonParachuteLanded({0}, {1}, {2})", person.Name(), person.Id, person.Health);
                 base.OnPersonParachuteLanded(person);
             }
 
             public override void OnPersonParachuteFailed(AiPerson person)
             {
+                Debug.WriteLine("Mission.OnPersonParachuteFailed({0}, {1}, {2})", person.Name(), person.Id, person.Health);
                 base.OnPersonParachuteFailed(person);
             }
 
@@ -502,6 +543,7 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.OnStationaryKilled({0}, {1}, {2}, {3})", missionNumber, _stationary.Name, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
                 base.OnStationaryKilled(missionNumber, _stationary, initiator, eventArgInt);
+                MissionStatus.Update(_stationary);
             }
 
             public override void OnUserCreateUserLabel(GPUserLabel ul)
@@ -606,29 +648,83 @@ namespace IL2DCE
             [Conditional("DEBUG")]
             private void TraceGameInfo()
             {
+                IPlayer iplayer = Game.gameInterface.Player();
+                AiPerson person = iplayer.PersonPrimary();
+                Debug.WriteLine("Palyer[{0}] Person.Name={1} IsAlive={2}, Health={3} Pos={4}", iplayer.Name(), person?.Name() ?? string.Empty, person?.IsAlive() ?? false, person?.Health ?? 0, person?.Pos().ToString() ?? string.Empty);
+                AiPerson person2 = iplayer.PersonSecondary();
+                AiActor actor = iplayer.Place();
+                if (actor != null)
+                {
+                    AiAircraft aiAircraft = actor as AiAircraft;
+                    Regiment regiment = aiAircraft.Regiment();
+                    Debug.WriteLine("Palyer Actor:{0}, TypedName={1}, Type={2}, InternalTypeName={3}, VariantName={4}, AircraftType={5}, IsAlive={6}, IsKilled={7}, IsValid={8}",
+                                actor.Name(), aiAircraft.TypedName(), aiAircraft.Type(), aiAircraft.InternalTypeName(), aiAircraft.VariantName(), aiAircraft.Type(), aiAircraft.IsAlive(), aiAircraft.IsKilled(), aiAircraft.IsValid());
+                    Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
+                        regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
+                }
+                IPlayerStat st = iplayer.GetBattleStat();
+
                 string gpDictionaryFilePath = GamePlay.gpDictionaryFilePath;
                 AiAirGroup[] aiAirGroupRed = GamePlay.gpAirGroups((int)EArmy.Red);
-                AiAirGroup[] aiAirGroupBlue = GamePlay.gpAirGroups((int)EArmy.Blue);
-                AiAirport[] aiAirport = GamePlay.gpAirports();
-                Point3d point;
-                foreach (var item in aiAirport)
+                if (aiAirGroupRed != null)
                 {
-                    point = item.Pos();
-                    AiActor[] queueTakeoff = item.QueueTakeoff();
-                    if (queueTakeoff != null && queueTakeoff.Length > 0)
+                    foreach (var item in aiAirGroupRed)
                     {
-                        Debug.WriteLine("aiAirport Army={0}, Pos=({1:F2},{2:F2},{3:F2}) FieldR={4}, CoverageR={5}, Name={6}, Type={7}, ParkCountAll={8}, ParkCountFree={9},",
-                            item.Army(), point.x, point.y, point.z, item.FieldR(), item.CoverageR(), item.Name(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
-                        foreach (var item1 in queueTakeoff)
+                        TraceAiAirGroup(item);
+                    }
+                }
+                AiAirGroup[] aiAirGroupBlue = GamePlay.gpAirGroups((int)EArmy.Blue);
+                if (aiAirGroupBlue != null)
+                {
+                    foreach (var item in aiAirGroupBlue)
+                    {
+                        TraceAiAirGroup(item);
+                    }
+                }
+                AiAirport[] aiAirport = GamePlay.gpAirports();
+                if (aiAirport != null)
+                {
+                    Point3d point;
+                    foreach (var item in aiAirport)
+                    {
+                        point = item.Pos();
+                        AiActor[] queueTakeoff = item.QueueTakeoff();
+                        if (queueTakeoff != null && queueTakeoff.Length > 0)
                         {
-                            Debug.WriteLine(string.Format("queueTakeoff: {0}", item1.Name()));
+                            Debug.WriteLine("aiAirport Army={0}, Pos=({1:F2},{2:F2},{3:F2}) FieldR={4}, CoverageR={5}, Name={6}, Type={7}, ParkCountAll={8}, ParkCountFree={9},",
+                                item.Army(), point.x, point.y, point.z, item.FieldR(), item.CoverageR(), item.Name(), item.Type(), item.ParkCountAll(), item.ParkCountFree());
+                            foreach (var item1 in queueTakeoff)
+                            {
+                                Debug.WriteLine(string.Format("queueTakeoff: {0}", item1.Name()));
+                            }
                         }
                     }
                 }
                 AiBirthPlace[] aiBirthPlace = GamePlay.gpBirthPlaces();
                 AiGroundGroup[] aiGroundGroupRed = GamePlay.gpGroundGroups((int)EArmy.Red);
+                if (aiGroundGroupRed != null)
+                {
+                    foreach (var item in aiGroundGroupRed)
+                    {
+                        TraceAiGroundGroup(item);
+                    }
+                }
                 AiGroundGroup[] aiGroundGroupBlue = GamePlay.gpGroundGroups((int)EArmy.Blue);
+                if (aiGroundGroupBlue != null)
+                {
+                    foreach (var item in aiGroundGroupBlue)
+                    {
+                        TraceAiGroundGroup(item);
+                    }
+                }
                 GroundStationary[] groundStationary = GamePlay.gpGroundStationarys();
+                if (groundStationary != null)
+                {
+                    foreach (var item in groundStationary)
+                    {
+                        TraceGroundStationary(item);
+                    }
+                }
             }
 
             [Conditional("DEBUG")]
@@ -740,6 +836,11 @@ namespace IL2DCE
                         Debug.WriteLine("  AiPerson: Id={0}, Name={1}, Health={2}", aiPerson.Id, aiPerson.Name(), aiPerson.Health);
                     }
                 }
+                else
+                {
+                    Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2}) Army={3}, Tag={4}, AirGroup={5}, Pos={6}, Type={7}", 
+                                            missionNumber, shortName, actor.Name(), actor.Army(), actor.Tag != null ? actor.Tag: string.Empty, actor.Group() != null ? actor.Group().Name() :string.Empty, actor.Pos(), actor.GetType().Name);
+                }
             }
 
             [Conditional("DEBUG")]
@@ -765,6 +866,72 @@ namespace IL2DCE
             }
 
             [Conditional("DEBUG")]
+            private void TraceAiAirGroup(AiAirGroup airGroup)
+            {
+                if (airGroup != null)
+                {
+                    AiAircraft aiAircraft = airGroup.GetItems()?.FirstOrDefault() as AiAircraft ?? null;
+                    Debug.WriteLine("  AiAirGroup: Army={0}, ID={1}, Name={2}, Type={3}, NOf={4}, Init={5}, Died={6}, IsValid={7}, IsAlive={8}, Way=[{9}/{10}], Task{11}, Idle={12}, Pos={13}",
+                        airGroup.Army(), airGroup.ID(), airGroup.Name(), aiAircraft?.InternalTypeName() ?? string.Empty, airGroup.NOfAirc, airGroup.InitNOfAirc, airGroup.DiedAircrafts, airGroup.IsValid(), airGroup.IsAlive(), airGroup.GetCurrentWayPoint(), airGroup.GetWay().Length, airGroup.getTask().ToString(), airGroup.Idle, airGroup.Pos().ToString());
+                    AiWayPoint[] airGroupWay = airGroup.GetWay();
+                    AiActor [] actors = airGroup.GetItems();
+                }
+            }
+
+            [Conditional("DEBUG")]
+            private void TraceAiGroundGroup(AiGroundGroup groundGroup)
+            {
+                if (groundGroup != null)
+                {
+                    try
+                    {
+                        AiActor[] aiActors = groundGroup.GetItems();
+                        AiGroundActor aiActor = aiActors != null ? aiActors.FirstOrDefault() as AiGroundActor : null;
+                        Debug.Write(string.Format("  AiGroundGroup: Army={0}, ID={1}, Name={2}, Type={3}, Count={4}, IsAlive={5}",
+                            groundGroup.Army(), 
+                            groundGroup.ID(), 
+                            groundGroup.Name(), 
+                            aiActor != null ? aiActor.InternalTypeName(): string.Empty, 
+                            aiActors != null ? aiActors.Count() :0, 
+                            groundGroup.IsAlive()));
+                        if (groundGroup.IsValid())
+                        {
+                            Debug.WriteLine(", IsValid={0}, Idle={1}, Pos={2}", groundGroup.IsValid(), groundGroup.Idle, groundGroup.Pos().ToString());
+                            AiWayPoint[] ways = groundGroup.GetWay();   // null
+                            if (ways != null)
+                            {
+                                Debug.WriteLine(", Way=[{0}/{1}], Current{2}",
+                                    groundGroup.GetCurrentWayPoint(), ways.Length, ways[groundGroup.GetCurrentWayPoint()].ToString());
+                            }
+                            else
+                            {
+                                Debug.WriteLine("");
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine("");
+                        }
+                        AiWayPoint[] airGroupWay = groundGroup.GetWay();
+                        AiActor[] actors = groundGroup.GetItems();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("{0} {1}", ex.Message, ex.StackTrace);
+                    }
+            } }
+
+            [Conditional("DEBUG")]
+            private void TraceGroundStationary(GroundStationary groundStationary)
+            {
+                if (groundStationary != null)
+                {
+                    Debug.WriteLine("  GroundStationary: Country={0}, Title={1}, Name={2}, Type={3}, Category={4}, IsAlive={5}, Pos={6}",
+                        groundStationary.country, groundStationary.Title, groundStationary.Name, groundStationary.Type, groundStationary.Category, groundStationary.IsAlive, groundStationary.pos);
+                }
+            }
+
+            [Conditional("DEBUG")]
             private void TraceLandedPosNearAirport(Point3d pos, int army)
             {
                 Debug.WriteLine("Pos=({0},{1}) Army={2}", pos.x, pos.y, GamePlay.gpFrontArmy(pos.x, pos.y));
@@ -775,6 +942,16 @@ namespace IL2DCE
                 }
             }
 
+            [Conditional("DEBUG")]
+            private void Trace(Dictionary<string, object> dataDictionary)
+            {
+                Debug.WriteLine(string.Format("Trace DataDictionary Count={0}", dataDictionary.Count));
+                foreach (var item in dataDictionary)
+                {
+                    Debug.WriteLine("  Key={0} Value={1}", item.Key, item.Value);
+
+                }
+            }
 #endif
 
             #endregion

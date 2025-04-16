@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -139,6 +140,10 @@ namespace IL2DCE.Pages
             {
                 if (career.BattleType == EBattleType.QuickMission)
                 {
+#if DEBUG
+                    Mission.Mission mission = Game.Core.Mission as Mission.Mission;
+                    Game.Core.SaveMissionResult(mission.MissionStatus);
+#endif
                     string valueSummary = string.Format("{0}|{1}|{2}",
                         career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft);
                     PlayerStat.UpdatePlayerStat(StatType, career, DateTime.Now, valueSummary);
@@ -148,10 +153,12 @@ namespace IL2DCE.Pages
                 }
                 else
                 {
+                    Mission.Mission mission = Game.Core.Mission as Mission.Mission;
+                    Game.Core.SaveMissionResult(mission.MissionStatus);
                     PlayerStat.UpdatePlayerStat(StatType, career, career.Date.Value);
-
-                    CampaignStatus status = Game.Core.AdvanceCampaign(Game);
-                    if (status != CampaignStatus.DateEnd)
+                    career.Status = (int)(PlayerStat.IsPlayerAlive() ? EPlayerStatus.Alive : EPlayerStatus.Dead);
+                    ECampaignStatus status = Game.Core.AdvanceCampaign(Game);
+                    if (status != ECampaignStatus.DateEnd && status != ECampaignStatus.Dead)
                     {
                         Game.gameInterface.PageChange(new BattleIntroPage(), null);
                     }
@@ -172,7 +179,7 @@ namespace IL2DCE.Pages
         protected string ToStringTimeSpan(Dictionary<string, float> dic, string separator = Config.CommaStr)
         {
             return string.Join(separator, dic.Select(x => string.Format("{0} {1}", 
-                                                    AircraftInfo.CreateDisplayName(x.Key), new TimeSpan((long)(x.Value * 10000000)).ToString("hh\\:mm\\:ss"))));
+                                                    AircraftInfo.CreateDisplayName(x.Key), PlayerStats.ToStringFlyingTime((long)x.Value))));
         }
 
         protected virtual string GetResultSummary()
@@ -183,6 +190,8 @@ namespace IL2DCE.Pages
             int exp2 = game.BattleResult == EBattleResult.DRAW ? Config.ExpDraw : game.BattleResult == EBattleResult.SUCCESS ? Config.ExpSuccess: Config.ExpFail;
             int rank = career.RankIndex;
             StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Campaign: {0}", career.CampaignInfo.Name);
+            sb.AppendLine();
             sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, career.Date.Value.Hour == 0 ? "Date: {0:M/d/yyyy} - {1}" : "Date: {0:M/d/yyyy h tt} - {1}", career.Date.Value, game.BattleResult.ToString());
             sb.AppendLine();
             // Before + Add Now [Next Rank]
@@ -206,6 +215,9 @@ namespace IL2DCE.Pages
                 IPlayer player = game.gameInterface.Player();
                 IPlayerStat st = player.GetBattleStat();
 
+                int digit = new int[] { PlayerStat.Digit(), PlayerStats.Digit(st, false), }.Max();
+                string format = Regex.Replace(PlayerStats.PlayerStatFormat, @"\{1,\d}", "{1," + digit.ToString(Config.NumberFormat) + "}");
+
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("PlayerStat [{0}]", player?.Name() ?? string.Empty);
                 sb.AppendLine();
@@ -213,9 +225,11 @@ namespace IL2DCE.Pages
                 sb.AppendLine();
                 sb.AppendFormat("Flying Time: {0}", ToStringTimeSpan(st.tTotalTypes));
                 sb.AppendLine();
+                sb.AppendFormat("Status: {0}", player.PersonPrimary() != null && player.PersonPrimary().IsAlive() ? EPlayerStatus.Alive.ToDescription() : EPlayerStatus.Dead.ToDescription());
                 sb.AppendLine();
-                sb.Append(PlayerStats.ToStringSummary(st, false));
-                sb.AppendLine(PlayerStat.ToStringTotal());
+                sb.AppendLine();
+                sb.Append(PlayerStats.ToStringSummary(st, false, format));
+                sb.AppendLine(PlayerStat.ToStringTotal(format));
                 sb.AppendLine("[Kills Type]");
                 sb.Append(PlayerStat.ToStringKillsType());
                 return sb.ToString();
@@ -235,8 +249,10 @@ namespace IL2DCE.Pages
             sb.AppendLine();
             sb.AppendFormat("Flying Time: {0}", ToStringTimeSpan(st.tTotalTypes));
             sb.AppendLine();
+            sb.AppendFormat("Status: {0}", player.PersonPrimary() != null && player.PersonPrimary().IsAlive() ? EPlayerStatus.Alive.ToDescription() : EPlayerStatus.Dead.ToDescription());
             sb.AppendLine();
-            sb.AppendLine(PlayerStats.ToStringSummary(st));
+            sb.AppendLine();
+            sb.AppendLine(PlayerStats.ToStringSummary(st, true, PlayerStats.PlayerStatFormat, true));
             sb.AppendLine("[Kills Type]");
             sb.Append(PlayerStats.ToStringkillsTypes(st.killsTypes));
             return sb.ToString();

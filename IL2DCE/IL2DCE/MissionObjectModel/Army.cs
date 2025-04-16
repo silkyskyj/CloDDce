@@ -26,6 +26,12 @@ namespace IL2DCE.MissionObjectModel
 
     public class Army
     {
+        public EArmy Value
+        {
+            get;
+            set;
+        }
+
         public static EArmy Parse(ECountry country)
         {
             if (country == ECountry.gb || country == ECountry.fr || country == ECountry.us || country == ECountry.ru || country == ECountry.rz || country == ECountry.pl)
@@ -39,6 +45,22 @@ namespace IL2DCE.MissionObjectModel
             else
             {
                 return EArmy.None;
+            }
+        }
+
+        public static ECountry DefaultCountry(EArmy army)
+        {
+            if (army == EArmy.Red)
+            {
+                return ECountry.gb;
+            }
+            else if (army == EArmy.Blue)
+            {
+                return ECountry.de;
+            }
+            else
+            {
+                return ECountry.nn;
             }
         }
     }

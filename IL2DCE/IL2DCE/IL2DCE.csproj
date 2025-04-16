@@ -35,10 +35,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Generator\GeneratorBase.cs" />
     <Compile Include="MissionObjectModel\AircraftState.cs" />
     <Compile Include="MissionObjectModel\AirForce.cs" />
+    <Compile Include="MissionObjectModel\Armor.cs" />
     <Compile Include="MissionObjectModel\Army.cs" />
+    <Compile Include="MissionObjectModel\Artillery.cs" />
     <Compile Include="MissionObjectModel\CampaignProgress.cs" />
+    <Compile Include="MissionObjectModel\MissionStatus.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
     <Compile Include="MissionObjectModel\EBattleType.cs" />
     <Compile Include="MissionObjectModel\Flight.cs" />
@@ -60,8 +64,12 @@
     <Compile Include="Config.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Generator\Generator.cs" />
+    <Compile Include="MissionObjectModel\GroundObject.cs" />
     <Compile Include="MissionObjectModel\GroupWaypoint.cs" />
+    <Compile Include="MissionObjectModel\MissionObject.cs" />
+    <Compile Include="MissionObjectModel\Option.cs" />
     <Compile Include="MissionObjectModel\Rank.cs" />
+    <Compile Include="MissionObjectModel\Ship.cs" />
     <Compile Include="MissionObjectModel\SilkySkyCloDFile.cs" />
     <Compile Include="MissionObjectModel\CloudAltitude.cs" />
     <Compile Include="MissionObjectModel\DistanceComparer.cs" />
@@ -90,6 +98,7 @@
     <Compile Include="Util\MissionFileConverter.cs" />
     <Compile Include="Util\FileUtil.cs" />
     <Compile Include="MissionObjectModel\PlayerStats.cs" />
+    <Compile Include="Util\Variable.cs" />
     <Compile Include="Util\VersionConverter.cs" />
   </ItemGroup>
   <ItemGroup>
