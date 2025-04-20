@@ -34,9 +34,9 @@ namespace IL2DCE.MissionObjectModel
         public const int FlightCount = 4;
         public const string DefaultFormation = "LINEABREAST"; // "Line Abreast" or "Line Astern" is All Flight Group & All Country
 
-        private const int CoverRange = 20000;
-        private const int ReconRange = 20000;
-        private const int GroundAttackRange = 20000;
+        public const int CoverRange = 20000;
+        public const int ReconRange = 20000;
+        public const int GroundAttackRange = 20000;
 
         #region Public properties
 

@@ -23,39 +23,29 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adlerangriff", "Adlerangriff", "{E4CFEBBA-6807-4642-A5E8-4111BBA5B859}"
 	ProjectSection(SolutionItems) = preProject
 		Campaigns\Adlerangriff\CampaignInfo.ini = Campaigns\Adlerangriff\CampaignInfo.ini
-		Campaigns\Adlerangriff\LW_OrderOfBattle_August1940.mis = Campaigns\Adlerangriff\LW_OrderOfBattle_August1940.mis
 		Campaigns\Adlerangriff\MissionSingle.cs = Campaigns\Adlerangriff\MissionSingle.cs
-		Campaigns\Adlerangriff\RAF_OrderOfBattle_August1940.mis = Campaigns\Adlerangriff\RAF_OrderOfBattle_August1940.mis
-		Campaigns\Adlerangriff\StaticTemplate.mis = Campaigns\Adlerangriff\StaticTemplate.mis
-		Campaigns\Adlerangriff\Summer1940.mis = Campaigns\Adlerangriff\Summer1940.mis
+		Campaigns\Adlerangriff\OrderOfBattle_August1940.mis = Campaigns\Adlerangriff\OrderOfBattle_August1940.mis
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kanalkampf", "Kanalkampf", "{85AF6006-C929-4478-AD67-FA895A2B51A7}"
 	ProjectSection(SolutionItems) = preProject
 		Campaigns\Kanalkampf\CampaignInfo.ini = Campaigns\Kanalkampf\CampaignInfo.ini
-		Campaigns\Kanalkampf\LW_OrderOfBattle_August1940.mis = Campaigns\Kanalkampf\LW_OrderOfBattle_August1940.mis
 		Campaigns\Kanalkampf\MissionSingle.cs = Campaigns\Kanalkampf\MissionSingle.cs
-		Campaigns\Kanalkampf\RAF_OrderOfBattle_August1940.mis = Campaigns\Kanalkampf\RAF_OrderOfBattle_August1940.mis
-		Campaigns\Kanalkampf\StaticTemplate.mis = Campaigns\Kanalkampf\StaticTemplate.mis
-		Campaigns\Kanalkampf\Summer1940.mis = Campaigns\Kanalkampf\Summer1940.mis
+		Campaigns\Kanalkampf\OrderOfBattle_August1940.mis = Campaigns\Kanalkampf\OrderOfBattle_August1940.mis
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars", "Supply Wars", "{359B04C2-59DD-4167-9CEC-DB40A4B9772E}"
 	ProjectSection(SolutionItems) = preProject
 		Campaigns\Supply Wars\CampaignInfo.ini = Campaigns\Supply Wars\CampaignInfo.ini
 		Campaigns\Supply Wars\MissionSingle.cs = Campaigns\Supply Wars\MissionSingle.cs
-		Campaigns\Supply Wars\SupplyWars_Environment.mis = Campaigns\Supply Wars\SupplyWars_Environment.mis
 		Campaigns\Supply Wars\SupplyWars_Initial.mis = Campaigns\Supply Wars\SupplyWars_Initial.mis
-		Campaigns\Supply Wars\SupplyWars_Static.mis = Campaigns\Supply Wars\SupplyWars_Static.mis
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars.Tobruk", "Supply Wars.Tobruk", "{197175B4-BD2C-4289-9C47-CB4660DBF7B2}"
 	ProjectSection(SolutionItems) = preProject
 		Campaigns\Supply Wars.tobruk\CampaignInfo.ini = Campaigns\Supply Wars.tobruk\CampaignInfo.ini
 		Campaigns\Supply Wars.tobruk\MissionSingle.cs = Campaigns\Supply Wars.tobruk\MissionSingle.cs
-		Campaigns\Supply Wars.tobruk\SupplyWars_Environment.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Environment.mis
 		Campaigns\Supply Wars.tobruk\SupplyWars_Initial.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Initial.mis
-		Campaigns\Supply Wars.tobruk\SupplyWars_Static.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Static.mis
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
@@ -71,8 +61,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cross v Roundel.Tobruk", "C
 		Campaigns\Cross v Roundel.Tobruk\AirGroupInfo.ini = Campaigns\Cross v Roundel.Tobruk\AirGroupInfo.ini
 		Campaigns\Cross v Roundel.Tobruk\CampaignInfo.ini = Campaigns\Cross v Roundel.Tobruk\CampaignInfo.ini
 		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel.mis
-		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_environment.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_environment.mis
-		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_static.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel_static.mis
 		Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs = Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs
 	EndProjectSection
 EndProject
@@ -82,8 +70,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Isles of Doom.Tobruk", "Isl
 		Campaigns\Isles of Doom.Tobruk\AirGroupInfo.ini = Campaigns\Isles of Doom.Tobruk\AirGroupInfo.ini
 		Campaigns\Isles of Doom.Tobruk\CampaignInfo.ini = Campaigns\Isles of Doom.Tobruk\CampaignInfo.ini
 		Campaigns\Isles of Doom.Tobruk\Isles of Doom.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom.mis
-		Campaigns\Isles of Doom.Tobruk\Isles of Doom_environment.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom_environment.mis
-		Campaigns\Isles of Doom.Tobruk\Isles of Doom_static.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom_static.mis
 		Campaigns\Isles of Doom.Tobruk\MissionSingle.cs = Campaigns\Isles of Doom.Tobruk\MissionSingle.cs
 	EndProjectSection
 EndProject
@@ -93,9 +79,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Steppe.Tobruk", "Steppe.Tob
 		Campaigns\Steppe.Tobruk\AirGroupInfo.ini = Campaigns\Steppe.Tobruk\AirGroupInfo.ini
 		Campaigns\Steppe.Tobruk\CampaignInfo.ini = Campaigns\Steppe.Tobruk\CampaignInfo.ini
 		Campaigns\Steppe.Tobruk\MissionSingle.cs = Campaigns\Steppe.Tobruk\MissionSingle.cs
-		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Environment.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Environment.mis
 		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis
-		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Static.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Static.mis
 	EndProjectSection
 EndProject
 Global

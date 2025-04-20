@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.5.10)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.0)
 =============================================================================================================================
-                                                                                                                   04/05/2025
+                                                                                                                   04/20/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -36,7 +36,11 @@ Main functions
  - Campaign (mission file for IL2DCE)
  - Air Group
  - Campaign Period
- - Filter display function for existing career list (Army/Air Force/Campaign)
+ - Filter display function for existing career list (Army/Air Force/Campaign/StrictMode/Playabe)
+ - Strict Mode
+ - Spawn Parked
+ - Initial AirGroup Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file)
+ - Progress (AnyTime/Daily/AnyDay/AnyDayAnyTime)
 
 2. The following items can be selected and set in Dynamic Quick Mission.
  - Campaign (mission file for IL2DCE)
@@ -69,6 +73,13 @@ Items that can be selected and set commonly in 1. 2.
  - Auto re-Fuel
  - Track Recording
  - AI Air Group Skill
+ - AI Ship Skill
+-  Add Random Ground units
+ - Ground Unit Setting
+ - Unit nums
+ - Unit Nums
+ - Convert Generic type
+ - Save/Load general settings
 
 Sample mission (7 mission files)
  - Adlerangriff RAF/Lufutwaffe
@@ -102,6 +113,9 @@ History
 
   Ver      Date       Comment
 
+  0.6.00   04/20/2025 Added: Strict mode/AI AirGroup Skill/SpawnParked/Progress type selection in Dynamic Campaign new Career page. Add Random Ground units/AI Ship Skill/Ground Unit Setting/Unit Nums/Convert Generic type option in each page. Save/Load general settings in each pages. Ability to increase or decrease skill values ​​based on Campaign mission results/Display current skill values.
+                      Fixed: Improved mission loading speed. Other minor bug fixes.
+                      Changed: Changes to mission import logic and mission file structure. Fixes to attached mission files.
   0.5.10   04/05/2025 Added: AI Air Group Skill selection. Stats view in Dynamic Quick Mission Page. Royal Netherlands Air Force and Belgian Air Component in Select AirForce. 
                       Fixed: if ther aircraft moves while stopped at the airport, the time until re-fuel(re-arm) is shorter. If an exception occurs while displaying Result page, game cannot be continued. Changed: Stats display Format & statType Option(conf.ini).
   0.5.9    03/30/2025 Fixed: After the change in v0.5.6, the speed becomes 0 when starting with AirStart. Reviewed the logic of Ground Operation and fixed related items in mission import.

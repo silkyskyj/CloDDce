@@ -22,6 +22,12 @@ namespace IL2DCE.MissionObjectModel
 {
     public class Groundway
     {
+        public string Id
+        {
+            get;
+            protected set;
+        }
+
         public List<GroundGroupWaypoint> Waypoints
         {
             get;
@@ -44,8 +50,9 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public Groundway(List<GroundGroupWaypoint> waypoints)
+        public Groundway(string id, List<GroundGroupWaypoint> waypoints)
         {
+            Id = id;
             Waypoints = waypoints;
         }
 
@@ -97,7 +104,7 @@ namespace IL2DCE.MissionObjectModel
 
             if (waypoints.Count > 0)
             {
-                return new Groundway(waypoints);
+                return new Groundway(id, waypoints);
             }
 
             return null;

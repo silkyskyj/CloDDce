@@ -85,6 +85,15 @@ namespace IL2DCE.MissionObjectModel
 
         public static readonly char[] SplitChars = new char[] { ' ' };
 
+        public enum LoadLevel
+        {
+            All,
+            AirGroup,
+            AirGroundGroup,
+            AirGroundGroupUnit,
+            Count,
+        }
+
         #endregion
 
         #region Property (& Variable)
@@ -141,7 +150,6 @@ namespace IL2DCE.MissionObjectModel
             get;
             private set;
         }
-
 
         public float Time
         {
@@ -239,23 +247,23 @@ namespace IL2DCE.MissionObjectModel
 
         private AirGroupInfos airGroupInfos;
 
-        public MissionFile(IGamePlay game, IEnumerable<string> fileNames, AirGroupInfos airGroupInfos = null)
+        public MissionFile(IGamePlay game, IEnumerable<string> fileNames, AirGroupInfos airGroupInfos = null, LoadLevel loadLevel = LoadLevel.All )
         {
             this.airGroupInfos = airGroupInfos;
 
             init();
             foreach (string fileName in fileNames)
             {
-                load(game.gpLoadSectionFile(fileName));
+                load(game.gpLoadSectionFile(fileName), loadLevel);
             }
         }
 
-        public MissionFile(ISectionFile file, AirGroupInfos airGroupInfos = null)
+        public MissionFile(ISectionFile file, AirGroupInfos airGroupInfos = null, LoadLevel loadLevel = LoadLevel.All)
         {
             this.airGroupInfos = airGroupInfos;
 
             init();
-            load(file);
+            load(file, loadLevel);
         }
 
         private void init()
@@ -273,10 +281,11 @@ namespace IL2DCE.MissionObjectModel
             FrontMarkers = new List<Point3d>();
         }
 
-        private void load(ISectionFile file)
+        private void load(ISectionFile file, LoadLevel loadLevel = LoadLevel.All)
         {
             // Parts
             Parts = SilkySkyCloDFile.ReadSectionKeies(file, SectionParts);
+            
             // Main
             Map = file.get(SectionMain, KeyMap, string.Empty);
             string value = file.get(SectionMain, KeyBattleArea, string.Empty);
@@ -324,6 +333,77 @@ namespace IL2DCE.MissionObjectModel
             GlobalWind = globalWindList;
 #endif
 
+            // AirGroups
+            lines = file.lines(SectionAirGroups);
+            for (i = 0; i < lines; i++)
+            {
+                file.get(SectionAirGroups, i, out key, out value);
+
+                AirGroup airGroup = new AirGroup(file, key);
+                string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
+                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGoupKey, airGroup.Class, false);
+                if (airGroupInfo.Any())
+                {
+                    AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
+                    airGroup.SetAirGroupInfo(airGroupInfoTarget);
+                    if (airGroup.ArmyIndex == (int)EArmy.Red || airGroup.ArmyIndex == (int)EArmy.Blue)
+                    {
+                        AirGroups.Add(airGroup);
+                    }
+                    else
+                    {
+                        Debug.Assert(false);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGoupKey, airGroup.Class, "AirGroupInfo.ini");
+                    Debug.Assert(false);
+                }
+            }
+
+            if (loadLevel == LoadLevel.AirGroup)
+            {
+                return;
+            }
+
+            // Chiefs
+            lines = file.lines(SectionChiefs);
+            for (i = 0; i < lines; i++)
+            {
+                file.get(SectionChiefs, i, out key, out value);
+
+                GroundGroup groundGroup = GroundGroup.Create(file, key);
+                if (groundGroup != null && (groundGroup.Army == (int)EArmy.Red || groundGroup.Army == (int)EArmy.Blue))
+                {
+                    GroundGroups.Add(groundGroup);
+                }
+                else
+                {   // Army = none
+                    Groundway road = Groundway.Create(file, key);
+                    if (road != null)
+                    {
+                        if (value.StartsWith("Vehicle") || value.StartsWith("Armor"))
+                        {
+                            Roads.Add(road);
+                        }
+                        else if (value.StartsWith("Ship"))
+                        {
+                            Waterways.Add(road);
+                        }
+                        else if (value.StartsWith("Train"))
+                        {
+                            Railways.Add(road);
+                        }
+                    }
+                }
+            }
+
+            if (loadLevel == LoadLevel.AirGroundGroup)
+            {
+                return;
+            }
+
             // Stationary
             lines = file.lines(SectionStationary);
             for (i = 0; i < lines; i++)
@@ -343,6 +423,11 @@ namespace IL2DCE.MissionObjectModel
                         // Debug.WriteLine("Stationary Type={0}, ID={1}, Army={2}, Country={3}, Class={4}", stationary.Type, stationary.Id, stationary.Army, stationary.Country, stationary.Class);
                     }
                 }
+            }
+
+            if (loadLevel == LoadLevel.AirGroundGroupUnit)
+            {
+                return;
             }
 
             // Buildings
@@ -376,67 +461,6 @@ namespace IL2DCE.MissionObjectModel
                         if (!FrontMarkers.Any(a => a.x == x && a.y == y && a.z == army))
                         {
                             FrontMarkers.Add(new Point3d(x, y, army));
-                        }
-                    }
-                }
-            }
-
-            // AirGroups
-            lines = file.lines(SectionAirGroups);
-            for (i = 0; i < lines; i++)
-            {
-                file.get(SectionAirGroups, i, out key, out value);
-
-                AirGroup airGroup = new AirGroup(file, key);
-                string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
-                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGoupKey, airGroup.Class, false);
-                if (airGroupInfo.Any())
-                {
-                    AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
-                    airGroup.SetAirGroupInfo(airGroupInfoTarget);
-                    if (airGroup.ArmyIndex == (int)EArmy.Red || airGroup.ArmyIndex == (int)EArmy.Blue)
-                    {
-                        AirGroups.Add(airGroup);
-                    }
-                    else
-                    {
-                        Debug.Assert(false);
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGoupKey, airGroup.Class, "AirGroupInfo.ini");
-                    Debug.Assert(false);
-                }
-            }
-
-            // Chiefs
-            lines = file.lines(SectionChiefs);
-            for (i = 0; i < lines; i++)
-            {
-                file.get(SectionChiefs, i, out key, out value);
-
-                GroundGroup groundGroup = GroundGroup.Create(file, key);
-                if (groundGroup != null && (groundGroup.Army == (int)EArmy.Red || groundGroup.Army == (int)EArmy.Blue))
-                {
-                    GroundGroups.Add(groundGroup);
-                }
-                else
-                {   // Army = none
-                    Groundway road = Groundway.Create(file, key);
-                    if (road != null)
-                    {
-                        if (value.StartsWith("Vehicle") || value.StartsWith("Armor"))
-                        {
-                            Roads.Add(road);
-                        }
-                        else if (value.StartsWith("Ship"))
-                        {
-                            Waterways.Add(road);
-                        }
-                        else if (value.StartsWith("Train"))
-                        {
-                            Railways.Add(road);
                         }
                     }
                 }

@@ -213,6 +213,14 @@ namespace IL2DCE.Pages
             }
         }
 
+        private bool IsProgressShortType
+        {
+            get
+            {
+                return SelectedProgress == ECampaignProgress.AnyTime || SelectedProgress == ECampaignProgress.AnyDayAnyTime;
+            }
+        }
+
         public bool SelectedStrictMode
         {
             get
@@ -235,6 +243,16 @@ namespace IL2DCE.Pages
 
         private MissionFile currentMissionFile = null;
         private bool missionLoaded = false;
+
+        #region StrictModeSaveSelectedInfo
+
+        private string comboBoxSelectUnitNumsArmorText;
+        private string comboBoxSelectUnitNumsShipText;
+        private bool checkBoxSpawnRandomLocationEnemyChecked;
+        private bool checkBoxSpawnRandomLocationFriendlyChecked;
+        private bool checkBoxSpawnRandomLocationPlayerChecked;
+
+        #endregion
 
         #endregion
 
@@ -331,7 +349,7 @@ namespace IL2DCE.Pages
                 CampaignInfo campaignInfo = SelectedCampaign;
                 if (campaignInfo != null)
                 {
-                    currentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+                    currentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
                 }
                 else
                 {
@@ -385,8 +403,9 @@ namespace IL2DCE.Pages
 
         private void comboBoxSelectProgress_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.Visibility 
-                = SelectedProgress == ECampaignProgress.AnyTime || SelectedProgress == ECampaignProgress.AnyDayAnyTime ? Visibility.Hidden: Visibility.Visible;
+            bool disable = IsProgressShortType;
+            FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.IsEnabled = !disable;
+            FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.Visibility = disable || SelectedStrictMode ? Visibility.Hidden: Visibility.Visible;
             UpdateButtonStatus();
         }
 
@@ -443,20 +462,69 @@ namespace IL2DCE.Pages
 
         private void checkBoxStrictMode_CheckedChange(object sender, RoutedEventArgs e)
         {
+            GeneralSettingsGroupBox general = FrameworkElement.GeneralSettingsGroupBox;
             bool strictMode = SelectedStrictMode;
             if (strictMode)
             {
+                general.labelSelectUnitNumsArmor.Visibility = Visibility.Hidden;
+                comboBoxSelectUnitNumsArmorText = general.comboBoxSelectUnitNumsArmor.Text;
+                general.comboBoxSelectUnitNumsArmor.Text = EArmorUnitNumsSet.Default.ToDescription();
+                general.comboBoxSelectUnitNumsArmor.IsEnabled = false;
+                general.comboBoxSelectUnitNumsArmor.Visibility = Visibility.Hidden;
 
+                general.labelSelectUnitNumsShip.Visibility = Visibility.Hidden;
+                comboBoxSelectUnitNumsShipText = general.comboBoxSelectUnitNumsShip.Text;
+                general.comboBoxSelectUnitNumsShip.Text = EArmorUnitNumsSet.Default.ToDescription();
+                general.comboBoxSelectUnitNumsShip.IsEnabled = false;
+                general.comboBoxSelectUnitNumsShip.Visibility = Visibility.Hidden;
+
+                general.labelSelectSpawnRandomLocation.Visibility = Visibility.Hidden;
+                checkBoxSpawnRandomLocationEnemyChecked = general.checkBoxSpawnRandomLocationEnemy.IsChecked != null && general.checkBoxSpawnRandomLocationEnemy.IsChecked.Value;
+                general.checkBoxSpawnRandomLocationEnemy.IsChecked = false;
+                general.checkBoxSpawnRandomLocationEnemy.IsEnabled = false;
+                general.checkBoxSpawnRandomLocationEnemy.Visibility = Visibility.Hidden;
+
+                checkBoxSpawnRandomLocationFriendlyChecked = general.checkBoxSpawnRandomLocationFriendly.IsChecked != null && general.checkBoxSpawnRandomLocationFriendly.IsChecked.Value;
+                general.checkBoxSpawnRandomLocationFriendly.IsChecked = false;
+                general.checkBoxSpawnRandomLocationFriendly.IsEnabled = false;
+                general.checkBoxSpawnRandomLocationFriendly.Visibility = Visibility.Hidden;
+
+                checkBoxSpawnRandomLocationPlayerChecked = general.checkBoxSpawnRandomLocationPlayer.IsChecked != null && general.checkBoxSpawnRandomLocationPlayer.IsChecked.Value;
+                general.checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+                general.checkBoxSpawnRandomLocationPlayer.IsEnabled = false;
+                general.checkBoxSpawnRandomLocationPlayer.Visibility = Visibility.Hidden;
             }
             else
             {
+                general.labelSelectUnitNumsArmor.Visibility = Visibility.Visible;
+                general.comboBoxSelectUnitNumsArmor.IsEnabled = true;
+                general.comboBoxSelectUnitNumsArmor.Visibility = Visibility.Visible;
+                general.comboBoxSelectUnitNumsArmor.Text = comboBoxSelectUnitNumsArmorText;
 
+                general.labelSelectUnitNumsShip.Visibility = Visibility.Visible;
+                general.comboBoxSelectUnitNumsShip.IsEnabled = true;
+                general.comboBoxSelectUnitNumsShip.Visibility = Visibility.Visible;
+                general.comboBoxSelectUnitNumsShip.Text = comboBoxSelectUnitNumsShipText;
+
+                general.labelSelectSpawnRandomLocation.Visibility = Visibility.Visible;
+                general.checkBoxSpawnRandomLocationEnemy.IsEnabled = true;
+                general.checkBoxSpawnRandomLocationEnemy.Visibility = Visibility.Visible;
+                general.checkBoxSpawnRandomLocationEnemy.IsChecked = checkBoxSpawnRandomLocationEnemyChecked;
+
+                general.checkBoxSpawnRandomLocationFriendly.IsEnabled = true;
+                general.checkBoxSpawnRandomLocationFriendly.Visibility = Visibility.Visible;
+                general.checkBoxSpawnRandomLocationFriendly.IsChecked = checkBoxSpawnRandomLocationFriendlyChecked;
+
+                bool disable = IsProgressShortType;
+                general.checkBoxSpawnRandomLocationPlayer.IsEnabled = disable;
+                general.checkBoxSpawnRandomLocationPlayer.Visibility = disable ? Visibility.Hidden: Visibility.Visible;
+                general.checkBoxSpawnRandomLocationPlayer.IsChecked = disable ? false: checkBoxSpawnRandomLocationPlayerChecked;
             }
         }
 
         #endregion
 
-            #region Button Click
+        #region Button Click
 
         private void buttonMissionLoad_Click(object sender, RoutedEventArgs e)
         {
@@ -471,7 +539,7 @@ namespace IL2DCE.Pages
                 try
                 {
                     gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
-                    gameIterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
+                    gameIterface.MissionLoad(campaignInfo.InitialMissionTemplateFiles.First());
                     missionLoaded = true;
                     UpdateAirGroupComboBoxContent();
                     gameIterface.BattleStart();
@@ -505,17 +573,18 @@ namespace IL2DCE.Pages
             AirGroup airGroup = SelectedAirGroup;
             GeneralSettingsGroupBox generalSettings = FrameworkElement.GeneralSettingsGroupBox;
 
+            Career career = null;
             try
             {
-                Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
+                career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
                 career.BattleType = EBattleType.Campaign;
                 career.CampaignInfo = campaign;
                 career.AirGroup = airGroup.ToString();
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
-                AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
-                career.Aircraft = aircraftInfo.DisplayName;
-                career.Spawn = (int)(FrameworkElement.checkBoxSpawnParked.IsEnabled ? SelectedSpawnParked ? ESpawn.Parked : ESpawn.Idle: ESpawn.Default); 
-                career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? new Skill[] { SelectedSkill } : null;
+                career.PlayerAirGroup = airGroup;
+                career.Aircraft = campaign.GetAircraftInfo(airGroup.Class).DisplayName;
+                career.Spawn = (int)(FrameworkElement.checkBoxSpawnParked.IsEnabled ? SelectedSpawnParked ? ESpawn.Parked : ESpawn.Idle: ESpawn.Default);
+                career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? SelectedSkill != Skill.Default ? new Skill[] { SelectedSkill }: career.UpdatePlayerAirGroupSkill() : null;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
                 career.CampaignProgress = SelectedProgress;
@@ -524,6 +593,10 @@ namespace IL2DCE.Pages
                 career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
                 career.AdditionalGroundGroups = generalSettings.SelectedAdditionalAirGroups;
                 career.AdditionalStationaries = generalSettings.SelectedAdditionalAirGroups;
+                career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
+                career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
+                career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;
+                career.StationaryGenerateType = generalSettings.SelectedStationaryGeneric ? EStationaryGenerateType.Generic : EStationaryGenerateType.Default;
                 career.SpawnRandomLocationFriendly = generalSettings.SelectedSpawnRandomLocationFriendly;
                 career.SpawnRandomLocationEnemy = generalSettings.SelectedSpawnRandomLocationEnemy;
                 career.SpawnRandomLocationPlayer = generalSettings.checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible ? generalSettings.SelectedSpawnRandomLocationPlayer: false;
@@ -546,6 +619,11 @@ namespace IL2DCE.Pages
 
                 career.StrictMode = SelectedStrictMode;
 
+                Career added = Game.Core.AvailableCareers.Where(x => string.Compare(x.PilotName, pilotName, true) == 0).FirstOrDefault();
+                if (added != null)
+                {
+                    Game.Core.AvailableCareers.Remove(career);
+                }
                 Game.Core.AvailableCareers.Add(career);
                 Game.Core.CurrentCareer = career;
 
@@ -558,6 +636,10 @@ namespace IL2DCE.Pages
                 string message = string.Format("{0} - {1} {2} {3} {4}", "CareerIntroPage.Start_Click", ex.Message, campaign.Name, airGroup.DisplayDetailName, ex.StackTrace);
                 Core.WriteLog(message);
                 MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                if (career != null)
+                {
+                    Game.Core.AvailableCareers.Remove(career);
+                }
             }
         }
 
@@ -672,7 +754,7 @@ namespace IL2DCE.Pages
 
             foreach (CampaignInfo campaignInfo in Game.Core.CampaignInfos)
             {
-                MissionFile missionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+                MissionFile missionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
                 campaignInfo.Data = missionFile.AirGroups.Select(x => new AircraftSummary()
                 {
                     Army = (char)x.ArmyIndex,

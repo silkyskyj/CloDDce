@@ -75,7 +75,27 @@ namespace IL2DCE
         public const string SectionQuickMissionPage = "QuickMissionPage";
         public const string SectionSkill = "Skill";
         public const string SectionMissionType = "MissionType";
+
         public const string SectionAircraft = "Aircraft";
+        public const string SectionGroundVehicle = "Ground.Vehicle";
+        public const string SectionGroundArmor = "Ground.Armor";
+        public const string SectionGroundShip = "Ground.Ship";
+        public const string SectionGroundTrain = "Ground.Train";
+        public const string SectionStationaryRadar = "Stationary.Radar";
+        public const string SectionStationaryAircraft = "Stationary.Aircraft";
+        public const string SectionStationaryArtillery = "Stationary.Artillery";
+        public const string SectionStationaryFlak = "Stationary.Flak";
+        public const string SectionStationaryDepot = "Stationary.Depot";
+        public const string SectionStationaryShip = "Stationary.Ship";
+        public const string SectionStationaryAmmo = "Stationary.Ammo";
+        public const string SectionStationaryWeapons = "Stationary.Weapons";
+        public const string SectionStationaryCar = "Stationary.Car";
+        public const string SectionStationaryConstCar = "Stationary.ConstCar";
+        public const string SectionStationaryEnvironment = "Stationary.Environment";
+        public const string SectionStationarySearchlight = "Stationary.Searchlight";
+        public const string SectionStationaryAeroanchored = "Stationary.Aeroanchored";
+        public const string SectionStationaryAirfield = "Stationary.Airfield";
+        public const string SectionStationaryUnknown = "Stationary.Unknown";
 
         public const string KeySourceFolderFileName = "SourceFolderFileName";
         public const string KeySourceFolderFolderName = "SourceFolderFolderName";
@@ -97,13 +117,16 @@ namespace IL2DCE
         public const string ConvertLogFileName = "Convert.log";
 
         public const string GeneralSettingsFileName = "GeneralSettings.ini";
-
+        public const string DQMSettingFileName = "DQMSetting.ini";
+        
         public const string DefaultFixedFontName = "Consolas";
         public const string KillsFormat = "F0";
         public const string PointValueFormat = "F2";
         public const string DateTimeDefaultLongFormat = "yyyyMMdd_HHmmss";
         public const string DateTimeDefaultLongLongFormat = "yyyy/MM/dd HH:mm:ss.fff";
 
+        public const int AddGroundGroupStartIdNo = 10000;
+        public const int AddStationaryUnitStartIdNo = 10000;
 
         public const int DefaultAdditionalAirOperations = 3;
         public const int MaxAdditionalAirOperations = 12;
@@ -265,6 +288,8 @@ namespace IL2DCE
             private set;
         }
 
+        #region Random Unit
+
         public string[] AircraftRandomRed
         {
             get;
@@ -276,6 +301,236 @@ namespace IL2DCE
             get;
             private set;
         }
+
+        public string[] GroundVehicleRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundVehicleRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundArmorRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundArmorRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundShipRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundShipRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundTrainRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] GroundTrainRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryRadarRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryRadarRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAircraftRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAircraftRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryArtilleryRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryArtilleryRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryFlakRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryFlakRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryDepotRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryDepotRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryShipRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryShipRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAmmoRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAmmoRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryWeaponsRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryWeaponsRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryCarRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryCarRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryConstCarRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryConstCarRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryEnvironmentRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryEnvironmentRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationarySearchlightRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationarySearchlightRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAeroanchoredRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAeroanchoredRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAirfieldRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryAirfieldRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryUnknownRandomRed
+        {
+            get;
+            private set;
+        }
+
+        public string[] StationaryUnknownRandomBlue
+        {
+            get;
+            private set;
+        }
+
+        #endregion
 
         public bool EnableMissionMultiAssign
         {
@@ -508,6 +763,24 @@ namespace IL2DCE
                 DisableMissionType = new EMissionType[0];
             }
 
+            ReadRandomUnitInfo(confFile);
+
+            EnableMissionMultiAssign = confFile.get(SectionCore, KeyEnableMissionMultiAssign, 0) == 1;
+
+            KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, KillsHistoryMaxDefault);
+            RandomTimeBegin = confFile.get(SectionCore, KeyRandomTimeBegin, (int)MissionTime.Begin);
+            RandomTimeEnd = confFile.get(SectionCore, KeyRandomTimeEnd, (int)MissionTime.End);
+
+            value = confFile.get(SectionCore, KeyGroupDisableRate, string.Empty);
+            float fValue;
+            GroupDisableRate = float.TryParse(value, NumberStyles.Float, NumberFormat, out fValue) ? fValue : GroupDisableRateDefault;
+            ReinForceDay = confFile.get(SectionCore, KeyReinForceDay, ReinForceDayDefault);
+        }
+
+        private void ReadRandomUnitInfo(ISectionFile confFile)
+        {
+            string value;
+
             if (confFile.exist(SectionAircraft, KeyRandomRed))
             {
                 value = confFile.get(SectionAircraft, KeyRandomRed);
@@ -528,16 +801,385 @@ namespace IL2DCE
                 AircraftRandomBlue = new string[0];
             }
 
-            EnableMissionMultiAssign = confFile.get(SectionCore, KeyEnableMissionMultiAssign, 0) == 1;
+            if (confFile.exist(SectionGroundVehicle, KeyRandomRed))
+            {
+                value = confFile.get(SectionGroundVehicle, KeyRandomRed);
+                GroundVehicleRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundVehicleRandomRed = new string[0];
+            }
 
-            KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, KillsHistoryMaxDefault);
-            RandomTimeBegin = confFile.get(SectionCore, KeyRandomTimeBegin, (int)MissionTime.Begin);
-            RandomTimeEnd = confFile.get(SectionCore, KeyRandomTimeEnd, (int)MissionTime.End);
+            if (confFile.exist(SectionGroundVehicle, KeyRandomBlue))
+            {
+                value = confFile.get(SectionGroundVehicle, KeyRandomBlue);
+                GroundVehicleRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundVehicleRandomBlue = new string[0];
+            }
 
-            value = confFile.get(SectionCore, KeyGroupDisableRate, string.Empty);
-            float fValue;
-            GroupDisableRate = float.TryParse(value, NumberStyles.Float, NumberFormat, out fValue) ? fValue : GroupDisableRateDefault;
-            ReinForceDay = confFile.get(SectionCore, KeyReinForceDay, ReinForceDayDefault);
+            if (confFile.exist(SectionGroundArmor, KeyRandomRed))
+            {
+                value = confFile.get(SectionGroundArmor, KeyRandomRed);
+                GroundArmorRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundArmorRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionGroundArmor, KeyRandomBlue))
+            {
+                value = confFile.get(SectionGroundArmor, KeyRandomBlue);
+                GroundArmorRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundArmorRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionGroundShip, KeyRandomRed))
+            {
+                value = confFile.get(SectionGroundShip, KeyRandomRed);
+                GroundShipRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundShipRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionGroundShip, KeyRandomBlue))
+            {
+                value = confFile.get(SectionGroundShip, KeyRandomBlue);
+                GroundShipRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundShipRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionGroundTrain, KeyRandomRed))
+            {
+                value = confFile.get(SectionGroundTrain, KeyRandomRed);
+                GroundTrainRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundTrainRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionGroundTrain, KeyRandomBlue))
+            {
+                value = confFile.get(SectionGroundTrain, KeyRandomBlue);
+                GroundTrainRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                GroundTrainRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryRadar, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryRadar, KeyRandomRed);
+                StationaryRadarRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryRadarRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryRadar, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryRadar, KeyRandomBlue);
+                StationaryRadarRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryRadarRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAircraft, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryAircraft, KeyRandomRed);
+                StationaryAircraftRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAircraftRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAircraft, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryAircraft, KeyRandomBlue);
+                StationaryAircraftRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAircraftRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryArtillery, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryArtillery, KeyRandomRed);
+                StationaryArtilleryRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryArtilleryRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryArtillery, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryArtillery, KeyRandomBlue);
+                StationaryArtilleryRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryArtilleryRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryFlak, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryFlak, KeyRandomRed);
+                StationaryFlakRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryFlakRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryFlak, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryFlak, KeyRandomBlue);
+                StationaryFlakRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryFlakRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryDepot, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryDepot, KeyRandomRed);
+                StationaryDepotRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryDepotRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryDepot, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryDepot, KeyRandomBlue);
+                StationaryDepotRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryDepotRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryShip, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryShip, KeyRandomRed);
+                StationaryShipRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryShipRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryShip, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryShip, KeyRandomBlue);
+                StationaryShipRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryShipRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAmmo, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryAmmo, KeyRandomRed);
+                StationaryAmmoRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAmmoRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAmmo, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryAmmo, KeyRandomBlue);
+                StationaryAmmoRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAmmoRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryWeapons, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryWeapons, KeyRandomRed);
+                StationaryWeaponsRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryWeaponsRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryWeapons, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryWeapons, KeyRandomBlue);
+                StationaryWeaponsRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryWeaponsRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryCar, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryCar, KeyRandomRed);
+                StationaryCarRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryCarRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryCar, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryCar, KeyRandomBlue);
+                StationaryCarRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryCarRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryConstCar, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryConstCar, KeyRandomRed);
+                StationaryConstCarRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryConstCarRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryConstCar, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryConstCar, KeyRandomBlue);
+                StationaryConstCarRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryConstCarRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryEnvironment, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryEnvironment, KeyRandomBlue);
+                StationaryEnvironmentRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryEnvironmentRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryEnvironment, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryEnvironment, KeyRandomRed);
+                StationaryEnvironmentRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryEnvironmentRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationarySearchlight, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationarySearchlight, KeyRandomBlue);
+                StationarySearchlightRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationarySearchlightRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationarySearchlight, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationarySearchlight, KeyRandomRed);
+                StationarySearchlightRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationarySearchlightRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAeroanchored, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryAeroanchored, KeyRandomBlue);
+                StationaryAeroanchoredRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAeroanchoredRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAeroanchored, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryAeroanchored, KeyRandomRed);
+                StationaryAeroanchoredRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAeroanchoredRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAirfield, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryAirfield, KeyRandomBlue);
+                StationaryAirfieldRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAirfieldRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryAirfield, KeyRandomRed))
+            {
+                value = confFile.get(SectionStationaryAirfield, KeyRandomRed);
+                StationaryAirfieldRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryAirfieldRandomBlue = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryUnknown, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryUnknown, KeyRandomBlue);
+                StationaryUnknownRandomRed = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryUnknownRandomRed = new string[0];
+            }
+
+            if (confFile.exist(SectionStationaryUnknown, KeyRandomBlue))
+            {
+                value = confFile.get(SectionStationaryUnknown, KeyRandomBlue);
+                StationaryUnknownRandomBlue = value.Split(SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                StationaryUnknownRandomBlue = new string[0];
+            }
         }
     }
 }

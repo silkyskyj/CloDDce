@@ -81,5 +81,7 @@
         <Button x:Name="buttonMissionLoad" Content="PreLoad" HorizontalAlignment="Left" Margin="592,270,0,0" VerticalAlignment="Top" Background="#00000000" Foreground="#B2FFFFFF" TabIndex="2" Height="25" Width="60"/>
         <Controls:HelpButton x:Name="helpButtonPreLoadMission" Content="?" HorizontalAlignment="Left" Margin="655,270,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.219,-0.275" Message="When you preload a mission, the [Select Air Group] list will display the spawn airport and the distance [km] from the front line.\nPreloading must be done separately for each campaign.\n[Warn!]*However, we have confirmed that using this function too much can cause the page to become unstable.\nIf the page becomes unstable, please use the Back button to leave this page." TabIndex="3"/>
         <my1:ButtonAsMenuItem Content="[Stats]" x:Name="buttonStats" HorizontalAlignment="Left" Margin="864,1000,0,0" VerticalAlignment="Top" Foreground="#FFA0854A" Background="#3FFFFFFF" TabIndex="150" AutomationProperties.HelpText="Import Mission" />
+        <Button x:Name="buttonUserLoad" Content="Load" HorizontalAlignment="Left" Margin="1801,690,0,0" VerticalAlignment="Top" Height="24" Foreground="#B2FFFFFF" Background="Transparent" TabIndex="41" Width="40"/>
+        <Button x:Name="buttonUserSave" Content="Save" HorizontalAlignment="Left" Margin="1847,690,0,0" VerticalAlignment="Top" Height="24" Foreground="#B2FFFFFF" Background="Transparent" TabIndex="42" Width="40"/>
     </Grid>
 </UserControl>

@@ -622,7 +622,8 @@ namespace IL2DCE.Generator
                 {
                     if (GeneratorGroundOperation.CreateRandomGroundOperation(sectionFile, groundGroup))
                     {
-                        airGroup.Recon(groundGroup, altitude, escortAirGroup);
+                        int range = Random.Next((int)Math.Floor(AirGroup.ReconRange / 1.5), (int)Math.Ceiling(AirGroup.ReconRange * 1.5));
+                        airGroup.Recon(groundGroup, altitude, escortAirGroup, null, range);
                         result = true;
                     }
                     else
@@ -633,7 +634,7 @@ namespace IL2DCE.Generator
                 }
                 else if (stationary != null)
                 {
-                    airGroup.Recon(stationary, altitude, escortAirGroup);
+                    airGroup.Recon(stationary, altitude, escortAirGroup, null);
                     result = true;
                 }
             } while (!result);
@@ -685,7 +686,8 @@ namespace IL2DCE.Generator
                 {
                     if (GeneratorGroundOperation.CreateRandomGroundOperation(sectionFile, groundGroup))
                     {
-                        airGroup.GroundAttack(groundGroup, altitude, escortAirGroup);
+                        int range = Random.Next((int)Math.Floor(AirGroup.GroundAttackRange / 1.5), (int)Math.Ceiling(AirGroup.GroundAttackRange * 1.5));
+                        airGroup.GroundAttack(groundGroup, altitude, escortAirGroup, null, range);
                         result = true;
                     }
                     else
@@ -779,7 +781,8 @@ namespace IL2DCE.Generator
             {
                 if (offensiveAirGroup.Altitude.HasValue && (offensiveAirGroup.TargetGroundGroup != null || offensiveAirGroup.TargetStationary != null))
                 {
-                    airGroup.Cover(offensiveAirGroup, offensiveAirGroup.Altitude.Value);
+                    int range = Random.Next((int)Math.Floor(AirGroup.CoverRange / 1.5), (int)Math.Ceiling(AirGroup.CoverRange * 1.5));
+                    airGroup.Cover(offensiveAirGroup, offensiveAirGroup.Altitude.Value, null, range);
                     result = true;
                 }
             }
@@ -1436,7 +1439,7 @@ namespace IL2DCE.Generator
                         IList<string> list = airGroup.Flights[i];
                         for (int j = 0; j < list.Count; j++)
                         {
-                            airGroup.Skills.Add(i, skill[s].ToString());
+                            airGroup.Skills.Add(i * list.Count + j, skill[s].ToString());
                             if (s + 1 < skill.Length)
                             {
                                 s++;
@@ -1507,7 +1510,7 @@ namespace IL2DCE.Generator
         private double MissionStatusRate(AirGroup airGroup)
         {
             var result = MissionStatus != null ? MissionStatus.AirGroups.Where(x => string.Compare(x.Name, airGroup.Id) == 0).FirstOrDefault() : null;
-            return result != null ? (result.Nums - result.DiedNums) / result.Nums : 1.0;
+            return result != null && result.InitNums > 0 ? (result.InitNums - result.DiedNums) / (float)result.InitNums : 1.0;
         }
 
         private void SetFlight(AirGroup airGroup, EMissionType missionType)
@@ -1829,13 +1832,16 @@ namespace IL2DCE.Generator
                         }
                         while (airGroups.Any(x => string.Compare(x.ToString(), airGroupSquadron) == 0) && reTry++ <= MaxRetryCreateOneAirGroup);
                         reTries += reTry;
-                        string id = string.Format("{0}{1}", airGroupSquadron, 0.ToString(Config.NumberFormat));
-                        Point3d point = CreateRandomPoint(ref (army == (int)EArmy.Red ? ref rangeRed : ref rangeBlue),
-                                                            aircraftParametersInfo.MinAltitude != null ? (int)aircraftParametersInfo.MinAltitude.Value : Spawn.SelectStartAltitude,
-                                                            aircraftParametersInfo.MaxAltitude != null ? (int)aircraftParametersInfo.MaxAltitude.Value : Spawn.SelectEndAltitude);
-                        AirGroup airGroup = new AirGroup(id, aircraftInfo, point, aircraftLoadoutInfo);
-                        airGroup.SetAirGroupInfo(airGroupInfo);
-                        airGroups.Add(airGroup);
+                        if (reTry <= MaxRetryCreateOneAirGroup)
+                        {
+                            string id = string.Format("{0}{1}", airGroupSquadron, 0.ToString(Config.NumberFormat));
+                            Point3d point = CreateRandomPoint(ref (army == (int)EArmy.Red ? ref rangeRed : ref rangeBlue),
+                                                                aircraftParametersInfo.MinAltitude != null ? (int)aircraftParametersInfo.MinAltitude.Value : Spawn.SelectStartAltitude,
+                                                                aircraftParametersInfo.MaxAltitude != null ? (int)aircraftParametersInfo.MaxAltitude.Value : Spawn.SelectEndAltitude);
+                            AirGroup airGroup = new AirGroup(id, aircraftInfo, point, aircraftLoadoutInfo);
+                            airGroup.SetAirGroupInfo(airGroupInfo);
+                            airGroups.Add(airGroup);
+                        }
                     }
                 }
             }
@@ -1844,8 +1850,10 @@ namespace IL2DCE.Generator
 
         private Point3d CreateRandomPoint(ref wRECTF rect, int minAltitude, int maxAltitude)
         {
-            return new Point3d(Random.Next((int)rect.x1, (int)rect.x2 + 1), Random.Next((int)rect.y1, (int)rect.y2 + 1), Random.Next(minAltitude, maxAltitude));
+            return new Point3d(Random.Next((int)rect.x1, (int)rect.x2 + 1), Random.Next((int)rect.y1, (int)rect.y2 + 1), Random.Next(minAltitude, maxAltitude + 1));
         }
+
+#if DEBUG
 
         [Conditional("DEBUG")]
         public void TraceAssignedAirGroups()
@@ -1869,5 +1877,7 @@ namespace IL2DCE.Generator
                 }
             }
         }
+
+#endif
     }
 }

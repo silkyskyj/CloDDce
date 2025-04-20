@@ -67,7 +67,7 @@ namespace IL2DCE
                 Career career = Game.Core.CurrentCareer;
                 CampaignInfo campaignInfo = career.CampaignInfo;
 
-                MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+                MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
 
                 ComboBox comboBoxAirGroup = FrameworkElement.comboBoxSelectAirGroup;
                 comboBoxAirGroup.Items.Clear();

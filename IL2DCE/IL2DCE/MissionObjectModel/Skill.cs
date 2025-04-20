@@ -212,15 +212,16 @@ namespace IL2DCE.MissionObjectModel
             return string.Join(" ", Skills.Select(x => x.ToString(SkillFormat, Config.NumberFormat)));
         }
 
-        public string ToDetailString(char splitCharLabelValue = ' ')
+        public string ToDetailString(char splitCharLabelValue = ' ', int spaceBegin = 0)
         {
             if (Skills != null && Skills.Length >= (int)ESkilType.Count)
             {
                 StringBuilder sb = new StringBuilder();
                 // var types = Enum.GetNames(typeof(ESkilType));
+                string spaceBegins = new string(' ', spaceBegin);
                 for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    sb.AppendFormat(Config.NumberFormat, "{0,-15}{1}{2:F2}", type.ToString(), splitCharLabelValue, Skills[(int)type]);
+                    sb.AppendFormat(Config.NumberFormat, "{0}{1,-15}{2}{3:F2}", spaceBegins, type.ToString(), splitCharLabelValue, Skills[(int)type]);
                     sb.AppendLine();
                 }
                 return sb.ToString();
@@ -228,26 +229,44 @@ namespace IL2DCE.MissionObjectModel
             return string.Empty;
         }
 
-        public static string ToDetailString(IEnumerable<string> skills, char splitCharLabelValue = ' ')
+        public static string ToIncrementDetailString(float [] skills, float [] newSkills, char splitCharLabelValue = ' ', int spaceBegin = 0)
+        {
+            if (skills != null && skills.Length >= (int)ESkilType.Count && newSkills != null && newSkills.Length >= (int)ESkilType.Count)
+            {
+                StringBuilder sb = new StringBuilder();
+                // var types = Enum.GetNames(typeof(ESkilType));
+                string spaceBegins = new string(' ', spaceBegin);
+                for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
+                {
+                    sb.AppendFormat(Config.NumberFormat, "{0}{1,-15}{2}{3:F2} [{4,5}]", spaceBegins, type.ToString(), splitCharLabelValue, skills[(int)type], newSkills[(int)type].ToString("+0.00;-0.00", Config.NumberFormat));
+                    sb.AppendLine();
+                }
+                return sb.ToString();
+            }
+            return string.Empty;
+        }
+
+        public static string ToDetailString(IEnumerable<string> skills, char splitCharLabelValue = ' ', int spaceBegin = 0)
         {
             if (skills != null && skills.Any())
             {
                 IEnumerable<string []> skillsArray = skills.Select(x => x.Split(SplitChar));
                 StringBuilder sb = new StringBuilder();
                 // var types = Enum.GetNames(typeof(ESkilType));
+                string spaceBegins = new string(' ', spaceBegin);
                 for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    sb.AppendFormat("{0,-15}{1}", type.ToString(), splitCharLabelValue);
+                    sb.AppendFormat("{0}{1,-15}{2}", spaceBegins, type.ToString(), splitCharLabelValue);
                     foreach (var item in skillsArray)
                     {
                         float val;
                         if (item.Length >= (int)type + 1 && float.TryParse(item[(int)type], NumberStyles.Float, Config.NumberFormat, out val))
                         {
-                            sb.AppendFormat(Config.NumberFormat, "{0:F2}{1}", val, splitCharLabelValue);
+                            sb.AppendFormat(Config.NumberFormat, "{0}{1:F2}{2}", new string(' ', spaceBegin), val, splitCharLabelValue);
                         }
                         else
                         {
-                            sb.AppendFormat("{0,4}{1}", "----", splitCharLabelValue);
+                            sb.AppendFormat("{0,4}{1}", spaceBegins, "----", splitCharLabelValue);
                         }
                     }
                     sb.AppendLine();
@@ -257,18 +276,19 @@ namespace IL2DCE.MissionObjectModel
             return string.Empty;
         }
 
-        public static string ToDetailString(IEnumerable<Skill> skills, char splitCharLabelValue = ' ')
+        public static string ToDetailString(IEnumerable<Skill> skills, char splitCharLabelValue = ' ', int spaceBegin = 0)
         {
             if (skills != null && skills.Any())
             {
                 StringBuilder sb = new StringBuilder();
                 // var types = Enum.GetNames(typeof(ESkilType));
+                string spaceBegins = new string(' ', spaceBegin);
                 for (ESkilType type = ESkilType.BasicFlying; type < ESkilType.Count; type++)
                 {
-                    sb.AppendFormat("{0,-15}{1}", type.ToString(), splitCharLabelValue);
+                    sb.AppendFormat("{0}{1,-15}{2}", new string(' ', spaceBegin), type.ToString(), splitCharLabelValue);
                     foreach (var item in skills)
                     {
-                        sb.AppendFormat(Config.NumberFormat, "{0:F2}{1}", item.Skills[(int)type], splitCharLabelValue);
+                        sb.AppendFormat(Config.NumberFormat, "{0}{1:F2}{2}", spaceBegins, item.Skills[(int)type], splitCharLabelValue);
                     }
                     sb.AppendLine();
                 }
@@ -276,6 +296,65 @@ namespace IL2DCE.MissionObjectModel
             }
             return string.Empty;
         }
+
+        public static string ToDetailDisplayString(IEnumerable<Skill> skills, char splitCharLabelValue = ' ', int spaceBegin = 0)
+        {
+            string str = string.Empty;
+            if (skills != null && skills.Any())
+            {
+                if (skills.Count() == 1)
+                {
+                    Skill skill = skills.First();
+                    if (Skill.EqualsValue(skill, Skill.Default))
+                    {
+                        str = Skill.Default.Name;
+                    }
+                    else if (Skill.EqualsValue(skill, Skill.Random))
+                    {
+                        str = Skill.Random.Name;
+                    }
+                    else
+                    {
+                        str = skill.ToDetailString(splitCharLabelValue, spaceBegin);
+                    }
+                }
+                else
+                {
+                    str = Skill.ToDetailString(skills, splitCharLabelValue, spaceBegin);
+                }
+            }
+            return str;
+        }
+
+        public static string ToDetailDisplayStringHorizontal(IEnumerable<Skill> skills, char splitCharLabelValue = ' ', int spaceBegin = 0)
+        {
+            string str = string.Empty;
+            if (skills != null && skills.Any())
+            {
+                if (skills.Count() == 1)
+                {
+                    Skill skill = skills.First();
+                    if (Skill.EqualsValue(skill, Skill.Default))
+                    {
+                        str = Skill.Default.Name;
+                    }
+                    else if (Skill.EqualsValue(skill, Skill.Random))
+                    {
+                        str = Skill.Random.Name;
+                    }
+                    else
+                    {
+                        str = skill.ToDetailString(splitCharLabelValue, spaceBegin);
+                    }
+                }
+                else
+                {
+                    str = string.Join("\n", skills.Select(x => x.ToDetailString(splitCharLabelValue, spaceBegin))); // Skill.ToDetailString(skills, splitCharLabelValue, spaceBegin);
+                }
+            }
+            return str;
+        }
+
 
 #if false
 
@@ -590,7 +669,7 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public Skills(IEnumerable<Skill> collection)
-            : base (collection)
+            : base(collection)
         {
 
         }
@@ -847,7 +926,7 @@ namespace IL2DCE.MissionObjectModel
         }
     }
 
-    public enum ESkillSet
+        public enum ESkillSet
     {
         [Description(SkillNameRandom)]
         Random = -2,

@@ -18,7 +18,9 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using IL2DCE.MissionObjectModel;
+using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -28,6 +30,7 @@ namespace IL2DCE
         public class SelectCareerPage : PageDefImpl
         {
             private const string NoFileString = "[no file]";
+            private const string NoSkillValueMessage = "(The value will be displayed after the next mission)";
 
             #region Property
 
@@ -92,11 +95,41 @@ namespace IL2DCE
                 }
             }
 
+            public bool SelectedStrictMode
+            {
+                get
+                {
+                    bool? isCheckd = FrameworkElement.checkBoxStrictMode.IsChecked;
+                    if (isCheckd != null)
+                    {
+                        return isCheckd.Value;
+                    }
+
+                    return false;
+                }
+            }
+
+            public bool SelectedPlayable
+            {
+                get
+                {
+                    bool? isCheckd = FrameworkElement.checkBoxPlayable.IsChecked;
+                    if (isCheckd != null)
+                    {
+                        return isCheckd.Value;
+                    }
+
+                    return false;
+                }
+            }
+
             #endregion
 
             #region Variable
 
             private bool hookComboSelectionChanged = false;
+
+            private AirGroup SelecedtAirGroup;
 
             #endregion
 
@@ -114,6 +147,10 @@ namespace IL2DCE
                 FrameworkElement.Continue.Click += new RoutedEventHandler(bContinue_Click);
                 FrameworkElement.buttonFilterClear.Click += new RoutedEventHandler(buttonFilterClear_Click);
                 FrameworkElement.buttonReload.Click += new RoutedEventHandler(buttonReload_Click);
+                FrameworkElement.checkBoxStrictMode.Checked += new RoutedEventHandler(checkBox_CheckedChange);
+                FrameworkElement.checkBoxStrictMode.Unchecked += new RoutedEventHandler(checkBox_CheckedChange);
+                FrameworkElement.checkBoxPlayable.Checked += new RoutedEventHandler(checkBox_CheckedChange);
+                FrameworkElement.checkBoxPlayable.Unchecked += new RoutedEventHandler(checkBox_CheckedChange);
 
                 FrameworkElement.Continue.IsEnabled = false;
                 FrameworkElement.Delete.IsEnabled = false;
@@ -165,6 +202,9 @@ namespace IL2DCE
                 if (career != null && career.CampaignInfo != null)
                 {
                     career.BattleType = EBattleType.Campaign;
+                    career.PlayerAirGroup = SelecedtAirGroup;
+                    career.Aircraft = career.CampaignInfo.GetAircraftInfo(SelecedtAirGroup.Class).DisplayName;
+                    career.UpdatePlayerAirGroupSkill();
                     Game.Core.CurrentCareer = career;
                     Game.Core.InitCampaign();
                     Game.gameInterface.PageChange(new BattleIntroPage(), null);
@@ -194,6 +234,8 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectCampaign.SelectedIndex = FrameworkElement.comboBoxSelectCampaign.Items.Count > 0 ? 0 : -1;
                 FrameworkElement.comboBoxSelectArmy.SelectedIndex = FrameworkElement.comboBoxSelectArmy.Items.Count > 0 ? 0 : -1;
                 FrameworkElement.comboBoxSelectAirForce.SelectedIndex = FrameworkElement.comboBoxSelectAirForce.Items.Count > 0 ? 0 : -1;
+                FrameworkElement.checkBoxPlayable.IsChecked = false;
+                FrameworkElement.checkBoxStrictMode.IsChecked = false;
             }
 
             private void buttonReload_Click(object sender, RoutedEventArgs e)
@@ -206,6 +248,12 @@ namespace IL2DCE
 
                     Game.gameInterface.PageChange(new SelectCareerPage(), null);
                 }
+            }
+
+            private void checkBox_CheckedChange(object sender, RoutedEventArgs e)
+            {
+                UpdateCareerListFilter();
+                UpdateButtonStatus();
             }
 
             #endregion
@@ -253,18 +301,21 @@ namespace IL2DCE
                     FrameworkElement.textBoxStatusCampaign.Text = campaignInfo.ToSummaryString();
                     FrameworkElement.textBoxStatusCurrent.Text = career.ToStringCurrestStatus();
                     FrameworkElement.textBoxStatusTotal.Text = career.ToStringTotalResult();
+                    UpdateDisplaySkillInfo(career.PlayerAirGroupSkill);
                 }
                 else if (career != null)
                 {
                     FrameworkElement.textBoxStatusCampaign.Text = NoFileString;
                     FrameworkElement.textBoxStatusCurrent.Text = career.ToStringCurrestStatus();
                     FrameworkElement.textBoxStatusTotal.Text = career.ToStringTotalResult();
+                    UpdateDisplaySkillInfo(career.PlayerAirGroupSkill);
                 }
                 else
                 {
                     FrameworkElement.textBoxStatusCampaign.Text = NoFileString;
                     FrameworkElement.textBoxStatusCurrent.Text = NoFileString;
                     FrameworkElement.textBoxStatusTotal.Text = NoFileString;
+                    UpdateDisplaySkillInfo(null);
                 }
 
                 UpdateAircraftImage(career);
@@ -335,32 +386,65 @@ namespace IL2DCE
                 CampaignInfo campaignInfo = SelectedCampaign;
                 int armyIndex = SelectedArmyIndex;
                 int airForceIndex = SelectedAirForceIndex;
+                bool strictMode = SelectedStrictMode;
+                bool playable = SelectedPlayable;
                 Career career = obj as Career;
                 return ((campaignInfo == null || career.CampaignInfo == campaignInfo) &&
                         (armyIndex == -1 || career.ArmyIndex == armyIndex) &&
-                        (airForceIndex == -1 || career.AirForceIndex == airForceIndex));
+                        (airForceIndex == -1 || career.AirForceIndex == airForceIndex) &&
+                        (!strictMode || (strictMode && career.StrictMode)) && 
+                        (!playable || (playable && career.CampaignInfo != null && career.Date <= career.CampaignInfo.EndDate) && 
+                        (!career.StrictMode || career.StrictMode && career.Status == (int)EPlayerStatus.Alive)));
+            }
+
+            private void UpdateDisplaySkillInfo(Skill[] skills)
+            {
+                ToolTip toolTip = FrameworkElement.textBoxStatusCurrentSkill.ToolTip as ToolTip;
+                if (toolTip == null)
+                {
+                    FrameworkElement.textBoxStatusCurrentSkill.ToolTip = toolTip = new ToolTip();
+                    toolTip.FontFamily = new FontFamily(Config.DefaultFixedFontName);
+                }
+                string strToolTips = skills != null ? Skill.ToDetailDisplayString(skills): null;
+                //if (str == null)
+                //{
+                //    str = NoFileString;
+                //}
+                //else if (str.Length == 0)
+                if (string.IsNullOrEmpty(strToolTips))
+                {
+                    strToolTips = NoSkillValueMessage;
+                }
+                toolTip.Content = strToolTips;
+
+                string strText = skills != null ? Skill.ToDetailDisplayStringHorizontal(skills) : null;
+                if (string.IsNullOrEmpty(strText))
+                {
+                    strText = NoSkillValueMessage;
+                }
+                FrameworkElement.textBoxStatusCurrentSkill.Text = strText;
             }
 
             private void UpdateAircraftImage(Career career)
             {
-                AirGroup airGroup;
                 if (career != null && career.CampaignInfo != null)
                 {
-                    MissionFile missionFile = new MissionFile(Game, career.CampaignInfo.InitialMissionTemplateFiles, career.CampaignInfo.AirGroupInfos);
-                    airGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == career.ArmyIndex && string.Compare(x.ToString(), career.AirGroup) == 0).FirstOrDefault();
+                    // MissionFile missionFile = new MissionFile(Game, career.CampaignInfo.InitialMissionTemplateFiles, career.CampaignInfo.AirGroupInfos);
+                    MissionFile missionFile = new MissionFile(Game, new string[] { career.MissionFileName }, career.CampaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+                    SelecedtAirGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == career.ArmyIndex && string.Compare(x.ToString(), career.AirGroup) == 0).FirstOrDefault();
                 }
                 else
                 {
-                    airGroup = null;
+                    SelecedtAirGroup = null;
                 }
 
-                FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
+                FrameworkElement.borderImage.DisplayImage(Game.gameInterface, SelecedtAirGroup != null ? SelecedtAirGroup.Class : string.Empty);
             }
 
             private void UpdateButtonStatus()
             {
                 Career career = SelectedCareer;
-                FrameworkElement.Continue.IsEnabled = career != null && career.CampaignInfo != null && career.Date < career.CampaignInfo.EndDate && 
+                FrameworkElement.Continue.IsEnabled = career != null && career.CampaignInfo != null && career.Date <= career.CampaignInfo.EndDate && 
                                                     ((career.StrictMode && career.Status == (int)EPlayerStatus.Alive) || !career.StrictMode);
                 FrameworkElement.Delete.IsEnabled = career != null;
             }

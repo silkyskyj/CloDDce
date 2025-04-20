@@ -93,7 +93,6 @@ namespace IL2DCE
                 ActorDead = new Dictionary<string, List<DamagerScore>>();
                 AircraftLanded = new List<AircraftState>();
 
-                MissionStatus = new MissionStatus();
 #if DEBUG
                 AirGroups = new List<AiAirGroup>();
 #endif
@@ -174,6 +173,7 @@ namespace IL2DCE
                 if (Core != null)
                 {
                     Core.Mission = this;
+                    MissionStatus = new MissionStatus(Core.Random);
                 }
             }
 
@@ -197,8 +197,10 @@ namespace IL2DCE
                 TraceGameInfo();
 #endif
 #endif
-
-                MissionStatus.Update(Game, PlayerActorName, career.Date.Value);
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(Game, PlayerActorName, career.Date.Value);
+                }
 
                 if (career.TrackRecording && !Game.gameInterface.TrackRecording())
                 {
@@ -217,15 +219,18 @@ namespace IL2DCE
                     Game.gameInterface.TrackRecordStop();
                 }
 
-                Career career = Core.CurrentCareer;
-                MissionStatus.Update(Game, PlayerActorName, career.Date.Value.AddSeconds(Core.GamePlay.gpTime().current()));
-
+                if (MissionStatus != null)
+                {
+                    Career career = Core.CurrentCareer;
+                    MissionStatus.Update(Game, PlayerActorName, career.Date.Value.AddSeconds(Core.GamePlay.gpTime().current()));
 #if DEBUG
-                Trace(DataDictionary);
-                Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Core.GamePlay.gpTime().current()));
+                    // Trace(DataDictionary);
+                    Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Core.GamePlay.gpTime().current()));
+#endif
+                }
+
 #if false
                 TraceGameInfo();
-#endif
 #endif
 
             }
@@ -279,7 +284,10 @@ namespace IL2DCE
                     if (idx != -1)
                     {
                         PlayerActorName = name.Substring(idx + 1);
-                        MissionStatus.Update(player, PlayerActorName);
+                        if (MissionStatus != null)
+                        {
+                            MissionStatus.Update(player, PlayerActorName);
+                        }
                     }
                 }
             }
@@ -306,8 +314,10 @@ namespace IL2DCE
 #if DEBUG
                 TraceActorCreated(missionNumber, shortName, actor);
 #endif
-
-                MissionStatus.Update(actor);
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(actor);
+                }
             }
 
             public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
@@ -315,11 +325,13 @@ namespace IL2DCE
                 Debug.WriteLine("Mission.OnActorDestroyed({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6})", missionNumber, shortName, actor.Name(),
                     actor is AiAircraft ? "Aircraft" : actor is AiGroundActor ? "AiGroundActor" : string.Empty, actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete());
                 base.OnActorDestroyed(missionNumber, shortName, actor);
-
 #if DEBUG
                 TraceActorDestroyed(missionNumber, shortName, actor);
 #endif
-                MissionStatus.Update(actor);
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(actor);
+                }
             }
 
             public override void OnActorDamaged(int missionNumber, string shortName, AiActor actor, AiDamageInitiator initiator, NamedDamageTypes damageType)
@@ -359,15 +371,20 @@ namespace IL2DCE
                     }
                 }
 
-                MissionStatus.Update(actor);
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(actor);
+                }
             }
 
             public override void OnActorTaskCompleted(int missionNumber, string shortName, AiActor actor)
             {
                 Debug.WriteLine("Mission.OnActorTaskCompleted({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                 base.OnActorTaskCompleted(missionNumber, shortName, actor);
-
-                MissionStatus.Update(actor);
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(actor);
+                }
             }
 
             #endregion
@@ -517,7 +534,7 @@ namespace IL2DCE
 
             public override void OnAiAirNewEnemy(AiAirEnemyElement element, int army)
             {
-                Debug.WriteLine("Mission.OnAiAirNewEnemy(army={0}, agID={1}, state={2})", element.army, element.agID, element.state);
+                // Debug.WriteLine("Mission.OnAiAirNewEnemy(army={0}, agID={1}, state={2})", element.army, element.agID, element.state);
                 base.OnAiAirNewEnemy(element, army);
             }
 
@@ -543,7 +560,10 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.OnStationaryKilled({0}, {1}, {2}, {3})", missionNumber, _stationary.Name, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
                 base.OnStationaryKilled(missionNumber, _stationary, initiator, eventArgInt);
-                MissionStatus.Update(_stationary);
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(_stationary);
+                }
             }
 
             public override void OnUserCreateUserLabel(GPUserLabel ul)
@@ -656,11 +676,11 @@ namespace IL2DCE
                 if (actor != null)
                 {
                     AiAircraft aiAircraft = actor as AiAircraft;
-                    Regiment regiment = aiAircraft.Regiment();
+                    // Regiment regiment = aiAircraft.Regiment();
                     Debug.WriteLine("Palyer Actor:{0}, TypedName={1}, Type={2}, InternalTypeName={3}, VariantName={4}, AircraftType={5}, IsAlive={6}, IsKilled={7}, IsValid={8}",
                                 actor.Name(), aiAircraft.TypedName(), aiAircraft.Type(), aiAircraft.InternalTypeName(), aiAircraft.VariantName(), aiAircraft.Type(), aiAircraft.IsAlive(), aiAircraft.IsKilled(), aiAircraft.IsValid());
-                    Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
-                        regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
+                    //Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
+                    //    regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
                 }
                 IPlayerStat st = iplayer.GetBattleStat();
 
@@ -744,16 +764,16 @@ namespace IL2DCE
                         //        item.Action.ToString(), item.P.x, item.P.y, item.P.z, item.Speed, item.Target != null ? item.Target.Name() : string.Empty);
                         //}
                         AiAircraft aiAircraft = x.GetItems().FirstOrDefault() as AiAircraft;
-                        Regiment regiment = aiAircraft.Regiment();
-                        Debug.WriteLine("   aiAircraft:InternalTypeName={0}, AircraftType={1}, name={2}, gruppeNumber={3}, Army={4}, IsKilled={5}, IsAlive={6}, IsTaskComplete={7}",
-                            aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), regiment.gruppeNumber(), aiAircraft.Army(), aiAircraft.IsKilled(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
+                        //Regiment regiment = aiAircraft.Regiment();
+                        //Debug.WriteLine("   aiAircraft:InternalTypeName={0}, AircraftType={1}, name={2}, gruppeNumber={3}, Army={4}, IsKilled={5}, IsAlive={6}, IsTaskComplete={7}",
+                        //    aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), regiment.gruppeNumber(), aiAircraft.Army(), aiAircraft.IsKilled(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
 
                         AiAirGroup[] enemies = x.enemies();
                         if (enemies != null && enemies.Length > 0)
                         {
                             AiAirGroup enemy = enemies.FirstOrDefault();
                             aiAircraft = enemy.GetItems().FirstOrDefault() as AiAircraft;
-                            regiment = aiAircraft.Regiment();
+                            Regiment regiment = aiAircraft.Regiment();
                             Point3d enemyPos = enemy.Pos();
                             Debug.WriteLine("   Enemies: Count={0}, ID={1}, InternalTypeName={2}, AircraftType={3}, name={4}, Pos={5}, Distance={6}",
                                 enemies.Length, x.ID(), aiAircraft.InternalTypeName(), aiAircraft.Type(), regiment.name(), enemyPos.ToString(), x.Pos().distance(ref enemyPos));
@@ -792,9 +812,9 @@ namespace IL2DCE
                         Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                         Debug.WriteLine("  aiAircraft: TypedName={0}, Type={1}, InternalTypeName={2}, VariantName={3}, AircraftType={4}",
                             aiAircraft.TypedName(), aiAircraft.Type(), aiAircraft.InternalTypeName(), aiAircraft.VariantName(), aiAircraft.Type());
-                        Regiment regiment = aiAircraft.Regiment();
-                        Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
-                            regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
+                        //Regiment regiment = aiAircraft.Regiment();
+                        //Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
+                        //    regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
                     }
                     else if (actor is AiGroundActor)
                     {
@@ -838,8 +858,8 @@ namespace IL2DCE
                 }
                 else
                 {
-                    Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2}) Army={3}, Tag={4}, AirGroup={5}, Pos={6}, Type={7}", 
-                                            missionNumber, shortName, actor.Name(), actor.Army(), actor.Tag != null ? actor.Tag: string.Empty, actor.Group() != null ? actor.Group().Name() :string.Empty, actor.Pos(), actor.GetType().Name);
+                    //Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2}) Army={3}, Tag={4}, AirGroup={5}, Pos={6}, Type={7}", 
+                    //                        missionNumber, shortName, actor.Name(), actor.Army(), actor.Tag != null ? actor.Tag: string.Empty, actor.Group() != null ? actor.Group().Name() :string.Empty, actor.Pos(), actor.GetType().Name);
                 }
             }
 
@@ -852,9 +872,9 @@ namespace IL2DCE
                     Debug.WriteLine("Mission.OnActorDestroyed({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                     Debug.WriteLine("  aiAircraft: TypedName={0}, Type={1}, InternalTypeName={2}, VariantName={3}, AircraftType={4}",
                         aiAircraft.TypedName(), aiAircraft.Type(), aiAircraft.InternalTypeName(), aiAircraft.VariantName(), aiAircraft.Type());
-                    Regiment regiment = aiAircraft.Regiment();
-                    Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
-                        regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
+                    //Regiment regiment = aiAircraft.Regiment();
+                    //Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
+                    //    regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
                 }
                 else if (actor is AiAirGroup)
                 {

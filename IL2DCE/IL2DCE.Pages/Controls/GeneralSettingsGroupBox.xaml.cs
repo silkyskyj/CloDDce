@@ -38,8 +38,11 @@ namespace IL2DCE.Pages.Controls
         public const string DefaultString = "Default";
 
         public const string SectionGeneralSettings = "GeneralSettings";
-        public const string GeneralSettingsFileFilter = "GeneralSettings File(.ini)|GeneralSettings*.ini";
-        
+        public const string GeneralSettingsFileFilter = "General Settings File(.ini)|GeneralSettings*.ini";
+
+        public const string MsgErrorFileLocked = "Unable to save configuration file.File is locked.[{0}]";
+        public const string MsgErrorFileNotFound = "Configuration file not found, please save your configuration.[{0}]";
+                                                         
         public event SelectionChangedEventHandler ComboBoxSelectionChangedEvent;
 
         public event TextChangedEventHandler ComboBoxTextChangedEvent;
@@ -568,9 +571,18 @@ namespace IL2DCE.Pages.Controls
 
         private void buttonRandomizeAllCheck_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxSpawnRandomLocationFriendly.IsChecked = true;
-            checkBoxSpawnRandomLocationEnemy.IsChecked = true;
-            checkBoxSpawnRandomLocationPlayer.IsChecked = true;
+            if (checkBoxSpawnRandomLocationFriendly.IsEnabled && checkBoxSpawnRandomLocationFriendly.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationFriendly.IsChecked = true;
+            }
+            if (checkBoxSpawnRandomLocationEnemy.IsEnabled && checkBoxSpawnRandomLocationEnemy.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationEnemy.IsChecked = true;
+            }
+            if (checkBoxSpawnRandomLocationPlayer.IsEnabled && checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationPlayer.IsChecked = true;
+            }
             checkBoxSpawnRandomAltitudeFriendly.IsChecked = true;
             checkBoxSpawnRandomAltitudeEnemy.IsChecked = true;
             checkBoxSpawnRandomTimeFriendly.IsChecked = true;
@@ -579,9 +591,18 @@ namespace IL2DCE.Pages.Controls
 
         private void buttonRandomizeAllUnCheck_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxSpawnRandomLocationFriendly.IsChecked = false;
-            checkBoxSpawnRandomLocationEnemy.IsChecked = false;
-            checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+            if (checkBoxSpawnRandomLocationFriendly.IsEnabled && checkBoxSpawnRandomLocationFriendly.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationFriendly.IsChecked = false;
+            }
+            if (checkBoxSpawnRandomLocationEnemy.IsEnabled && checkBoxSpawnRandomLocationEnemy.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationEnemy.IsChecked = false;
+            }
+            if (checkBoxSpawnRandomLocationPlayer.IsEnabled && checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+            }
             checkBoxSpawnRandomAltitudeFriendly.IsChecked = false;
             checkBoxSpawnRandomAltitudeEnemy.IsChecked = false;
             checkBoxSpawnRandomTimeFriendly.IsChecked = false;
@@ -596,9 +617,29 @@ namespace IL2DCE.Pages.Controls
             checkBoxAdditionalGroundGroups.IsChecked = false;
             checkBoxAdditionalStationaryUnits.IsChecked = false;
 
-            checkBoxSpawnRandomLocationFriendly.IsChecked = false;
-            checkBoxSpawnRandomLocationEnemy.IsChecked = true;
-            checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+            if (comboBoxSelectUnitNumsArmor.IsEnabled && comboBoxSelectUnitNumsArmor.Visibility == Visibility.Visible)
+            {
+                comboBoxSelectUnitNumsArmor.Text = EArmorUnitNumsSet.Random.ToDescription();
+            }
+            if (comboBoxSelectUnitNumsShip.IsEnabled && comboBoxSelectUnitNumsShip.Visibility == Visibility.Visible)
+            {
+                comboBoxSelectUnitNumsShip.Text = EShipUnitNumsSet.Random.ToDescription();
+            }
+            checkBoxGroundGroupGeneric.IsChecked = false;
+            checkBoxStatiomaryGeneric.IsChecked = true;
+
+            if (checkBoxSpawnRandomLocationFriendly.IsEnabled && checkBoxSpawnRandomLocationFriendly.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationFriendly.IsChecked = false;
+            }
+            if (checkBoxSpawnRandomLocationEnemy.IsEnabled && checkBoxSpawnRandomLocationEnemy.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationEnemy.IsChecked = true;
+            }
+            if (checkBoxSpawnRandomLocationPlayer.IsEnabled && checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationPlayer.IsChecked = false;
+            }
             checkBoxSpawnRandomAltitudeFriendly.IsChecked = false;
             checkBoxSpawnRandomAltitudeEnemy.IsChecked = true;
             checkBoxSpawnRandomTimeFriendly.IsChecked = false;
@@ -606,11 +647,6 @@ namespace IL2DCE.Pages.Controls
 
             comboBoxSelectRandomTimeBegin.SelectedItem = Spawn.SpawnTime.DefaultBeginSec;
             comboBoxSelectRandomTimeEnd.SelectedItem = Spawn.SpawnTime.DefaultEndSec;
-
-            comboBoxSelectUnitNumsArmor.Text = EArmorUnitNumsSet.Random.ToDescription();
-            comboBoxSelectUnitNumsShip.Text = EShipUnitNumsSet.Random.ToDescription();
-            checkBoxGroundGroupGeneric.IsChecked = false;
-            checkBoxStatiomaryGeneric.IsChecked = true;
 
             comboBoxSelectAISkill.Text = ESkillSet.Random.ToDescription();
             comboBoxSelectArtilleryTimeout.Text = DefaultString;
@@ -636,7 +672,7 @@ namespace IL2DCE.Pages.Controls
             }
             else
             {
-                MessageBox.Show(string.Format("Configuration file not found, please save your configuration.[{0}]", fileSystemPath), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(string.Format(MsgErrorFileNotFound, fileSystemPath), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -652,7 +688,7 @@ namespace IL2DCE.Pages.Controls
             }
             else
             {
-                MessageBox.Show(string.Format("Unable to save configuration file. File is locked.[{0}]", fileSystemPath), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(MsgErrorFileLocked, fileSystemPath), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -666,8 +702,16 @@ namespace IL2DCE.Pages.Controls
             bool? result = dlg.ShowDialog();
             if (result != null && result.Value)
             {
-                SilkySkyCloDFile file = SilkySkyCloDFile.Load(dlg.FileName);
-                Read(file);
+                try
+                {
+                    SilkySkyCloDFile file = SilkySkyCloDFile.Load(dlg.FileName);
+                    Read(file);
+                }
+                catch (Exception ex)
+                {
+                    string message = string.Format("{0} - {1}", "GeneralSettingsGroupBox.buttonUserLoadAs_Click", ex.Message, ex.StackTrace);
+                    Core.WriteLog(message);
+                }
             }
         }
 
@@ -681,9 +725,17 @@ namespace IL2DCE.Pages.Controls
             bool? result = dlg.ShowDialog();
             if (result != null && result.Value)
             {
-                SilkySkyCloDFile file = SilkySkyCloDFile.Create();
-                Write(file);
-                file.Save(dlg.FileName);
+                try
+                {
+                    SilkySkyCloDFile file = SilkySkyCloDFile.Create();
+                    Write(file);
+                    file.Save(dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    string message = string.Format("{0} - {1}", "GeneralSettingsGroupBox.buttonUserSaveAs_Click", ex.Message, ex.StackTrace);
+                    Core.WriteLog(message);
+                }
             }
         }
 
@@ -871,7 +923,7 @@ namespace IL2DCE.Pages.Controls
             if (toolTip == null)
             {
                 comboBox.ToolTip = toolTip = new ToolTip();
-                toolTip.FontFamily = new FontFamily("Consolas");
+                toolTip.FontFamily = new FontFamily(Config.DefaultFixedFontName);
             }
             string str = string.Empty;
             if (skill != null)
@@ -880,7 +932,7 @@ namespace IL2DCE.Pages.Controls
                 {
                     if (airGroup != null)
                     {
-                        str = airGroup.Skills.Count > 0 ? Skill.ToDetailString(airGroup.Skills.Values) : airGroup.Skill != null ? Skill.ToDetailString(new string[] { airGroup.Skill }) : string.Empty;
+                        str = airGroup.Skills.Any() ? Skill.ToDetailString(airGroup.Skills.Values) : airGroup.Skill != null ? Skill.ToDetailString(new string[] { airGroup.Skill }) : string.Empty;
                     }
                 }
                 else if (skill == Skill.Random)
@@ -903,7 +955,7 @@ namespace IL2DCE.Pages.Controls
             if (toolTip == null)
             {
                 comboBox.ToolTip = toolTip = new ToolTip();
-                toolTip.FontFamily = new FontFamily("Consolas");
+                toolTip.FontFamily = new FontFamily(Config.DefaultFixedFontName);
                 toolTip.ClipToBounds = true;
             }
             string str = string.Empty;
@@ -944,6 +996,11 @@ namespace IL2DCE.Pages.Controls
             file.add(SectionGeneralSettings, checkBoxAdditionalGroundGroups.Name, checkBoxAdditionalGroundGroups.IsChecked != null && checkBoxAdditionalGroundGroups.IsChecked.Value ? "1" : "0");
             file.add(SectionGeneralSettings, checkBoxAdditionalStationaryUnits.Name, checkBoxAdditionalStationaryUnits.IsChecked != null && checkBoxAdditionalStationaryUnits.IsChecked.Value ? "1" : "0");
 
+            file.add(SectionGeneralSettings, comboBoxSelectUnitNumsArmor.Name, comboBoxSelectUnitNumsArmor.Text);
+            file.add(SectionGeneralSettings, comboBoxSelectUnitNumsShip.Name, comboBoxSelectUnitNumsShip.Text);
+            file.add(SectionGeneralSettings, checkBoxGroundGroupGeneric.Name, checkBoxGroundGroupGeneric.IsChecked != null && checkBoxGroundGroupGeneric.IsChecked.Value ? "1" : "0");
+            file.add(SectionGeneralSettings, checkBoxStatiomaryGeneric.Name, checkBoxStatiomaryGeneric.IsChecked != null && checkBoxStatiomaryGeneric.IsChecked.Value ? "1" : "0");
+
             file.add(SectionGeneralSettings, checkBoxSpawnRandomLocationFriendly.Name, checkBoxSpawnRandomLocationFriendly.IsChecked != null && checkBoxSpawnRandomLocationFriendly.IsChecked.Value ? "1" : "0");
             file.add(SectionGeneralSettings, checkBoxSpawnRandomLocationEnemy.Name, checkBoxSpawnRandomLocationEnemy.IsChecked != null && checkBoxSpawnRandomLocationEnemy.IsChecked.Value ? "1" : "0");
             file.add(SectionGeneralSettings, checkBoxSpawnRandomLocationPlayer.Name, checkBoxSpawnRandomLocationPlayer.IsChecked != null && checkBoxSpawnRandomLocationPlayer.IsChecked.Value ? "1" : "0");
@@ -954,11 +1011,6 @@ namespace IL2DCE.Pages.Controls
 
             file.add(SectionGeneralSettings, comboBoxSelectRandomTimeBegin.Name, comboBoxSelectRandomTimeBegin.Text);
             file.add(SectionGeneralSettings, comboBoxSelectRandomTimeEnd.Name, comboBoxSelectRandomTimeEnd.Text);
-
-            file.add(SectionGeneralSettings, comboBoxSelectUnitNumsArmor.Name, comboBoxSelectUnitNumsArmor.Text);
-            file.add(SectionGeneralSettings, comboBoxSelectUnitNumsShip.Name, comboBoxSelectUnitNumsShip.Text);
-            file.add(SectionGeneralSettings, checkBoxGroundGroupGeneric.Name, checkBoxGroundGroupGeneric.IsChecked != null && checkBoxGroundGroupGeneric.IsChecked.Value ? "1" : "0");
-            file.add(SectionGeneralSettings, checkBoxStatiomaryGeneric.Name, checkBoxStatiomaryGeneric.IsChecked != null && checkBoxStatiomaryGeneric.IsChecked.Value ? "1" : "0");
 
             file.add(SectionGeneralSettings, comboBoxSelectAISkill.Name, comboBoxSelectAISkill.Text);
             file.add(SectionGeneralSettings, comboBoxSelectArtilleryTimeout.Name, comboBoxSelectArtilleryTimeout.Text);
@@ -981,9 +1033,29 @@ namespace IL2DCE.Pages.Controls
             checkBoxAdditionalGroundGroups.IsChecked = file.get(SectionGeneralSettings, checkBoxAdditionalGroundGroups.Name, false);
             checkBoxAdditionalStationaryUnits.IsChecked = file.get(SectionGeneralSettings, checkBoxAdditionalStationaryUnits.Name, false);
 
-            checkBoxSpawnRandomLocationFriendly.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomLocationFriendly.Name, false);
-            checkBoxSpawnRandomLocationEnemy.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomLocationEnemy.Name, true);
-            checkBoxSpawnRandomLocationPlayer.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomLocationPlayer.Name, false);
+            if (comboBoxSelectUnitNumsArmor.IsEnabled && comboBoxSelectUnitNumsArmor.Visibility == Visibility.Visible)
+            {
+                comboBoxSelectUnitNumsArmor.Text = file.get(SectionGeneralSettings, comboBoxSelectUnitNumsArmor.Name, EArmorUnitNumsSet.Random.ToDescription());
+            }
+            if (comboBoxSelectUnitNumsShip.IsEnabled && comboBoxSelectUnitNumsShip.Visibility == Visibility.Visible)
+            {
+                comboBoxSelectUnitNumsShip.Text = file.get(SectionGeneralSettings, comboBoxSelectUnitNumsShip.Name, EShipUnitNumsSet.Random.ToDescription());
+            }
+            checkBoxGroundGroupGeneric.IsChecked = file.get(SectionGeneralSettings, checkBoxGroundGroupGeneric.Name, false);
+            checkBoxStatiomaryGeneric.IsChecked = file.get(SectionGeneralSettings, checkBoxStatiomaryGeneric.Name, false);
+
+            if (checkBoxSpawnRandomLocationFriendly.IsEnabled && checkBoxSpawnRandomLocationFriendly.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationFriendly.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomLocationFriendly.Name, false);
+            }
+            if (checkBoxSpawnRandomLocationEnemy.IsEnabled && checkBoxSpawnRandomLocationEnemy.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationEnemy.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomLocationEnemy.Name, true);
+            }
+            if (checkBoxSpawnRandomLocationPlayer.IsEnabled && checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible)
+            {
+                checkBoxSpawnRandomLocationPlayer.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomLocationPlayer.Name, false);
+            }
             checkBoxSpawnRandomAltitudeFriendly.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomAltitudeFriendly.Name, false);
             checkBoxSpawnRandomAltitudeEnemy.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomAltitudeEnemy.Name, true);
             checkBoxSpawnRandomTimeFriendly.IsChecked = file.get(SectionGeneralSettings, checkBoxSpawnRandomTimeFriendly.Name, false);
@@ -991,11 +1063,6 @@ namespace IL2DCE.Pages.Controls
 
             comboBoxSelectRandomTimeBegin.SelectedItem = file.get(SectionGeneralSettings, comboBoxSelectRandomTimeBegin.Name, Spawn.SpawnTime.DefaultBeginSec);
             comboBoxSelectRandomTimeEnd.SelectedItem = file.get(SectionGeneralSettings, comboBoxSelectRandomTimeEnd.Name, Spawn.SpawnTime.DefaultEndSec);
-
-            comboBoxSelectUnitNumsArmor.Text = file.get(SectionGeneralSettings, comboBoxSelectUnitNumsArmor.Name, EArmorUnitNumsSet.Random.ToDescription());
-            comboBoxSelectUnitNumsShip.Text = file.get(SectionGeneralSettings, comboBoxSelectUnitNumsShip.Name, EShipUnitNumsSet.Random.ToDescription());
-            checkBoxGroundGroupGeneric.IsChecked = file.get(SectionGeneralSettings, checkBoxGroundGroupGeneric.Name, false);
-            checkBoxStatiomaryGeneric.IsChecked = file.get(SectionGeneralSettings, checkBoxStatiomaryGeneric.Name, true);
 
             comboBoxSelectAISkill.Text = file.get(SectionGeneralSettings, comboBoxSelectAISkill.Name, ESkillSet.Random.ToDescription());
             comboBoxSelectArtilleryTimeout.Text = file.get(SectionGeneralSettings, comboBoxSelectArtilleryTimeout.Name, DefaultString);
@@ -1008,6 +1075,12 @@ namespace IL2DCE.Pages.Controls
             checkBoxAutoReArm.IsChecked = file.get(SectionGeneralSettings, checkBoxAutoReArm.Name, false);
             checkBoxAutoReFuel.IsChecked = file.get(SectionGeneralSettings, checkBoxAutoReFuel.Name, false);
             checkBoxTrackRecording.IsChecked = file.get(SectionGeneralSettings, checkBoxTrackRecording.Name, false);
+        }
+
+        public static void SelectReadValue(ISectionFile file, string section, ComboBox comboBox)
+        {
+            string val = file.get(section, comboBox.Name, string.Empty);
+            comboBox.Text = string.IsNullOrEmpty(val) ? comboBox.Items.Count > 0 ? comboBox.Items[0] is ComboBoxItem ? (comboBox.Items[0] as ComboBoxItem).Content as string : comboBox.Items[0].ToString() : string.Empty : val;
         }
     }
 }

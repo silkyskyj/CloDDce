@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using IL2DCE.Generator;
 using maddox.game;
 using maddox.game.world;
+using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -215,14 +216,20 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public EPlayerStatsType StatsType
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Variable
 
-        private Dictionary<string, int> killsAircraft = new Dictionary<string, int>();
-        private Dictionary<string, int> killsFriendlyAircraft = new Dictionary<string, int>();
-        private Dictionary<string, int> killsGroundUnit = new Dictionary<string, int>();
-        private Dictionary<string, int> killsFriendlyGroundUnit = new Dictionary<string, int>();
+        private Dictionary<string, int> killsAircraft;
+        private Dictionary<string, int> killsFriendlyAircraft;
+        private Dictionary<string, int> killsGroundUnit;
+        private Dictionary<string, int> killsFriendlyGroundUnit;
 
         #endregion
 
@@ -232,6 +239,10 @@ namespace IL2DCE.MissionObjectModel
             Army = army;
             PlayerActorName = playerActorName;
             KillsScoreOver = killsScoreOver;
+            killsAircraft = new Dictionary<string, int>();
+            killsFriendlyAircraft = new Dictionary<string, int>();
+            killsGroundUnit = new Dictionary<string, int>();
+            killsFriendlyGroundUnit = new Dictionary<string, int>();
         }
 
         public EPlayerStatsType Create(EPlayerStatsType statType, object data)
@@ -306,6 +317,7 @@ namespace IL2DCE.MissionObjectModel
                     break;
 
             }
+            StatsType = statType;
             return statType;
         }
 
@@ -411,7 +423,7 @@ namespace IL2DCE.MissionObjectModel
             if (actor is AiAircraft)
             {
                 AiAircraft aiAircraft = actor as AiAircraft;
-                Debug.WriteLine("  AiAircraft: {0}={1}", aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name(): string.Empty);
+                Debug.WriteLine("  AiAircraft: {0}={1}", aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
                 if (armyActor != Army)
                 {
                     AddKillsCount(killsAircraft, aiAircraft.InternalTypeName());
@@ -424,7 +436,7 @@ namespace IL2DCE.MissionObjectModel
             else if (actor is AiGroundActor)
             {
                 AiGroundActor aiGroundActor = actor as AiGroundActor;
-                Debug.WriteLine("  AiGroundActor: {0}={1}", aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name(): string.Empty);
+                Debug.WriteLine("  AiGroundActor: {0}={1}", aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
                 if (armyActor != Army)
                 {
                     AddKillsCount(killsGroundUnit, aiGroundActor.InternalTypeName());
@@ -542,9 +554,9 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void UpdatePlayerStat(EPlayerStatsType statType, IPlayerStatTotal playerStatTotal, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
+        public void Update(IPlayerStatTotal playerStatTotal, DateTime dt, string valueSummary = null, string separator = Config.CommaStr)
         {
-            if (statType == EPlayerStatsType.Api)
+            if (StatsType == EPlayerStatsType.Api)
             {
                 UpdatePlayerStatsDefaultAPI(playerStatTotal, dt, valueSummary, separator);
             }
@@ -624,7 +636,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static int Digit(PlayerStats playerStats)
         {
-            int max = (new int[] { playerStats.KillsAircraftTotal, playerStats.KillsGroundUnitTotal, playerStats.KillsFriendlyAircraftTotal, 
+            int max = (new int[] { playerStats.KillsAircraftTotal, playerStats.KillsGroundUnitTotal, playerStats.KillsFriendlyAircraftTotal,
                                                                                                         playerStats.KillsFriendyGroundUnitTotal,}).Max();
             return max > 0 ? (int)Math.Ceiling(Math.Log10(max)) : 1;
         }
@@ -633,7 +645,7 @@ namespace IL2DCE.MissionObjectModel
         {
             int max = (new int[] { playerStatTotal.Sorties, playerStatTotal.Takeoffs, playerStatTotal.Landings, playerStatTotal.Deaths,
                                                                 playerStatTotal.Bails, (int)playerStatTotal.Kills, (int)playerStatTotal.KillsGround, }).Max();
-            return max > 0 ? (int)Math.Ceiling(Math.Log10(max)): 1;
+            return max > 0 ? (int)Math.Ceiling(Math.Log10(max)) : 1;
         }
 
         public static int Digit(IPlayerStat playerStat, bool AddKills)
@@ -792,7 +804,7 @@ namespace IL2DCE.MissionObjectModel
         public static string ToStringFlyingTime(long time)
         {
             TimeSpan tm = new TimeSpan(0, 0, (int)time);
-            return tm.Days < 1 ? tm.ToString(PlayerStatTimeSpanShortFormat, Config.DateTimeFormat): tm.ToString(PlayerStatTimeSpanLongFormat, Config.DateTimeFormat);
+            return tm.Days < 1 ? tm.ToString(PlayerStatTimeSpanShortFormat, Config.DateTimeFormat) : tm.ToString(PlayerStatTimeSpanLongFormat, Config.DateTimeFormat);
         }
 
         private DamagerScore[] GetPlayerDamageScore(ArrayList listDamage)
@@ -804,6 +816,92 @@ namespace IL2DCE.MissionObjectModel
         {
             IPlayer player = (Game as IGameSingle).gameInterface.Player();
             return player.PersonPrimary() != null && player.PersonPrimary().IsAlive();
+        }
+
+        public void UpdateSkill(float[] skills, EBattleResult result, MissionStatus missionStatus)
+        {
+            if (skills != null && skills.Length >= (int)ESkilType.Count)
+            {
+                IPlayerStat st = Game.gameInterface.Player().GetBattleStat();
+
+                long flyingTime = (long)st.tTotalTypes.Sum(x => x.Value);
+                int flying = st.takeoffs + st.landings;
+                if (flying > 0)
+                {
+                    if (flyingTime >= 600)
+                    {
+                        skills[(int)ESkilType.BasicFlying] += 0.01f;
+                        skills[(int)ESkilType.Awareness] += 0.01f;
+                        skills[(int)ESkilType.Vision] += 0.01f;
+                        if (flyingTime >= 1200)
+                        {
+                            skills[(int)ESkilType.Discipline] += 0.01f;
+                            if (flying > 1 && flyingTime >= 1800)
+                            {
+                                skills[(int)ESkilType.AdvancedFlying] += 0.01f;
+                            }
+                        }
+                    }
+                }
+                double kills = StatsType == EPlayerStatsType.Api ? st.kills : KillsAircraftTotal;
+                double gkills = StatsType == EPlayerStatsType.Api ? st.gkills.Sum() : KillsGroundUnitTotal;
+                double fkills = StatsType == EPlayerStatsType.Api ? st.fkills : KillsFriendlyAircraftTotal;
+                double fgkills = StatsType == EPlayerStatsType.Api ? st.fgkills.Sum() : KillsFriendyGroundUnitTotal;
+                if (kills + gkills > 0)
+                {
+                    skills[(int)ESkilType.AerialGunnnery] += (float)Math.Floor(kills + gkills / 2) * 0.01f;
+                    skills[(int)ESkilType.Discipline] += 0.01f;
+                }
+                if (fkills + fgkills > 0)
+                {
+                    skills[(int)ESkilType.AerialGunnnery] -= (float)Math.Floor(kills + gkills / 3) * 0.02f;
+                    skills[(int)ESkilType.Discipline] -= (float)Math.Floor(kills + gkills / 3) * 0.03f;
+                }
+
+                skills[(int)ESkilType.Tactics] += result == EBattleResult.SUCCESS ? 0.02f : result == EBattleResult.FAIL ? -0.02f : 0f;
+
+                if (st.bails > 0 && st.deaths == 0)
+                {
+                    skills[(int)ESkilType.Bravery] += 0.01f;
+                }
+
+                if (missionStatus != null)
+                {
+                    MissionStatus.AirGroupObject airGroup = missionStatus.GetPlayerAirGroup();
+                    if (airGroup != null)
+                    {
+                        if (airGroup.DiedNums > 0)
+                        {
+                            skills[(int)ESkilType.Discipline] -= airGroup.DiedNums * 0.01f;
+                            if (airGroup.InitNums > 0)
+                            {
+                                skills[(int)ESkilType.Tactics] -= airGroup.DiedNums / airGroup.InitNums * 0.05f;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < skills.Length; i++)
+                {
+                    skills[i] = Math.Min((float)Math.Floor(skills[i] * 100) / 100, 1.0f);
+                }
+            }
+        }
+
+        public void UpdateSkill(Skill skill, EBattleResult result, MissionStatus missionStatus)
+        {
+            UpdateSkill(skill.Skills, result, missionStatus);
+        }
+
+        public void UpdateSkills(IEnumerable<Skill> skills, EBattleResult result, MissionStatus missionStatus)
+        {
+            if (skills != null)
+            {
+                foreach (var item in skills)
+                {
+                    UpdateSkill(item, result, missionStatus);
+                }
+            }
         }
     }
 }

@@ -55,6 +55,7 @@ namespace IL2DCE.MissionObjectModel
     public class Stationary : GroundObject
     {
         public const float DefaultSpawnZ = 0f;
+        public const int DefaultClassesOption = 2;
 
         private static readonly List<string> Depots = new List<string>
         {
@@ -450,15 +451,30 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void UpdateIdArmy(int army, string id)
+        public void UpdateId(string id)
         {
-            Debug.WriteLine("Stationary.UpdateArmy(Army:{0} -> {1}, Country:{2} Id:{3} -> {4})", Army, army, Country, Id, id);
+            // Debug.WriteLine("Stationary.UpdateId(Id:{0} -> {1})", Id, id);
+            if (!string.IsNullOrEmpty(id))
+            {
+                Id = id;
+            }
+        }
+
+        public void UpdateArmy(int army)
+        {
+            // Debug.WriteLine("Stationary.UpdateArmy(Army:{0} -> {1}, Country:{2}", Army, army, Country);
             Army = army;
             if (army != (int)MissionObjectModel.Army.Parse(Country))
             {
                 Country = MissionObjectModel.Army.DefaultCountry((EArmy)army);
             }
-            Id = id;
+        }
+
+        public void UpdateIdArmy(int army, string id)
+        {
+            // Debug.WriteLine("Stationary.UpdateIdArmy(Army:{0} -> {1}, Country:{2} Id:{3} -> {4})", Army, army, Country, Id, id);
+            UpdateId(id);
+            UpdateArmy(army);
         }
 
         public virtual void WriteTo(ISectionFile sectionFile)

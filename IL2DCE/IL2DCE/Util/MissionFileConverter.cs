@@ -22,6 +22,7 @@ using System.Linq;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
+using maddox.GP;
 
 namespace IL2DCE.Util
 {
@@ -130,7 +131,7 @@ namespace IL2DCE.Util
             string outputBasetFolderrSystemPath = gameInterface.ToFileSystemPath(outputBasetFolder);
 
             // 2. Read Mission File
-            MissionFile missionFile = new MissionFile(fileSorce, airGroupInfos);
+            MissionFile missionFile = new MissionFile(fileSorce, airGroupInfos, MissionFile.LoadLevel.AirGroup);
 
             // 3. Create AircraftInfo.ini 
             ISectionFile fileAircraft = gameInterface.SectionFileCreate();
@@ -191,69 +192,17 @@ namespace IL2DCE.Util
                 }
             }
 
-            // 5. Create Mission environmentTemplate File
-            ISectionFile fileMissionEnvironment = gameInterface.SectionFileCreate();
-            string fileNameMissionEnvironment = string.Format("{0}_Environment{1}", fileName, Config.MissionFileExt);
-            string filePathMissionEnvironment = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionEnvironment);
-            if (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionParts) == 0)
-            {
-                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionParts));
-            }
-            if (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, MissionFile.SectionMain) == 0)
-            {
-                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionMain));
-            }
-            int i = 0;
-            while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionEnvironment, string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
-            {
-                i++;
-            }
-
-            // 6. Create Mission staticTemplate File
-            ISectionFile fileMissionStatic = gameInterface.SectionFileCreate();
-            string fileNameMissionStatic = string.Format("{0}_Static{1}", fileName, Config.MissionFileExt);
-            string filePathMissionStatic = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionStatic);
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionParts);
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionMain);
-            //while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
-            //{
-            //    i++;
-            //}
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionSplines);
-            IEnumerable<string> countries = Country.ToStrings().Select(x => string.Format(" {0} ", x));
-            string replaceCountry = string.Format(" {0} ", ECountry.nn.ToString());
-            IEnumerable<string> keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionChiefs);
-            foreach (var item in keys)
-            {
-                SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.SectionRoad));
-            }
-            keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionCustomChiefs);
-            foreach (var item in keys)
-            {
-                SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, item);
-            }
-            SilkySkyCloDFile.CopySectionReplace(fileSorce, fileMissionStatic, MissionFile.SectionStationary, countries, replaceCountry);
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionBuildings);
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionBuildingsLinks);
-            keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionStatic, MissionFile.SectionAirdromes);
-            foreach (var item in keys)
-            {
-                SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyRunways));
-                SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, string.Format("{0}_{1}", item, MissionFile.KeyPoints));
-            }
-            if (SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionFrontMarker) == 0)
-            {
-                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionFrontMarker));
-            }
-            // SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionTrigger);
-            // SilkySkyCloDFile.CopySection(fileSorce, fileMissionStatic, MissionFile.SectionAction);
-
-            // 7. Create Mission initialTemplate File
+            // 5. Create Mission initialTemplate File
             ISectionFile fileMissionInitial = gameInterface.SectionFileCreate();
             string fileNameMissionInitial = string.Format("{0}_Initial{1}", fileName, Config.MissionFileExt);
             string filePathMissionInitial = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionInitial);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionParts);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionMain);
+            int i = 0;
+            while (SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, string.Format(Config.NumberFormat, "{0}_{1}", MissionFile.SectionGlobalWind, i)) > 0)
+            {
+                i++;
+            }
             foreach (var army in armys)
             {
                 var airGroupsArmy = airGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
@@ -262,32 +211,54 @@ namespace IL2DCE.Util
                     airGroup.WriteTo(fileMissionInitial);
                 }
             }
+            SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionSplines);
+            IEnumerable<string> countries = Country.ToStrings().Select(x => string.Format(" {0} ", x));
+            IEnumerable<string> keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionInitial, MissionFile.SectionChiefs);
+            foreach (var item in keys)
+            {
+                SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, string.Format("{0}_{1}", item, MissionFile.SectionRoad));
+            }
+            keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionInitial, MissionFile.SectionCustomChiefs);
+            foreach (var item in keys)
+            {
+                SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, item);
+            }
+            SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionStationary);
+            SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionBuildings);
+            SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionBuildingsLinks);
+            keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionInitial, MissionFile.SectionAirdromes);
+            foreach (var item in keys)
+            {
+                SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, string.Format("{0}_{1}", item, MissionFile.KeyRunways));
+                SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, string.Format("{0}_{1}", item, MissionFile.KeyPoints));
+            }
+            if (SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionFrontMarker) == 0)
+            {
+                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionFrontMarker));
+            }
 
-            // 8. Create Mission Script File
+            // 6. Create Mission Script File
             string filePathScriptSystemPathSrc = string.Format("{0}\\{1}", gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault), Config.MissionScriptFileName);
             string filePathScriptSystemPathDst = string.Format("{0}\\{1}\\{2}", outputBasetFolderrSystemPath, fileName, Config.MissionScriptFileName);
 
-            // 9. Create CampaignInfo.ini 
+            // 7. Create CampaignInfo.ini 
             ISectionFile fileCampaign = gameInterface.SectionFileCreate();
             string filePathCampaign = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.CampaignInfoFileName);
-            CampaignInfo campaignInfo = new CampaignInfo(name, fileNameMissionEnvironment, new string[] { fileNameMissionStatic },
-                new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, new System.DateTime(1940, 07, 10), new System.DateTime(1940, 8, 11));
+            CampaignInfo campaignInfo = new CampaignInfo(name, new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, new System.DateTime(1940, 07, 10), new System.DateTime(1940, 8, 11));
             campaignInfo.Write(fileCampaign);
 
             if (ErrorMsg.Count == 0)
             {
-                // 10. Create Mission Folder (Mission Filename without Extension)
+                // 8. Create Mission Folder (Mission Filename without Extension)
                 string missionFolderSystemPath = string.Format("{0}\\{1}", outputBasetFolderrSystemPath, fileName);
                 if (!Directory.Exists(missionFolderSystemPath))
                 {
                     Directory.CreateDirectory(missionFolderSystemPath);
                 }
 
-                // 11. Save All Files
+                // 9. Save All Files
                 fileAircraft.save(filePathAircraft);
                 fileAirGroup.save(filePathAirGroup);
-                fileMissionEnvironment.save(filePathMissionEnvironment);
-                fileMissionStatic.save(filePathMissionStatic);
                 fileMissionInitial.save(filePathMissionInitial);
                 File.Copy(filePathScriptSystemPathSrc, filePathScriptSystemPathDst, true);
                 fileCampaign.save(filePathCampaign);
@@ -296,6 +267,30 @@ namespace IL2DCE.Util
             }
 
             return ErrorMsg.Count == 0;
+        }
+
+
+        private void CreateAndWriteFrontMarker(ISectionFile file, MissionFile missionFile)
+        {
+            IEnumerable<Point3d> positionsRed = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)
+                                .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Red));
+            IEnumerable<Point3d> positionsBlue = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)
+                                .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Blue));
+
+
+
+            // TODO: Create FrontMarker
+
+
+
+            int i = 0;
+            foreach (Point3d point in missionFile.FrontMarkers)
+            {
+                string key = string.Format(Config.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
+                string value = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
+                file.add(MissionFile.SectionFrontMarker, key, value);
+                i++;
+            }
         }
 
         public bool ConvertFolder(string srcFolder, string destFolder = null, bool useFolderName = false, string fileSearchPattern = DefaultFileSearchPettern)

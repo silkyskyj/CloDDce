@@ -24,6 +24,7 @@ using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
+using maddox.game.play;
 
 namespace IL2DCE
 {
@@ -231,17 +232,14 @@ namespace IL2DCE
             Career career = CurrentCareer;
             Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, career);
             CampaignInfo campaignInfo = career.CampaignInfo;
+            GameIterface gameInterface = game.gameInterface;
 
-            ISectionFile initialMissionTemplateFile = null;
             if (!career.Date.HasValue)
             {
                 result = ECampaignStatus.Empty;
                 // It is the first mission.
                 career.InitializeDateTime(Config, Random);
                 career.InitializeExperience();
-
-                // Generate the initial mission tempalte   (Get AirGroup & GroundGroup from InitialMissionFile)
-                generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
             }
             else
             {
@@ -263,9 +261,6 @@ namespace IL2DCE
                 {
                     result = ECampaignStatus.InProgress;
                     career.ProgressDateTime(Config, Random);
-
-                    // Read latest mission tempalte     (Get AirGroup & GroundGroup & other from previosMissionTemplateFile)
-                    initialMissionTemplateFile = game.gpLoadSectionFile(career.MissionTemplateFileName);
                 }
             }
 
@@ -278,40 +273,38 @@ namespace IL2DCE
             ISectionFile careerFile = GamePlay.gpCreateSectionFile();
             string careerFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.CareerInfoFileName);
 
-            if (game.gameInterface.BattleIsRun())
+            if (gameInterface.BattleIsRun())
             {
                 // Stop the currntly running battle.
-                game.gameInterface.BattleStop();
+                gameInterface.BattleStop();
             }
 
             if (result != ECampaignStatus.DateEnd && result != ECampaignStatus.Dead)
             {
+                string missionTemplateFileName = campaignInfo.InitialMissionTemplateFiles.FirstOrDefault();
                 // Preload mission file for path calculation.
-                game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
+                gameInterface.MissionLoad(missionTemplateFileName);
 
                 DateTime dt = career.Date.Value;
-                string missionId = string.Format(Config.NumberFormat, 
+                string missionId = string.Format(Config.NumberFormat,
                                             "{0}_{1:d4}-{2:d2}-{3:d2}_{4:d2}", campaignInfo.Id, dt.Year, dt.Month, dt.Day, dt.Hour);
                 string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
                 career.MissionFileName = missionFileName;
 
                 // Load MissionStatus
                 string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.MissionStatusResultFileName);
-                ISectionFile missionStatusFile = game.gameInterface.SectionFileLoad(missionStatusFileName);
-                MissionStatus missionStatus = MissionStatus.Create(missionStatusFile);
+                string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
+                ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName) : gameInterface.SectionFileCreate();
+                MissionStatus missionStatus = MissionStatus.Create(missionStatusFile, Random);
 
                 // ReinForce
                 generator.ReinForce(missionStatus, career.Date.Value);
 
-                // Generate the template for the next mission     (Merge StaticTemplateFile'GroundGroup & Static Stationary to InitialMissionFile/previosMissionTemplateFile)
-                ISectionFile missionTemplateFile = null;
-                generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, initialMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
-                missionTemplateFile.save(career.MissionTemplateFileName);
-
-                // Generate the next mission based on the new template.
+                // Generate the next mission based on the template.
+                ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
                 ISectionFile missionFile = null;
                 BriefingFile briefingFile = null;
-                generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, missionStatus, out missionFile, out briefingFile);
+                generator.GenerateMission(missionTemplateFile, missionId, missionStatus, out missionFile, out briefingFile);
 
                 // Save mission file
                 missionFile.save(missionFileName);
@@ -342,7 +335,7 @@ namespace IL2DCE
             }
 
             // Stop the preloaded battle to prevent a postload.
-            game.gameInterface.BattleStop();
+            gameInterface.BattleStop();
 
             career.WriteTo(careerFile, Config.KillsHistoryMax);
             careerFile.save(careerFileName);
@@ -355,12 +348,10 @@ namespace IL2DCE
             Generator.Generator generator = new Generator.Generator(GamePlay, Random, Config, CurrentCareer);
 
             CampaignInfo campaignInfo = career.CampaignInfo;
+            GameIterface gameInterface = game.gameInterface;
 
             career.InitializeDateTime(Config);
             career.InitializeExperience();
-
-            ISectionFile initialMissionTemplateFile = null;
-            generator.GenerateInitialMissionTempalte(campaignInfo.InitialMissionTemplateFiles, out initialMissionTemplateFile, campaignInfo.AirGroupInfos);
 
             string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
             if (!Directory.Exists(missionFolderSystemPath))
@@ -368,28 +359,26 @@ namespace IL2DCE
                 Directory.CreateDirectory(missionFolderSystemPath);
             }
 
-            if (game.gameInterface.BattleIsRun())
+            if (gameInterface.BattleIsRun())
             {
-                game.gameInterface.BattleStop();
+                gameInterface.BattleStop();
             }
 
+            string missionTemplateFileName = campaignInfo.InitialMissionTemplateFiles.FirstOrDefault();
+
             // Preload mission file for path calculation.
-            game.gameInterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
-            game.gameInterface.BattleStop();
+            gameInterface.MissionLoad(missionTemplateFileName);
+            gameInterface.BattleStop();
 
             string missionId = campaignInfo.Id;
             string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
             career.MissionFileName = missionFileName;
 
-            // Generate the template for the next mission
-            ISectionFile missionTemplateFile = null;
-            generator.GenerateMissionTemplate(campaignInfo.StaticTemplateFiles, initialMissionTemplateFile, out missionTemplateFile, campaignInfo.AirGroupInfos);
-            missionTemplateFile.save(career.MissionTemplateFileName);
-
             // Generate the next mission based on the new template.
+            ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
             ISectionFile missionFile = null;
             BriefingFile briefingFile = null;
-            generator.GenerateMission(campaignInfo.EnvironmentTemplateFile, career.MissionTemplateFileName, missionId, null, out missionFile, out briefingFile);
+            generator.GenerateMission(missionTemplateFile, missionId, null, out missionFile, out briefingFile);
 
             // Save mission file
             missionFile.save(missionFileName);
@@ -426,33 +415,6 @@ namespace IL2DCE
             }
         }
 
-        public void SaveCurrentStatus(string fileName,string playerActorName, DateTime dateTime, bool forceCreate = false)
-        {
-            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
-            Career career = CurrentCareer;
-            string careersFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
-            string missionFolderSystemPath = string.Format("{0}\\{1}", careersFolderSystemPath, career.PilotName);
-            if (!Directory.Exists(missionFolderSystemPath))
-            {
-                Directory.CreateDirectory(missionFolderSystemPath);
-            }
-            // ISectionFile missionStatusFile = gameInterface.SectionFileCreate();
-            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, fileName);
-            ISectionFile missionStatusFile = forceCreate ? gameInterface.SectionFileCreate(): gameInterface.SectionFileLoad(missionStatusFileName);
-            // MissionStatus.Update(missionStatusFile, GamePlay as IGame, playerActorName);
-            MissionStatus missionStatus = new MissionStatus();
-            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime);
-            missionStatus.WriteTo(missionStatusFile);
-            missionStatusFile.save(missionStatusFileName);
-
-#if DEBUG
-            ISectionFile missionStatusFileLoad = gameInterface.SectionFileLoad(missionStatusFileName);
-            missionStatus = MissionStatus.Create(missionStatusFileLoad);
-            Debug.Assert(missionStatus != null);
-#endif
-
-        }
-
         public void SaveMissionResult(MissionStatus missionStatus)
         {
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
@@ -463,8 +425,10 @@ namespace IL2DCE
 
         public void UpdateMissionResult(MissionStatus missionStatus)
         {
+            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
-            ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileLoad(missionStatusFileName);
+            string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
+            ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName): gameInterface.SectionFileCreate();
             missionStatus.UpdateWriteTo(missionStatusFile, Config.ReinForceDay);
             missionStatusFile.save(missionStatusFileName);
         }
@@ -555,5 +519,32 @@ namespace IL2DCE
                 writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString(Config.DateTimeDefaultLongLongFormat, Config.DateTimeFormat), message.Replace("\"", "\"\"").Replace("\n", "|"));
             }
         }
+
+#if DEBUG
+        [Conditional("DEBUG")]
+        public void SaveCurrentStatus(string fileName, string playerActorName, DateTime dateTime, bool forceCreate = false)
+        {
+            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
+            Career career = CurrentCareer;
+            string careersFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
+            string missionFolderSystemPath = string.Format("{0}\\{1}", careersFolderSystemPath, career.PilotName);
+            if (!Directory.Exists(missionFolderSystemPath))
+            {
+                Directory.CreateDirectory(missionFolderSystemPath);
+            }
+            // ISectionFile missionStatusFile = gameInterface.SectionFileCreate();
+            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, fileName);
+            ISectionFile missionStatusFile = forceCreate ? gameInterface.SectionFileCreate() : gameInterface.SectionFileLoad(missionStatusFileName);
+            // MissionStatus.Update(missionStatusFile, GamePlay as IGame, playerActorName);
+            MissionStatus missionStatus = new MissionStatus(Random);
+            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime);
+            missionStatus.WriteTo(missionStatusFile);
+            missionStatusFile.save(missionStatusFileName);
+
+            ISectionFile missionStatusFileLoad = gameInterface.SectionFileLoad(missionStatusFileName);
+            missionStatus = MissionStatus.Create(missionStatusFileLoad, Random);
+            Debug.Assert(missionStatus != null);
+        }
+#endif
     }
 }

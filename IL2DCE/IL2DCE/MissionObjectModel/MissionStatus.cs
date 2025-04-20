@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
@@ -45,6 +44,15 @@ namespace IL2DCE.MissionObjectModel
         public const string KeyDateTime = "DateTime";
         public const string ValueNoName = "NONAME";
         public const string ValueUnknown = "Unknown";
+
+        public const float ResetReinForceDateRate = 0.5f;
+
+        public enum ReinForcePart
+        {
+            Day,
+            Hour,
+            Count,
+        }
 
         public class MissionObject
         {
@@ -150,7 +158,7 @@ namespace IL2DCE.MissionObjectModel
                 return name;
             }
 
-            public static bool Update(ref string target, string compare)
+            protected bool Update(ref string target, string compare)
             {
                 if ((string.IsNullOrEmpty(target) || string.Compare(target, ValueNoName, true) == 0) &&
                     (!string.IsNullOrEmpty(compare) && string.Compare(compare, ValueNoName, true) != 0))
@@ -159,6 +167,19 @@ namespace IL2DCE.MissionObjectModel
                     return true;
                 }
                 return false;
+            }
+
+            public virtual double ReinForceRate()
+            {
+                return 1.0;
+            }
+
+            public int [] ReinForceDayHour(int reinForceDay)
+            {
+                double rate = ReinForceRate();
+                int needDay = (int)Math.Floor(reinForceDay / rate);
+                int needHour = (int)Math.Floor((((reinForceDay * 100 / rate) % 100) * 24) / 100);
+                return new int[(int)ReinForcePart.Count] { needDay, needHour };
             }
         }
 
@@ -282,6 +303,12 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
+            public override double ReinForceRate()
+            {
+                Debug.Assert(false, "PlayerObject.ReinForceRate()");
+                return base.ReinForceRate();
+            }
+
             public bool Update(PlayerObject playerObject)
             {
                 bool updated = false;
@@ -290,22 +317,22 @@ namespace IL2DCE.MissionObjectModel
                 IsAlive = playerObject.IsAlive;
                 IsTaskComplete = playerObject.IsTaskComplete;
 
-                if ((string.IsNullOrEmpty(AirGroup) || string.Compare(AirGroup, ValueNoName, true) == 0) &&
-                    (!string.IsNullOrEmpty(playerObject.AirGroup) && string.Compare(playerObject.AirGroup, ValueNoName, true) != 0))
+                string target = AirGroup;
+                if (Update(ref target, playerObject.AirGroup))
                 {
-                    AirGroup = playerObject.AirGroup;
+                    AirGroup = target;
                 }
 
-                if ((string.IsNullOrEmpty(ActorName) || string.Compare(ActorName, ValueNoName, true) == 0) &&
-                    (!string.IsNullOrEmpty(playerObject.ActorName) && string.Compare(playerObject.ActorName, ValueNoName, true) != 0))
+                target = ActorName;
+                if (Update(ref target, playerObject.ActorName))
                 {
-                    ActorName = playerObject.ActorName;
+                    ActorName = target;
                 }
 
-                if ((string.IsNullOrEmpty(Class) || string.Compare(Class, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(playerObject.Class) && string.Compare(playerObject.Class, ValueUnknown, true) != 0))
+                target = Class;
+                if (Update(ref target, playerObject.Class))
                 {
-                    Class = playerObject.Class;
+                    Class = target;
                 }
 
                 if (playerObject.IsValidPoint)
@@ -401,7 +428,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public double ReinForceRate()
+            public override double ReinForceRate()
             {
                 AircraftType type;
                 if (!Enum.TryParse<AircraftType>(Type, true, out type))
@@ -494,6 +521,8 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(AirGroupObject airGroupObject)
             {
+                Debug.WriteLine("AirGroupObject.Update Nums={0}->{1} InitNums={2}->{3} DiedNums={4}->{5}, IsValid={6}->{7}, IsAlive={8}->{9}, IsTaskComplete{10}->{11}", 
+                    Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
                 bool updated = false;
 
                 Nums = airGroupObject.Nums;
@@ -502,17 +531,23 @@ namespace IL2DCE.MissionObjectModel
                 IsValid = airGroupObject.IsValid;
                 IsAlive = airGroupObject.IsAlive;
                 IsTaskComplete = airGroupObject.IsTaskComplete;
-                
-                if ((string.IsNullOrEmpty(Class) || string.Compare(Class, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(airGroupObject.Class) && string.Compare(airGroupObject.Class, ValueUnknown, true) != 0))
+
+                string target = Name;
+                if (Update(ref target, airGroupObject.Name))
                 {
-                    Class = airGroupObject.Class;
+                    Name = target;
                 }
 
-                if ((string.IsNullOrEmpty(Type) || string.Compare(Type, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(airGroupObject.Type) && string.Compare(airGroupObject.Type, ValueUnknown, true) != 0))
+                target = Class;
+                if (Update(ref target, airGroupObject.Class))
                 {
-                    Type = airGroupObject.Type;
+                    Class = target;
+                }
+
+                target = Type;
+                if (Update(ref target, airGroupObject.Type))
+                {
+                    Type = target;
                 }
 
                 if (airGroupObject.IsValidPoint)
@@ -604,7 +639,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public double ReinForceRate()
+            public override double ReinForceRate()
             {
                 AiGroundActorType type;
                 if (!Enum.TryParse<AiGroundActorType>(Type, true, out type))
@@ -709,16 +744,22 @@ namespace IL2DCE.MissionObjectModel
                 IsAlive = groundGroupObject.IsAlive;
                 IsTaskComplete = groundGroupObject.IsTaskComplete;
 
-                if ((string.IsNullOrEmpty(Class) || string.Compare(Class, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(groundGroupObject.Class) && string.Compare(groundGroupObject.Class, ValueUnknown, true) != 0))
+                string target = Name;
+                if (Update(ref target, groundGroupObject.Name))
                 {
-                    Class = groundGroupObject.Class;
+                    Name = target;
                 }
 
-                if ((string.IsNullOrEmpty(Type) || string.Compare(Type, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(groundGroupObject.Type) && string.Compare(groundGroupObject.Type, ValueUnknown, true) != 0))
+                target = Class;
+                if (Update(ref target, groundGroupObject.Class))
                 {
-                    Type = groundGroupObject.Class;
+                    Class = target;
+                }
+
+                target = Type;
+                if (Update(ref target, groundGroupObject.Type))
+                {
+                    Type = target;
                 }
 
                 if (groundGroupObject.IsValidPoint)
@@ -791,7 +832,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public double ReinForceRate()
+            public override double ReinForceRate()
             {
                 AiGroundActorType type;
                 if (!Enum.TryParse<AiGroundActorType>(Type, true, out type))
@@ -878,28 +919,34 @@ namespace IL2DCE.MissionObjectModel
 
                 IsAlive = stationaryObject.IsAlive;
 
-                if ((string.IsNullOrEmpty(Country) || string.Compare(Country, ValueNoName, true) == 0) &&
-                    (!string.IsNullOrEmpty(stationaryObject.Country) && string.Compare(stationaryObject.Country, ValueNoName, true) != 0))
+                string target = Name;
+                if (Update(ref target, stationaryObject.Name))
                 {
-                    Country = stationaryObject.Class;
+                    Name = target;
                 }
 
-                if ((string.IsNullOrEmpty(Class) || string.Compare(Class, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(stationaryObject.Class) && string.Compare(stationaryObject.Class, ValueUnknown, true) != 0))
+                target = Country;
+                if (Update(ref target, stationaryObject.Country))
                 {
-                    Class = stationaryObject.Class;
+                    Country = target;
                 }
 
-                if ((string.IsNullOrEmpty(Type) || string.Compare(Type, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(stationaryObject.Type) && string.Compare(stationaryObject.Type, ValueUnknown, true) != 0))
+                target = Class;
+                if (Update(ref target, stationaryObject.Class))
                 {
-                    Type = stationaryObject.Class;
+                    Class = target;
                 }
 
-                if ((string.IsNullOrEmpty(Category) || string.Compare(Category, ValueNoName, true) == 0) &&
-                    (!string.IsNullOrEmpty(stationaryObject.Category) && string.Compare(stationaryObject.Category, ValueNoName, true) != 0))
+                target = Type;
+                if (Update(ref target, stationaryObject.Type))
                 {
-                    Category = stationaryObject.Class;
+                    Type = target;
+                }
+
+                target = Category;
+                if (Update(ref target, stationaryObject.Category))
+                {
+                    Category = target;
                 }
 
                 if (stationaryObject.IsValidPoint)
@@ -969,7 +1016,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public double ReinForceRate()
+            public override double ReinForceRate()
             {
                 AircraftType type;
                 if (!Enum.TryParse<AircraftType>(Type, true, out type))
@@ -1114,16 +1161,22 @@ namespace IL2DCE.MissionObjectModel
                 IsAlive = aircraftObject.IsAlive;
                 IsTaskComplete = aircraftObject.IsTaskComplete;
 
-                if ((string.IsNullOrEmpty(Class) || string.Compare(Class, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(aircraftObject.Class) && string.Compare(aircraftObject.Class, ValueUnknown, true) != 0))
+                string target = Name;
+                if (Update(ref target, aircraftObject.Name))
                 {
-                    Class = aircraftObject.Class;
+                    Name = target;
                 }
 
-                if ((string.IsNullOrEmpty(Type) || string.Compare(Type, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(aircraftObject.Type) && string.Compare(aircraftObject.Type, ValueUnknown, true) != 0))
+                target = Class;
+                if (Update(ref target, aircraftObject.Class))
                 {
-                    Type = aircraftObject.Class;
+                    Class = target;
+                }
+
+                target = Type;
+                if (Update(ref target, aircraftObject.Type))
+                {
+                    Type = target;
                 }
 
                 if (aircraftObject.IsValidPoint)
@@ -1194,7 +1247,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public double ReinForceRate()
+            public override double ReinForceRate()
             {
                 AiGroundActorType type;
                 if (!Enum.TryParse<AiGroundActorType>(Type, true, out type))
@@ -1411,16 +1464,22 @@ namespace IL2DCE.MissionObjectModel
                 IsAlive = groundObject.IsAlive;
                 IsTaskComplete = groundObject.IsTaskComplete;
 
-                if ((string.IsNullOrEmpty(Class) || string.Compare(Class, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(groundObject.Class) && string.Compare(groundObject.Class, ValueUnknown, true) != 0))
+                string target = Name;
+                if (Update(ref target, groundObject.Name))
                 {
-                    Class = groundObject.Class;
+                    Name = target;
                 }
 
-                if ((string.IsNullOrEmpty(Type) || string.Compare(Type, ValueUnknown, true) == 0) &&
-                    (!string.IsNullOrEmpty(groundObject.Type) && string.Compare(groundObject.Type, ValueUnknown, true) != 0))
+                target = Class;
+                if (Update(ref target, groundObject.Class))
                 {
-                    Type = groundObject.Class;
+                    Class = target;
+                }
+
+                target = Type;
+                if (Update(ref target, groundObject.Type))
+                {
+                    Type = target;
                 }
 
                 if (groundObject.IsValidPoint)
@@ -1505,10 +1564,19 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        #endregion 
-
-        public MissionStatus()
+        private IRandom Random
         {
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Constructor
+
+        public MissionStatus(IRandom random)
+        {
+            Random = random;
             DateTime = DateTime.Now;
             PlayerInfo = null;
             AirGroups = new List<AirGroupObject>();
@@ -1518,8 +1586,9 @@ namespace IL2DCE.MissionObjectModel
             GroundActors = new List<GroundObject>();
         }
 
-        public MissionStatus(DateTime dateTime, PlayerObject playerInfo, IEnumerable<AirGroupObject> airGroups, IEnumerable<GroundGroupObject> groundGroups, IEnumerable<StationaryObject> stationaries, IEnumerable<AircraftObject> aircrafts, IEnumerable<GroundObject> groundActors)
+        public MissionStatus(IRandom random, DateTime dateTime, PlayerObject playerInfo, IEnumerable<AirGroupObject> airGroups, IEnumerable<GroundGroupObject> groundGroups, IEnumerable<StationaryObject> stationaries, IEnumerable<AircraftObject> aircrafts, IEnumerable<GroundObject> groundActors)
         {
+            Random = random;
             DateTime = dateTime;
             PlayerInfo = playerInfo;
             AirGroups = new List<AirGroupObject>(airGroups);
@@ -1529,7 +1598,11 @@ namespace IL2DCE.MissionObjectModel
             GroundActors = new List<GroundObject>(groundActors);
         }
 
-        public static MissionStatus Create(ISectionFile file)
+        #endregion
+
+        #region Create
+
+        public static MissionStatus Create(ISectionFile file, IRandom random)
         {
             DateTime dt;
             string dtStr = file.get(SectionMain, KeyDateTime, string.Empty);
@@ -1537,18 +1610,18 @@ namespace IL2DCE.MissionObjectModel
             {
                 string key;
                 string value;
-                int i;
                 int lines = file.lines(SectionPlayer);
                 if (lines > 0)
                 {
                     file.get(SectionPlayer, 0, out key, out value);
                     PlayerObject player = PlayerObject.Create(key, value.Split(SplitChars));
 
+                    int i;
                     List<AirGroupObject> airGroups = new List<AirGroupObject>();
                     lines = file.lines(SectionAirGroups);
                     for (i = 0; i < lines; i++)
                     {
-                        file.get(SectionAirGroups, 0, out key, out value);
+                        file.get(SectionAirGroups, i, out key, out value);
                         AirGroupObject airGroup = AirGroupObject.Create(key, value.Split(SplitChars));
                         if (airGroup != null)
                         {
@@ -1560,7 +1633,7 @@ namespace IL2DCE.MissionObjectModel
                     lines = file.lines(SectionChiefs);
                     for (i = 0; i < lines; i++)
                     {
-                        file.get(SectionChiefs, 0, out key, out value);
+                        file.get(SectionChiefs, i, out key, out value);
                         GroundGroupObject groundGroup = GroundGroupObject.Create(key, value.Split(SplitChars));
                         if (groundGroup != null)
                         {
@@ -1572,7 +1645,7 @@ namespace IL2DCE.MissionObjectModel
                     lines = file.lines(SectionStationary);
                     for (i = 0; i < lines; i++)
                     {
-                        file.get(SectionStationary, 0, out key, out value);
+                        file.get(SectionStationary, i, out key, out value);
                         StationaryObject stationary = StationaryObject.Create(key, value.Split(SplitChars));
                         if (stationary != null)
                         {
@@ -1584,7 +1657,7 @@ namespace IL2DCE.MissionObjectModel
                     lines = file.lines(SectionAircraft);
                     for (i = 0; i < lines; i++)
                     {
-                        file.get(SectionAircraft, 0, out key, out value);
+                        file.get(SectionAircraft, i, out key, out value);
                         AircraftObject aircraft = AircraftObject.Create(key, value.Split(SplitChars));
                         if (aircraft != null)
                         {
@@ -1596,7 +1669,7 @@ namespace IL2DCE.MissionObjectModel
                     lines = file.lines(SectionGroundActor);
                     for (i = 0; i < lines; i++)
                     {
-                        file.get(SectionGroundActor, 0, out key, out value);
+                        file.get(SectionGroundActor, i, out key, out value);
                         GroundObject groundActor = GroundObject.Create(key, value.Split(SplitChars));
                         if (groundActor != null)
                         {
@@ -1606,13 +1679,17 @@ namespace IL2DCE.MissionObjectModel
 
                     if (player != null)
                     {
-                        return new MissionStatus(dt, player, airGroups, groundGroups, stationaries, aircrafts, groundActors);
+                        return new MissionStatus(random, dt, player, airGroups, groundGroups, stationaries, aircrafts, groundActors);
                     }
                 }
             }
 
             return null;
         }
+
+        #endregion
+
+        #region Update
 
         public void Update(AiActor aiActor)
         {
@@ -1632,10 +1709,10 @@ namespace IL2DCE.MissionObjectModel
             {
                 Update(aiActor as AiGroundGroup);
             }
-            else if (aiActor is GroundStationary)
-            {
-                Update(aiActor as GroundStationary);
-            }
+            //else if (aiActor is GroundStationary)
+            //{
+            //    Update(aiActor as GroundStationary);
+            //}
             else if (aiActor is AiPerson)
             {
                 Update(aiActor as AiPerson);
@@ -1710,7 +1787,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void Update(AiAirGroup aiAirGroup)
+        private void Update(AiAirGroup aiAirGroup)
         {
             AirGroupObject airGroupNew = AirGroupObject.Create(aiAirGroup);
             AirGroupObject airGroup = airGroupNew.Id > 0 ? AirGroups.Where(x => x.Id == airGroupNew.Id).FirstOrDefault() :
@@ -1725,7 +1802,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void Update(AiGroundGroup aiGroundGroup)
+        private void Update(AiGroundGroup aiGroundGroup)
         {
             GroundGroupObject groundGroupNew = GroundGroupObject.Create(aiGroundGroup);
             GroundGroupObject groundGroup = !string.IsNullOrEmpty(groundGroupNew.Name) ? GroundGroups.Where(x => string.Compare(x.Name, groundGroupNew.Name) == 0).FirstOrDefault() : null;
@@ -1754,7 +1831,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void Update(AiAircraft aiAircraft)
+        private void Update(AiAircraft aiAircraft)
         {
             Debug.WriteLine("AiAircraft Army={0}, Name={1}, TypeName={2}, Group={3}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
             AircraftObject aircraftNew = AircraftObject.Create(aiAircraft);
@@ -1783,7 +1860,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void Update(AiGroundActor aiGroundActor)
+        private void Update(AiGroundActor aiGroundActor)
         {
             Debug.WriteLine("AiGroundActor Army={0}, Name={1}, TypeName={2}, Group={3}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
             GroundObject groundActorNew = GroundObject.Create(aiGroundActor);
@@ -1812,7 +1889,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public void Update(AiPerson aiPerson)
+        private void Update(AiPerson aiPerson)
         {
             AiGroup aiGroup = aiPerson.Group();
             if (aiGroup != null)
@@ -1863,6 +1940,10 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        #endregion
+
+        #region WriteTo
+
         public void WriteTo(ISectionFile file)
         {
             SilkySkyCloDFile.Write(file, SectionMain, KeyDateTime, DateTime.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat), true);
@@ -1879,7 +1960,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void UpdateWriteTo(ISectionFile file, int reinForceDay)
         {
-            MissionStatus missionStatusPrevious = MissionStatus.Create(file);
+            MissionStatus missionStatusPrevious = MissionStatus.Create(file, Random);
 
             // Player
             SilkySkyCloDFile.Write(file, SectionMain, KeyDateTime, DateTime.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat), true);
@@ -1891,209 +1972,19 @@ namespace IL2DCE.MissionObjectModel
             if (missionStatusPrevious != null)
             {
                 // AirGroup
-                foreach (var item in AirGroups.OrderBy(x => x.Name))
-                {
-                    int needDay = (int)Math.Floor(reinForceDay / item.ReinForceRate()); // (int)Math.Ceiling(reinForceDay / item.ReinForeRate());
-                    int needHour = (int)Math.Floor(((reinForceDay * 100 / item.ReinForceRate()) % 100) * 24);
-                    float rate = (item.Nums - item.DiedNums) / item.Nums;
-                    AirGroupObject previousAirGroup = missionStatusPrevious.AirGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
-                    if (previousAirGroup != null)
-                    {
-                        DateTime? reinForceDate = previousAirGroup.ReinForceDate;
-                        if (reinForceDate == null)
-                        {
-                            previousAirGroup.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                        }
-                        else
-                        {
-                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
-                            if (reinForceDate.Value < DateTime.AddDays(needDay).AddHours(needHour))
-                            {
-                                if (rate < 0.5f)
-                                {
-                                    previousAirGroup.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                                }
-                            }
-                        }
-                        previousAirGroup.Nums = item.Nums;
-                        previousAirGroup.InitNums = item.InitNums;
-                        previousAirGroup.DiedNums = item.DiedNums;
-                    }
-                    else
-                    {
-                        missionStatusPrevious.AirGroups.Add(item);
-                    }
-                }
-                missionStatusPrevious.AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.AirGroups);
 
-                // GroundGroup
-                foreach (var item in GroundGroups.OrderBy(x => x.Name))
-                {
-                    int needDay = (int)Math.Floor(reinForceDay / item.ReinForceRate()); // (int)Math.Ceiling(reinForceDay / item.ReinForeRate());
-                    int needHour = (int)Math.Floor(((reinForceDay * 100 / item.ReinForceRate()) % 100) * 24);
-                    float rate = item.AliveNums / item.Nums;
-                    GroundGroupObject previousGroundGroup = missionStatusPrevious.GroundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
-                    if (previousGroundGroup != null)
-                    {
-                        DateTime? reinForceDate = previousGroundGroup.ReinForceDate;
-                        if (reinForceDate == null)
-                        {
-                            previousGroundGroup.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                        }
-                        else
-                        {
-                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
-                            if (reinForceDate.Value < DateTime.AddDays(needDay).AddHours(needHour))
-                            {
-                                if (rate < 0.5f)
-                                {
-                                    previousGroundGroup.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                                }
-                            }
-                        }
-                        previousGroundGroup.Nums = item.Nums;
-                        previousGroundGroup.AliveNums = item.AliveNums;
-                    }
-                    else
-                    {
-                        missionStatusPrevious.GroundGroups.Add(item);
-                    }
-                }
-                missionStatusPrevious.GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                // GroundGroups
+                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.GroundGroups);
 
                 // Stationary
-                foreach (var item in Stationaries.OrderBy(x => x.Name))
-                {
-                    int needDay = (int)Math.Floor(reinForceDay / item.ReinForceRate()); // (int)Math.Ceiling(reinForceDay / item.ReinForeRate());
-                    int needHour = (int)Math.Floor(((reinForceDay * 100 / item.ReinForceRate()) % 100) * 24);
-                    StationaryObject previousStationary = missionStatusPrevious.Stationaries.Where(x => x.IsSamePosition(item)).FirstOrDefault();
-                    if (previousStationary != null)
-                    {
-                        DateTime? reinForceDate = previousStationary.ReinForceDate;
-                        if (reinForceDate == null)
-                        {
-                            previousStationary.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                        }
-                        else
-                        {
-                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
-                            if (reinForceDate.Value < DateTime.AddDays(needDay).AddHours(needHour))
-                            {
-                                if (!item.IsAlive)
-                                {
-                                    previousStationary.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                                }
-                            }
-                        }
-                        previousStationary.IsAlive = item.IsAlive;
-                    }
-                    else
-                    {
-                        missionStatusPrevious.Stationaries.Add(item);
-                    }
-                }
-                missionStatusPrevious.Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.Stationaries);
 
-                // GroundGroup
-                foreach (var item in GroundGroups.OrderBy(x => x.Name))
-                {
-                    int needDay = (int)Math.Floor(reinForceDay / item.ReinForceRate()); // (int)Math.Ceiling(reinForceDay / item.ReinForeRate());
-                    int needHour = (int)Math.Floor(((reinForceDay * 100 / item.ReinForceRate()) % 100) * 24);
-                    float rate = item.AliveNums / item.Nums;
-                    GroundGroupObject previousGroundGroup = missionStatusPrevious.GroundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
-                    if (previousGroundGroup != null)
-                    {
-                        DateTime? reinForceDate = previousGroundGroup.ReinForceDate;
-                        if (reinForceDate == null)
-                        {
-                            previousGroundGroup.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                        }
-                        else
-                        {
-                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
-                            if (reinForceDate.Value < DateTime.AddDays(needDay).AddHours(needHour))
-                            {
-                                if (rate < 0.5f)
-                                {
-                                    previousGroundGroup.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                                }
-                            }
-                        }
-                        previousGroundGroup.Nums = item.Nums;
-                        previousGroundGroup.AliveNums = item.AliveNums;
-                    }
-                    else
-                    {
-                        missionStatusPrevious.GroundGroups.Add(item);
-                    }
-                }
-                missionStatusPrevious.GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-
-                // Stationary
-                foreach (var item in Aircrafts.OrderBy(x => x.Name))
-                {
-                    int needDay = (int)Math.Floor(reinForceDay / item.ReinForceRate()); // (int)Math.Ceiling(reinForceDay / item.ReinForeRate());
-                    int needHour = (int)Math.Floor(((reinForceDay * 100 / item.ReinForceRate()) % 100) * 24);
-                    AircraftObject previousAircraft = missionStatusPrevious.Aircrafts.Where(x => x.IsSamePosition(item)).FirstOrDefault();
-                    if (previousAircraft != null)
-                    {
-                        DateTime? reinForceDate = previousAircraft.ReinForceDate;
-                        if (reinForceDate == null)
-                        {
-                            previousAircraft.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                        }
-                        else
-                        {
-                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
-                            if (reinForceDate.Value < DateTime.AddDays(needDay).AddHours(needHour))
-                            {
-                                if (!item.IsAlive)
-                                {
-                                    previousAircraft.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                                }
-                            }
-                        }
-                        previousAircraft.IsAlive = item.IsAlive;
-                    }
-                    else
-                    {
-                        missionStatusPrevious.Aircrafts.Add(item);
-                    }
-                }
-                missionStatusPrevious.Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                // Aircraft
+                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.Aircrafts);
 
                 // GroundActor
-                foreach (var item in GroundActors.OrderBy(x => x.Name))
-                {
-                    int needDay = (int)Math.Floor(reinForceDay / item.ReinForceRate()); // (int)Math.Ceiling(reinForceDay / item.ReinForeRate());
-                    int needHour = (int)Math.Floor(((reinForceDay * 100 / item.ReinForceRate()) % 100) * 24);
-                    GroundObject previousGroundObject = missionStatusPrevious.GroundActors.Where(x => x.IsSamePosition(item)).FirstOrDefault();
-                    if (previousGroundObject != null)
-                    {
-                        DateTime? reinForceDate = previousGroundObject.ReinForceDate;
-                        if (reinForceDate == null)
-                        {
-                            previousGroundObject.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                        }
-                        else
-                        {
-                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
-                            if (reinForceDate.Value < DateTime.AddDays(needDay).AddHours(needHour))
-                            {
-                                if (!item.IsAlive)
-                                {
-                                    previousGroundObject.ReinForceDate = DateTime.AddDays(needDay).AddHours(needHour);
-                                }
-                            }
-                        }
-                        previousGroundObject.IsAlive = item.IsAlive;
-                    }
-                    else
-                    {
-                        missionStatusPrevious.GroundActors.Add(item);
-                    }
-                }
-                missionStatusPrevious.GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.GroundActors);
             }
             else
             {
@@ -2105,6 +1996,323 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        private int[] GetRandomReinForceDayHour(int[] reinForceDayHour)
+        {
+            return new int[(int)ReinForcePart.Count] 
+            {
+                Random.Next((int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Day] * 0.5), (int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Day] * 1.5)),
+                Random.Next((int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Hour] * 0.5), (int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Hour] * 1.5)),
+            };
+        }
+
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<AirGroupObject> airGroups)
+        {
+            foreach (var item in AirGroups.OrderBy(x => x.Name))
+            {
+                try
+                {
+                    AirGroupObject previousAirGroup = airGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
+                    if (item.InitNums > 0 && item.Nums > 0)
+                    {
+                        int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
+                        float rate = (item.InitNums - item.DiedNums) / (float)item.InitNums;
+                        if (previousAirGroup != null)
+                        {
+                            DateTime? reinForceDate = previousAirGroup.ReinForceDate;
+                            if (reinForceDate == null)
+                            {
+                                if (rate < 1)
+                                {
+                                    previousAirGroup.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                                }
+                            }
+                            else
+                            {
+                                // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
+                                if (reinForceDate.Value < DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]))
+                                {
+                                    if (rate < ResetReinForceDateRate)
+                                    {
+                                        previousAirGroup.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                                    }
+                                }
+                            }
+                            // Debug.Assert(!previousAirGroup.IsAlive, "previousAirGroup=True[{0}]", previousAirGroup.Name);
+                            // previousAirGroup.IsAlive = false;//item.IsAlive;
+                            if (item.IsValidPoint)
+                            {
+                                previousAirGroup.X = item.X;
+                                previousAirGroup.Y = item.Y;
+                                previousAirGroup.Z = item.Z;
+                            }
+                            previousAirGroup.Nums = item.Nums;
+                            previousAirGroup.InitNums = item.InitNums;
+                            previousAirGroup.DiedNums = item.DiedNums;
+                            previousAirGroup.IsTaskComplete = item.IsTaskComplete;
+                        }
+                        else
+                        {
+                            item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            airGroups.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        if (previousAirGroup != null)
+                        {
+                            // previousGroundObject = item;
+                            airGroups.Remove(previousAirGroup);
+                        }
+                        item.IsAlive = false;
+                        airGroups.Add(item);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error MissionStatus.UpdateWriteTo: {0} {1}", ex.Message, ex.StackTrace);
+                }
+            }
+            airGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+        }
+
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<GroundGroupObject> groundGroups)
+        {
+            foreach (var item in GroundGroups.OrderBy(x => x.Name))
+            {
+                try
+                {
+                    GroundGroupObject previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
+                    if (item.Nums > 0 && item.AliveNums > 0)
+                    {
+                        int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
+                        float rate = item.AliveNums / (float)item.Nums;
+                        if (previousGroundGroup != null)
+                        {
+                            DateTime? reinForceDate = previousGroundGroup.ReinForceDate;
+                            if (reinForceDate == null)
+                            {
+                                if (rate < 1)
+                                {
+                                    previousGroundGroup.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                                }
+                            }
+                            else
+                            {
+                                // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
+                                if (reinForceDate.Value < DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]))
+                                {
+                                    if (rate < ResetReinForceDateRate)
+                                    {
+                                        previousGroundGroup.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                                    }
+                                }
+                            }
+                            // Debug.Assert(!previousGroundGroup.IsAlive, "previousGroundGroup=True[{0}]", previousGroundGroup.Name);
+                            // previousGroundGroup.IsAlive = false;//item.IsAlive;
+                            if (item.IsValidPoint)
+                            {
+                                previousGroundGroup.X = item.X;
+                                previousGroundGroup.Y = item.Y;
+                                previousGroundGroup.Z = item.Z;
+                            }
+                            previousGroundGroup.Nums = item.Nums;
+                            previousGroundGroup.AliveNums = item.AliveNums;
+                            previousGroundGroup.IsTaskComplete = item.IsTaskComplete;
+                        }
+                        else
+                        {
+                            item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            groundGroups.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        if (previousGroundGroup != null)
+                        {
+                            // previousGroundObject = item;
+                            groundGroups.Remove(previousGroundGroup);
+                        }
+                        item.IsAlive = false;
+                        groundGroups.Add(item);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error MissionStatus.UpdateWriteTo: {0} {1}", ex.Message, ex.StackTrace);
+                }
+            }
+            groundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+        }
+
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<StationaryObject> stationaries)
+        {
+            foreach (var item in Stationaries.OrderBy(x => x.Name))
+            {
+                StationaryObject previousStationary = stationaries.Where(x => x.Country == item.Country && x.Class == item.Class && (x.Name == item.Name || x.IsSamePosition(item))).FirstOrDefault();
+                if (!item.IsAlive)
+                {
+                    int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
+                    if (previousStationary != null)
+                    {
+                        DateTime? reinForceDate = previousStationary.ReinForceDate;
+                        if (reinForceDate == null)
+                        {
+                            previousStationary.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                        }
+                        else
+                        {
+                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
+                            if (reinForceDate.Value < DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]))
+                            {
+                                previousStationary.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            }
+                        }
+                        Debug.Assert(!previousStationary.IsAlive, "previousStationary=True[{0}]", previousStationary.Name);
+                        previousStationary.IsAlive = false; // item.IsAlive;
+                        if (item.IsValidPoint)
+                        {
+                            previousStationary.X = item.X;
+                            previousStationary.Y = item.Y;
+                            previousStationary.Z = item.Z;
+                        }
+                    }
+                    else
+                    {
+                        item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                        stationaries.Add(item);
+                    }
+                }
+                else
+                {
+                    if (previousStationary != null)
+                    {
+                        // previousStationary = item;
+                        stationaries.Remove(previousStationary);
+                    }
+                    stationaries.Add(item);
+                }
+            }
+            stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+        }
+
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<AircraftObject> aircrafts)
+        {
+            foreach (var item in Aircrafts.OrderBy(x => x.Name))
+            {
+                AircraftObject previousAircraft = aircrafts.Where(x => x.Army == item.Army && x.Name == item.Name && x.Class == item.Class).FirstOrDefault();
+                if (!item.IsAlive)
+                {
+                    int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
+                    if (previousAircraft != null)
+                    {
+                        DateTime? reinForceDate = previousAircraft.ReinForceDate;
+                        if (reinForceDate == null)
+                        {
+                            previousAircraft.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                        }
+                        else
+                        {
+                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
+                            if (reinForceDate.Value < DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]))
+                            {
+                                previousAircraft.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            }
+                        }
+                        Debug.Assert(!previousAircraft.IsAlive, "previousAircraft=True[{0}]", previousAircraft.Name);
+                        previousAircraft.IsAlive = false;// item.IsAlive;
+                        if (item.IsValidPoint)
+                        {
+                            previousAircraft.X = item.X;
+                            previousAircraft.Y = item.Y;
+                            previousAircraft.Z = item.Z;
+                        }
+                        previousAircraft.IsTaskComplete = item.IsTaskComplete;
+                    }
+                    else
+                    {
+                        item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                        aircrafts.Add(item);
+                    }
+                }
+                else
+                {
+                    if (previousAircraft != null)
+                    {
+                        // previousAircraft = item;
+                        aircrafts.Remove(previousAircraft);
+                    }
+                    aircrafts.Add(item);
+                }
+            }
+            aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+        }
+
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<GroundObject> groundActors)
+        {
+            foreach (var item in GroundActors.OrderBy(x => x.Name))
+            {
+                GroundObject previousGroundObject = groundActors.Where(x => x.Army == item.Army && x.Class == item.Class && (x.Name == item.Name || x.IsSamePosition(item))).FirstOrDefault();
+                if (!item.IsAlive)
+                {
+                    int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
+                    if (previousGroundObject != null)
+                    {
+                        DateTime? reinForceDate = previousGroundObject.ReinForceDate;
+                        if (reinForceDate == null)
+                        {
+                            previousGroundObject.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                        }
+                        else
+                        {
+                            // float previouRate = (previousAirGroup.Nums - previousAirGroup.DiedNums) / previousAirGroup.Nums;
+                            if (reinForceDate.Value < DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]))
+                            {
+                                previousGroundObject.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            }
+                        }
+                        Debug.Assert(!previousGroundObject.IsAlive, "previousGroundObject=True[{0}]", previousGroundObject.Name);
+                        previousGroundObject.IsAlive = false;//item.IsAlive;
+                        if (item.IsValidPoint)
+                        {
+                            previousGroundObject.X = item.X;
+                            previousGroundObject.Y = item.Y;
+                            previousGroundObject.Z = item.Z;
+                        }
+                        previousGroundObject.IsTaskComplete = item.IsTaskComplete;
+                    }
+                    else
+                    {
+                        item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                        groundActors.Add(item);
+                    }
+                }
+                else
+                {
+                    if (previousGroundObject != null)
+                    {
+                        // previousGroundObject = item;
+                        groundActors.Remove(previousGroundObject);
+                    }
+                    groundActors.Add(item);
+                }
+            }
+            groundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+        }
+
+        #endregion
+
+        public AirGroupObject GetPlayerAirGroup()
+        {
+            if (PlayerInfo != null && !string.IsNullOrEmpty(PlayerInfo.AirGroup))
+            {
+                return AirGroups.Where(x => string.Compare(x.Name, PlayerInfo.AirGroup, true) == 0).FirstOrDefault();
+            }
+            return null;
+        }
+
+#if DEBUG
+
+        [Conditional("DEBUG")]
         public static void Update(ISectionFile missionStatusFile, IGame game, string playerActorName)
         {
             // Player 
@@ -2134,6 +2342,7 @@ namespace IL2DCE.MissionObjectModel
 
         #region WriteTo(Static)
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, IPlayer player, string actorName)
         {
             string name = MissionObject.CreateShortName(player.Name());
@@ -2169,6 +2378,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, IEnumerable<AiAirport> airports)
         {
             if (airports != null)
@@ -2180,6 +2390,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, AiAirport airport)
         {
             string name = MissionObject.CreateShortName(airport.Name());
@@ -2208,6 +2419,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, IEnumerable<AiAirGroup> airGroups)
         {
             if (airGroups != null)
@@ -2219,6 +2431,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, AiAirGroup airGroup)
         {
             string name = MissionObject.CreateShortName(airGroup.Name());
@@ -2250,6 +2463,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, IEnumerable<AiGroundGroup> groundGroups)
         {
             if (groundGroups != null)
@@ -2261,6 +2475,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, AiGroundGroup groundGroup)
         {
             string name = MissionObject.CreateShortName(groundGroup.Name());
@@ -2293,6 +2508,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, IEnumerable<GroundStationary> GroundStationaies)
         {
             if (GroundStationaies != null)
@@ -2304,6 +2520,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, GroundStationary groundStationary)
         {
             string name = MissionObject.CreateShortName(groundStationary.Name);
@@ -2331,7 +2548,9 @@ namespace IL2DCE.MissionObjectModel
                 Debug.WriteLine(string.Format("{0} {1}", ex.Message, ex.StackTrace));
             }
         }
-
         #endregion
+
+#endif
+
     }
 }

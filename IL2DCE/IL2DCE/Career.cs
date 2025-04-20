@@ -570,7 +570,7 @@ namespace IL2DCE
             AdditionalGroundGroups = false;
             AdditionalStationaries = false;
             GroundGroupGenerateType = EGroundGroupGenerateType.Default;
-            StationaryGenerateType = EStationaryGenerateType.Generic;
+            StationaryGenerateType = EStationaryGenerateType.Default;
             ArmorUnitNumsSet = EArmorUnitNumsSet.Random;
             ShipUnitNumsSet = EShipUnitNumsSet.Random;
             SpawnRandomLocationPlayer = false;
@@ -594,7 +594,7 @@ namespace IL2DCE
             ArtilleryRHide = ArtilleryOption.RHideMissionDefault;
             ArtilleryZOffset = ArtilleryOption.ZOffsetMissionDefault;
             ShipSleep = ShipOption.SleepMissionDefault;
-            ShipSkill =  ESkillSetShip.Random;
+            ShipSkill = ESkillSetShip.Random;
             ShipSlowfire = ShipOption.SlowFireMissionDefault;
 
             ReArmTime = -1;
@@ -664,7 +664,7 @@ namespace IL2DCE
             string val = careerFile.get(SectionCampaign, KeyGroundGroupGenerateType, string.Empty);
             GroundGroupGenerateType = (Enum.IsDefined(typeof(EGroundGroupGenerateType), val)) ? (EGroundGroupGenerateType)Enum.Parse(typeof(EGroundGroupGenerateType), val) : EGroundGroupGenerateType.Default;
             val = careerFile.get(SectionCampaign, KeyStationaryGenerateType, string.Empty);
-            StationaryGenerateType = (Enum.IsDefined(typeof(EStationaryGenerateType), val)) ? (EStationaryGenerateType)Enum.Parse(typeof(EStationaryGenerateType), val) : EStationaryGenerateType.Generic;
+            StationaryGenerateType = (Enum.IsDefined(typeof(EStationaryGenerateType), val)) ? (EStationaryGenerateType)Enum.Parse(typeof(EStationaryGenerateType), val) : EStationaryGenerateType.Default;
             val = careerFile.get(SectionCampaign, KeyArmorUnitNumsSet, string.Empty);
             ArmorUnitNumsSet = (Enum.IsDefined(typeof(EArmorUnitNumsSet), val)) ? (EArmorUnitNumsSet)Enum.Parse(typeof(EArmorUnitNumsSet), val) : EArmorUnitNumsSet.Default;
             val = careerFile.get(SectionCampaign, KeyShipUnitNumsSet, string.Empty);
@@ -842,7 +842,7 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
             careerFile.add(SectionCampaign, KeyId, CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
-            careerFile.add(SectionCampaign, KeySpawnParked, Spawn == (int)ESpawn.Parked ? "1": "0");
+            careerFile.add(SectionCampaign, KeySpawnParked, Spawn == (int)ESpawn.Parked ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalGroundOperations, AdditionalGroundOperations.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAdditionalAirGroups, AdditionalAirGroups ? "1" : "0");
@@ -991,7 +991,7 @@ namespace IL2DCE
         public string ToStringCurrestStatus()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString(Date.Value.Hour != 0 ? "M/d/yyyy h tt": "M/d/yyyy", DateTimeFormatInfo.InvariantInfo));
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString(Date.Value.Hour != 0 ? "M/d/yyyy h tt" : "M/d/yyyy", DateTimeFormatInfo.InvariantInfo));
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Army", ((EArmy)ArmyIndex).ToString());
             sb.AppendLine();
@@ -1010,6 +1010,13 @@ namespace IL2DCE
             {
                 sb.AppendFormat(" [{0}]", KeyStrictMode);
             }
+
+            //if (PlayerAirGroupSkill != null && PlayerAirGroupSkill.Any())
+            //{
+            //    sb.AppendLine();
+            //    sb.AppendFormat("[Current Skill]\n{0}", Skill.ToDetailString(PlayerAirGroupSkill));
+            //}
+
             return sb.ToString();
         }
 
@@ -1068,8 +1075,8 @@ namespace IL2DCE
             {
                 case ECampaignProgress.AnyDay:
                     dt = Date.Value.Add(new TimeSpan(
-                                                    random.Next(MissionObjectModel.CampaignProgress.AnyDayBebin, MissionObjectModel.CampaignProgress.AnyDayEnd + 1) , 
-                                                    random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1) - Date.Value.Hour, 
+                                                    random.Next(MissionObjectModel.CampaignProgress.AnyDayBebin, MissionObjectModel.CampaignProgress.AnyDayEnd + 1),
+                                                    random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1) - Date.Value.Hour,
                                                     0, 0));
                     break;
 
@@ -1084,8 +1091,8 @@ namespace IL2DCE
                 case ECampaignProgress.Daily:
                 default:
                     dt = Date.Value.Add(new TimeSpan(
-                                                    MissionObjectModel.CampaignProgress.DailyDay, 
-                                                    random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1) - Date.Value.Hour, 
+                                                    MissionObjectModel.CampaignProgress.DailyDay,
+                                                    random.Next(MissionObjectModel.CampaignProgress.AnyTimeBebin, MissionObjectModel.CampaignProgress.AnyTimeEnd + 1) - Date.Value.Hour,
                                                     0, 0));
                     break;
             }
@@ -1099,10 +1106,36 @@ namespace IL2DCE
             }
             else if (dt.Hour > config.RandomTimeEnd)
             {
-                dt = dt.AddHours(dt.Date < CampaignInfo.EndDate ? config.RandomTimeBegin + 24 - dt.Hour: config.RandomTimeEnd - dt.Hour);
+                dt = dt.AddHours(dt.Date < CampaignInfo.EndDate ? config.RandomTimeBegin + 24 - dt.Hour : config.RandomTimeEnd - dt.Hour);
             }
             Date = dt;
             Time = dt.Hour;
+        }
+
+        public Skill[] UpdatePlayerAirGroupSkill()
+        {
+            AirGroup airGroup = PlayerAirGroup;
+            if (airGroup != null)
+            {
+                Skill skill;
+                if (airGroup.Skills != null && airGroup.Skills.Any())
+                {
+                    var result = airGroup.Skills.Select(x => Skill.TryParse(x.Value, out skill) ? new Skill(skill.Skills) : null).Where(x => x != null);
+                    if (result.Any())
+                    {
+                        PlayerAirGroupSkill = result.ToArray();
+                    }
+                }
+                else if (!string.IsNullOrEmpty(airGroup.Skill))
+                {
+                    if (Skill.TryParse(airGroup.Skill, out skill))
+                    {
+                        PlayerAirGroupSkill = new Skill[] { skill };
+                    }
+                }
+            }
+
+            return PlayerAirGroupSkill;
         }
     }
 }

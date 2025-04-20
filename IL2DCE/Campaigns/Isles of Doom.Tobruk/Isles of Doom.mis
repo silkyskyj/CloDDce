@@ -27,6 +27,12 @@
   CloudsHeight 1000
   BreezeActivity 10
   ThermalActivity 10
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
 [splines]
 [AirGroups]
   tobruk:Tobruk_RAF_F_94Sqn.01
@@ -164,6 +170,157 @@
   RECON 19456.01 16121.01 500.00 300.00
 [CustomChiefs]
 [Chiefs]
+  0_Chief Armor.tobruk:Pz_IVF de /num_units 8
+  1_Chief Armor.tobruk:Matilda_2A_Late gb /num_units 8
+  2_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1
+  3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1
+  4_Chief Ship.Minensuchboote de /sleep 0/skill 1/slowfire 1
+  5_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1
+[0_Chief_Road]
+  21828.05 21153.62 38.40  0 2 6.94
+  21781.66 21121.67 38.40  0 2 3.47
+  21734.13 21084.86 38.40  0 2 3.47
+  21698.68 21057.05 38.40  0 2 3.47
+  21649.10 21025.36 38.40  0 2 3.47
+  21644.03 20988.16 38.40
+[1_Chief_Road]
+  16655.89 11929.52 38.40  0 2 4.17
+  16613.57 12052.44 38.40  0 2 2.08
+  16691.95 12167.98 38.40  0 2 2.08
+  16756.18 12256.45 38.40  0 2 2.08
+  16765.53 12371.99 38.40  0 4 2.08
+  S 28 2 0.48 20.00 P 16769.66 12479.59
+  S 28 2 0.48 20.00 P 16769.66 12479.59
+  16807.49 12548.93 38.40  0 2 2.08
+  16874.05 12591.13 38.40
+[2_Chief_Road]
+  25706.63 19648.10 38.40  0 2 5.83
+  26005.29 17770.53 38.40  0 2 2.92
+  26538.62 16234.54 38.40  0 2 2.92
+  27861.28 14741.22 38.40  0 2 2.92
+  30186.59 14250.55 38.40  0 2 2.92
+  31829.24 15594.54 38.40  0 2 2.92
+  32085.24 17578.53 38.40
+[3_Chief_Road]
+  14485.38 13738.56 38.40  0 2 5.83
+  16042.70 14677.22 38.40  0 2 2.92
+  15850.70 16831.87 38.40  0 2 2.92
+  13781.39 17535.86 38.40  0 2 2.92
+  11754.74 17983.86 38.40  0 2 2.92
+  9429.42 17407.86 38.40
+[4_Chief_Road]
+  24938.63 19114.52 38.40  0 2 5.56
+  25493.29 17151.87 38.40  0 2 2.78
+  26389.29 15231.88 38.40  0 2 2.78
+  27861.28 13610.56 38.40  0 2 2.78
+  30698.59 13311.90 38.40  0 2 2.78
+  32213.24 14250.55 38.40
+[5_Chief_Road]
+  16234.70 13738.56 38.40  0 2 5.00
+  16789.36 15466.54 38.40  0 2 2.50
+  16597.36 17685.20 38.40  0 2 2.50
+  14101.38 17919.86 38.40  0 2 2.50
+  12202.73 17493.20 38.40  0 2 2.50
+  10666.74 18367.86 38.40  0 2 2.50
+  9194.75 18517.19 38.40
 [Stationary]
+  Static12 Artillery.Bofors_StandAlone gb 10463.60 10260.68 0.00 /timeout 0/radius_hide 0
+  Static11 Artillery.Bofors_StandAlone gb 11030.60 10267.40 0.00 /timeout 0/radius_hide 0
+  Static65 Stationary.Radar.EnglishRadar3 gb 18361.38 10266.14 0.00 
+  Static5 Artillery.Bofors_StandAlone gb 17331.15 10442.43 0.00 /timeout 0/radius_hide 0
+  Static56 Stationary.Bofors_ENG_Transport gb 11298.40 10622.94 0.00 
+  Static6 Artillery.Bofors_StandAlone gb 17583.08 10545.79 0.00 /timeout 0/radius_hide 0
+  Static13 Artillery.Bofors_StandAlone gb 10158.23 10683.74 0.00 /timeout 0/radius_hide 0
+  Static55 Stationary.Bofors_ENG_Transport gb 11183.76 10648.18 0.00 
+  Static10 Artillery.Bofors_StandAlone gb 11086.04 10720.34 0.00 /timeout 0/radius_hide 0
+  Static4 Artillery.Bofors_StandAlone gb 16866.04 10664.22 0.00 /timeout 0/radius_hide 0
+  Static47 Stationary.HurricaneMkI_dH5-20 gb 10368.30 10872.20 0.00 
+  Static48 Stationary.HurricaneMkI_dH5-20 gb 10398.19 10862.55 0.00 
+  Static49 Stationary.HurricaneMkI_dH5-20 gb 10433.68 10847.99 0.00 
+  Static54 Stationary.Bofors_ENG_Transport gb 10930.76 10826.06 0.00 
+  Static46 Stationary.HurricaneMkI_dH5-20 gb 10337.51 10888.54 0.00 
+  Static9 Artillery.Bofors_StandAlone gb 10662.57 10934.17 0.00 /timeout 0/radius_hide 0
+  Static53 Stationary.Bofors_ENG_Transport gb 10808.44 10881.84 0.00 
+  Static1 Artillery.Bofors_StandAlone gb 17805.94 10852.63 0.00 /timeout 0/radius_hide 0
+  Static52 Stationary.Bofors_ENG_Transport gb 10643.87 10998.62 0.00 
+  Static51 Stationary.Bofors_ENG_Transport gb 10514.12 11059.45 0.00 
+  Static50 Stationary.Bofors_ENG_Transport gb 10409.76 11124.30 0.00 
+  Static8 Artillery.Bofors_StandAlone gb 10314.87 11173.12 0.00 /timeout 0/radius_hide 0
+  Static7 Artillery.Bofors_StandAlone gb 10033.03 11297.34 0.00 /timeout 0/radius_hide 0
+  Static3 Artillery.Bofors_StandAlone gb 16759.46 11244.52 0.00 /timeout 0/radius_hide 0
+  Static0 Artillery.Bofors_StandAlone gb 17484.03 11305.89 0.00 /timeout 0/radius_hide 0
+  Static2 Artillery.Bofors_StandAlone gb 17027.54 11548.13 0.00 /timeout 0/radius_hide 0
+  Static64 Stationary.Radar.EnglishRadar3 gb 16210.13 13419.49 0.00 
+  Static66 Stationary.Radar.EnglishRadar3 gb 15233.90 15730.10 0.00 
+  Static19 Artillery.Bofors_StandAlone gb 13160.85 15964.41 0.00 /timeout 0/radius_hide 0
+  Static18 Artillery.Bofors_StandAlone gb 12973.17 16023.62 0.00 /timeout 0/radius_hide 0
+  Static20 Artillery.Bofors_StandAlone gb 12862.57 16112.99 0.00 /timeout 0/radius_hide 0
+  Static17 Artillery.Bofors_StandAlone gb 12552.00 16221.36 0.00 /timeout 0/radius_hide 0
+  Static16 Artillery.Bofors_StandAlone gb 12365.44 16329.72 0.00 /timeout 0/radius_hide 0
+  Static28 Artillery.Zwillingssockel36_GER1 de 29739.83 16147.30 0.00 /timeout 0/radius_hide 0
+  Static15 Artillery.Bofors_StandAlone gb 12215.74 16485.01 0.00 /timeout 0/radius_hide 0
+  Static29 Artillery.Zwillingssockel36_GER1 de 29669.72 16216.81 0.00 /timeout 0/radius_hide 0
+  Static31 Artillery.Zwillingssockel36_GER1 de 29398.02 16319.27 0.00 /timeout 0/radius_hide 0
+  Static30 Artillery.Zwillingssockel36_GER1 de 29560.24 16264.46 0.00 /timeout 0/radius_hide 0
+  Static14 Artillery.Bofors_StandAlone gb 12324.10 16624.65 0.00 /timeout 0/radius_hide 0
+  Static34 Artillery.Zwillingssockel36_GER1 de 28962.77 16336.30 0.00 /timeout 0/radius_hide 0
+  Static33 Artillery.Zwillingssockel36_GER1 de 29120.21 16352.07 0.00 /timeout 0/radius_hide 0
+  Static32 Artillery.Zwillingssockel36_GER1 de 29251.60 16334.16 0.00 /timeout 0/radius_hide 0
+  Static68 Stationary.Radar.Wotan_II de 27467.88 16769.45 0.00 
+  Static67 Stationary.Radar.Wotan_II de 22333.01 19119.40 0.00 
+  Static22 Artillery.Zwillingssockel36_GER1 de 28662.39 22143.13 0.00 /timeout 0/radius_hide 0
+  Static21 Artillery.Zwillingssockel36_GER1 de 28383.74 22174.59 0.00 /timeout 0/radius_hide 0
+  Static24 Artillery.Zwillingssockel36_GER1 de 27772.06 22248.70 0.00 /timeout 0/radius_hide 0
+  Static23 Artillery.Zwillingssockel36_GER1 de 28041.35 22217.10 0.00 /timeout 0/radius_hide 0
+  Static69 Stationary.Radar.Wotan_II de 20980.70 22355.81 0.00 
+  Static25 Artillery.Zwillingssockel36_GER1 de 27347.69 22323.27 0.00 /timeout 0/radius_hide 0
+  Static42 Stationary.Bf-109E-3 de 28550.77 22456.91 0.00 
+  Static43 Stationary.Bf-109E-3 de 28628.97 22442.36 0.00 
+  Static44 Stationary.Bf-109E-3 de 28688.99 22436.91 0.00 
+  Static45 Stationary.Bf-109E-3 de 28763.56 22418.72 0.00 
+  Static41 Artillery.Zwillingssockel36_GER1 de 23319.27 22556.92 0.00 /timeout 0/radius_hide 0
+  Static57 Stationary.Bofors_GER_Transport de 25447.90 22635.87 0.00 
+  Static35 Artillery.Zwillingssockel36_GER1 de 23105.03 22679.34 0.00 /timeout 0/radius_hide 0
+  Static27 Artillery.Zwillingssockel36_GER1 de 27312.92 22642.27 0.00 /timeout 0/radius_hide 0
+  Static63 Stationary.Bofors_GER_Transport de 26573.12 22715.54 0.00 
+  Static26 Artillery.Zwillingssockel36_GER1 de 26873.10 22675.00 0.00 /timeout 0/radius_hide 0
+  Static40 Artillery.Zwillingssockel36_GER1 de 23522.99 22748.20 0.00 /timeout 0/radius_hide 0
+  Static61 Stationary.Bofors_GER_Transport de 26107.17 22765.43 0.00 
+  Static62 Stationary.Bofors_GER_Transport de 26302.27 22737.44 0.00 
+  Static36 Artillery.Zwillingssockel36_GER1 de 23169.11 22837.15 0.00 /timeout 0/radius_hide 0
+  Static58 Stationary.Bofors_GER_Transport de 25459.85 22835.03 0.00 
+  Static59 Stationary.Bofors_GER_Transport de 25684.84 22819.19 0.00 
+  Static60 Stationary.Bofors_GER_Transport de 25923.92 22797.71 0.00 
+  Static37 Artillery.Zwillingssockel36_GER1 de 23235.11 23036.09 0.00 /timeout 0/radius_hide 0
+  Static39 Artillery.Zwillingssockel36_GER1 de 23601.42 23124.08 0.00 /timeout 0/radius_hide 0
+  Static38 Artillery.Zwillingssockel36_GER1 de 23347.01 23308.67 0.00 /timeout 0/radius_hide 0
 [Buildings]
+  0_bld buildings.House$Oil_Bunker-Middle 1 23654.33 23033.42 0.00
+  1_bld buildings.House$Oil_Bunker-Middle 1 28753.75 22525.91 0.00
+  2_bld buildings.House$Oil_Bunker-Middle 1 29417.41 16276.73 0.00
+  3_bld buildings.House$Oil_Bunker-Middle 1 17468.21 10513.68 0.00
+  4_bld buildings.House$Oil_Bunker-Middle 1 10444.88 10653.56 0.00
 [BuildingsLinks]
+[FrontMarker]
+  FrontMarker0 20717.04 24156.71 2
+  FrontMarker1 20789.54 22390.25 2
+  FrontMarker2 20734.96 20518.72 2
+  FrontMarker3 20708.40 19018.06 2
+  FrontMarker4 20721.68 17344.76 2
+  FrontMarker5 20673.47 15677.15 2
+  FrontMarker6 20673.60 13874.77 2
+  FrontMarker7 20728.36 12406.38 2
+  FrontMarker8 20742.02 11006.51 2
+  FrontMarker9 20701.05 9325.78 2
+  FrontMarker10 20687.36 8216.94 2
+  FrontMarker11 20090.80 24162.30 1
+  FrontMarker12 20233.48 8209.05 1
+  FrontMarker13 19994.15 17331.44 1
+  FrontMarker14 20151.48 12436.58 1
+  FrontMarker15 20213.25 11013.26 1
+  FrontMarker16 20191.92 9403.27 1
+  FrontMarker17 20212.14 13892.57 1
+  FrontMarker18 20111.03 15692.34 1
+  FrontMarker19 20131.26 18968.31 1
+  FrontMarker20 20070.59 20565.86 1
+  FrontMarker21 20191.92 22385.84 1

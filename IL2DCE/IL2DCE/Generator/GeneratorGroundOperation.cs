@@ -70,12 +70,6 @@ namespace IL2DCE.Generator
             }
         }
 
-        private int FormationCount
-        {
-            get;
-            set;
-        }
-
         private int ArtilleryTimeout
         {
             get;
@@ -143,12 +137,12 @@ namespace IL2DCE.Generator
         }
 
         private List<GroundGroup> AvailableGroundGroups = new List<GroundGroup>();
-
+        private List<GroundGroup> AssigneGroundGroups = new List<GroundGroup>();
         private List<Stationary> AvailableStationaries = new List<Stationary>();
 
         private IEnumerable<Point3d> FrontMarkers;
 
-        public GeneratorGroundOperation(IGamePlay gamePlay, IRandom random, Config config, MissionStatus missionStatus, wRECTF rangeBattleArea, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IEnumerable<Point3d> frontMarkers, EStationaryGenerateType stationaryGenerateType, EGroundGroupGenerateType groundGroupGenerateType, EArmorUnitNumsSet armorUnitNumsSet, EShipUnitNumsSet shipUnitNumsSet, int formationCount = Config.GroundGroupFormationCountDefault, int artilleryTimeout = ArtilleryOption.TimeoutMissionDefault, int artilleryRHide = ArtilleryOption.RHideMissionDefault, int artilleryZOffset = ArtilleryOption.ZOffsetMissionDefault, int shipSleep = ShipOption.SleepMissionDefault, ESkillSetShip shipSkil = ESkillSetShip.Random, float shipSlowfire = ShipOption.SlowFireMissionDefault)
+        public GeneratorGroundOperation(IGamePlay gamePlay, IRandom random, Config config, MissionStatus missionStatus, wRECTF rangeBattleArea, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IEnumerable<Point3d> frontMarkers, EGroundGroupGenerateType groundGroupGenerateType, EStationaryGenerateType stationaryGenerateType, EArmorUnitNumsSet armorUnitNumsSet, EShipUnitNumsSet shipUnitNumsSet, int artilleryTimeout = ArtilleryOption.TimeoutMissionDefault, int artilleryRHide = ArtilleryOption.RHideMissionDefault, int artilleryZOffset = ArtilleryOption.ZOffsetMissionDefault, int shipSleep = ShipOption.SleepMissionDefault, ESkillSetShip shipSkil = ESkillSetShip.Random, float shipSlowfire = ShipOption.SlowFireMissionDefault)
             : base(gamePlay, random, config)
         {
             MissionStatus = missionStatus;
@@ -162,14 +156,18 @@ namespace IL2DCE.Generator
             SetRange(AvailableGroundGroups.Select(x => x.Position).Concat(AvailableStationaries.Select(x => x.Position)));
 
             FrontMarkers = frontMarkers;
+            Debug.WriteLine("FrontMarkers");
+            int i = 0;
+            foreach (var item in frontMarkers)
+            {
+                Debug.WriteLine("  {0:2}: {1}", i++, item.ToString());
+            }
 
             GroundGroupGenerateType = groundGroupGenerateType;
             StationaryGenerateType = stationaryGenerateType;
 
             ArmorUnitNumsSet = armorUnitNumsSet;
             ShipUnitNumsSet = shipUnitNumsSet;
-
-            FormationCount = formationCount;
 
             ArtilleryTimeout = artilleryTimeout;
             ArtilleryRHide = artilleryRHide;
@@ -180,6 +178,16 @@ namespace IL2DCE.Generator
             ShipSlowfire = shipSlowfire;
 
             SkillsShip = CreateSkills(shipSkil);
+        }
+
+        public void SetGroundObjects(IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries)
+        {
+            AvailableGroundGroups.Clear();
+            AvailableStationaries.Clear();
+            AvailableGroundGroups.AddRange(groundGroups);
+            AvailableStationaries.AddRange(stationaries);
+
+            SetRange(AvailableGroundGroups.Select(x => x.Position).Concat(AvailableStationaries.Select(x => x.Position)));
         }
 
         private void SetRange(IEnumerable<Point2d> points)
@@ -241,12 +249,13 @@ namespace IL2DCE.Generator
                             {
                                 armor.Waypoints.Clear();
                                 armor.Waypoints.AddRange(wayPoints);
-                                result = true;
                             }
                             armor.WriteTo(missionFile);
+                            result = true;
                         }
                         else
                         {   // Ship & Unknouw
+                            Debug.Assert(groundGroup.Type == EGroundGroupType.Ship);
                             if (groundGroup is ShipGroup && groundGroup.Type == EGroundGroupType.Ship)
                             {
                                 SetSkill(groundGroup as ShipGroup);
@@ -266,7 +275,6 @@ namespace IL2DCE.Generator
                             {
                                 groundGroup.Waypoints.Clear();
                                 groundGroup.Waypoints.AddRange(wayPoints);
-                                result = true;
                             }
                             groundGroup.WriteTo(missionFile);
                             if (formationCount == -1)
@@ -274,9 +282,14 @@ namespace IL2DCE.Generator
                                 formationCount = GetFormationCount();
                             }
                             generateColumnFormation(missionFile, groundGroup, formationCount);
+                            result = true;
                         }
                     }
                 }
+            }
+            if (result)
+            {
+                AssigneGroundGroups.Add(groundGroup);
             }
             return result;
         }
@@ -640,7 +653,7 @@ namespace IL2DCE.Generator
                 wayPointLast.X -= xOffset;
                 wayPointLast.Y -= yOffset;
 
-                groundGroup.UpdateId(string.Format(Config.NumberFormat, "{0}.{1}", groundGroupId , i));
+                groundGroup.UpdateId(string.Format(Config.NumberFormat, "{0}.{1}", groundGroupId, i));
 
                 groundGroup.WriteTo(missionFile);
             }
@@ -698,7 +711,7 @@ namespace IL2DCE.Generator
         {
             if (missionType == EMissionType.ARMED_MARITIME_RECON || missionType == EMissionType.MARITIME_RECON || missionType == EMissionType.ATTACK_SHIP)
             {
-                return getAvailableRandomEnemyGroundGroup(airGroup, new EGroundGroupType [] { EGroundGroupType.Ship });
+                return getAvailableRandomEnemyGroundGroup(airGroup, new EGroundGroupType[] { EGroundGroupType.Ship });
             }
             else if (missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
             {
@@ -766,168 +779,201 @@ namespace IL2DCE.Generator
 
         #endregion
 
-        public static void CreateGroundGroup(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, GroundGroup groundGroup, ref int idNo)
+        public GroundGroup UpdateGroundGroup(ISectionFile sectionFile, GroundGroup groundGroup)
         {
-            string id = string.Format(Config.NumberFormat, "{0:D}_{1}", idNo, MissionFile.KeyChief);
             Point2d point = groundGroup.Position;
             // Debug.WriteLine("GroundGroup Name={0}, LandTypes={1}", groundGroup.DisplayName, gamePlay.gpLandType(point.x, point.y).ToString());
-            int army = gamePlay.gpFrontArmy(point.x, point.y);
+            int army = GamePlay.gpFrontArmy(point.x, point.y);
             if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
             {
-                groundGroup.UpdateIdArmy(army, id);
-                groundGroup.WriteTo(sectionFile);
-                idNo++;
+                if (groundGroup.Army != army)
+                {
+                    groundGroup.UpdateArmy(army);
+                }
+                if (sectionFile != null)
+                {
+                    groundGroup.WriteTo(sectionFile);
+                }
+                return groundGroup;
             }
             else
             {
                 Debug.WriteLine("no Army GroundGroup[X:{0:F2}, Y:{1:F2}] {2}[{3}]", point.x, point.y, groundGroup.DisplayName, groundGroup.Id);
             }
+            return null;
         }
 
-        public static void CreateGroundGroups(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, IEnumerable<GroundGroup> groundGroups, ref int idNo)
+        public IEnumerable<GroundGroup> CreateGroundGroups(ISectionFile sectionFile, IEnumerable<GroundGroup> groundGroups)
         {
-            if (groundGroupGenerateType == EGroundGroupGenerateType.Default)
+            List<GroundGroup> newGroundGroups = new List<GroundGroup>();
+            if (GroundGroupGenerateType == EGroundGroupGenerateType.Default)
             {
                 foreach (GroundGroup groundGroup in groundGroups)
                 {
-                    CreateGroundGroup(gamePlay, groundGroupGenerateType, sectionFile, groundGroup, ref idNo);
+                    GroundGroup groundGroupUpdated = UpdateGroundGroup(sectionFile, groundGroup);
+                    if (groundGroupUpdated != null)
+                    {
+                        newGroundGroups.Add(groundGroupUpdated);
+                    }
                 }
             }
-            else if (groundGroupGenerateType == EGroundGroupGenerateType.Generic)
+            else if (GroundGroupGenerateType == EGroundGroupGenerateType.Generic)
             {
                 foreach (GroundGroup groundGroup in groundGroups)
                 {
                     if (groundGroup.Type == EGroundGroupType.Armor || groundGroup.Type == EGroundGroupType.Armor)
                     {
-                        CreateGroundGroupRoad(gamePlay, groundGroupGenerateType, sectionFile, new Groundway(groundGroup.Waypoints), ref idNo);
+                        Armor armor = CreateGroundGroupRoad(sectionFile, new Groundway(groundGroup.Id, groundGroup.Waypoints));
+                        if (armor != null)
+                        {
+                            newGroundGroups.Add(armor);
+                        }
                     }
                     else if (groundGroup.Type == EGroundGroupType.Ship)
                     {
-                        CreateGroundGroupWaterway(gamePlay, groundGroupGenerateType, sectionFile, new Groundway(groundGroup.Waypoints), ref idNo);
+                        ShipGroup shipGroup = CreateGroundGroupWaterway(sectionFile, new Groundway(groundGroup.Id, groundGroup.Waypoints));
+                        if (shipGroup != null)
+                        {
+                            newGroundGroups.Add(shipGroup);
+                        }
                     }
                     else if (groundGroup.Type == EGroundGroupType.Train)
                     {
-                        CreateGroundGroupRailway(gamePlay, groundGroupGenerateType, sectionFile, new Groundway(groundGroup.Waypoints), ref idNo);
+                        GroundGroup groundGroupNew = CreateGroundGroupRailway(sectionFile, new Groundway(groundGroup.Id, groundGroup.Waypoints));
+                        if (groundGroupNew != null)
+                        {
+                            newGroundGroups.Add(groundGroupNew);
+                        }
                     }
                 }
             }
+            return newGroundGroups;
         }
 
-        public static void CreateGroundGroupRoad(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, Groundway groundway, ref int idNo)
+        public Armor CreateGroundGroupRoad(ISectionFile sectionFile, Groundway groundway)
         {
             GroundGroupWaypoint point = groundway.End;
-            string id = string.Format(Config.NumberFormat, "{0:D}_{1}", idNo, MissionFile.KeyChief);
-            int army = gamePlay.gpFrontArmy(point.X, point.Y);
+            int army = GamePlay.gpFrontArmy(point.X, point.Y);
 
-            string option = GroundGroup.DefaultClasses[(int)EGroundGroupType.Armor][2];
+            string option = GroundGroup.DefaultClasses[(int)EGroundGroupType.Armor][GroundGroup.DefaultClassesOption];
             ArmorOption armorOption = ArmorOption.Create(option);
-            if (army == (int)EArmy.Red)
+            if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
             {
                 // For groundways only the end must be in friendly territory.
-                Armor armor = new Armor(id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Armor][0], (int)EArmy.Red, ECountry.gb, option, armorOption, groundway.Waypoints);
-                armor.WriteTo(sectionFile);
-                idNo++;
-            }
-            else if (army == (int)EArmy.Blue)
-            {
-                Armor armor = new Armor(id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Armor][1], (int)EArmy.Blue, ECountry.de, option, armorOption, groundway.Waypoints);
-                armor.WriteTo(sectionFile);
-                idNo++;
+                Armor armor = new Armor(groundway.Id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Armor][army - 1], army, Army.DefaultCountry((EArmy)army), option, armorOption, groundway.Waypoints);
+                if (sectionFile != null)
+                {
+                    armor.WriteTo(sectionFile);
+                }
+                return armor;
             }
             else
             {
                 Debug.WriteLine("no Army Roads[End.X:{0}, End.Y:{1}]", point.X, point.Y);
             }
+            return null;
         }
 
-        public static void CreateGroundGroupsRoads(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, IEnumerable<Groundway> groundways, ref int idNo)
+        public IEnumerable<Armor> CreateGroundGroupsRoads(ISectionFile sectionFile, IEnumerable<Groundway> groundways)
         {
+            List<Armor> armors = new List<Armor>();
             foreach (Groundway groundway in groundways)
             {
-                CreateGroundGroupRoad(gamePlay, groundGroupGenerateType, sectionFile, groundway, ref idNo);
+                Armor armor = CreateGroundGroupRoad(sectionFile, groundway);
+                if (armor != null)
+                {
+                    armors.Add(armor);
+                }
             }
+            return armors;
         }
 
-        public static void CreateGroundGroupWaterway(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, Groundway waterway, ref int idNo)
+        public ShipGroup CreateGroundGroupWaterway(ISectionFile sectionFile, Groundway waterway)
         {
             GroundGroupWaypoint point = waterway.End;
-            string id = string.Format(Config.NumberFormat, "{0:D}_{1}", idNo, MissionFile.KeyChief);
-            string option = GroundGroup.DefaultClasses[(int)EGroundGroupType.Ship][2];
+            string option = GroundGroup.DefaultClasses[(int)EGroundGroupType.Ship][GroundGroup.DefaultClassesOption];
             ShipOption shipOption = ShipOption.Create(option);
-            int army = gamePlay.gpFrontArmy(point.X, point.Y);
+            int army = GamePlay.gpFrontArmy(point.X, point.Y);
             // For waterways only the end must be in friendly territory.
-            if (army == (int)EArmy.Red)
+            if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
             {
-                ShipGroup supplyShip = new ShipGroup(id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Ship][0], (int)EArmy.Red, ECountry.gb, option, shipOption, waterway.Waypoints);  // British Tanker
-                supplyShip.WriteTo(sectionFile);
-                idNo++;
-            }
-            else if (army == (int)EArmy.Blue)
-            {
-                ShipGroup supplyShip = new ShipGroup(id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Ship][1], (int)EArmy.Blue, ECountry.de, option, shipOption, waterway.Waypoints); // German Tanker
-                supplyShip.WriteTo(sectionFile);
-                idNo++;
+                ShipGroup supplyShip = new ShipGroup(waterway.Id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Ship][army - 1], army, Army.DefaultCountry((EArmy)army), option, shipOption, waterway.Waypoints);  // British Tanker
+                if (sectionFile != null)
+                {
+                    supplyShip.WriteTo(sectionFile);
+                }
+                return supplyShip;
             }
             else
             {
                 Debug.WriteLine("no Army Waterway[End.X:{0}, End.Y:{1}]", point.X, point.Y);
             }
+            return null;
         }
 
-        public static void CreateGroundGroupsWaterways(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, IEnumerable<Groundway> waterways, ref int idNo)
+        public IEnumerable<ShipGroup> CreateGroundGroupsWaterways(ISectionFile sectionFile, IEnumerable<Groundway> waterways)
         {
+            List<ShipGroup> ships = new List<ShipGroup>();
             foreach (Groundway waterway in waterways)
             {
-                CreateGroundGroupWaterway(gamePlay, groundGroupGenerateType, sectionFile, waterway, ref idNo);
+                ShipGroup shipGroup = CreateGroundGroupWaterway(sectionFile, waterway);
+                if (shipGroup != null)
+                {
+                    ships.Add(shipGroup);
+                }
             }
+            return ships;
         }
 
-        public static void CreateGroundGroupRailway(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, Groundway railway, ref int idNo)
+        public GroundGroup CreateGroundGroupRailway(ISectionFile sectionFile, Groundway railway)
         {
             GroundGroupWaypoint point = railway.Start;
             GroundGroupWaypoint point2 = railway.End;
-            string id = string.Format(Config.NumberFormat, "{0:D}_{1}", idNo, MissionFile.KeyChief);
-            int army = gamePlay.gpFrontArmy(point.X, point.Y);
-            int  army2 = gamePlay.gpFrontArmy(point2.X, point2.Y);
+            int army = GamePlay.gpFrontArmy(point.X, point.Y);
+            int army2 = GamePlay.gpFrontArmy(point2.X, point2.Y);
             // For waterways only the end must be in friendly territory.
-            if (army == (int)EArmy.Red && army2 == (int)EArmy.Red)
+            if ((army == (int)EArmy.Red && army2 == (int)EArmy.Red) || (army == (int)EArmy.Blue && army2 == (int)EArmy.Blue))
             {
-                GroundGroup train = new GroundGroup(id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Train][0], (int)EArmy.Red, ECountry.gb, string.Empty, railway.Waypoints);       // United Kingdom 57xx 0-6-0PT c0
-                train.WriteTo(sectionFile);
-                idNo++;
-            }
-            else if (army == (int)EArmy.Blue && army2 == (int)EArmy.Blue)
-            {
-                GroundGroup train = new GroundGroup(id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Train][1], (int)EArmy.Blue, ECountry.de, string.Empty, railway.Waypoints);           // Germany BR56-00, Cargo Type 2
-                train.WriteTo(sectionFile);
-                idNo++;
+                GroundGroup train = new GroundGroup(railway.Id, GroundGroup.DefaultClasses[(int)EGroundGroupType.Train][army - 1], army, Army.DefaultCountry((EArmy)army), string.Empty, railway.Waypoints);       // United Kingdom 57xx 0-6-0PT c0
+                if (sectionFile != null)
+                {
+                    train.WriteTo(sectionFile);
+                }
+                return train;
             }
             else
             {
                 Debug.WriteLine("no Army Railway[Start.X:{0}, Start.Y:{1}, End.X:{2}, End.Y:{3}]", point.X, point.Y, point2.X, point2.Y);
             }
+            return null;
         }
 
-        public static void CreateGroundGroupsRailways(IGamePlay gamePlay, EGroundGroupGenerateType groundGroupGenerateType, ISectionFile sectionFile, IEnumerable<Groundway> railways, ref int idNo)
+        public IEnumerable<GroundGroup> CreateGroundGroupsRailways(ISectionFile sectionFile, IEnumerable<Groundway> railways)
         {
+            List<GroundGroup> groundGroups = new List<GroundGroup>();
             foreach (Groundway railway in railways)
             {
-                CreateGroundGroupRailway(gamePlay, groundGroupGenerateType, sectionFile, railway, ref idNo);
+                GroundGroup groundGroup = CreateGroundGroupRailway(sectionFile, railway);
+                if (groundGroup != null)
+                {
+                    groundGroups.Add(groundGroup);
+                }
             }
+            return groundGroups;
         }
 
-        public void AddRandomGroundGroups(int additionalGroundOperations)
+        public void AddRandomGroundGroups(int additionalGroundOperations, IEnumerable<IEnumerable<string>> groundActors)
         {
             const int MaxGroundOperationGroundGroupCount = 1;
             int needGroups = (additionalGroundOperations * MaxGroundOperationGroundGroupCount - AvailableGroundGroups.Count) / Random.Next(2, 6);
             if (needGroups > 0)
             {
-                IEnumerable<GroundGroup> groundGroups = GetRandomGroundGroups(needGroups);
+                IEnumerable<GroundGroup> groundGroups = GetRandomGroundGroups(needGroups, groundActors);
                 AvailableGroundGroups.AddRange(groundGroups);
             }
         }
 
-        private IEnumerable<GroundGroup> GetRandomGroundGroups(int needGroups)
+        private IEnumerable<GroundGroup> GetRandomGroundGroups(int needGroups, IEnumerable<IEnumerable<string>> groundActors)
         {
             List<GroundGroup> groundGroups = new List<GroundGroup>();
             Point3d pos;
@@ -940,15 +986,15 @@ namespace IL2DCE.Generator
                 ECountry country = Army.DefaultCountry((EArmy)army);
                 EGroundGroupType type = (EGroundGroupType)Random.Next((int)EGroundGroupType.Vehicle, (int)EGroundGroupType.Ship/*Train*/ + 1);
                 LandTypes[] landTypesValid = GroundGroup.GetLandTypes(type);
-                string groundClass = (army == (int)EArmy.Red) ? GroundGroup.DefaultClasses[(int)type][0] : GroundGroup.DefaultClasses[(int)type][1];
-                string option = GroundGroup.DefaultClasses[(int)type][2];
+                string groundClass = GroundGroupGenerateType == EGroundGroupGenerateType.Generic ? GroundGroup.DefaultClasses[(int)type][army - 1]: GetRandomActorClass(groundActors, army, (int)type, GroundGroup.DefaultClasses);
+                string option = GroundGroup.DefaultClasses[(int)type][GroundGroup.DefaultClassesOption];
 
                 // Id
                 string id = CreateAvailableGroundGroupId(groundGroups);
                 if (!string.IsNullOrEmpty(id))
                 {
                     List<GroundGroupWaypoint> waypoints = new List<GroundGroupWaypoint>();
-                    if (type == EGroundGroupType.Armor || type == EGroundGroupType.Vehicle || type == EGroundGroupType.Unknown)
+                    if (type == EGroundGroupType.Armor || type == EGroundGroupType.Vehicle/* || type == EGroundGroupType.Unknown*/)
                     {
                         AiAirport aiAirport = GetRandomAirport((army == (int)EArmy.Red) ? airPortsRed : airPortsBlue);
                         pos = aiAirport.Pos();
@@ -961,8 +1007,8 @@ namespace IL2DCE.Generator
                             if (posSpawn != null)
                             {
                                 waypoints.Add(new GroundGroupWaypointLine(posSpawn.Value.x, posSpawn.Value.y, posSpawn.Value.z, null));
-                                GroundGroup groundGroup = type == EGroundGroupType.Armor || type == EGroundGroupType.Vehicle ? 
-                                    new Armor(id, groundClass, army, country, option, ArmorOption.Create(option), waypoints): new GroundGroup(id, groundClass, army, country, option, waypoints);
+                                GroundGroup groundGroup = type == EGroundGroupType.Armor || type == EGroundGroupType.Vehicle ?
+                                    new Armor(id, groundClass, army, country, option, ArmorOption.Create(option), waypoints) : new GroundGroup(id, groundClass, army, country, option, waypoints);
                                 groundGroups.Add(groundGroup);
                                 continue;
                             }
@@ -990,9 +1036,15 @@ namespace IL2DCE.Generator
             return groundGroups;
         }
 
+        private string GetRandomActorClass(IEnumerable<IEnumerable<string>> actors, int army, int type, string[][] defaultClasses)
+        {
+            IEnumerable<string> typedActors = actors.ElementAt(type * 2 + (army - 1));
+            return typedActors.Any() ? typedActors.ElementAt(Random.Next(0, typedActors.Count())) : defaultClasses[type][army - 1];
+        }
+
         private string CreateAvailableGroundGroupId(List<GroundGroup> groundGroups)
         {
-            int idx = 0;
+            int idx = Config.AddGroundGroupStartIdNo;
             string id;
             int reTry = -1;
             while (reTry++ <= MaxRetryCreateAllGroundGroups)
@@ -1041,18 +1093,23 @@ namespace IL2DCE.Generator
 
         private Point3d? CreateRandomPoint(int army, float x, float y, float r, float z, LandTypes[] landTypes)
         {
+            return CreateRandomPoint(GamePlay, Random, army, x, y, r, z, landTypes);
+        }
+
+        public static Point3d? CreateRandomPoint(IGamePlay gamePlay, IRandom random, int army, float x, float y, float r, float z, LandTypes[] landTypes)
+        {
             Array arrayLandTypes = Enum.GetValues(typeof(LandTypes));
             int reTry = -1;
             while (reTry++ <= MaxRetryCreateRandomPoint)
             {
-                double xNew = Random.Next((int)(x - r), (int)(x + r + 1));
-                double yNew = Random.Next((int)(y - r), (int)(y + r + 1));
-                if (GamePlay.gpFrontArmy(xNew, yNew) == army)
+                double xNew = random.Next((int)(x - r), (int)(x + r + 1));
+                double yNew = random.Next((int)(y - r), (int)(y + r + 1));
+                if (gamePlay.gpFrontArmy(xNew, yNew) == army)
                 {
-                    LandTypes landType = GamePlay.gpLandType(xNew, yNew);
+                    LandTypes landType = gamePlay.gpLandType(xNew, yNew);
                     foreach (LandTypes item in arrayLandTypes)
                     {
-                        if ((item & landType) == item)
+                        if (item != LandTypes.NONE && (item & landType) == item)
                         {
                             if (landTypes.Contains(item))
                             {
@@ -1062,7 +1119,7 @@ namespace IL2DCE.Generator
                     }
                 }
             }
-            Debug.WriteLine("Error CreateRandomPoint(x={0}, y={1}, r={2}, z={3}, {4})", x, y , r, z, string.Join("|", landTypes));
+            Debug.WriteLine("Error CreateRandomPoint(x={0}, y={1}, r={2}, z={3}, {4})", x, y, r, z, string.Join("|", landTypes));
             return null;
         }
 
@@ -1084,7 +1141,7 @@ namespace IL2DCE.Generator
 
         public IEnumerable<Stationary> getAvailableEnemyStationaries(int armyIndex, IEnumerable<EStationaryType> stationaryTypes)
         {
-            IEnumerable <Stationary> stationaries  = getAvailableEnemyStationaries(armyIndex);
+            IEnumerable<Stationary> stationaries = getAvailableEnemyStationaries(armyIndex);
             return stationaries.Where(x => stationaryTypes.Contains(x.Type));
         }
 
@@ -1115,7 +1172,7 @@ namespace IL2DCE.Generator
             }
             else if (missionType == EMissionType.ARMED_RECON || missionType == EMissionType.RECON)
             {
-                return getAvailableRandomEnemyStationary(airGroup, new EStationaryType[] { EStationaryType.Artillery, EStationaryType.Flak, EStationaryType.Ammo, EStationaryType.Weapons, 
+                return getAvailableRandomEnemyStationary(airGroup, new EStationaryType[] { EStationaryType.Artillery, EStationaryType.Flak, EStationaryType.Ammo, EStationaryType.Weapons,
                                                     EStationaryType.Aircraft, EStationaryType.Radar, EStationaryType.Depot, EStationaryType.Car, EStationaryType.ConstCar, });
             }
             else if (missionType == EMissionType.ATTACK_AIRCRAFT)
@@ -1132,7 +1189,7 @@ namespace IL2DCE.Generator
             }
             else if (missionType == EMissionType.ATTACK_DEPOT)
             {
-                return getAvailableRandomEnemyStationary(airGroup, new EStationaryType [] { EStationaryType.Depot });
+                return getAvailableRandomEnemyStationary(airGroup, new EStationaryType[] { EStationaryType.Depot });
             }
 
             return null;
@@ -1182,103 +1239,113 @@ namespace IL2DCE.Generator
 
         #endregion
 
-        public static void CreateStationary(IGamePlay gamePlay, EStationaryGenerateType stationaryGenerateType, ISectionFile sectionFile, EStationaryType stationaryType, Stationary artillery, ref int idNo)
+        public Stationary CreateStationary(ISectionFile sectionFile, EStationaryType stationaryType, Stationary artillery)
         {
-            string id = string.Format(Config.NumberFormat, "{0}{1:D}", MissionFile.KeyStatic, idNo);
             // Debug.WriteLine("Stationary Name={0}, LandTypes={1}", artillery.DisplayName, gamePlay.gpLandType(artillery.X, artillery.Y).ToString());
-            int army = gamePlay.gpFrontArmy(artillery.X, artillery.Y);
-            if (stationaryGenerateType == EStationaryGenerateType.Default)
+            int army = GamePlay.gpFrontArmy(artillery.X, artillery.Y);
+            if (StationaryGenerateType == EStationaryGenerateType.Default)
             {
                 if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
                 {
-                    artillery.UpdateIdArmy(army, id);
-                    artillery.WriteTo(sectionFile);
-                    idNo++;
+                    if (artillery.Army != army)
+                    {
+                        artillery.UpdateArmy(army);
+                    }
+                    if (sectionFile != null)
+                    {
+                        artillery.WriteTo(sectionFile);
+                    }
                 }
+                return artillery;
             }
-            else if (stationaryGenerateType == EStationaryGenerateType.Generic)
+            else if (StationaryGenerateType == EStationaryGenerateType.Generic)
             {
-                string option = Stationary.DefaultClasses[(int)stationaryType][2];
-                if (army == (int)EArmy.Red)
+                string option = Stationary.DefaultClasses[(int)stationaryType][Stationary.DefaultClassesOption];
+                if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
                 {
                     // For red army
-                    Stationary stationary = stationaryType == EStationaryType.Artillery ? 
-                        new Artillery(id, Stationary.DefaultClasses[(int)stationaryType][0], (int)EArmy.Red, ECountry.gb, artillery.X, artillery.Y, artillery.Direction, option, ArtilleryOption.Create(option)) :
+                    Stationary stationary = stationaryType == EStationaryType.Artillery ?
+                        new Artillery(artillery.Id, Stationary.DefaultClasses[(int)stationaryType][army - 1], army, Army.DefaultCountry((EArmy)army), artillery.X, artillery.Y, artillery.Direction, option, ArtilleryOption.Create(option)) :
                         stationaryType == EStationaryType.Ship ?
-                        new ShipUnit(id, Stationary.DefaultClasses[(int)stationaryType][0], (int)EArmy.Red, ECountry.gb, artillery.X, artillery.Y, artillery.Direction, option, ShipOption.Create(option)) :
-                        new Stationary(id, Stationary.DefaultClasses[(int)stationaryType][0], (int)EArmy.Red, ECountry.gb, artillery.X, artillery.Y, artillery.Direction, option);
-                    stationary.WriteTo(sectionFile);
-                    idNo++;
-                }
-                else if (army == (int)EArmy.Blue)
-                {
-                    // For blue army
-                    Stationary stationary = stationaryType == EStationaryType.Artillery ? 
-                        new Artillery(id, Stationary.DefaultClasses[(int)stationaryType][1], (int)EArmy.Blue, ECountry.de, artillery.X, artillery.Y, artillery.Direction, option, ArtilleryOption.Create(option)) :
-                        stationaryType == EStationaryType.Ship ?
-                        new ShipUnit(id, Stationary.DefaultClasses[(int)stationaryType][1], (int)EArmy.Blue, ECountry.de, artillery.X, artillery.Y, artillery.Direction, option, ShipOption.Create(option)) :
-                        new Stationary(id, Stationary.DefaultClasses[(int)stationaryType][1], (int)EArmy.Blue, ECountry.de, artillery.X, artillery.Y, artillery.Direction, option);
-                    stationary.WriteTo(sectionFile);
-                    idNo++;
+                        new ShipUnit(artillery.Id, Stationary.DefaultClasses[(int)stationaryType][army - 1], army, Army.DefaultCountry((EArmy)army), artillery.X, artillery.Y, artillery.Direction, option, ShipOption.Create(option)) :
+                        new Stationary(artillery.Id, Stationary.DefaultClasses[(int)stationaryType][army - 1], army, Army.DefaultCountry((EArmy)army), artillery.X, artillery.Y, artillery.Direction, option);
+                    if (sectionFile != null)
+                    {
+                        stationary.WriteTo(sectionFile);
+                    }
+                    return stationary;
                 }
                 else
                 {
                     Debug.WriteLine("no Army Stationary[Class:{0}, Id:{1}, X:{2}, Y:{3}]", artillery.Class, artillery.Id, artillery.X, artillery.Y);
                 }
             }
+            return null;
         }
 
-        public static void CreateStationaries(IGamePlay gamePlay, EStationaryGenerateType stationaryGenerateType, ISectionFile sectionFile, IEnumerable<Stationary> stationaries, ref int idNo)
+        public IEnumerable<Stationary> CreateStationaries(ISectionFile sectionFile, IEnumerable<Stationary> stationaries)
         {
+            List<Stationary> stationariesNew = new List<Stationary>();
             foreach (Stationary stationary in stationaries)
             {
-                CreateStationary(gamePlay, stationaryGenerateType, sectionFile, stationary.Type, stationary, ref idNo);
+                Stationary stationaryNew = CreateStationary(sectionFile, stationary.Type, stationary);
+                if (stationaryNew != null)
+                {
+                    stationariesNew.Add(stationaryNew);
+                }
             }
+            return stationariesNew;
         }
 
-        public static void CreateStationaryBuilding(IGamePlay gamePlay, EStationaryGenerateType stationaryGenerateType, ISectionFile sectionFile, Building depot, ref int idNo)
+        public GroundObject CreateStationaryBuilding(ISectionFile sectionFile, Building depot)
         {
             // For depots the position must be in friendly territory.
-            if (stationaryGenerateType == EStationaryGenerateType.Default)
+            if (StationaryGenerateType == EStationaryGenerateType.Default)
             {
-                depot.WriteTo(sectionFile);
+                if (sectionFile != null)
+                {
+                    depot.WriteTo(sectionFile);
+                }
+                return depot;
             }
-            else if (stationaryGenerateType == EStationaryGenerateType.Generic)
+            else if (StationaryGenerateType == EStationaryGenerateType.Generic)
             {
-                string id = string.Format(Config.NumberFormat, "{0}{1:D}", MissionFile.KeyStatic, idNo);
-                int army = gamePlay.gpFrontArmy(depot.X, depot.Y);
-                if (army == (int)EArmy.Red)
+                int army = GamePlay.gpFrontArmy(depot.X, depot.Y);
+                if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
                 {
                     // For red army
-                    Stationary fuelTruck = new Stationary(id, Stationary.DefaultClasses[(int)EStationaryType.Depot][0], (int)EArmy.Red, ECountry.gb, depot.X, depot.Y, depot.Direction);
-                    fuelTruck.WriteTo(sectionFile);
-                    idNo++;
-                }
-                else if (army == (int)EArmy.Blue)
-                {
-                    // For blue army
-                    Stationary fuelTruck = new Stationary(id, Stationary.DefaultClasses[(int)EStationaryType.Depot][1], (int)EArmy.Blue, ECountry.de, depot.X, depot.Y, depot.Direction);
-                    fuelTruck.WriteTo(sectionFile);
-                    idNo++;
+                    Stationary fuelTruck = new Stationary(depot.Id, Stationary.DefaultClasses[(int)EStationaryType.Depot][army - 1], army, Army.DefaultCountry((EArmy)army), depot.X, depot.Y, depot.Direction);
+                    if (sectionFile != null)
+                    {
+                        fuelTruck.WriteTo(sectionFile);
+                    }
+                    return fuelTruck;
                 }
                 else
                 {
                     Debug.WriteLine("no Army Stationary.Building[Class:{0}, Id:{1}, X:{2}, Y:{3}]", depot.Class, depot.Id, depot.X, depot.Y);
                 }
             }
+            return null;
         }
 
-        public static void CreateStationaryBuildings(IGamePlay gamePlay, EStationaryGenerateType stationaryGenerateType, ISectionFile sectionFile, IEnumerable<Building> depots, ref int idNo)
+        public IEnumerable<GroundObject> CreateStationaryBuildings(ISectionFile sectionFile, IEnumerable<Building> depots)
         {
+            List<GroundObject> groundObjects = new List<GroundObject>();
             foreach (Building depot in depots)
             {
-                CreateStationaryBuilding(gamePlay, stationaryGenerateType, sectionFile, depot, ref idNo);
+                GroundObject groundObject = CreateStationaryBuilding(sectionFile, depot);
+                if (groundObject != null)
+                {
+                    groundObjects.Add(groundObject);
+                }
             }
+            return groundObjects;
         }
 
         public void StationaryWriteTo(ISectionFile file)
         {
-            foreach (Stationary stationary in AvailableStationaries)
+            foreach (Stationary stationary in AvailableStationaries.OrderBy(x => x.Id))
             {
                 if (stationary is ShipUnit)
                 {
@@ -1294,35 +1361,35 @@ namespace IL2DCE.Generator
             }
         }
 
-        public void AddRandomStationaries(int additionalStationaries)
+        public void AddRandomStationaries(int additionalStationaries, IEnumerable<IEnumerable<string>> stationaries)
         {
             const int MaxStationaryOperationUnitCount = 1;
             int needGroups = additionalStationaries * MaxStationaryOperationUnitCount - AvailableGroundGroups.Count - AvailableStationaries.Count;
             if (needGroups > 0)
             {
-                IEnumerable<Stationary> stationaries = GetRandomStationaries(needGroups);
-                AvailableStationaries.AddRange(stationaries);
+                IEnumerable<Stationary> stationariesRandom = GetRandomStationaries(needGroups, stationaries);
+                AvailableStationaries.AddRange(stationariesRandom);
             }
         }
 
-        private IEnumerable<Stationary> GetRandomStationaries(int needUnitNums)
+        private IEnumerable<Stationary> GetRandomStationaries(int needUnitNums, IEnumerable<IEnumerable<string>> stationaries)
         {
-            List<Stationary> stationaries = new List<Stationary>();
+            List<Stationary> stationariesRandom = new List<Stationary>();
             Point3d pos;
             IEnumerable<AiAirport> airPortsRed = GamePlay.gpAirports().Where(x => { pos = x.Pos(); return GamePlay.gpFrontArmy(pos.x, pos.y) == (int)EArmy.Red/* return MapUtil.IsInRange(ref rangeRed, ref pos)*/; });
             IEnumerable<AiAirport> airPortsBlue = GamePlay.gpAirports().Where(x => { pos = x.Pos(); return GamePlay.gpFrontArmy(pos.x, pos.y) == (int)EArmy.Blue /*return MapUtil.IsInRange(ref rangeBlue, ref pos)*/; });
             int reTries = -1;
-            while (stationaries.Count < needUnitNums && reTries < MaxRetryCreateAllStationary)
+            while (stationariesRandom.Count < needUnitNums && reTries < MaxRetryCreateAllStationary)
             {
                 int army = Random.Next((int)EArmy.Red, (int)EArmy.Blue + 1);
                 ECountry country = Army.DefaultCountry((EArmy)army);
                 EStationaryType type = (EStationaryType)Random.Next((int)EStationaryType.Radar, (int)EStationaryType.Unknown + 1);
                 LandTypes[] landTypesValid = Stationary.GetLandTypes(type);
-                string unitClass = (army == (int)EArmy.Red) ? Stationary.DefaultClasses[(int)type][0] : Stationary.DefaultClasses[(int)type][1];
-                string option = Stationary.DefaultClasses[(int)type][2];
+                string unitClass = StationaryGenerateType == EStationaryGenerateType.Generic ? Stationary.DefaultClasses[(int)type][army - 1] : GetRandomActorClass(stationaries, army, (int)type, Stationary.DefaultClasses);
+                string option = Stationary.DefaultClasses[(int)type][Stationary.DefaultClassesOption];
 
                 // Id
-                string id = CreateAvailableStationaryId(stationaries);
+                string id = CreateAvailableStationaryId(stationariesRandom);
                 if (!string.IsNullOrEmpty(id))
                 {
                     if (type == EStationaryType.Ship)
@@ -1331,7 +1398,7 @@ namespace IL2DCE.Generator
                         if (posSpawn != null)
                         {
                             Stationary stationary = new ShipUnit(id, unitClass, army, country, posSpawn.Value.x, posSpawn.Value.y, posSpawn.Value.z, option, ShipOption.Create(option));
-                            stationaries.Add(stationary);
+                            stationariesRandom.Add(stationary);
                             continue;
                         }
                     }
@@ -1341,26 +1408,26 @@ namespace IL2DCE.Generator
                         pos = aiAirport.Pos();
                         double r = aiAirport.FieldR();
                         Point3d? posSpawn = CreateRandomPoint(army, (float)pos.x, (float)pos.y,
-                            (float)r * (type == EStationaryType.Aircraft || type == EStationaryType.Weapons ? MaxSpawnDifDistanceAirportRRateStationaryAircraft: MaxSpawnDifDistanceAirportRRateStationary), 
+                            (float)r * (type == EStationaryType.Aircraft || type == EStationaryType.Weapons ? MaxSpawnDifDistanceAirportRRateStationaryAircraft : MaxSpawnDifDistanceAirportRRateStationary),
                             Stationary.DefaultSpawnZ, landTypesValid);
                         if (posSpawn != null)
                         {
-                            Stationary stationary = type == EStationaryType.Artillery ? 
-                                new Artillery(id, unitClass, army, country, posSpawn.Value.x, posSpawn.Value.y, posSpawn.Value.z, option, ArtilleryOption.Create(option)) : 
+                            Stationary stationary = type == EStationaryType.Artillery ?
+                                new Artillery(id, unitClass, army, country, posSpawn.Value.x, posSpawn.Value.y, posSpawn.Value.z, option, ArtilleryOption.Create(option)) :
                                 new Stationary(id, unitClass, army, country, posSpawn.Value.x, posSpawn.Value.y, posSpawn.Value.z, option);
-                            stationaries.Add(stationary);
+                            stationariesRandom.Add(stationary);
                             continue;
                         }
                     }
                 }
                 reTries++;
             }
-            return stationaries;
+            return stationariesRandom;
         }
 
         private string CreateAvailableStationaryId(List<Stationary> stationaries)
         {
-            int idx = 0;
+            int idx = Config.AddStationaryUnitStartIdNo;
             string id;
             int reTry = -1;
             while (reTry++ <= MaxRetryCreateAllStationary)
@@ -1506,5 +1573,31 @@ namespace IL2DCE.Generator
         }
 
         #endregion
+
+#if DEBUG
+
+        [Conditional("DEBUG")]
+        public void TraceAssignedGroundGroups()
+        {
+            foreach (var item in AssigneGroundGroups.Where(x => x.Army == (int)EArmy.Red).OrderBy(x => x.Position.x))
+            {
+                GroundGroupWaypoint way = item.Waypoints.FirstOrDefault();
+                if (way != null)
+                {
+                    Debug.WriteLine("Name={0} Army={1}, Id={2} Pos=({3:F2},{4:F2}) V={5:F2}, Class={6}, Country={7}, Options={8}, Type={9}",
+                                item.DisplayName, item.Army, item.Id, way.X, way.Y, way.V, item.Class, item.Country, item.Options, item.Type);
+                }
+            }
+            foreach (var item in AssigneGroundGroups.Where(x => x.Army == (int)EArmy.Blue).OrderBy(x => x.Position.x))
+            {
+                GroundGroupWaypoint way = item.Waypoints.FirstOrDefault();
+                if (way != null)
+                {
+                    Debug.WriteLine("Name={0} Army={1}, Id={2} Pos=({3:F2},{4:F2}) V={5:F2}, Class={6}, Country={7}, Options={8}, Type={9}",
+                                item.DisplayName, item.Army, item.Id, way.X, way.Y, way.V, item.Class, item.Country, item.Options, item.Type);
+                }
+            }
+        }
+#endif
     }
 }

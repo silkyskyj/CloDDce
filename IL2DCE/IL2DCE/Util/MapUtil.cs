@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using IL2DCE.MissionObjectModel;
 using maddox.GP;
 using XLAND;
 
@@ -117,6 +119,24 @@ namespace IL2DCE.Util
         public static wRECTF Sum(wRECTF rect1, wRECTF rect2)
         {
             return new wRECTF() { x1 = Math.Min(rect1.x1, rect2.x1), x2 = Math.Max(rect1.x2, rect2.x2), y1 = Math.Min(rect1.y1, rect2.y1), y2 = Math.Max(rect1.y2, rect2.y2) };
+        }
+
+        public static Point3d? NeaestPoint(IEnumerable<Point3d> points, ref Point3d targetPos)
+        {
+            Point3d? posMin = null;
+            double dispanceMin = double.MaxValue;
+            for (int i = 0; i < points.Count(); i++)
+            {
+                Point3d pos = points.ElementAt(i);
+                double d = targetPos.distance(ref pos);
+                if (d < dispanceMin)
+                {
+                    dispanceMin = d;
+                    posMin = pos;
+                }
+
+            }
+            return posMin;
         }
     }
 }

@@ -27,6 +27,7 @@ using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
 using maddox.game.play;
+using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.Pages
 {
@@ -42,12 +43,6 @@ namespace IL2DCE.Pages
         protected IGame _game;
 
         protected PlayerStats PlayerStat
-        {
-            get;
-            set;
-        }
-
-        protected EPlayerStatsType StatType
         {
             get;
             set;
@@ -89,7 +84,7 @@ namespace IL2DCE.Pages
 
                 PlayerStat = new PlayerStats(Game, career.ArmyIndex, mission != null ? mission.PlayerActorName : string.Empty, config.StatKillsOver);
                 EPlayerStatsType type = Enum.IsDefined(typeof(EPlayerStatsType), config.StatType) ? (EPlayerStatsType)config.StatType : EPlayerStatsType.Api;
-                StatType = PlayerStat.Create(type, mission != null ? mission.ActorDead : null);
+                PlayerStat.Create(type, mission != null ? mission.ActorDead : null);
 
                 string result = GetResultSummary() + GetPlayerStat();
                 textBoxDescription.Text = result;
@@ -146,7 +141,7 @@ namespace IL2DCE.Pages
 #endif
                     string valueSummary = string.Format("{0}|{1}|{2}",
                         career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft);
-                    PlayerStat.UpdatePlayerStat(StatType, career, DateTime.Now, valueSummary);
+                    PlayerStat.Update(career, DateTime.Now, valueSummary);
 
                     Game.Core.UpdateResult(career);
                     Game.gameInterface.PageChange(new QuickMissionPage(), null);
@@ -154,8 +149,9 @@ namespace IL2DCE.Pages
                 else
                 {
                     Mission.Mission mission = Game.Core.Mission as Mission.Mission;
-                    Game.Core.SaveMissionResult(mission.MissionStatus);
-                    PlayerStat.UpdatePlayerStat(StatType, career, career.Date.Value);
+                    Game.Core.UpdateMissionResult(mission.MissionStatus);
+                    PlayerStat.Update(career, career.Date.Value);
+                    PlayerStat.UpdateSkills(career.PlayerAirGroupSkill, (Game as IGameSingle).BattleResult, mission.MissionStatus);
                     career.Status = (int)(PlayerStat.IsPlayerAlive() ? EPlayerStatus.Alive : EPlayerStatus.Dead);
                     ECampaignStatus status = Game.Core.AdvanceCampaign(Game);
                     if (status != ECampaignStatus.DateEnd && status != ECampaignStatus.Dead)
@@ -205,13 +201,14 @@ namespace IL2DCE.Pages
 
         protected virtual string GetPlayerStat()
         {
-            if (StatType == EPlayerStatsType.Api)
+            if (PlayerStat.StatsType == EPlayerStatsType.Api)
             {
                 return GetPlayerStatDefaultAPI();
             }
             else
             {
                 IGameSingle game = Game as IGameSingle;
+                Career career = game.Core.CurrentCareer;
                 IPlayer player = game.gameInterface.Player();
                 IPlayerStat st = player.GetBattleStat();
 
@@ -221,7 +218,7 @@ namespace IL2DCE.Pages
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("PlayerStat [{0}]", player?.Name() ?? string.Empty);
                 sb.AppendLine();
-                sb.AppendFormat("Pilot Name : {0}", Game.Core.CurrentCareer.ToString());
+                sb.AppendFormat("Pilot Name : {0}", career.ToString());
                 sb.AppendLine();
                 sb.AppendFormat("Flying Time: {0}", ToStringTimeSpan(st.tTotalTypes));
                 sb.AppendLine();
@@ -232,8 +229,40 @@ namespace IL2DCE.Pages
                 sb.AppendLine(PlayerStat.ToStringTotal(format));
                 sb.AppendLine("[Kills Type]");
                 sb.Append(PlayerStat.ToStringKillsType());
+
+                if (career.BattleType != EBattleType.QuickMission)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine(GetPlayerAirGroupSkillString());
+                }
+
                 return sb.ToString();
             }
+        }
+
+        protected string GetPlayerAirGroupSkillString()
+        {
+            StringBuilder sb = new StringBuilder();
+            Mission.Mission mission = Game.Core.Mission as Mission.Mission;
+            if (mission != null)
+            {
+                IGameSingle game = Game as IGameSingle;
+                Skill[] skills = game.Core.CurrentCareer.PlayerAirGroupSkill;
+                if (skills != null && skills.Any())
+                {
+                    float[] skillValues = skills.Select(x => x.Skills).FirstOrDefault();
+                    if (skillValues != null)
+                    {
+                        skillValues = (float[])skillValues.Clone();
+                        float[] newSkill = new float[(int)ESkilType.Count];
+                        PlayerStat.UpdateSkill(skillValues, game.BattleResult, mission.MissionStatus);
+                        PlayerStat.UpdateSkill(newSkill, game.BattleResult, mission.MissionStatus);
+                        sb.AppendLine("[Skill]");
+                        sb.AppendLine(Skill.ToIncrementDetailString(skillValues, newSkill, ' ', 1));
+                    }
+                }
+            }
+            return sb.ToString();
         }
 
         protected virtual string GetPlayerStatDefaultAPI()
@@ -255,6 +284,14 @@ namespace IL2DCE.Pages
             sb.AppendLine(PlayerStats.ToStringSummary(st, true, PlayerStats.PlayerStatFormat, true));
             sb.AppendLine("[Kills Type]");
             sb.Append(PlayerStats.ToStringkillsTypes(st.killsTypes));
+
+            Career career = game.Core.CurrentCareer;
+            if (career.BattleType != EBattleType.QuickMission)
+            {
+                sb.AppendLine();
+                sb.AppendLine(GetPlayerAirGroupSkillString());
+            }
+
             return sb.ToString();
         }
 

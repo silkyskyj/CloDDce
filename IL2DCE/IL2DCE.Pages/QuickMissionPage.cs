@@ -42,6 +42,9 @@ namespace IL2DCE
 
             #region Constant
 
+            public const string SectionDQMSetting = "DQMSetting";
+            public const string DQMSettingFileFilter = "DQM Setting File(.ini)|DQMSetting*.ini";
+
             private const string RandomString = "[Random]";
             private const string DefaultString = "Default";
             private const string MissionDefaultFormat = "Mission Default: {0}";
@@ -316,6 +319,8 @@ namespace IL2DCE
                 FrameworkElement.buttonReload.Click += new RoutedEventHandler(buttonReload_Click);
                 FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
                 FrameworkElement.buttonStats.Click += new RoutedEventHandler(buttonStats_Click);
+                FrameworkElement.buttonUserLoad.Click += new RoutedEventHandler(buttonUserLoad_Click);
+                FrameworkElement.buttonUserSave.Click += new RoutedEventHandler(buttonUserSave_Click);
 
                 // FrameworkElement.buttonMissionLoad.Visibility = Visibility.Hidden;
                 FrameworkElement.labelSelectMissionTarget.Visibility = Visibility.Hidden;
@@ -367,7 +372,7 @@ namespace IL2DCE
                     CampaignInfo campaignInfo = SelectedCampaign;
                     if (campaignInfo != null)
                     {
-                        currentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos);
+                        currentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
                     }
                     missionLoaded = false;
                     UpdateArmyComboBoxInfo(true);
@@ -616,7 +621,7 @@ namespace IL2DCE
                     try
                     {
                         gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
-                        gameIterface.MissionLoad(campaignInfo.StaticTemplateFiles.First());
+                        gameIterface.MissionLoad(campaignInfo.InitialMissionTemplateFiles.First());
                         missionLoaded = true;
                         UpdateAirGroupComboBoxContent();
                         gameIterface.BattleStart();
@@ -680,6 +685,8 @@ namespace IL2DCE
                     career.CampaignInfo = campaignInfo;
                     career.AirGroup = airGroup.ToString();
                     career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
+                    career.PlayerAirGroup = airGroup;
+                    career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
                     career.MissionType = SelectedMissionType;
                     career.Flight = SelectedFlight;
                     career.Formation = SelectedFormation;
@@ -690,13 +697,15 @@ namespace IL2DCE
                     career.Time = SelectedTime;
                     career.Weather = SelectedWeather;
                     career.CloudAltitude = SelectedCloudAltitude;
-                    career.PlayerAirGroup = airGroup;
-                    career.Aircraft = campaignInfo.GetAircraftInfo(airGroup.Class).DisplayName;
                     career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
                     career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
                     career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
                     career.AdditionalGroundGroups= generalSettings.SelectedAdditionalGroundGroups;
                     career.AdditionalStationaries = generalSettings.SelectedAdditionalStasionaries;
+                    career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
+                    career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
+                    career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;
+                    career.StationaryGenerateType = generalSettings.SelectedStationaryGeneric ? EStationaryGenerateType.Generic : EStationaryGenerateType.Default;
                     career.SpawnRandomLocationFriendly = generalSettings.SelectedSpawnRandomLocationFriendly;
                     career.SpawnRandomLocationEnemy = generalSettings.SelectedSpawnRandomLocationEnemy;
                     career.SpawnRandomLocationPlayer = generalSettings.SelectedSpawnRandomLocationPlayer;
@@ -706,10 +715,6 @@ namespace IL2DCE
                     career.SpawnRandomTimeEnemy = generalSettings.SelectedSpawnRandomTimeEnemy;
                     career.SpawnRandomTimeBeginSec = generalSettings.SelectedRandomTimeBegin;
                     career.SpawnRandomTimeEndSec = generalSettings.SelectedRandomTimeEnd;
-                    career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
-                    career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
-                    career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;
-                    career.StationaryGenerateType = generalSettings.SelectedStationaryGeneric ? EStationaryGenerateType.Generic : EStationaryGenerateType.Default;
                     career.AISkill = generalSettings.SelecteAISkill;
                     career.ArtilleryTimeout = generalSettings.SelectedArtilleryTimeout;
                     career.ArtilleryRHide = generalSettings.SelectedArtilleryRHide;
@@ -733,6 +738,53 @@ namespace IL2DCE
                     string message = string.Format("{0} - {1} {2} {3} {4}", "QuickMissionPage.Start_Click", ex.Message, campaignInfo.Name, airGroup.DisplayDetailName, ex.StackTrace);
                     Core.WriteLog(message);
                     MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            private void buttonUserLoad_Click(object sender, RoutedEventArgs e)
+            {
+                string filePath = string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DQMSettingFileName);
+                string fileSystemPath = Game.gameInterface.ToFileSystemPath(filePath);
+                if (File.Exists(fileSystemPath))
+                {
+                    try
+                    {
+                        ISectionFile file = Game.gameInterface.SectionFileLoad(filePath);
+                        Read(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = string.Format("{0} - {1}", "QuickMissionPage.buttonUserLoad_Click", ex.Message, ex.StackTrace);
+                        Core.WriteLog(message);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(string.Format(GeneralSettingsGroupBox.MsgErrorFileNotFound, fileSystemPath), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+
+            private void buttonUserSave_Click(object sender, RoutedEventArgs e)
+            {
+                string filePath = string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DQMSettingFileName);
+                string fileSystemPath = Game.gameInterface.ToFileSystemPath(filePath);
+                if (FileUtil.IsFileWritable(fileSystemPath))
+                {
+                    try
+                    {
+                        ISectionFile file = Game.gameInterface.SectionFileCreate();
+                        Write(file);
+                        file.save(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = string.Format("{0} - {1}", "QuickMissionPage.buttonUserSaveAs_Click", ex.Message, ex.StackTrace);
+                        Core.WriteLog(message);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(string.Format(GeneralSettingsGroupBox.MsgErrorFileLocked, fileSystemPath), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
 
@@ -1525,6 +1577,52 @@ namespace IL2DCE
             {
                 AirGroup airGroup = SelectedAirGroup;
                 FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
+            }
+
+            private void Write(ISectionFile file)
+            {
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectCampaign.Name, FrameworkElement.comboBoxSelectCampaign.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectArmy.Name, FrameworkElement.comboBoxSelectArmy.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectAirForce.Name, FrameworkElement.comboBoxSelectAirForce.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectRank.Name, FrameworkElement.comboBoxSelectRank.Text);
+                
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectAirGroup.Name, FrameworkElement.comboBoxSelectAirGroup.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectSkill.Name, FrameworkElement.comboBoxSelectSkill.Text);
+                
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectMissionType.Name, FrameworkElement.comboBoxSelectMissionType.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectFlight.Name, FrameworkElement.comboBoxSelectFlight.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectFormation.Name, FrameworkElement.comboBoxSelectFormation.Text);
+                
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSpawn.Name, FrameworkElement.comboBoxSpawn.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSpeed.Name, FrameworkElement.comboBoxSpeed.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxFuel.Name, FrameworkElement.comboBoxFuel.Text);
+
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectTime.Name, FrameworkElement.comboBoxSelectTime.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectWeather.Name, FrameworkElement.comboBoxSelectWeather.Text);
+                file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectCloudAltitude.Name, FrameworkElement.comboBoxSelectCloudAltitude.Text);
+            }
+
+            private void Read(ISectionFile file)
+            {
+                GeneralSettingsGroupBox.SelectReadValue(file, SectionDQMSetting, FrameworkElement.comboBoxSelectCampaign);
+                GeneralSettingsGroupBox.SelectReadValue(file, SectionDQMSetting, FrameworkElement.comboBoxSelectArmy);
+                GeneralSettingsGroupBox.SelectReadValue(file, SectionDQMSetting, FrameworkElement.comboBoxSelectAirForce);
+                GeneralSettingsGroupBox.SelectReadValue(file, SectionDQMSetting, FrameworkElement.comboBoxSelectRank);
+
+                GeneralSettingsGroupBox.SelectReadValue(file, SectionDQMSetting, FrameworkElement.comboBoxSelectAirGroup);
+                FrameworkElement.comboBoxSelectSkill.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectSkill.Name, Skill.Default.Name);
+
+                FrameworkElement.comboBoxSelectMissionType.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectMissionType.Name, RandomString);
+                FrameworkElement.comboBoxSelectFlight.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectFlight.Name, Flight.CreateDisplayString((int)EFlight.Default));
+                FrameworkElement.comboBoxSelectFormation.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectFormation.Name, EFormation.Default.ToDescription());
+
+                FrameworkElement.comboBoxSpawn.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSpawn.Name, ESpawn.Default.ToDescription());
+                FrameworkElement.comboBoxSpeed.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSpeed.Name, DefaultString);
+                FrameworkElement.comboBoxFuel.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxFuel.Name, DefaultString);
+
+                FrameworkElement.comboBoxSelectTime.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectTime.Name, DefaultString);
+                FrameworkElement.comboBoxSelectWeather.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectWeather.Name, DefaultString);
+                FrameworkElement.comboBoxSelectCloudAltitude.Text = file.get(SectionDQMSetting, FrameworkElement.comboBoxSelectCloudAltitude.Name, DefaultString);
             }
         }
     }

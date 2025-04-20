@@ -45,6 +45,8 @@ namespace IL2DCE.MissionObjectModel
     {
         public const float DefaultNormalMoveZ = 38.40f;
 
+        public const int DefaultClassesOption = 2;
+
         public static readonly string[][] DefaultClasses = new string[(int)EGroundGroupType.Count][]
         {
             new string [] { "Vehicle.Morris_CS", "Vehicle.Ford_G917", "/num_units 8", }, // Vehicle
@@ -251,19 +253,28 @@ namespace IL2DCE.MissionObjectModel
 
         public void UpdateId(string id)
         {
-            Debug.WriteLine("GroundGroup.UpdateId(Id:{0} -> {1})", Id, id);
-            Id = id;
+            // Debug.WriteLine("GroundGroup.UpdateId(Id:{0} -> {1})", Id, id);
+            if (!string.IsNullOrEmpty(id))
+            {
+                Id = id;
+            }
         }
 
-        public void UpdateIdArmy(int army, string id)
+        public void UpdateArmy(int army)
         {
-            Debug.WriteLine("GroundGroup.UpdateArmy(Army:{0} -> {1}, Country:{2} Id:{3} -> {4})", Army, army, Country, Id, id);
+            // Debug.WriteLine("GroundGroup.UpdateArmy(Army:{0} -> {1}, Country:{2})", Army, army, Country);
             Army = army;
             if (army != (int)MissionObjectModel.Army.Parse(Country))
             {
                 Country = MissionObjectModel.Army.DefaultCountry((EArmy)army);
             }
-            Id = id;
+        }
+
+        public void UpdateIdArmy(int army, string id)
+        {
+            // Debug.WriteLine("GroundGroup.UpdateIdArmy(Army:{0} -> {1}, Country:{2} Id:{3} -> {4})", Army, army, Country, Id, id);
+            UpdateArmy(army);
+            UpdateId(id);
         }
 
         public virtual void WriteTo(ISectionFile sectionFile)
