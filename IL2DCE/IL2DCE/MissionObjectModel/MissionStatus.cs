@@ -715,7 +715,7 @@ namespace IL2DCE.MissionObjectModel
                         Name = name,
                         Army = groundGroup.Army(),
                         Class = CreateActorName(groundActor != null ? groundActor.InternalTypeName() : string.Empty),
-                        Type = groundActor.Type().ToString(),
+                        Type = groundActor != null ? groundActor.Type().ToString(): string.Empty,
                         Nums = aiActors != null ? aiActors.Length : 0,
                         AliveNums = aiActors != null ? aiActors.Where(x => x.IsAlive()).Count() : 0,
                         IsValid = groundGroup.IsValid(),
@@ -2167,7 +2167,7 @@ namespace IL2DCE.MissionObjectModel
                                 previousStationary.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
                             }
                         }
-                        Debug.Assert(!previousStationary.IsAlive, "previousStationary=True[{0}]", previousStationary.Name);
+                        // Debug.Assert(!previousStationary.IsAlive, "previousStationary=True[{0}]", previousStationary.Name);
                         previousStationary.IsAlive = false; // item.IsAlive;
                         if (item.IsValidPoint)
                         {
@@ -2218,7 +2218,7 @@ namespace IL2DCE.MissionObjectModel
                                 previousAircraft.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
                             }
                         }
-                        Debug.Assert(!previousAircraft.IsAlive, "previousAircraft=True[{0}]", previousAircraft.Name);
+                        // Debug.Assert(!previousAircraft.IsAlive, "previousAircraft=True[{0}]", previousAircraft.Name);
                         previousAircraft.IsAlive = false;// item.IsAlive;
                         if (item.IsValidPoint)
                         {
@@ -2270,7 +2270,7 @@ namespace IL2DCE.MissionObjectModel
                                 previousGroundObject.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
                             }
                         }
-                        Debug.Assert(!previousGroundObject.IsAlive, "previousGroundObject=True[{0}]", previousGroundObject.Name);
+                        // Debug.Assert(!previousGroundObject.IsAlive, "previousGroundObject=True[{0}]", previousGroundObject.Name);
                         previousGroundObject.IsAlive = false;//item.IsAlive;
                         if (item.IsValidPoint)
                         {

@@ -376,16 +376,7 @@ namespace IL2DCE.MissionObjectModel
             BandColor = ReadFligthTypeValue(sectionFile, id, Flights, MissionFile.KeyBandColor);
 
             // Id
-            int flightMask = 0x0;
-            foreach (int flightIndex in Flights.Keys)
-            {
-                if (Flights[flightIndex].Count > 0)
-                {
-                    int bit = (0x1 << flightIndex);
-                    flightMask = (flightMask | bit);
-                }
-            }
-            Id = ToString() + flightMask.ToString("X");
+            UpdateId();
 
             // Waypoints            
             Waypoints = new List<AirGroupWaypoint>();
@@ -486,16 +477,7 @@ namespace IL2DCE.MissionObjectModel
             // BandColor
 
             // Id
-            int flightMask = 0x0;
-            foreach (int flightIndex in Flights.Keys)
-            {
-                if (Flights[flightIndex].Count > 0)
-                {
-                    int bit = (0x1 << flightIndex);
-                    flightMask = (flightMask | bit);
-                }
-            }
-            Id = ToString() + flightMask.ToString("X");
+            UpdateId();
 
             // Postion 
             Position = point;
@@ -638,7 +620,10 @@ namespace IL2DCE.MissionObjectModel
                             SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeySetOnPark, "1", true);
                             break;
                         case ESpawn.Idle:
+#if false       
+                            // TODO: after CloD spec changed. 
                             SilkySkyCloDFile.Write(sectionFile, Id, "Idle", "1", true);
+#endif
                             break;
                         case ESpawn.Scramble:
                             SilkySkyCloDFile.Write(sectionFile, Id, "Scramble", "1", true);
@@ -680,6 +665,21 @@ namespace IL2DCE.MissionObjectModel
                 // Briefing
                 SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyBriefing, this.Id, true);
             }
+        }
+
+        private void UpdateId()
+        {
+            // Id
+            int flightMask = 0x0;
+            foreach (int flightIndex in Flights.Keys)
+            {
+                if (Flights[flightIndex].Count > 0)
+                {
+                    int bit = (0x1 << flightIndex);
+                    flightMask = (flightMask | bit);
+                }
+            }
+            Id = ToString() + flightMask.ToString("X");
         }
 
         #region Operation
@@ -1087,7 +1087,7 @@ namespace IL2DCE.MissionObjectModel
             MissionType = EMissionType.INTERCEPT;
         }
 
-        #endregion 
+        #endregion
 
         public void SetSpawn(Spawn spawn)
         {
@@ -1162,6 +1162,8 @@ namespace IL2DCE.MissionObjectModel
                 }
                 Flights[i] = aircraftNumbers;
             }
+
+            UpdateId();
         }
 
         public void GetFlight(out int flightCount, out int flightSize)
@@ -1240,7 +1242,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        #endregion
+#endregion
 
         #region Private methods
 

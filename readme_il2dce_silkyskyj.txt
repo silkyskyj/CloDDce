@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.0)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.1)
 =============================================================================================================================
-                                                                                                                   04/20/2025
+                                                                                                                   04/25/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -76,7 +76,6 @@ Items that can be selected and set commonly in 1. 2.
  - AI Ship Skill
 -  Add Random Ground units
  - Ground Unit Setting
- - Unit nums
  - Unit Nums
  - Convert Generic type
  - Save/Load general settings
@@ -113,7 +112,8 @@ History
 
   Ver      Date       Comment
 
-  0.6.00   04/20/2025 Added: Strict mode/AI AirGroup Skill/SpawnParked/Progress type selection in Dynamic Campaign new Career page. Add Random Ground units/AI Ship Skill/Ground Unit Setting/Unit Nums/Convert Generic type option in each page. Save/Load general settings in each pages. Ability to increase or decrease skill values ​​based on Campaign mission results/Display current skill values.
+  0.6.1    04/25/2025 Fixed: Temporary solution to CloD specification where AI aircraft will not take off if AirGroup is set idle.
+  0.6.0    04/20/2025 Added: Strict mode/AI AirGroup Skill/SpawnParked/Progress type selection in Dynamic Campaign new Career page. Add Random Ground units/AI Ship Skill/Ground Unit Setting/Unit Nums/Convert Generic type option in each page. Save/Load general settings in each pages. Ability to increase or decrease skill values ​​based on Campaign mission results/Display current skill values.
                       Fixed: Improved mission loading speed. Other minor bug fixes.
                       Changed: Changes to mission import logic and mission file structure. Fixes to attached mission files.
   0.5.10   04/05/2025 Added: AI Air Group Skill selection. Stats view in Dynamic Quick Mission Page. Royal Netherlands Air Force and Belgian Air Component in Select AirForce. 

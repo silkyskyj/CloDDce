@@ -20,7 +20,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using IL2DCE.MissionObjectModel;
-using maddox.game.page;
 using maddox.game.play;
 
 namespace IL2DCE

@@ -42,6 +42,8 @@
     <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Artillery.cs" />
     <Compile Include="MissionObjectModel\CampaignProgress.cs" />
+    <Compile Include="MissionObjectModel\MissionDebug.cs" />
+    <Compile Include="MissionObjectModel\MissionProc.cs" />
     <Compile Include="MissionObjectModel\MissionStatus.cs" />
     <Compile Include="MissionObjectModel\Country.cs" />
     <Compile Include="MissionObjectModel\EBattleType.cs" />
