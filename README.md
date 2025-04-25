@@ -46,6 +46,7 @@ Main functions
 1. Dynamic Campaign
 2. Dynamic Quick Misson
 
+
 1. In Dynamic Campaign, you can select and set the following items. 
 Career
  - Army (Red/Blue)
