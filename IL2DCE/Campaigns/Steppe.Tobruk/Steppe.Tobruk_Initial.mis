@@ -735,7 +735,7 @@
   Static56 Artillery.Bofors gb 67577.15 15591.90 0.00 /timeout 0/radius_hide 0
   Static55 Artillery.Bofors gb 67412.12 15673.37 0.00 /timeout 0/radius_hide 0
   Static54 Artillery.Bofors gb 67182.33 15748.58 0.00 /timeout 0/radius_hide 0
-  Static8 Artillery.Flak30 de 39612.34 20618.68 0.00 /timeout 0/radius_hide 0
+  Static8 Artillery.Flak30 de 46658.35 25946.62 0.00 /timeout 0/radius_hide 0
   Static4 Artillery.Flak30 de 39633.40 20830.63 0.00 /timeout 0/radius_hide 0
   Static5 Artillery.Flak30 de 39736.08 21061.00 0.00 /timeout 0/radius_hide 0
   Static6 Artillery.Flak30 de 39920.39 21217.66 0.00 /timeout 0/radius_hide 0
@@ -743,17 +743,17 @@
   Static103 Stationary.Bofors_GER_Transport de 36328.42 31265.34 0.00 
   Static102 Stationary.Bofors_GER_Transport de 35853.05 31353.38 0.00 
   Static101 Stationary.Bofors_GER_Transport de 35465.71 31388.59 0.00 
-  Static100 Stationary.Bofors_GER_Transport de 35060.77 31459.01 0.00 
   Static99 Stationary.Bofors_GER_Transport de 34673.54 31483.27 0.00 
+  Static100 Stationary.Bofors_GER_Transport de 35060.77 31459.01 0.00 
   Static88 Stationary.Radar.Wotan_II de 48937.64 31953.23 0.00 
   Static87 Stationary.Radar.Wotan_II de 47956.43 32081.21 0.00 
   Static84 Stationary.Radar.Wotan_II de 45652.73 32251.86 0.00 
   Static85 Stationary.Radar.Wotan_II de 46335.31 32209.20 0.00 
   Static86 Stationary.Radar.Wotan_II de 47145.87 32209.20 0.00 
-  Static53 Artillery.Bofors gb 52998.73 32922.09 0.00 /timeout 0/radius_hide 0
   Static73 Stationary.Radar.EnglishRadar1 gb 33554.07 33145.78 0.00 
-  Static72 Stationary.Radar.EnglishRadar1 gb 32830.71 33518.14 0.00 
+  Static53 Artillery.Bofors gb 52998.73 32922.09 0.00 /timeout 0/radius_hide 0
   Static52 Artillery.Bofors gb 53318.11 33143.78 0.00 /timeout 0/radius_hide 0
+  Static72 Stationary.Radar.EnglishRadar1 gb 32830.71 33518.14 0.00 
   Static49 Artillery.Bofors gb 52682.86 33474.11 0.00 /timeout 0/radius_hide 0
   Static71 Stationary.Radar.EnglishRadar1 gb 32427.35 33842.37 0.00 
   Static51 Artillery.Bofors gb 53509.96 33569.89 0.00 /timeout 0/radius_hide 0
@@ -770,15 +770,15 @@
   Static66 Stationary.Radar.EnglishRadar1 gb 43636.43 51248.76 0.00 
   Static67 Stationary.Radar.EnglishRadar1 gb 44106.04 51877.54 0.00 
   Static38 Artillery.Bofors gb 52583.94 52346.29 0.00 /timeout 0/radius_hide 0
-  Static37 Artillery.Bofors gb 52858.98 52496.07 0.00 /timeout 0/radius_hide 0
   Static68 Stationary.Radar.EnglishRadar1 gb 44606.84 52505.26 0.00 
+  Static37 Artillery.Bofors gb 52858.98 52496.07 0.00 /timeout 0/radius_hide 0
   Static34 Artillery.Bofors gb 52164.57 52765.66 0.00 /timeout 0/radius_hide 0
   Static36 Artillery.Bofors gb 53131.30 52839.18 0.00 /timeout 0/radius_hide 0
   Static35 Artillery.Bofors gb 52499.52 53239.49 0.00 /timeout 0/radius_hide 0
   Static94 Stationary.Bofors_GER_Transport de 40480.41 54443.79 0.00 
   Static19 Artillery.Flak30 de 29238.01 54781.53 0.00 /timeout 0/radius_hide 0
-  Static20 Artillery.Flak30 de 28953.22 54959.54 0.00 /timeout 0/radius_hide 0
   Static95 Stationary.Bofors_GER_Transport de 40114.21 54743.09 0.00 
+  Static20 Artillery.Flak30 de 28953.22 54959.54 0.00 /timeout 0/radius_hide 0
   Static96 Stationary.Bofors_GER_Transport de 39797.84 55051.89 0.00 
   Static21 Artillery.Flak30 de 28690.56 55257.81 0.00 /timeout 0/radius_hide 0
   Static23 Artillery.Flak30 de 29602.00 55309.58 0.00 /timeout 0/radius_hide 0
@@ -814,11 +814,11 @@
   Static44 Artillery.Bofors gb 68057.12 68691.21 0.00 /timeout 0/radius_hide 0
   Static91 Stationary.Radar.Wotan_II de 27087.43 69491.07 0.00 
   Static40 Artillery.Bofors gb 66658.32 69040.15 0.00 /timeout 0/radius_hide 0
+  Static92 Stationary.Radar.Wotan_II de 27851.88 69948.05 0.00 
   Static39 Artillery.Bofors gb 66734.88 69367.80 0.00 /timeout 0/radius_hide 0
   Static45 Artillery.Bofors gb 67925.50 69327.86 0.00 /timeout 0/radius_hide 0
   Static129 Stationary.SpitfireMkI gb 67113.80 69382.29 0.00 
   Static127 Stationary.SpitfireMkI gb 67126.40 69432.69 0.00 
-  Static92 Stationary.Radar.Wotan_II de 27851.88 69948.05 0.00 
   Static128 Stationary.SpitfireMkI gb 67118.00 69459.98 0.00 
   Static126 Stationary.SpitfireMkI gb 67118.00 69497.78 0.00 
   Static125 Stationary.SpitfireMkI gb 67118.00 69531.38 0.00 
@@ -826,6 +826,123 @@
   Static93 Stationary.Radar.Wotan_II de 28760.21 70262.11 0.00 
   Static46 Artillery.Bofors gb 67221.70 69689.27 0.00 /timeout 0/radius_hide 0
   Static48 Artillery.Bofors gb 67735.73 69649.25 0.00 /timeout 0/radius_hide 0
+  Static109 tobruk:Stationary.WellingtonMkIc_t gb 67007.86 13887.98 0.00 
+  Static110 tobruk:Stationary.WellingtonMkIc_t gb 67043.51 13889.12 0.00 
+  Static111 tobruk:Stationary.WellingtonMkIc_t gb 67077.16 13888.27 0.00 
+  Static112 tobruk:Stationary.WellingtonMkIc_t gb 67105.96 13887.13 0.00 
+  Static113 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67534.58 14028.03 0.00 
+  Static114 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67535.47 14082.17 0.00 
+  Static115 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67530.14 14154.94 0.00 
+  Static116 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67529.26 14231.27 0.00 
+  Static117 tobruk:Stationary.WellingtonMkIc_t gb 67062.75 68067.38 0.00 
+  Static118 tobruk:Stationary.WellingtonMkIc_t gb 67164.32 68050.45 0.00 
+  Static119 tobruk:Stationary.WellingtonMkIc_t gb 66980.70 68101.23 0.00 
+  Static120 tobruk:Stationary.WellingtonMkIc_t gb 66885.64 68148.12 0.00 
+  Static121 Stationary.BlenheimMkIV gb 66580.01 69168.55 0.00 
+  Static122 Stationary.BlenheimMkIV gb 66566.99 69098.27 0.00 
+  Static123 Stationary.BlenheimMkIV gb 66560.48 69026.70 0.00 
+  Static148 Stationary.BlenheimMkIV gb 66565.69 68960.34 0.00 
+  Static149 Stationary.BlenheimMkIV gb 66572.31 68871.88 0.00 
+  Static150 Stationary.BlenheimMkIV gb 66559.30 68813.37 0.00 
+  Static151 Stationary.BlenheimMkIV gb 66555.41 68735.34 0.00 
+  Static152 Stationary.BlenheimMkIV gb 66551.51 68661.22 0.00 
+  Static153 Stationary.BlenheimMkIV_Late gb 67895.49 68673.08 0.00 
+  Static154 Stationary.BlenheimMkIV_Late gb 67896.80 68757.66 0.00 
+  Static155 Stationary.BlenheimMkIV_Late gb 67900.70 68833.14 0.00 
+  Static156 Stationary.BlenheimMkIV_Late gb 67892.89 68902.11 0.00 
+  Static157 tobruk:Stationary.SpitfireMkVb gb 52925.76 52322.23 0.00 
+  Static158 tobruk:Stationary.SpitfireMkVb gb 52908.12 52311.98 0.00 
+  Static159 tobruk:Stationary.SpitfireMkVb gb 53129.32 52575.37 0.00 
+  Static160 Stationary.HurricaneMkI gb 52082.43 52495.06 0.00 
+  Static161 Stationary.HurricaneMkI gb 52075.69 52515.11 0.00 
+  Static162 tobruk:Stationary.HurricaneMkIIb gb 52053.100 52630.09 0.00 
+  Static163 tobruk:Stationary.HurricaneMkIIb gb 52052.59 52653.24 0.00 
+  Static164 tobruk:Stationary.HurricaneMkIIb gb 52086.97 52856.01 0.00 
+  Static165 tobruk:Stationary.HurricaneMkIIb gb 52091.88 52874.96 0.00 
+  Static166 tobruk:Stationary.SpitfireMkVb gb 52121.35 52968.27 0.00 
+  Static167 tobruk:Stationary.SpitfireMkVb gb 52126.96 52991.43 0.00 
+  Static168 tobruk:Stationary.SpitfireMkVb gb 52160.64 53090.36 0.00 
+  Static169 tobruk:Stationary.SpitfireMkVb gb 52169.06 53103.69 0.00 
+  Static170 tobruk:Stationary.SpitfireMkIIb gb 52266.59 53200.52 0.00 
+  Static171 tobruk:Stationary.SpitfireMkIIb gb 52276.41 53213.84 0.00 
+  Static172 tobruk:Stationary.SpitfireMkIIb gb 52383.06 53279.80 0.00 
+  Static173 tobruk:Stationary.SpitfireMkIIb gb 52387.97 53296.64 0.00 
+  Static174 tobruk:Stationary.SpitfireMkIIb gb 52811.78 33956.26 0.00 
+  Static175 tobruk:Stationary.SpitfireMkIIb gb 52824.98 33966.82 0.00 
+  Static176 tobruk:Stationary.SpitfireMkIIb gb 52701.59 33869.18 0.00 
+  Static177 tobruk:Stationary.SpitfireMkIIb gb 52712.19 33887.66 0.00 
+  Static178 tobruk:Stationary.D520_Serie1 fr 52609.05 33766.94 0.00 
+  Static179 tobruk:Stationary.D520_Serie1 fr 52599.35 33756.37 0.00 
+  Static180 tobruk:Stationary.D520_Serie1 fr 52560.57 33643.56 0.00 
+  Static181 tobruk:Stationary.D520_Serie1 fr 52564.10 33661.18 0.00 
+  Static182 tobruk:Stationary.MartletMkIII us 52533.88 33548.50 0.00 
+  Static183 tobruk:Stationary.MartletMkIII us 52522.54 33527.45 0.00 
+  Static184 tobruk:Stationary.MartletMkIII us 52488.04 33322.43 0.00 
+  Static185 tobruk:Stationary.MartletMkIII us 52489.66 33301.91 0.00 
+  Static186 tobruk:Stationary.TomahawkMkII us 52506.78 33183.27 0.00 
+  Static187 tobruk:Stationary.TomahawkMkII us 52512.05 33166.57 0.00 
+  Static188 tobruk:Stationary.TomahawkMkII us 53346.77 32978.23 0.00 
+  Static189 tobruk:Stationary.TomahawkMkII us 53356.45 32994.95 0.00 
+  Static190 tobruk:Stationary.KittyhawkMkIA us 53564.86 33246.62 0.00 
+  Static191 tobruk:Stationary.KittyhawkMkIA us 53572.79 33266.86 0.00 
+  Static192 tobruk:Stationary.KittyhawkMkIA us 53616.76 33382.02 0.00 
+  Static193 tobruk:Stationary.KittyhawkMkIA us 53629.06 33432.98 0.00 
+  Static194 Stationary.Bf-110C-4 de 40401.52 20287.43 0.00 
+  Static195 Stationary.Bf-110C-4 de 40415.57 20300.41 0.00 
+  Static196 Stationary.Bf-110C-4 de 40619.87 20556.46 0.00 
+  Static197 Stationary.Bf-110C-4 de 40627.96 20573.71 0.00 
+  Static198 tobruk:Stationary.Bf-109F-2 de 39870.35 21260.88 0.00 
+  Static199 tobruk:Stationary.Bf-109F-2 de 39883.62 21271.36 0.00 
+  Static200 tobruk:Stationary.Bf-109F-2 de 39753.68 21178.45 0.00 
+  Static201 tobruk:Stationary.Bf-109F-2 de 39766.26 21191.72 0.00 
+  Static202 tobruk:Stationary.Bf-109F-1 de 39648.90 21063.18 0.00 
+  Static203 tobruk:Stationary.Bf-109F-1 de 39657.98 21079.25 0.00 
+  Static204 tobruk:Stationary.Bf-109F-1 de 39617.46 20969.57 0.00 
+  Static205 tobruk:Stationary.Bf-109F-1 de 39611.17 20954.20 0.00 
+  Static206 Stationary.Bf-109E-4 de 39583.23 20852.91 0.00 
+  Static207 Stationary.Bf-109E-4 de 39578.34 20833.35 0.00 
+  Static208 Stationary.Bf-109E-4 de 39540.62 20636.35 0.00 
+  Static209 Stationary.Bf-109E-4 de 39542.71 20613.29 0.00 
+  Static210 tobruk:Stationary.Bf-109E-7 de 39564.37 20488.25 0.00 
+  Static211 tobruk:Stationary.Bf-109E-7 de 39572.05 20476.38 0.00 
+  Static212 tobruk:Stationary.Bf-109E-7 de 39590.91 20435.86 0.00 
+  Static213 tobruk:Stationary.Bf-109E-7 de 39604.19 20413.50 0.00 
+  Static214 tobruk:Stationary.Bf-109F-4 de 29305.30 55652.21 0.00 
+  Static215 tobruk:Stationary.Bf-109F-4 de 29329.83 55649.55 0.00 
+  Static216 tobruk:Stationary.Bf-109F-4 de 29580.46 55441.04 0.00 
+  Static217 tobruk:Stationary.Bf-109F-4 de 29590.06 55431.44 0.00 
+  Static218 tobruk:Stationary.Ju-88A-5 de 14711.94 14047.36 0.00 
+  Static219 tobruk:Stationary.Ju-88A-5 de 14709.17 14028.69 0.00 
+  Static220 tobruk:Stationary.Ju-88A-5 de 14702.25 13949.17 0.00 
+  Static221 tobruk:Stationary.Ju-88A-5 de 14706.40 13930.50 0.00 
+  Static222 Stationary.Ju-87B-2 de 14698.87 13820.35 0.00 
+  Static223 Stationary.Ju-87B-2 de 14698.47 13793.24 0.00 
+  Static224 Stationary.Ju-87B-2 de 14707.91 13693.42 0.00 
+  Static225 Stationary.Ju-87B-2 de 14707.91 13675.73 0.00 
+  Static226 Stationary.Ju-87B-2 de 14913.05 14434.32 0.00 
+  Static227 Stationary.Ju-87B-2 de 14942.01 14474.00 0.00 
+  Static228 Stationary.Ju-87B-2 de 14991.34 14528.70 0.00 
+  Static229 Stationary.Ju-87B-2 de 15040.67 14564.09 0.00 
+  Static230 tobruk:Stationary.Ju-88A-5 de 13775.17 68019.96 0.00 
+  Static231 tobruk:Stationary.Ju-88A-5 de 13816.56 68013.49 0.00 
+  Static232 tobruk:Stationary.Ju-88A-5 de 13850.18 67983.74 0.00 
+  Static233 tobruk:Stationary.Ju-88A-5 de 13758.16 68068.00 0.00 
+  Static234 Stationary.He-111P-2 de 13895.79 66666.80 0.00 
+  Static235 Stationary.He-111P-2 de 13942.35 66637.05 0.00 
+  Static236 Stationary.He-111P-2 de 13981.15 66608.59 0.00 
+  Static237 Stationary.He-111P-2 de 14022.54 66581.43 0.00 
+  Static238 tobruk:Stationary.He-111H-6 de 13506.47 66982.39 0.00 
+  Static239 tobruk:Stationary.He-111H-6 de 13529.75 66951.35 0.00 
+  Static240 tobruk:Stationary.He-111H-6 de 13559.50 66931.95 0.00 
+  Static241 tobruk:Stationary.He-111H-6 de 13590.54 66904.79 0.00 
+  Static242 Stationary.G50 it 40654.45 20981.22 0.00 
+  Static243 Stationary.G50 it 40639.12 20938.32 0.00 
+  Static244 Stationary.G50 it 40619.21 20896.95 0.00 
+  Static245 Stationary.G50 it 40600.82 20841.80 0.00 
+  Static246 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40026.20 20215.17 0.00 
+  Static247 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40069.10 20258.06 0.00 
+  Static248 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40096.68 20304.03 0.00 
+  Static249 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40139.56 20357.65 0.00 
 [Buildings]
 [BuildingsLinks]
 [FrontMarker]

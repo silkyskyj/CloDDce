@@ -592,7 +592,7 @@ namespace IL2DCE.Pages
                 career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
                 career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
                 career.AdditionalGroundGroups = generalSettings.SelectedAdditionalAirGroups;
-                career.AdditionalStationaries = generalSettings.SelectedAdditionalAirGroups;
+                career.AdditionalStationaries = generalSettings.SelectedAdditionalStasionaries;
                 career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
                 career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
                 career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;

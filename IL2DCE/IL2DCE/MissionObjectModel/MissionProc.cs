@@ -95,7 +95,7 @@ namespace IL2DCE.MissionObjectModel
                     AiAirGroupTask taskNew = ConvertWayActionToTask(wayAction);
                     aiAirGroup.setTask(taskNew, null);
                     task = aiAirGroup.getTask();
-                    Debug.WriteLine(" => {1}", aiAirGroup.Name(), task.ToString());
+                    Debug.WriteLine(" => {0}", task.ToString());
                 }
             }
         }
@@ -108,39 +108,51 @@ namespace IL2DCE.MissionObjectModel
                 case AiAirWayPointType.NORMFLY:
                     task = AiAirGroupTask.FLY_WAYPOINT;
                     break;
+
                 case AiAirWayPointType.TAKEOFF:
                     task = AiAirGroupTask.TAKEOFF;
                     break;
+
                 case AiAirWayPointType.LANDING:
                     task = AiAirGroupTask.LANDING;
                     break;
+
                 case AiAirWayPointType.GATTACK_TARG:
                     task = AiAirGroupTask.ATTACK_GROUND;
                     break;
+
                 case AiAirWayPointType.GATTACK_POINT:
                     task = AiAirGroupTask.ATTACK_GROUND;
                     break;
+
                 case AiAirWayPointType.AATTACK_BOMBERS:
                     task = AiAirGroupTask.ATTACK_AIR;
                     break;
+
                 case AiAirWayPointType.AATTACK_FIGHTERS:
                     task = AiAirGroupTask.ATTACK_AIR;
                     break;
+
                 case AiAirWayPointType.HUNTING:
                     task = AiAirGroupTask.ATTACK_AIR;
                     break;
+
                 case AiAirWayPointType.FOLLOW:
                     task = AiAirGroupTask.FLY_WAYPOINT;
                     break;
+
                 case AiAirWayPointType.ESCORT:
                     task = AiAirGroupTask.FLY_WAYPOINT;
                     break;
+
                 case AiAirWayPointType.COVER:
                     task = AiAirGroupTask.FLY_WAYPOINT;
                     break;
+
                 case AiAirWayPointType.RECON:
                     task = AiAirGroupTask.FLY_WAYPOINT;
                     break;
+
                 default:
                     task = AiAirGroupTask.FLY_WAYPOINT;
                     break;

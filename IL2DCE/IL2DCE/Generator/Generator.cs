@@ -23,6 +23,7 @@ using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.GP;
+using static IL2DCE.MissionObjectModel.MissionStatus;
 using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Generator
@@ -589,11 +590,14 @@ namespace IL2DCE.Generator
                 for (int i = stationaries.Count - 1; i >= 0; i--)
                 {
                     Stationary stationary = stationaries[i];
-                    MissionStatus.StationaryObject stationaryObject = missionStatus.Stationaries.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 && string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
-                    MissionStatus.GroundObject groundObject = missionStatus.GroundActors.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 && string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
+                    MissionStatus.StationaryObject stationaryObject = missionStatus.Stationaries.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 && 
+                                                                string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
+                    MissionStatus.GroundObject groundObject = missionStatus.GroundActors.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 && 
+                                                                string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
                     // Debug.WriteLine("stationary[{0}] StationaryObject={1}[{2}] GroundObject={1}[{2}]", stationary.Id, stationaryObject != null ? stationaryObject.IsAlive.ToString() : "NONE", groundObject != null ? groundObject.IsAlive.ToString() : "NONE");
                     if (stationaryObject != null && !stationaryObject.IsAlive || groundObject != null && !groundObject.IsAlive)
                     {
+                        Debug.WriteLine("Remove Stationary {0}[{1}]", stationary.Id, stationary.Class);
                         stationaries.Remove(stationary);
                     }
                 }
@@ -605,8 +609,10 @@ namespace IL2DCE.Generator
                     AirGroup airGroup = airGroups[i];
 //                    if (airGroup != airGroupPlayer)
                     {
-                        IEnumerable<Stationary> substitutes = stationaries.Where(x => x.Type == EStationaryType.Aircraft && x.Army == airGroup.Army && string.Compare(x.Class.Replace(ValueStationary, ValueAircraft), airGroup.Class, true) == 0);
-                        substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 && string.Compare(x.Class, y.Class, true) == 0 && y.IsAlive));
+                        IEnumerable<Stationary> substitutes = stationaries.Where(x => x.Type == EStationaryType.Aircraft && x.Army == airGroup.Army && 
+                                                                string.Compare(x.Class.Replace(ValueStationary, ValueAircraft), airGroup.Class, true) == 0);
+                        substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 && 
+                                                                string.Compare(x.Class, y.Class, true) == 0 && y.IsAlive));
                         MissionStatus.AirGroupObject airGroupObject = missionStatus.AirGroups.Where(x => string.Compare(x.Name, airGroup.Id, true) == 0).FirstOrDefault();
                         if (airGroupObject != null)
                         {
@@ -624,6 +630,7 @@ namespace IL2DCE.Generator
                             {
                                 if (airGroup != airGroupPlayer)
                                 {
+                                    Debug.WriteLine("Remove AirGroups {0}[{1}]", airGroup.Id, airGroup.Class);
                                     airGroups.Remove(airGroup);
                                 }
 
@@ -650,9 +657,12 @@ namespace IL2DCE.Generator
                 for (int i = groundGroups.Count - 1; i >= 0; i--)
                 {
                     GroundGroup groundGroup = groundGroups[i];
-                    IEnumerable<Stationary> substitutes = stationaries.Where(x => x.Army == groundGroup.Army && string.Compare(MissionStatus.MissionObject.CreateClassShortName(x.Class), MissionStatus.MissionObject.CreateClassShortName(groundGroup.Class), true) == 0);
+                    IEnumerable<Stationary> substitutes = stationaries.Where(x => x.Army == groundGroup.Army &&
+                        string.Compare(MissionObjBase.CreateClassShortShortName(x.Class), MissionObjBase.CreateClassShortShortName(groundGroup.Class), true) == 0 &&
+                        !x.Id.StartsWith(groundGroup.Id, true, CultureInfo.InvariantCulture));
                     substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 && string.Compare(x.Class, y.Class, true) == 0 && y.IsAlive));
-                    MissionStatus.GroundGroupObject groundGroupObject = missionStatus.GroundGroups.Where(x => string.Compare(x.Name, groundGroup.Id, true) == 0 && x.Army == groundGroup.Army && string.Compare(x.Class, groundGroup.Class, true) == 0).FirstOrDefault();
+                    MissionStatus.GroundGroupObject groundGroupObject = missionStatus.GroundGroups.Where(x => string.Compare(x.Name, groundGroup.Id, true) == 0 && x.Army == groundGroup.Army &&
+                        string.Compare(MissionObjBase.CreateClassShortShortName(x.Class), MissionObjBase.CreateClassShortShortName(groundGroup.Class), true) == 0).FirstOrDefault();
                     if (groundGroupObject != null)
                     {
                         // Substitute Unit  
@@ -666,6 +676,7 @@ namespace IL2DCE.Generator
                         if (groundGroupObject.Nums == 0 || /*!groundGroupObject.IsAlive || !groundGroupObject.IsValid || */(groundGroupObject.AliveNums / (float)groundGroupObject.Nums) < Config.GroupDisableRate)
                         {
                             groundGroups.Remove(groundGroup);
+                            Debug.WriteLine("Remove GroundGroup {0}[{1}]", groundGroup.Id, groundGroup.Class);
 
                             // TODO: Substitute GroundGroup
 
@@ -681,8 +692,13 @@ namespace IL2DCE.Generator
                                                 GroundGroup.GetLandTypes(groundGroup.Type));
                                 if (pos != null)
                                 {
+                                    Debug.WriteLine("Position Update GroundGroup {0}[{1}] ({2},{3}) -> ({4},{5})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y, pos.Value.x, pos.Value.y);
                                     wayPoint.X = pos.Value.x;
                                     wayPoint.Y = pos.Value.y;
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Position No Update GroundGroup {0}[{1}] ({2},{3})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y);
                                 }
                             }
                         }

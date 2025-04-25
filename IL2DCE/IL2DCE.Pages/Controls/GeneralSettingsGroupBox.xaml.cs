@@ -626,7 +626,7 @@ namespace IL2DCE.Pages.Controls
                 comboBoxSelectUnitNumsShip.Text = EShipUnitNumsSet.Random.ToDescription();
             }
             checkBoxGroundGroupGeneric.IsChecked = false;
-            checkBoxStatiomaryGeneric.IsChecked = true;
+            checkBoxStatiomaryGeneric.IsChecked = false;
 
             if (checkBoxSpawnRandomLocationFriendly.IsEnabled && checkBoxSpawnRandomLocationFriendly.Visibility == Visibility.Visible)
             {

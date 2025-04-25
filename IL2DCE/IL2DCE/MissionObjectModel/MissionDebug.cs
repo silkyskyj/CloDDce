@@ -327,10 +327,10 @@ namespace IL2DCE.MissionObjectModel
                         AiWayPoint[] WayPoints = groundGroup.GetWay();
                         if (WayPoints != null)
                         {
-                            foreach (AiAirWayPoint item in WayPoints)
+                            foreach (AiGroundWayPoint item in WayPoints)
                             {
-                                Debug.WriteLine("    WayPoint: Action={0}, P=({1},{2},{3}) V={4}, Target={5}",
-                                    item.Action.ToString(), item.P.x, item.P.y, item.P.z, item.Speed, item.Target != null ? item.Target.Name() : string.Empty);
+                                Debug.WriteLine("    WayPoint: RoadWidth={0}, P=({1},{2},{3}) V={4}, waitTime={5}, BridgeIdx={6}",
+                                    item.roadWidth.ToString(), item.P.x, item.P.y, item.P.z, item.Speed, item.waitTime, item.BridgeIdx);
                             }
                         }
                     }

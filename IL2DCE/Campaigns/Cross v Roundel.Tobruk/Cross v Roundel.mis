@@ -399,20 +399,72 @@
   8699.29 21930.29 38.40  0 2 2.92
   9257.96 23344.06 38.40
 [Stationary]
+  Static34 Stationary.G50 it 21047.52 8739.39 0.00 
+  Static35 Stationary.G50 it 21074.67 8732.30 0.00 
+  Static36 Stationary.G50 it 21110.08 8719.32 0.00 
+  Static37 Stationary.G50 it 21143.12 8715.78 0.00 
+  Static38 tobruk:Stationary.Ju-88A-5 de 19820.03 9086.85 0.00 
+  Static39 tobruk:Stationary.Ju-88A-5 de 19873.95 9080.38 0.00 
+  Static40 tobruk:Stationary.Ju-88A-5 de 19932.19 9054.50 0.00 
+  Static41 tobruk:Stationary.Ju-88A-5 de 19971.02 9043.71 0.00 
   Static3 Artillery.Zwillingssockel36_GER1 de 21150.89 9106.13 0.00 /timeout 0/radius_hide 0
   Static2 Artillery.Zwillingssockel36_GER1 de 19917.05 9390.63 0.00 /timeout 0/radius_hide 0
+  Static15 Stationary.Bf-109E-4 de 17396.61 14011.14 0.00 
+  Static14 Stationary.Bf-109E-4 de 17430.63 14003.85 0.00 
+  Static32 Stationary.G50 it 17169.93 14074.41 0.00 
+  Static33 Stationary.G50 it 17188.82 14055.52 0.00 
   Static0 Artillery.Zwillingssockel36_GER1 de 17309.57 14043.01 0.00 /timeout 0/radius_hide 0
+  Static17 tobruk:Stationary.Bf-109F-2 de 17332.62 14028.15 0.00 
+  Static16 Stationary.Bf-109E-4 de 17363.40 14017.62 0.00 
+  Static30 Stationary.G50 it 17128.61 14087.40 0.00 
+  Static31 Stationary.G50 it 17147.50 14081.49 0.00 
+  Static21 tobruk:Stationary.Bf-109F-2 de 16938.92 14193.41 0.00 
+  Static20 tobruk:Stationary.Bf-109F-2 de 16938.92 14233.10 0.00 
+  Static19 tobruk:Stationary.Bf-109F-2 de 16934.06 14263.88 0.00 
+  Static18 tobruk:Stationary.Bf-109F-2 de 16931.63 14294.67 0.00 
+  Static27 tobruk:Stationary.Ju-88A-5 de 17107.45 14402.45 0.00 
+  Static26 tobruk:Stationary.Ju-88A-5 de 17090.01 14422.85 0.00 
+  Static29 tobruk:Stationary.Ju-88A-5 de 17139.11 14433.72 0.00 
+  Static28 tobruk:Stationary.Ju-88A-5 de 17121.34 14457.36 0.00 
   Static1 Artillery.Zwillingssockel36_GER1 de 16860.21 14571.66 0.00 /timeout 0/radius_hide 0
+  Static23 tobruk:Stationary.Bf-109E-7 de 17032.19 14543.02 0.00 
+  Static22 tobruk:Stationary.Bf-109E-7 de 17030.55 14564.41 0.00 
+  Static25 tobruk:Stationary.Bf-109E-7 de 16996.49 14751.98 0.00 
+  Static24 tobruk:Stationary.Bf-109E-7 de 16989.79 14770.71 0.00 
   Static11 Stationary.Radar.Wotan_II de 16765.62 15474.87 0.00 
   Static12 Stationary.Radar.Wotan_II de 16767.15 15686.18 0.00 
   Static13 Stationary.Radar.Wotan_II de 16807.77 15936.67 0.00 
+  Static57 Stationary.SpitfireMkIIa gb 12255.47 17048.25 0.00 
+  Static60 Stationary.HurricaneMkI gb 12239.31 17075.39 0.00 
+  Static56 Stationary.SpitfireMkIIa gb 12290.54 17035.44 0.00 
+  Static55 Stationary.SpitfireMkIIa gb 12327.13 17041.54 0.00 
+  Static54 Stationary.SpitfireMkIIa gb 12363.72 17049.77 0.00 
+  Static58 Stationary.HurricaneMkI gb 12208.52 17142.47 0.00 
+  Static59 Stationary.HurricaneMkI gb 12225.59 17107.71 0.00 
+  Static61 Stationary.HurricaneMkI gb 12202.11 17178.75 0.00 
   Static7 Artillery.Bofors_StandAlone gb 12461.85 17249.91 0.00 /timeout 0/radius_hide 0
+  Static62 tobruk:Stationary.KittyhawkMkIA us 12024.20 17551.38 0.00 
+  Static63 tobruk:Stationary.KittyhawkMkIA us 12029.74 17571.05 0.00 
+  Static65 tobruk:Stationary.KittyhawkMkIA us 12052.00 17617.10 0.00 
+  Static64 tobruk:Stationary.KittyhawkMkIA us 12059.25 17636.25 0.00 
   Static6 Artillery.Bofors_StandAlone gb 12646.03 17680.14 0.00 /timeout 0/radius_hide 0
   Static9 Stationary.Radar.EnglishRadar3 gb 14933.35 18433.31 0.00 
   Static8 Stationary.Radar.EnglishRadar3 gb 15259.26 18935.29 0.00 
   Static10 Stationary.Radar.EnglishRadar3 gb 15452.02 19365.52 0.00 
   Static4 Artillery.Bofors_StandAlone gb 11633.84 20740.47 0.00 /timeout 0/radius_hide 0
+  Static49 Stationary.BlenheimMkIV gb 11231.57 20917.37 0.00 
+  Static47 Stationary.BlenheimMkIV gb 11192.38 20961.79 0.00 
+  Static48 Stationary.BlenheimMkIV gb 11204.71 20937.55 0.00 
+  Static46 Stationary.BlenheimMkIV gb 11174.62 21001.19 0.00 
+  Static45 Stationary.BlenheimMkIV gb 11175.73 21042.81 0.00 
+  Static44 Stationary.BlenheimMkIV gb 11155.76 21067.22 0.00 
+  Static43 Stationary.BlenheimMkIV gb 11141.33 21106.07 0.00 
+  Static42 Stationary.BlenheimMkIV gb 11128.57 21126.04 0.00 
   Static5 Artillery.Bofors_StandAlone gb 12968.42 21212.78 0.00 /timeout 0/radius_hide 0
+  Static50 Stationary.WellingtonMkIc gb 12845.54 21526.16 0.00 
+  Static51 Stationary.WellingtonMkIc gb 12825.90 21476.37 0.00 
+  Static52 Stationary.WellingtonMkIc gb 12808.37 21420.96 0.00 
+  Static53 Stationary.WellingtonMkIc gb 12801.29 21366.34 0.00 
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Middle 1 11461.61 21566.66 0.00
   1_bld buildings.House$Oil_Bunker-Middle 1 11708.21 21719.72 0.00

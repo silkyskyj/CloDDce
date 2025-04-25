@@ -23,6 +23,7 @@ using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
+using static IL2DCE.MissionObjectModel.MissionStatus;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -54,7 +55,7 @@ namespace IL2DCE.MissionObjectModel
             Count,
         }
 
-        public class MissionObject
+        public class MissionObjBase
         {
             public string Name
             {
@@ -108,7 +109,7 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
-            public bool IsSamePosition(MissionObject target)
+            public bool IsSamePosition(MissionObjBase target)
             {
                 return X == target.X && Y == target.Y && Z == target.Z;
             }
@@ -135,6 +136,28 @@ namespace IL2DCE.MissionObjectModel
                 if (name != null)
                 {
                     int idx = name.IndexOf(".");
+                    if (idx != -1)
+                    {
+                        name = name.Substring(idx + 1);
+                    }
+                }
+                else
+                {
+                    name = string.Empty;
+                }
+                return name;
+            }
+
+            public static string CreateClassShortShortName(string name)
+            {
+                if (name != null)
+                {
+                    int idx = name.IndexOf(".");
+                    if (idx != -1)
+                    {
+                        name = name.Substring(idx + 1);
+                    }
+                    idx = name.IndexOf(":");
                     if (idx != -1)
                     {
                         name = name.Substring(idx + 1);
@@ -183,7 +206,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class PlayerObject : MissionObject
+        public class PlayerObject : MissionObjBase
         {
             public int Army
             {
@@ -372,7 +395,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class AirGroupObject : MissionObject
+        public class AirGroupObject : MissionObjBase
         {
             public int Id
             {
@@ -521,8 +544,8 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(AirGroupObject airGroupObject)
             {
-                Debug.WriteLine("AirGroupObject.Update Nums={0}->{1} InitNums={2}->{3} DiedNums={4}->{5}, IsValid={6}->{7}, IsAlive={8}->{9}, IsTaskComplete{10}->{11}", 
-                    Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
+                Debug.WriteLine("AirGroupObject.Update[{0}] Nums={1}->{2} InitNums={3}->{4} DiedNums={5}->{6}, IsValid={7}->{8}, IsAlive={9}->{10}, IsTaskComplete{11}->{12}",
+                    airGroupObject.Name, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
                 bool updated = false;
 
                 Nums = airGroupObject.Nums;
@@ -589,7 +612,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class GroundGroupObject : MissionObject
+        public class GroundGroupObject : MissionObjBase
         {
             public string Id
             {
@@ -736,51 +759,46 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(GroundGroupObject groundGroupObject)
             {
+                Debug.WriteLine("GroundGroupObject.Update[{0}] Nums={1}->{2} AliveNums={3}->{4}, IsValid={5}->{6}, IsAlive={7}->{8}, IsTaskComplete{9}->{12}",
+                                groundGroupObject.Name, Nums, groundGroupObject.Nums, AliveNums, groundGroupObject.AliveNums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
                 bool updated = false;
-
                 Nums = groundGroupObject.Nums;
                 AliveNums = groundGroupObject.AliveNums;
                 IsValid = groundGroupObject.IsValid;
                 IsAlive = groundGroupObject.IsAlive;
                 IsTaskComplete = groundGroupObject.IsTaskComplete;
-
                 string target = Name;
                 if (Update(ref target, groundGroupObject.Name))
                 {
                     Name = target;
                 }
-
                 target = Class;
                 if (Update(ref target, groundGroupObject.Class))
                 {
                     Class = target;
                 }
-
                 target = Type;
                 if (Update(ref target, groundGroupObject.Type))
                 {
                     Type = target;
                 }
-
                 if (groundGroupObject.IsValidPoint)
                 {
                     X = groundGroupObject.X;
                     Y = groundGroupObject.Y;
                     Z = groundGroupObject.Z;
                 }
-
                 return updated;
             }
-
             public void WriteTo(ISectionFile file)
             {
                 try
                 {
                     string[] vals = new string[]
-                        {
-                            Army.ToString(Config.NumberFormat),
-                            Class,
-                            Type,
+                    {
+                        Army.ToString(Config.NumberFormat),
+                        Class,
+                        Type,
                             Nums.ToString(Config.NumberFormat),
                             AliveNums.ToString(Config.NumberFormat),
                             IsValid ? "1" : "0",
@@ -800,7 +818,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class StationaryObject : MissionObject
+        public class StationaryObject : MissionObjBase
         {
             public string Id
             {
@@ -984,7 +1002,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class AircraftObject : MissionObject
+        public class AircraftObject : MissionObjBase
         {
             public int Army
             {
@@ -1215,7 +1233,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class GroundObject : MissionObject
+        public class GroundObject : MissionObjBase
         {
             public int Army
             {
@@ -2012,7 +2030,7 @@ namespace IL2DCE.MissionObjectModel
                 try
                 {
                     AirGroupObject previousAirGroup = airGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
-                    if (item.InitNums > 0 && item.Nums > 0)
+                    if (item.InitNums > 0/* && item.Nums > 0*/)
                     {
                         int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
                         float rate = (item.InitNums - item.DiedNums) / (float)item.InitNums;
@@ -2082,7 +2100,7 @@ namespace IL2DCE.MissionObjectModel
                 try
                 {
                     GroundGroupObject previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
-                    if (item.Nums > 0 && item.AliveNums > 0)
+                    if (item.Nums > 0/* && item.AliveNums > 0*/)
                     {
                         int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
                         float rate = item.AliveNums / (float)item.Nums;
@@ -2345,7 +2363,7 @@ namespace IL2DCE.MissionObjectModel
         [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, IPlayer player, string actorName)
         {
-            string name = MissionObject.CreateShortName(player.Name());
+            string name = MissionObjBase.CreateShortName(player.Name());
 
             try
             {
@@ -2353,15 +2371,15 @@ namespace IL2DCE.MissionObjectModel
                 AiActor actor = player.Place();
                 AiAircraft aircraft = actor != null ? actor as AiAircraft : null;
                 AiAirGroup airGroup = aircraft != null ? aircraft.Group() as AiAirGroup : null;
-                string airGroupName = MissionObject.CreateShortName(airGroup != null ? airGroup.Name() : string.Empty);
-                string aircraftName = MissionObject.CreateShortName(aircraft != null ? aircraft.Name() : string.Empty);
+                string airGroupName = MissionObjBase.CreateShortName(airGroup != null ? airGroup.Name() : string.Empty);
+                string aircraftName = MissionObjBase.CreateShortName(aircraft != null ? aircraft.Name() : string.Empty);
                 Point3d pos = aircraft != null ? aircraft.Pos() : new Point3d(0, 0, 0);
                 string[] vals = new string[]
                     {
                         player.Army().ToString(Config.NumberFormat),                            // Amry
                         airGroupName,                                                           // AirGroup Name
                         aircraft != null ? aircraftName: actorName ?? string.Empty,             // ActorName
-                        aircraft != null ? MissionObject.CreateActorName(aircraft.InternalTypeName()): string.Empty,           // Class
+                        aircraft != null ? MissionObjBase.CreateActorName(aircraft.InternalTypeName()): string.Empty,           // Class
                         aircraft != null ? aircraft.IsValid() ? "1" : "0": string.Empty,        // Valid
                         aircraft != null ? aircraft.IsAlive() ? "1" : "0": string.Empty,        // Alive 
                         aircraft != null ? aircraft.IsTaskComplete() ? "1" : "0": string.Empty, // TaskComplete 
@@ -2393,7 +2411,7 @@ namespace IL2DCE.MissionObjectModel
         [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, AiAirport airport)
         {
-            string name = MissionObject.CreateShortName(airport.Name());
+            string name = MissionObjBase.CreateShortName(airport.Name());
 
             try
             {
@@ -2434,7 +2452,7 @@ namespace IL2DCE.MissionObjectModel
         [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, AiAirGroup airGroup)
         {
-            string name = MissionObject.CreateShortName(airGroup.Name());
+            string name = MissionObjBase.CreateShortName(airGroup.Name());
 
             try
             {
@@ -2443,7 +2461,7 @@ namespace IL2DCE.MissionObjectModel
                 string[] vals = new string[]
                     {
                       airGroup.Army().ToString(Config.NumberFormat),
-                      MissionObject.CreateActorName(aircraft.InternalTypeName()),
+                      MissionObjBase.CreateActorName(aircraft.InternalTypeName()),
                       airGroup.NOfAirc.ToString(Config.NumberFormat),
                       airGroup.InitNOfAirc.ToString(Config.NumberFormat),
                       airGroup.DiedAircrafts.ToString(Config.NumberFormat),
@@ -2478,7 +2496,7 @@ namespace IL2DCE.MissionObjectModel
         [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, AiGroundGroup groundGroup)
         {
-            string name = MissionObject.CreateShortName(groundGroup.Name());
+            string name = MissionObjBase.CreateShortName(groundGroup.Name());
 
             try
             {
@@ -2488,7 +2506,7 @@ namespace IL2DCE.MissionObjectModel
                 string[] vals = new string[]
                     {
                       groundGroup.Army().ToString(Config.NumberFormat),
-                      MissionObject.CreateActorName(groundActor.InternalTypeName()),
+                      MissionObjBase.CreateActorName(groundActor.InternalTypeName()),
                       groundActor.Type().ToString(),
                       aiActors != null ? aiActors.Length.ToString(Config.NumberFormat) : "0",
                       aiActors != null ? aiActors.Where(x => x.IsAlive()).Count().ToString(Config.NumberFormat) : "0",
@@ -2523,7 +2541,7 @@ namespace IL2DCE.MissionObjectModel
         [Conditional("DEBUG")]
         public static void WriteTo(ISectionFile file, GroundStationary groundStationary)
         {
-            string name = MissionObject.CreateShortName(groundStationary.Name);
+            string name = MissionObjBase.CreateShortName(groundStationary.Name);
 
             try
             {

@@ -1,5 +1,5 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.1)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.2)
 =============================================================================================================================
                                                                                                                    04/25/2025
 This is the silkyskyj version of IL2DCE.
@@ -112,7 +112,8 @@ History
 
   Ver      Date       Comment
 
-  0.6.1    04/25/2025 Fixed: Temporary solution to CloD specification where AI aircraft will not take off if AirGroup is set idle.
+  0.6.2    04/25/2025 Fixed: not work AdditionalStationaries in Campaign, not carried over GroundGroup disable & position[Campaign StrictMode], if a group's units are reduced to 0, they will disappear forever[Campaign StrictMode]
+  0.6.1    04/24/2025 Fixed: Temporary solution to CloD specification where AI aircraft will not take off if AirGroup is set idle.
   0.6.0    04/20/2025 Added: Strict mode/AI AirGroup Skill/SpawnParked/Progress type selection in Dynamic Campaign new Career page. Add Random Ground units/AI Ship Skill/Ground Unit Setting/Unit Nums/Convert Generic type option in each page. Save/Load general settings in each pages. Ability to increase or decrease skill values ​​based on Campaign mission results/Display current skill values.
                       Fixed: Improved mission loading speed. Other minor bug fixes.
                       Changed: Changes to mission import logic and mission file structure. Fixes to attached mission files.

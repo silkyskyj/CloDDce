@@ -294,6 +294,46 @@
   Static37 Artillery.Zwillingssockel36_GER1 de 23235.11 23036.09 0.00 /timeout 0/radius_hide 0
   Static39 Artillery.Zwillingssockel36_GER1 de 23601.42 23124.08 0.00 /timeout 0/radius_hide 0
   Static38 Artillery.Zwillingssockel36_GER1 de 23347.01 23308.67 0.00 /timeout 0/radius_hide 0
+  Static70 tobruk:Stationary.Bf-109E-7 de 28784.69 16231.83 0.00 
+  Static71 tobruk:Stationary.Bf-109E-7 de 28825.59 16233.52 0.00 
+  Static72 tobruk:Stationary.Bf-109E-7 de 28855.84 16236.32 0.00 
+  Static73 tobruk:Stationary.Bf-109E-7 de 28886.10 16238.56 0.00 
+  Static74 tobruk:Stationary.Bf-109F-4 de 29541.66 16157.31 0.00 
+  Static75 tobruk:Stationary.Bf-109F-4 de 29589.29 16145.55 0.00 
+  Static76 tobruk:Stationary.Bf-109F-4 de 29636.35 16133.22 0.00 
+  Static77 tobruk:Stationary.Bf-109F-4 de 29678.94 16124.26 0.00 
+  Static78 Stationary.Do-17Z-1 de 28742.51 22055.98 0.00 
+  Static79 Stationary.Do-17Z-1 de 28771.90 22039.70 0.00 
+  Static80 Stationary.Do-17Z-1 de 28795.36 22033.12 0.00 
+  Static81 Stationary.Do-17Z-1 de 28821.52 22023.29 0.00 
+  Static82 tobruk:Stationary.He-111H-6 de 29061.96 21995.15 0.00 
+  Static83 tobruk:Stationary.He-111H-6 de 29101.92 21991.28 0.00 
+  Static84 tobruk:Stationary.He-111H-6 de 29135.93 21985.25 0.00 
+  Static85 tobruk:Stationary.He-111H-6 de 29182.60 21979.23 0.00 
+  Static86 tobruk:Stationary.Macchi-C202-SeriesVII it 23516.37 22635.76 0.00 
+  Static87 tobruk:Stationary.Macchi-C202-SeriesVII it 23589.05 22690.94 0.00 
+  Static88 tobruk:Stationary.Macchi-C202-SeriesVII it 23633.46 22747.47 0.00 
+  Static89 tobruk:Stationary.Macchi-C202-SeriesVII it 23679.22 22840.33 0.00 
+  Static93 tobruk:Stationary.SpitfireMkVb gb 12273.100 16461.28 0.00 
+  Static90 tobruk:Stationary.SpitfireMkVb gb 12257.23 16417.06 0.00 
+  Static92 tobruk:Stationary.SpitfireMkVb gb 12348.71 16362.93 0.00 
+  Static91 tobruk:Stationary.SpitfireMkVb gb 12312.12 16381.23 0.00 
+  Static94 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10254.37 11126.93 0.00 
+  Static95 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10314.98 11106.79 0.00 
+  Static96 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10364.85 11090.70 0.00 
+  Static97 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10431.05 11066.10 0.00 
+  Static98 Stationary.AnsonMkI gb 10757.51 10866.85 0.00 
+  Static99 Stationary.AnsonMkI gb 10796.14 10853.06 0.00 
+  Static100 Stationary.AnsonMkI gb 10818.10 10841.11 0.00 
+  Static101 Stationary.AnsonMkI gb 10838.32 10830.100 0.00 
+  Static102 tobruk:Stationary.TomahawkMkII-Late us 10849.85 10583.08 0.00 
+  Static103 tobruk:Stationary.TomahawkMkII-Late us 10881.08 10569.31 0.00 
+  Static104 tobruk:Stationary.TomahawkMkII-Late us 10920.57 10550.02 0.00 
+  Static105 tobruk:Stationary.TomahawkMkII-Late us 10971.09 10527.06 0.00 
+  Static106 tobruk:Stationary.D520_Serie1 fr 10409.06 10757.33 0.00 
+  Static107 tobruk:Stationary.D520_Serie1 fr 10427.95 10747.89 0.00 
+  Static108 tobruk:Stationary.D520_Serie1 fr 10444.06 10738.44 0.00 
+  Static109 tobruk:Stationary.D520_Serie1 fr 10465.18 10726.77 0.00 
 [Buildings]
   0_bld buildings.House$Oil_Bunker-Middle 1 23654.33 23033.42 0.00
   1_bld buildings.House$Oil_Bunker-Middle 1 28753.75 22525.91 0.00
