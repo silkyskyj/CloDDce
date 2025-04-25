@@ -45,9 +45,8 @@ I'm very sorry, but please use this product only if you understand these points.
 Main functions
 1. Dynamic Campaign
 2. Dynamic Quick Misson
-
-
-1. In Dynamic Campaign, you can select and set the following items. 
+---
+1.In Dynamic Campaign, you can select and set the following items. 
 Career
  - Army (Red/Blue)
  - Air Force
@@ -103,7 +102,7 @@ Items that can be selected and set commonly in 1. 2.
  - Unit Nums <- v0.6.0
  - Convert Generic type <- v0.6.0
  - Save/Load general settings <- v0.6.0
-
+---
 Sample mission (7 mission files)
  - Adlerangriff RAF/Lufutwaffe
  - Cross v Round.Tobruk \[*\] RAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Hungarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
@@ -120,6 +119,59 @@ OS: Windows 10 x64 Home (Development) latest official MS patch
 Software: IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings(DLC) - English Langauage
 Display Resolution: 1920x1080
 
+---
+\[Default install location\]
+Module: C:\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\IL2DCE
+  conf.ini(Configuration file): C:\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\IL2DCE\conf.ini
+
+logs: C:\Users\<UserName>\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\missions\IL2DCE
+  il2dce.log (Errors, etc.)
+  Convert.log (Mission import)
+
+Progress of each campaign, career, etc. : C:\Users\<UserName>\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\mission\IL2DCE
+*<UserName>: your windows user account name
+*How to find settings value in the folder: To search, use the Windows findstr command or an editor that supports Grep, such as Notepad++.
+
+* Default folder and file structure (Program Files)
+
+C:\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\AddIns
+ IL2DCE.GameSingle.xml
+ IL2DCE.QuickMission.xml
+
+C:\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\IL2DCE
+<DIR> Campaigns
+ conf.ini
+ IL2DCE.dll
+ IL2DCE.Game.dll
+ IL2DCE.Mission.dll
+ IL2DCE.Pages.dll
+ LICENSE
+
+\[Reporting Bug\]
+When reporting bug, please include the following information:
+- CloD version
+- IL2DCE version
+- CloD language
+- OS language (system locale)
+- If you have customized the regional settings in the OS settings, those settings (date, time, calendar, numeric display settings, etc.)
+- Log files (see the default installation location above)
+- Information about the campaign or mission file where the bug occurred
+
+*Please include any files or images as evidence
+*Even if you post an issue, if this information is not provided, I will likely ignore it, as we will not be able to stop development and allocate the time to investigate. I appreciate your understanding on this point.
+
+\[Regarding feature requests\]
+sorry, but I'm not currently accepting feature requests.
+The features to be added and the content to be modified are decided based on information from past forum posts and new features, taking into account time costs and ease of implementation. Thank you for your understanding.
+
+\[About the term "Dynamic campaign" and the system\]
+The original authors' discussions on other forums regarding the Dynamic campaign can be found here. I respect the authors' contributions and use them as is. Please note that I will not be discussing this matter. (*the original source code has been open for 14 years).
+http://forum.fulqrumpublishing.com/showthread.php?p=405610
+
+\[Upcoming features\]
+- Controlling the actions of each unit and group during a mission (if possible)
+
+---
 A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
 Official website: https://github.com/silkyskyj/il2dce
 
