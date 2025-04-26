@@ -1,11 +1,9 @@
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.2 04/25/2025)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.3 04/27/2025)
 https://github.com/silkyskyj/il2dce/releases
 
 Fixed:
- - not work AdditionalStationaries in Campaign
- - not carried over GroundGroup disable & position\[Campaign StrictMode\]
- - if a group's units are reduced to 0, they will disappear forever\[Campaign StrictMode\]
- - Temporary solution to CloD specification where AI aircraft will not take off if AirGroup is set idle. (0.6.1)
+ - Battle results statistics show nothing.
+ - In Campaign Strict Mode, some groups and units do not inherit their status or reinforce properly.
 
 *In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.
 
