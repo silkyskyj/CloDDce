@@ -11,6 +11,7 @@ Artillery (The ship kind and the land kind and the anti-air kind) https://forum.
 Ship Speed and Convoys (Boat Racing) https://forum.il2sturmovik.com/topic/90951-ship-speed-and-convoys-boat-racing/
 AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
 
+
 *There are cases where files are not properly overwritten by the installer. I recommend uninstalling the old version -> deleting the IL2DCE folder in Program Files -> reinstalling.
 *please re-import any mission files that you have previously imported.
 * \[Kill count may differ from game default\] sorry, since the method for counting the number of kills in the game has not been made public, we cannot guarantee that the numbers will be the same. The calculation method is different.This is the current specification of IL2DCE. If you don't like this number, please use CloD PlayerStat API statType 1. 
