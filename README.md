@@ -20,7 +20,7 @@ AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
 * If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.
 
 \[Current Bugs\]
- - There are cases where no text is displayed when viewing the battle results statistics.(the cause has been identified)
+ - 
 
 This is the silkyskyj version of IL2DCE.
 
