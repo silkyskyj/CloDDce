@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using IL2DCE.Generator;
+using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using static IL2DCE.MissionObjectModel.Skill;
@@ -398,10 +399,11 @@ namespace IL2DCE.MissionObjectModel
         {
             AiDamageInitiator initiator = null;
             double scoreHighest = 0;
-            IEnumerable<string> actors = damages.Where(x => !string.IsNullOrEmpty(GetName(x.initiator))).Select(x => x.initiator.Actor.Name()).Distinct();
-            foreach (string actor in actors)
+            string name;
+            IEnumerable<string> actorNames = damages.Where(x => !string.IsNullOrEmpty(name = CloDAPIUtil.GetName(x.initiator))).Select(x => CloDAPIUtil.GetName(x.initiator)).Distinct();
+            foreach (string actorName in actorNames)
             {
-                var damageScores = damages.Where(x => string.Compare(x.initiator.Actor.Name(), actor) == 0);
+                var damageScores = damages.Where(x => string.Compare(CloDAPIUtil.GetName(x.initiator), actorName) == 0);
                 double score = damageScores.Sum(x => x.score);
                 if (score > scoreHighest)
                 {
@@ -412,10 +414,6 @@ namespace IL2DCE.MissionObjectModel
             return initiator;
         }
 
-        private string GetName(AiDamageInitiator initiator)
-        {
-            return initiator.Actor != null ? initiator.Actor.Name() : initiator.Person != null ? initiator.Person.Name() : initiator.Player != null ? initiator.Player.Name() : initiator.Tool != null ? initiator.Tool.Name : string.Empty;
-        }
 
         private void AddKillsCount(AiActor actor)
         {

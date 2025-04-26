@@ -488,82 +488,86 @@ namespace IL2DCE.Generator
 
         public void ReinForce(MissionStatus missionStatus, DateTime dateTime)
         {
-            if (missionStatus != null)
-            {                                                                                       // 2
-                int reinForceHour = Config.ReinForceDay * 24;                                       // 72
-                double IntervalHour = (dateTime - missionStatus.DateTime).TotalHours;               // 48
-                double rate = IntervalHour / reinForceHour;                                         // 0.7
+                                                                                    // 2
+            int reinForceHour = Config.ReinForceDay * 24;                                       // 72
+            double IntervalHour = (dateTime - missionStatus.DateTime).TotalHours;               // 48
+            double rate = IntervalHour / reinForceHour;                                         // 0.7
 
-                foreach (var item in missionStatus.AirGroups)
-                {
-                    if (item.InitNums > 0)
-                    {
-                        DateTime? reinForceDate = item.ReinForceDate;
-                        if (reinForceDate != null)
-                        {
-                            if (reinForceDate.Value <= dateTime)
-                            {
-                                item.Nums = item.InitNums;
-                                item.DiedNums = 0;
-                                item.ReinForceDate = null;
-                            }
-                        }
-                    }
-                }
-
-                foreach (var item in missionStatus.GroundGroups)
-                {
-                    if (item.Nums > 0)
-                    {
-                        DateTime? reinForceDate = item.ReinForceDate;
-                        if (reinForceDate != null)
-                        {
-                            if (reinForceDate.Value <= dateTime)
-                            {
-                                item.AliveNums = item.Nums;
-                                item.ReinForceDate = null;
-                            }
-                        }
-                    }
-                }
-
-                foreach (var item in missionStatus.Stationaries)
+            foreach (var item in missionStatus.AirGroups)
+            {
+                // if (item.InitNums > 0)
                 {
                     DateTime? reinForceDate = item.ReinForceDate;
                     if (reinForceDate != null)
                     {
                         if (reinForceDate.Value <= dateTime)
                         {
-                            item.IsAlive = true;
+                            item.Nums = item.InitNums > 0 ? item.InitNums: 1;
+                            item.InitNums = item.Nums;
+                            item.DiedNums = 0;
                             item.ReinForceDate = null;
+                            item.IsAlive = true;
+                            item.IsValid = true;
                         }
                     }
                 }
+            }
 
-                foreach (var item in missionStatus.Aircrafts)
+            foreach (var item in missionStatus.GroundGroups)
+            {
+                // if (item.Nums > 0)
                 {
                     DateTime? reinForceDate = item.ReinForceDate;
                     if (reinForceDate != null)
                     {
                         if (reinForceDate.Value <= dateTime)
                         {
-                            item.IsAlive = true;
+                            item.AliveNums = item.Nums > 0 ? item.Nums: 1;
+                            item.Nums = item.AliveNums;
                             item.ReinForceDate = null;
+                            item.IsAlive = true;
+                            item.IsValid = true;
                         }
                     }
                 }
+            }
 
-                foreach (var item in missionStatus.GroundActors)
+            foreach (var item in missionStatus.Stationaries)
+            {
+                DateTime? reinForceDate = item.ReinForceDate;
+                if (reinForceDate != null)
                 {
-                    DateTime? reinForceDate = item.ReinForceDate;
-                    if (reinForceDate != null)
+                    if (reinForceDate.Value <= dateTime)
                     {
-                        if (reinForceDate.Value <= dateTime)
-                        {
-                            Debug.WriteLine("ReinForce to Alive[{0}] ReinForceDate:{1} [Next Date: {2}]", item.Name, item.ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat), dateTime.ToString(Config.DateTimeDefaultLongFormat));
-                            item.IsAlive = true;
-                            item.ReinForceDate = null;
-                        }
+                        item.IsAlive = true;
+                        item.ReinForceDate = null;
+                    }
+                }
+            }
+
+            foreach (var item in missionStatus.Aircrafts)
+            {
+                DateTime? reinForceDate = item.ReinForceDate;
+                if (reinForceDate != null)
+                {
+                    if (reinForceDate.Value <= dateTime)
+                    {
+                        item.IsAlive = true;
+                        item.ReinForceDate = null;
+                    }
+                }
+            }
+
+            foreach (var item in missionStatus.GroundActors)
+            {
+                DateTime? reinForceDate = item.ReinForceDate;
+                if (reinForceDate != null)
+                {
+                    if (reinForceDate.Value <= dateTime)
+                    {
+                        Debug.WriteLine("ReinForce to Alive[{0}] ReinForceDate:{1} [Next Date: {2}]", item.Name, item.ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat), dateTime.ToString(Config.DateTimeDefaultLongFormat));
+                        item.IsAlive = true;
+                        item.ReinForceDate = null;
                     }
                 }
             }

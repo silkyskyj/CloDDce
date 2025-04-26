@@ -95,6 +95,7 @@
     <Compile Include="Random.cs" />
     <Compile Include="MissionObjectModel\Speed.cs" />
     <Compile Include="Util\AircraftImage.cs" />
+    <Compile Include="Util\CloDAPIUtil.cs" />
     <Compile Include="Util\Collection.cs" />
     <Compile Include="Util\MapUtil.cs" />
     <Compile Include="Util\MissionFileConverter.cs" />

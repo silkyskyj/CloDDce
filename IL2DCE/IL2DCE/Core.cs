@@ -297,8 +297,13 @@ namespace IL2DCE
                 ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName) : gameInterface.SectionFileCreate();
                 MissionStatus missionStatus = MissionStatus.Create(missionStatusFile, Random);
 
-                // ReinForce
-                generator.ReinForce(missionStatus, career.Date.Value);
+                // ReinForce & Save
+                if (missionStatus != null)
+                {
+                    generator.ReinForce(missionStatus, career.Date.Value);
+                    missionStatus.WriteTo(missionStatusFile);
+                    missionStatusFile.save(missionStatusFileName);
+                }
 
                 // Generate the next mission based on the template.
                 ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
@@ -415,14 +420,6 @@ namespace IL2DCE
             }
         }
 
-        public void SaveMissionResult(MissionStatus missionStatus)
-        {
-            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
-            ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileCreate();
-            missionStatus.WriteTo(missionStatusFile);
-            missionStatusFile.save(missionStatusFileName);
-        }
-
         public void UpdateMissionResult(MissionStatus missionStatus)
         {
             GameIterface gameInterface = (GamePlay as IGame).gameInterface;
@@ -521,6 +518,15 @@ namespace IL2DCE
         }
 
 #if DEBUG
+        [Conditional("DEBUG")]
+        public void SaveMissionResult(MissionStatus missionStatus)
+        {
+            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
+            ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileCreate();
+            missionStatus.WriteTo(missionStatusFile);
+            missionStatusFile.save(missionStatusFileName);
+        }
+
         [Conditional("DEBUG")]
         public void SaveCurrentStatus(string fileName, string playerActorName, DateTime dateTime, bool forceCreate = false)
         {
