@@ -1,17 +1,16 @@
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.2 04/25/2025)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.3 04/27/2025)
 https://github.com/silkyskyj/il2dce/releases
 
 Fixed:
- - not work AdditionalStationaries in Campaign
- - not carried over GroundGroup disable & position\[Campaign StrictMode\]
- - if a group's units are reduced to 0, they will disappear forever\[Campaign StrictMode\]
- - Temporary solution to CloD specification where AI aircraft will not take off if AirGroup is set idle. (0.6.1)
+ - Battle results statistics show nothing.
+ - In Campaign Strict Mode, some groups and units do not inherit their status or reinforce properly.
 
 *In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.
 
 Artillery (The ship kind and the land kind and the anti-air kind) https://forum.il2sturmovik.com/topic/90957-artillery-the-ship-kind-and-the-land-kind-and-the-anti-air-kind/
 Ship Speed and Convoys (Boat Racing) https://forum.il2sturmovik.com/topic/90951-ship-speed-and-convoys-boat-racing/
 AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
+
 
 *There are cases where files are not properly overwritten by the installer. I recommend uninstalling the old version -> deleting the IL2DCE folder in Program Files -> reinstalling.
 *please re-import any mission files that you have previously imported.
@@ -22,7 +21,7 @@ AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
 * If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.
 
 \[Current Bugs\]
- - There are cases where no text is displayed when viewing the battle results statistics.(the cause has been identified)
+ - 
 
 This is the silkyskyj version of IL2DCE.
 
