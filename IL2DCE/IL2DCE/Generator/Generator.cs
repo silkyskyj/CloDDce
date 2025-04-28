@@ -578,6 +578,11 @@ namespace IL2DCE.Generator
             if (missionStatus != null)
             {
                 double IntervalHour = (dateTime - missionStatus.DateTime).TotalHours;
+                if (IntervalHour < CampaignProgress.AnyTimeBebin)
+                {
+                    IntervalHour = Career.CampaignProgress == ECampaignProgress.AnyTime || Career.CampaignProgress == ECampaignProgress.AnyDayAnyTime ? 
+                                    CampaignProgress.AnyTimeBebin : CampaignProgress.AnyDayBebin * 24;
+                }
 
                 // Stationaries
 #if DEBUG && false
@@ -617,7 +622,7 @@ namespace IL2DCE.Generator
                                                                 string.Compare(x.Class.Replace(ValueStationary, ValueAircraft), airGroup.Class, true) == 0);
                         substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 && 
                                                                 string.Compare(x.Class, y.Class, true) == 0 && y.IsAlive));
-                        MissionStatus.AirGroupObject airGroupObject = missionStatus.AirGroups.Where(x => string.Compare(x.Name, airGroup.Id, true) == 0).FirstOrDefault();
+                        MissionStatus.AirGroupObject airGroupObject = missionStatus.AirGroups.Where(x => string.Compare(x.SquadronName, airGroup.SquadronName, true) == 0).FirstOrDefault();
                         if (airGroupObject != null)
                         {
                             // Substitute Aircraft  

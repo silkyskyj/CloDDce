@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
@@ -168,7 +169,7 @@ namespace IL2DCE
                 if (Core != null)
                 {
                     Core.Mission = this;
-                    MissionStatus = new MissionStatus(Core.Random);
+                    MissionStatus = new MissionStatus(Core.Random, Core.CurrentCareer.Date.Value);
                 }
             }
 
@@ -188,6 +189,7 @@ namespace IL2DCE
 #if DEBUG
                 MissionDebug.Trace(Game, DataDictionary);
                 Core.SaveCurrentStatus(Config.MissionStatusStartFileName, PlayerActorName, career.Date.Value, true);
+
 #if false
                 TraceGameInfo();
 #endif
@@ -222,7 +224,7 @@ namespace IL2DCE
                     MissionStatus.Update(Game, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()));
 #if DEBUG
                     // Trace(DataDictionary);
-                    Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()));
+                    Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()), true);
 #endif
                 }
 
@@ -323,7 +325,7 @@ namespace IL2DCE
 
             public override void OnActorDestroyed(int missionNumber, string shortName, AiActor actor)
             {
-                Debug.WriteLine("Mission.OnActorDestroyed({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6})", missionNumber, shortName, actor.Name(),
+                Debug.WriteLine("Mission.OnActorDestroyed({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, Task={6})", missionNumber, shortName, CloDAPIUtil.ActorInfo(actor),
                     actor is AiAircraft ? "Aircraft" : actor is AiGroundActor ? "AiGroundActor" : string.Empty, actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete());
                 base.OnActorDestroyed(missionNumber, shortName, actor);
 #if DEBUG
@@ -344,15 +346,9 @@ namespace IL2DCE
 
             public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
             {
-                Debug.WriteLine("Mission.OnActorDead({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, TaskComplete={6}, Army={7}, Group={8}))",
-                    missionNumber, shortName, actor.Name(),
-                        // string.Join("|", damages.Where(x => x.initiator != null && x.initiator.Player != null).Select(x => string.Format("{0}[{1}]", x.score, x.initiator.Player.Name()))),
-                        string.Join("|", damages.Where(x => x.initiator != null).Select(x => string.Format("{0}[Actor={1}, Player={2}, Person={3}, Tool={4}]", x.score,
-                                                                                                                                x.initiator.Actor != null ? x.initiator.Actor.Name() : string.Empty,
-                                                                                                                                x.initiator.Player != null ? x.initiator.Player.Name() : string.Empty,
-                                                                                                                                x.initiator.Person != null ? x.initiator.Person.Name() : string.Empty,
-                                                                                                                                x.initiator.Tool != null ? x.initiator.Tool.Name : string.Empty))),
-                        actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete(), actor.Army(), actor.Group() != null ? actor.Group().Name() : string.Empty);
+                Debug.WriteLine("Mission.OnActorDead({0}, {1}, {2}[{3}], {4}, Valid={5}, Alive={6}, Task={7}, Army={8}))",
+                    missionNumber, shortName, CloDAPIUtil.ActorInfo(actor), string.Join("|", damages.Where(x => x.initiator != null).Select(x => CloDAPIUtil.GetName(x.initiator))),
+                        actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete(), actor.Army());
                 base.OnActorDead(missionNumber, shortName, actor, damages);
 
                 if (actor is AiAircraft || actor is AiGroundActor)
@@ -380,7 +376,7 @@ namespace IL2DCE
 
             public override void OnActorTaskCompleted(int missionNumber, string shortName, AiActor actor)
             {
-                Debug.WriteLine("Mission.OnActorTaskCompleted({0}, {1}, {2})", missionNumber, shortName, actor.Name());
+                Debug.WriteLine("Mission.OnActorTaskCompleted({0}, {1}, {2})", missionNumber, shortName, CloDAPIUtil.ActorInfo(actor));
                 base.OnActorTaskCompleted(missionNumber, shortName, actor);
                 if (MissionStatus != null)
                 {
@@ -435,6 +431,11 @@ namespace IL2DCE
                         result.First().IsLanded = false;
                     }
                 }
+
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(aircraft);
+                }
             }
 
 #if false
@@ -487,18 +488,33 @@ namespace IL2DCE
                         AircraftLanded.Add(new AircraftState(aircraft) { IsLanded = true });
                     }
                 }
+
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(aircraft);
+                }
             }
 
             public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
             {
                 Debug.WriteLine("Mission.OnAircraftCrashLanded({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
                 base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
+
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(aircraft);
+                }
             }
 
             public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
             {
                 Debug.WriteLine("Mission.OnAircraftKilled({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
                 base.OnAircraftKilled(missionNumber, shortName, aircraft);
+
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(aircraft);
+                }
             }
 
             #endregion
@@ -513,7 +529,7 @@ namespace IL2DCE
 
             public override void OnPersonHealth(AiPerson person, AiDamageInitiator initiator, float deltaHealth)
             {
-                Debug.WriteLine("Mission.OnPersonHealth({0}, {1}, {2})", person.Name(), initiator != null && initiator.Actor != null ? initiator.Actor.Name() : string.Empty, deltaHealth);
+                Debug.WriteLine("Mission.OnPersonHealth({0}, {1}, {2})", person.Name(), initiator != null ? CloDAPIUtil.GetName(initiator): string.Empty, deltaHealth);
                 base.OnPersonHealth(person, initiator, deltaHealth);
             }
 
@@ -521,12 +537,22 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.OnPersonParachuteLanded({0}, {1}, {2})", person.Name(), person.Id, person.Health);
                 base.OnPersonParachuteLanded(person);
+
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(person);
+                }
             }
 
             public override void OnPersonParachuteFailed(AiPerson person)
             {
                 Debug.WriteLine("Mission.OnPersonParachuteFailed({0}, {1}, {2})", person.Name(), person.Id, person.Health);
                 base.OnPersonParachuteFailed(person);
+
+                if (MissionStatus != null)
+                {
+                    MissionStatus.Update(person);
+                }
             }
 
             #endregion
@@ -535,11 +561,13 @@ namespace IL2DCE
 
             public override void OnAutopilotOn(AiActor actor, int placeIndex)
             {
+                Debug.WriteLine("Mission.OnAutopilotOn({0}, {1})", CloDAPIUtil.ActorInfo(actor), placeIndex);
                 base.OnAutopilotOn(actor, placeIndex);
             }
 
             public override void OnAutopilotOff(AiActor actor, int placeIndex)
             {
+                Debug.WriteLine("Mission.OnAutopilotOff({0}, {1})", CloDAPIUtil.ActorInfo(actor), placeIndex);
                 base.OnAutopilotOff(actor, placeIndex);
             }
 
@@ -547,20 +575,20 @@ namespace IL2DCE
 
             public override void OnAiAirNewEnemy(AiAirEnemyElement element, int army)
             {
-                // Debug.WriteLine("Mission.OnAiAirNewEnemy(army={0}, agID={1}, state={2})", element.army, element.agID, element.state);
+                //Debug.WriteLine("Mission.OnAiAirNewEnemy(army={0}, agID={1}, state={2})", element.army, element.agID, element.state);
                 base.OnAiAirNewEnemy(element, army);
 #if DEBUG && false
                 AiAirGroup aiAirGroup = Game.gpAiAirGroup(element.agID, element.army);
                 if (aiAirGroup != null)
                 {
-                    TraceAiAirGroup(aiAirGroup, false, false);
+                    MissionDebug.TraceAiAirGroup(Game, aiAirGroup, false, false, false, false, false);
                 }
 #endif
             }
 
             public override void OnBombExplosion(string title, double mass, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
             {
-                Debug.WriteLine("Mission.OnBombExplosion({0}, {1}, {2}, {3})", title, mass, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
+                // Debug.WriteLine("Mission.OnBombExplosion({0}, {1}, {2}, {3})", title, mass, initiator != null ? CloDAPIUtil.GetName(initiator) : string.Empty, eventArgInt);
                 base.OnBombExplosion(title, mass, pos, initiator, eventArgInt);
             }
 
@@ -572,13 +600,13 @@ namespace IL2DCE
 
             public override void OnBuildingKilled(string title, Point3d pos, AiDamageInitiator initiator, int eventArgInt)
             {
-                Debug.WriteLine("Mission.OnBuildingKilled({0}, {1}, {2})", title, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
+                Debug.WriteLine("Mission.OnBuildingKilled({0}, {1}, {2})", title, initiator != null ? CloDAPIUtil.GetName(initiator) : string.Empty, eventArgInt);
                 base.OnBuildingKilled(title, pos, initiator, eventArgInt);
             }
 
             public override void OnStationaryKilled(int missionNumber, GroundStationary _stationary, AiDamageInitiator initiator, int eventArgInt)
             {
-                Debug.WriteLine("Mission.OnStationaryKilled({0}, {1}, {2}, {3})", missionNumber, _stationary.Name, initiator.Player != null ? initiator.Player.Name() : string.Empty, eventArgInt);
+                Debug.WriteLine("Mission.OnStationaryKilled({0}, {1}, {2}, {3}, {4})", missionNumber, _stationary.Name, _stationary.Title, initiator != null ? CloDAPIUtil.GetName(initiator) : string.Empty, eventArgInt);
                 base.OnStationaryKilled(missionNumber, _stationary, initiator, eventArgInt);
                 if (MissionStatus != null)
                 {

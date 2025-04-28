@@ -226,7 +226,15 @@ namespace IL2DCE.MissionObjectModel
             get
             {
                 string airGroupKey = string.IsNullOrEmpty(VirtualAirGroupKey) ? CreateDisplayName(AirGroupKey) : VirtualAirGroupKey;
-                return string.Format(Config.NumberFormat, SquadronFormat, airGroupKey, SquadronIndex);
+                return CreateSquadronString(airGroupKey, SquadronIndex);
+            }
+        }
+
+        public string SquadronName
+        {
+            get
+            {
+                return CreateSquadronString(CreateDisplayName(AirGroupKey), SquadronIndex);
             }
         }
 
@@ -655,7 +663,7 @@ namespace IL2DCE.MissionObjectModel
                 // Waypoint
                 foreach (AirGroupWaypoint waypoint in Waypoints)
                 {
-                    SilkySkyCloDFile.Write(sectionFile,
+                    SilkySkyCloDFile.Add(sectionFile,
                                     string.Format("{0}_{1}", Id, MissionFile.SectionWay),
                                     waypoint.Type.ToString(),
                                     string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2} {4}", 

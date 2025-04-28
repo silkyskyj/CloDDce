@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -136,7 +137,7 @@ namespace IL2DCE.MissionObjectModel
         [Conditional("DEBUG")]
         public static void TraceActorCreated(IGame game, int missionNumber, string shortName, AiActor actor)
         {
-            if (string.Compare(shortName, "NONAME", true) != 0)
+            if (string.Compare(shortName, MissionStatus.ValueNoName, true) != 0)
             {
                 // Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
 
@@ -201,7 +202,7 @@ namespace IL2DCE.MissionObjectModel
                 try
                 {
                     AiAircraft aiAircraft = airGroup.GetItems()?.FirstOrDefault() as AiAircraft ?? null;
-                    Debug.WriteLine("  AiAirGroup: Army={0}, ID={1}, Name={2}, Type={3}, NOf={4}, Init={5}, Died={6}, Valid={7}, Alive={8}, Way=[{9}/{10}], Task={11}, Idle={12}, Pos={13}",
+                    Debug.WriteLine("  AiAirGroup: Army={0,1}, ID={1,3}, Name={2,-30}, Type={3,-35}, NOf={4,2}, Init={5,2}, Died={6,2}, Valid={7,-5}, Alive={8,-5}, Way=[{9,2}/{10,2}], Task={11,-15}, Idle={12,-5}, Pos={13,-65}",
                         airGroup.Army(), airGroup.ID(), airGroup.Name(), aiAircraft?.InternalTypeName() ?? string.Empty, airGroup.NOfAirc, airGroup.InitNOfAirc, airGroup.DiedAircrafts,
                         airGroup.IsValid(), airGroup.IsAlive(), airGroup.NOfAirc > 0 ? airGroup.GetCurrentWayPoint() : -1,
                         airGroup.NOfAirc > 0 && airGroup.GetWay() != null ? airGroup.GetWay().Length : 0, airGroup.getTask().ToString(), airGroup.Idle, airGroup.Pos().ToString());
@@ -295,33 +296,22 @@ namespace IL2DCE.MissionObjectModel
             {
                 try
                 {
+                    StringBuilder sb = new StringBuilder();
                     AiActor[] aiActors = groundGroup.GetItems();
                     AiGroundActor aiActor = aiActors != null ? aiActors.FirstOrDefault() as AiGroundActor : null;
-                    Debug.Write(string.Format("  AiGroundGroup: Army={0}, ID={1}, Name={2}, Type={3}, Count={4}, IsAlive={5}",
-                        groundGroup.Army(),
-                        groundGroup.ID(),
-                        groundGroup.Name(),
-                        aiActor != null ? aiActor.InternalTypeName() : string.Empty,
-                        aiActors != null ? aiActors.Count() : 0,
-                        groundGroup.IsAlive()));
+                    sb.AppendFormat("  AiGroundGroup: Army={0,1}, Name={1,-30}, Type={2,-35}, Count={3,2}, IsAlive={4,-5}",
+                        groundGroup.Army(),groundGroup.Name(), aiActor != null ? aiActor.InternalTypeName() : string.Empty, aiActors != null ? aiActors.Count() : 0, groundGroup.IsAlive());
                     if (groundGroup.IsValid())
                     {
-                        Debug.WriteLine(", IsValid={0}, Idle={1}, Pos={2}", groundGroup.IsValid(), groundGroup.Idle, groundGroup.Pos().ToString());
+                        sb.AppendFormat(", IsValid={0,-5}, Idle={1,-5}, Pos={2,-65}", groundGroup.IsValid(), groundGroup.Idle, groundGroup.Pos().ToString());
                         AiWayPoint[] waysPoints = groundGroup.GetWay();   // null
                         if (waysPoints != null)
                         {
-                            Debug.WriteLine(", Way=[{0}/{1}], Current{2}",
+                            sb.AppendFormat(", Way=[{0,2}/{1,2}], Current{2,2}",
                                 groundGroup.GetCurrentWayPoint(), waysPoints.Length, waysPoints[groundGroup.GetCurrentWayPoint()].ToString());
                         }
-                        else
-                        {
-                            Debug.WriteLine("");
-                        }
                     }
-                    else
-                    {
-                        Debug.WriteLine("");
-                    }
+                    sb.AppendLine();
                     if (ways)
                     {
                         AiWayPoint[] WayPoints = groundGroup.GetWay();
@@ -329,8 +319,9 @@ namespace IL2DCE.MissionObjectModel
                         {
                             foreach (AiGroundWayPoint item in WayPoints)
                             {
-                                Debug.WriteLine("    WayPoint: RoadWidth={0}, P=({1},{2},{3}) V={4}, waitTime={5}, BridgeIdx={6}",
+                                sb.AppendFormat("    WayPoint: RoadWidth={0}, P=({1},{2},{3}) V={4}, waitTime={5}, BridgeIdx={6}",
                                     item.roadWidth.ToString(), item.P.x, item.P.y, item.P.z, item.Speed, item.waitTime, item.BridgeIdx);
+                                sb.AppendLine();
                             }
                         }
                     }
@@ -341,12 +332,13 @@ namespace IL2DCE.MissionObjectModel
                         {
                             foreach (AiGroundActor item in actors)
                             {
-                                Debug.WriteLine("    GroundActor: Name={0}, Health={1}, IsValid={2} IsAlive={3}, Pos={4}",
+                                sb.AppendFormat("    GroundActor: Name={0}, Health={1}, IsValid={2} IsAlive={3}, Pos={4}",
                                     item.Name(), item.Health(), item.IsValid(), item.IsAlive(), item.Pos().ToString());
+                                sb.AppendLine();
                             }
                         }
                     }
-
+                    Debug.Write(sb.ToString());
                 }
                 catch (Exception ex)
                 {

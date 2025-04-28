@@ -114,6 +114,14 @@ namespace IL2DCE
             private set;
         }
 
+        public int ArmyAirForce
+        {
+            get
+            {
+                return ArmyIndex * 10 + AirForceIndex;
+            }
+        }
+
         public int RankIndex
         {
             get;
@@ -130,6 +138,14 @@ namespace IL2DCE
         {
             get;
             set;
+        }
+
+        public string CampaignString
+        {
+            get
+            {
+                return CampaignInfo != null ? CampaignInfo.ToString(): !string.IsNullOrEmpty(MissionFileName) ? MissionFileName: string.Empty;
+            }
         }
 
         public DateTime? Date
@@ -168,6 +184,14 @@ namespace IL2DCE
         {
             get;
             set;
+        }
+
+        public string AirGroupDisplayString
+        {
+            get
+            {
+                return string.IsNullOrEmpty(AirGroupDisplay) ? MissionObjectModel.AirGroup.CreateDisplayName(AirGroup) : AirGroupDisplay;
+            }
         }
 
         public int AdditionalAirOperations
@@ -543,6 +567,14 @@ namespace IL2DCE
         }
 
         #endregion
+
+        public string DisplayString
+        {
+            get
+            {
+                return ToString();
+            }
+        }
 
         #endregion
 

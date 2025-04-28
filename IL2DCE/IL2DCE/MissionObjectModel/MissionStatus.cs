@@ -54,7 +54,62 @@ namespace IL2DCE.MissionObjectModel
             Count,
         }
 
-        public class MissionObjBase
+        interface IMissionObj
+        {
+            string Name
+            {
+                get;
+                set;
+            }
+
+            bool IsAlive
+            {
+                get;
+                set;
+            }
+
+            double X
+            {
+                get;
+                set;
+            }
+
+            double Y
+            {
+                get;
+                set;
+            }
+                
+            double Z
+            {
+                get;
+                set;
+            }
+
+            Point3d Point
+            {
+                get;
+            }
+
+            DateTime? ReinForceDate
+            {
+                get;
+                set;
+            }
+
+            bool IsValidPoint
+            {
+                get;
+            }
+
+            bool IsSamePosition(MissionObjBase target);
+            bool Update(ref string target, string compare);
+            double ReinForceRate();
+            int[] ReinForceDayHour(int reinForceDay);
+            void WriteTo(ISectionFile file, bool overwrite);
+        }
+
+        public class MissionObjBase : IMissionObj
         {
             public string Name
             {
@@ -180,7 +235,7 @@ namespace IL2DCE.MissionObjectModel
                 return name;
             }
 
-            protected bool Update(ref string target, string compare)
+            public bool Update(ref string target, string compare)
             {
                 if ((string.IsNullOrEmpty(target) || string.Compare(target, ValueNoName, true) == 0) &&
                     (!string.IsNullOrEmpty(compare) && string.Compare(compare, ValueNoName, true) != 0))
@@ -196,12 +251,17 @@ namespace IL2DCE.MissionObjectModel
                 return 1.0;
             }
 
-            public int [] ReinForceDayHour(int reinForceDay)
+            public int[] ReinForceDayHour(int reinForceDay)
             {
                 double rate = ReinForceRate();
                 int needDay = (int)Math.Floor(reinForceDay / rate);
                 int needHour = (int)Math.Floor((((reinForceDay * 100 / rate) % 100) * 24) / 100);
                 return new int[(int)ReinForcePart.Count] { needDay, needHour };
+            }
+
+            public virtual void WriteTo(ISectionFile file, bool overwrite)
+            {
+                ;
             }
         }
 
@@ -380,8 +440,10 @@ namespace IL2DCE.MissionObjectModel
                 return updated;
             }
 
-            public void WriteTo(ISectionFile file)
+            public override void WriteTo(ISectionFile file, bool overwrite)
             {
+                base.WriteTo(file, overwrite);
+
                 try
                 {
                     string[] vals = new string[]
@@ -398,7 +460,7 @@ namespace IL2DCE.MissionObjectModel
                             Z.ToString(Config.PointValueFormat, Config.NumberFormat),       // Z
                             ReinForceDate.HasValue ? ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat): string.Empty,
                         };
-                    SilkySkyCloDFile.Write(file, SectionPlayer, Name, string.Join(SplitString, vals), true);
+                    SilkySkyCloDFile.Write(file, SectionPlayer, Name, string.Join(SplitString, vals), overwrite);
                 }
                 catch (Exception ex)
                 {
@@ -461,6 +523,14 @@ namespace IL2DCE.MissionObjectModel
             {
                 get;
                 set;
+            }
+
+            public string SquadronName
+            {
+                get
+                {
+                    return Name2SquadronName(Name);
+                }
             }
 
             public override double ReinForceRate()
@@ -565,12 +635,13 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(AirGroupObject airGroupObject)
             {
-                Debug.WriteLine("AirGroupObject.Update[{0}] Nums={1}->{2} InitNums={3}->{4} DiedNums={5}->{6}, IsValid={7}->{8}, IsAlive={9}->{10}, IsTaskComplete{11}->{12}",
-                    airGroupObject.Name, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
+                Debug.WriteLine("  AirGroupObject.Update[Id={0}] Name={1} Nums={2}->{3} InitNums={4}->{5} DiedNums={6}->{7}, IsValid={8}->{9}, IsAlive={10}->{11}, IsTaskComplete{12}->{13}",
+                    airGroupObject.Id, airGroupObject.Name, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
                 bool updated = false;
 
                 try
                 {
+                    // Name = airGroupObject.Name;
                     Nums = airGroupObject.Nums;
                     InitNums = airGroupObject.InitNums;
                     DiedNums = airGroupObject.DiedNums;
@@ -610,8 +681,10 @@ namespace IL2DCE.MissionObjectModel
                 return updated;
             }
 
-            public void WriteTo(ISectionFile file)
+            public override void WriteTo(ISectionFile file, bool overwrite)
             {
+                base.WriteTo(file, overwrite);
+
                 try
                 {
                     string[] vals = new string[]
@@ -630,12 +703,32 @@ namespace IL2DCE.MissionObjectModel
                             Z.ToString(Config.PointValueFormat, Config.NumberFormat),
                             ReinForceDate.HasValue ? ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat) : string.Empty,
                         };
-                    SilkySkyCloDFile.Write(file, SectionAirGroups, Name, string.Join(SplitString, vals), true);
+                    if (overwrite)
+                    {
+                        SilkySkyCloDFile.Write(file, SectionAirGroups, Name, string.Join(SplitString, vals), true);
+                    }
+                    else
+                    {
+                        SilkySkyCloDFile.Add(file, SectionAirGroups, Name, string.Join(SplitString, vals));
+                    }
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(string.Format("AirGroup.WriteTo {0} {1}", ex.Message, ex.StackTrace));
                 }
+            }
+
+            public static string Name2SquadronName(string name)
+            {
+                if (!string.IsNullOrEmpty(name))
+                {
+                    int idx = name.LastIndexOf('.');
+                    if (idx != -1 && idx < name.Length - 2)
+                    {
+                        return name.Substring(0, idx + 2);
+                    }
+                }
+                return name;
             }
         }
 
@@ -792,7 +885,7 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(GroundGroupObject groundGroupObject)
             {
-                Debug.WriteLine("GroundGroupObject.Update[{0}] Nums={1}->{2} AliveNums={3}->{4}, IsValid={5}->{6}, IsAlive={7}->{8}, IsTaskComplete{9}->{10}",
+                Debug.WriteLine("  GroundGroupObject.Update[{0}] Nums={1}->{2} AliveNums={3}->{4}, IsValid={5}->{6}, IsAlive={7}->{8}, IsTaskComplete{9}->{10}",
                                 groundGroupObject.Name, Nums, groundGroupObject.Nums, AliveNums, groundGroupObject.AliveNums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
                 bool updated = false;
                 try
@@ -831,8 +924,10 @@ namespace IL2DCE.MissionObjectModel
                 return updated;
             }
 
-            public void WriteTo(ISectionFile file)
+            public override void WriteTo(ISectionFile file, bool overwrite)
             {
+                base.WriteTo(file, overwrite);
+
                 try
                 {
                     string[] vals = new string[]
@@ -850,7 +945,14 @@ namespace IL2DCE.MissionObjectModel
                             Z.ToString(Config.PointValueFormat, Config.NumberFormat),
                             ReinForceDate.HasValue ? ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat): string.Empty,
                         };
-                    SilkySkyCloDFile.Write(file, SectionChiefs, Name, string.Join(SplitString, vals), true);
+                    if (overwrite)
+                    {
+                        SilkySkyCloDFile.Write(file, SectionChiefs, Name, string.Join(SplitString, vals), true);
+                    }
+                    else
+                    {
+                        SilkySkyCloDFile.Add(file, SectionChiefs, Name, string.Join(SplitString, vals));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1037,8 +1139,10 @@ namespace IL2DCE.MissionObjectModel
                 return updated;
             }
 
-            public void WriteTo(ISectionFile file)
+            public override void WriteTo(ISectionFile file, bool overwrite)
             {
+                base.WriteTo(file, overwrite);
+
                 try
                 {
                     string[] vals = new string[]
@@ -1053,7 +1157,7 @@ namespace IL2DCE.MissionObjectModel
                         Z.ToString(Config.PointValueFormat, Config.NumberFormat),
                         ReinForceDate.HasValue ? ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat): string.Empty,
                     };
-                    SilkySkyCloDFile.Write(file, SectionStationary, Name, string.Join(SplitString, vals), true);
+                    SilkySkyCloDFile.Write(file, SectionStationary, Name, string.Join(SplitString, vals), overwrite);
                 }
                 catch (Exception ex)
                 {
@@ -1287,8 +1391,10 @@ namespace IL2DCE.MissionObjectModel
                 return updated;
             }
 
-            public void WriteTo(ISectionFile file)
+            public override void WriteTo(ISectionFile file, bool overwrite)
             {
+                base.WriteTo(file, overwrite);
+
                 try
                 {
                     string[] vals = new string[]
@@ -1304,7 +1410,7 @@ namespace IL2DCE.MissionObjectModel
                         Z.ToString(Config.PointValueFormat, Config.NumberFormat),
                         ReinForceDate.HasValue ? ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat): string.Empty,
                     };
-                    SilkySkyCloDFile.Write(file, SectionAircraft, Name, string.Join(SplitString, vals), true);
+                    SilkySkyCloDFile.Write(file, SectionAircraft, Name, string.Join(SplitString, vals), overwrite);
                 }
                 catch (Exception ex)
                 {
@@ -1602,8 +1708,10 @@ namespace IL2DCE.MissionObjectModel
                 return updated;
             }
 
-            public void WriteTo(ISectionFile file)
+            public override void WriteTo(ISectionFile file, bool overwrite)
             {
+                base.WriteTo(file, overwrite);
+
                 try
                 {
                     string[] vals = new string[]
@@ -1619,7 +1727,7 @@ namespace IL2DCE.MissionObjectModel
                         Z.ToString(Config.PointValueFormat, Config.NumberFormat),
                         ReinForceDate.HasValue ? ReinForceDate.Value.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat): string.Empty,
                     };
-                    SilkySkyCloDFile.Write(file, SectionGroundActor, Name, string.Join(SplitString, vals), true);
+                    SilkySkyCloDFile.Write(file, SectionGroundActor, Name, string.Join(SplitString, vals), overwrite);
                 }
                 catch (Exception ex)
                 {
@@ -1684,10 +1792,10 @@ namespace IL2DCE.MissionObjectModel
 
         #region Constructor
 
-        public MissionStatus(IRandom random)
+        public MissionStatus(IRandom random, DateTime dateTime)
         {
             Random = random;
-            DateTime = DateTime.Now;
+            DateTime = dateTime;
             PlayerInfo = null;
             AirGroups = new List<AirGroupObject>();
             GroundGroups = new List<GroundGroupObject>();
@@ -1801,23 +1909,23 @@ namespace IL2DCE.MissionObjectModel
 
         #region Update
 
-        public void Update(AiActor aiActor)
+        public void Update(AiActor aiActor, bool group = true, bool items = false)
         {
             if (aiActor is AiAircraft)
             {
-                Update(aiActor as AiAircraft);
+                Update(aiActor as AiAircraft, group);
             }
             else if (aiActor is AiGroundActor)
             {
-                Update(aiActor as AiGroundActor);
+                Update(aiActor as AiGroundActor, group);
             }
             else if (aiActor is AiAirGroup)
             {
-                Update(aiActor as AiAirGroup);
+                Update(aiActor as AiAirGroup, items);
             }
             else if (aiActor is AiGroundGroup)
             {
-                Update(aiActor as AiGroundGroup);
+                Update(aiActor as AiGroundGroup, items);
             }
             //else if (aiActor is GroundStationary)
             //{
@@ -1825,11 +1933,11 @@ namespace IL2DCE.MissionObjectModel
             //}
             else if (aiActor is AiPerson)
             {
-                Update(aiActor as AiPerson);
+                Update(aiActor as AiPerson, group, true);
             }
         }
 
-        public void Update(IGame game, string playerActoName, DateTime dateTime)
+        public void Update(IGame game, string playerActoName, DateTime dateTime, bool items = false)
         {
             DateTime = dateTime;
 
@@ -1842,7 +1950,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiAirGroupRed)
                 {
-                    Update(item);
+                    Update(item, items);
                 }
             }
 
@@ -1851,7 +1959,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiAirGroupBlue)
                 {
-                    Update(item);
+                    Update(item, items);
                 }
             }
 
@@ -1861,7 +1969,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiGroundGroupRed)
                 {
-                    Update(item);
+                    Update(item, items);
                 }
             }
             AiGroundGroup[] aiGroundGroupBlue = game.gpGroundGroups((int)EArmy.Blue);
@@ -1869,7 +1977,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiGroundGroupBlue)
                 {
-                    Update(item);
+                    Update(item, items);
                 }
             }
 
@@ -1900,25 +2008,39 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private void Update(AiAirGroup aiAirGroup)
+        private void Update(AiAirGroup aiAirGroup, bool items = false)
         {
             AirGroupObject airGroupNew = AirGroupObject.Create(aiAirGroup);
             if (airGroupNew != null)
             {
                 AirGroupObject airGroup = airGroupNew.Id > 0 ? AirGroups.Where(x => x.Id == airGroupNew.Id).FirstOrDefault() :
-                    !string.IsNullOrEmpty(airGroupNew.Name) ? AirGroups.Where(x => x.Name == airGroupNew.Name).FirstOrDefault() : null;
+                    !string.IsNullOrEmpty(airGroupNew.Name) ? AirGroups.Where(x => string.Compare(x.SquadronName, airGroupNew.SquadronName, true) == 0).FirstOrDefault() : null;
                 if (airGroup == null)
                 {
+                    Debug.WriteLine("  AiAirGroup.Add(Id={0,2} {1,-30} Class={2,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.Class);
                     AirGroups.Add(airGroupNew);
                 }
                 else
                 {
+                    // Debug.WriteLine("  AiAirGroup.Update(Id={0,2} {1,-30} Class={2,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.Class);
                     airGroup.Update(airGroupNew);
+                }
+
+                if (items)
+                {
+                    AiActor[] actors = CloDAPIUtil.GetItems(aiAirGroup);
+                    if (actors != null)
+                    {
+                        foreach (var item in actors)
+                        {
+                            Update(item, false, false);
+                        }
+                    }
                 }
             }
         }
 
-        private void Update(AiGroundGroup aiGroundGroup)
+        private void Update(AiGroundGroup aiGroundGroup, bool items = false)
         {
             GroundGroupObject groundGroupNew = GroundGroupObject.Create(aiGroundGroup);
             if (groundGroupNew != null)
@@ -1926,13 +2048,26 @@ namespace IL2DCE.MissionObjectModel
                 GroundGroupObject groundGroup = !string.IsNullOrEmpty(groundGroupNew.Name) ? GroundGroups.Where(x => string.Compare(x.Name, groundGroupNew.Name) == 0).FirstOrDefault() : null;
                 if (groundGroup == null)
                 {
-                    Debug.WriteLine("GroundGroups.Add({0} Class={1})", groundGroupNew.Name, groundGroupNew.Class);
+                    Debug.WriteLine("  AiGroundGroup.Add({0,-30} Class={1,-35})", groundGroupNew.Name, groundGroupNew.Class);
                     GroundGroups.Add(groundGroupNew);
                 }
                 else
                 {
-                    Debug.WriteLine("GroundGroups.Update({0} Class={1})", groundGroupNew.Name, groundGroupNew.Class);
+                    // Debug.WriteLine("  AiGroundGroup.Update({0,-30} Class={1,-35})", groundGroupNew.Name, groundGroupNew.Class);
                     groundGroup.Update(groundGroupNew);
+                }
+            }
+
+            if (items)
+            {
+
+                AiActor[] actors = CloDAPIUtil.GetItems(aiGroundGroup);
+                if (actors != null)
+                {
+                    foreach (var item in actors)
+                    {
+                        Update(item, false, false);
+                    }
                 }
             }
         }
@@ -1955,9 +2090,9 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private void Update(AiAircraft aiAircraft)
+        private void Update(AiAircraft aiAircraft, bool group = false)
         {
-            Debug.WriteLine("AiAircraft Army={0}, Name={1}, TypeName={2}, Group={3}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiAircraft Army={0}, Name={1}, TypeName={2}, Group={3}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
             AircraftObject aircraftNew = AircraftObject.Create(aiAircraft);
             if (aircraftNew != null)
             {
@@ -1972,24 +2107,27 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
-            AiAirGroup aiAirGroup = aiAircraft.AirGroup();
-            if (aiAirGroup != null)
+            if (group)
             {
-                Update(aiAirGroup);
-            }
-            else
-            {
-                aiAirGroup = aiAircraft.Group() as AiAirGroup;
-                if (aiAirGroup != null)
+                AiAirGroup aiAirGroup = aiAircraft.AirGroup();
+                if (aiAirGroup != null/* && string.Compare(aiAirGroup.Name(), ValueNoName, true) != 0*/)
                 {
-                    Update(aiAirGroup);
+                    Update(aiAirGroup, false);
+                }
+                else
+                {
+                    aiAirGroup = aiAircraft.Group() as AiAirGroup;
+                    if (aiAirGroup != null/* && string.Compare(aiAirGroup.Name(), ValueNoName, true) != 0*/)
+                    {
+                        Update(aiAirGroup, false);
+                    }
                 }
             }
         }
 
-        private void Update(AiGroundActor aiGroundActor)
+        private void Update(AiGroundActor aiGroundActor, bool group = false)
         {
-            Debug.WriteLine("AiGroundActor Army={0}, Name={1}, TypeName={2}, Group={3}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiGroundActor Army={0}, Name={1}, TypeName={2}, Group={3}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
             GroundObject groundActorNew = GroundObject.Create(aiGroundActor);
             if (groundActorNew != null)
             {
@@ -2012,28 +2150,35 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
-            AiGroundGroup aiGroundGroup = aiGroundActor.Group() as AiGroundGroup;
-            if (aiGroundGroup != null && string.Compare(aiGroundActor.Name(), aiGroundGroup.Name(), true) != 0)
+            if (group)
             {
-                Update(aiGroundGroup);
+                AiGroundGroup aiGroundGroup = aiGroundActor.Group() as AiGroundGroup;
+                if (aiGroundGroup != null && string.Compare(aiGroundActor.Name(), aiGroundGroup.Name(), true) != 0)
+                {
+                    Update(aiGroundGroup, false);
+                }
             }
         }
 
-        private void Update(AiPerson aiPerson)
+        private void Update(AiPerson aiPerson, bool group = true, bool cart = true)
         {
-            AiGroup aiGroup = aiPerson.Group();
-            if (aiGroup != null)
+            if (group)
             {
-                if (aiGroup is AiAirGroup)
+                AiGroup aiGroup = aiPerson.Group();
+                if (aiGroup != null)
                 {
-                    Update(aiGroup as AiAirGroup);
-                }
-                else if (aiGroup is AiGroundGroup)
-                {
-                    Update(aiGroup as AiGroundGroup);
+                    if (aiGroup is AiAirGroup/* && string.Compare(aiGroup.Name(), ValueNoName, true) != 0*/)
+                    {
+                        Update(aiGroup as AiAirGroup, true);
+                    }
+                    else if (aiGroup is AiGroundGroup/* && string.Compare(aiGroup.Name(), ValueNoName, true) != 0*/)
+                    {
+                        Update(aiGroup as AiGroundGroup, true);
+                    }
                 }
             }
-            else
+
+            if (cart)
             {
                 AiCart aiCart = aiPerson.Cart();
                 if (aiCart != null)
@@ -2043,7 +2188,7 @@ namespace IL2DCE.MissionObjectModel
                         AiAircraft aiAircraf = aiCart as AiAircraft;
                         if (aiAircraf != null)
                         {
-                            Update(aiAircraf);
+                            Update(aiAircraf, group);
                         }
                         //AiAirGroup aiAirGroup = aiAircraf.AirGroup();
                         //Debug.WriteLine("    AiAircraft={0}[{1}], AiAirGroup={2}", aiAircraf.Name(), aiAircraf.InternalTypeName(), aiAirGroup != null ? aiAirGroup.Name() : string.Empty);
@@ -2057,7 +2202,7 @@ namespace IL2DCE.MissionObjectModel
                         AiGroundActor aiGroundActor = aiCart as AiGroundActor;
                         if (aiGroundActor != null)
                         {
-                            Update(aiGroundActor);
+                            Update(aiGroundActor, group);
                         }
                         //AiGroundGroup aiGroundGroup = aiGroundActor.Group() as AiGroundGroup;
                         //Debug.WriteLine("    AiGroundActor={0}[{1}], AiGroundGroup={2}", aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundGroup != null ? aiGroundGroup.Name() : string.Empty);
@@ -2074,21 +2219,21 @@ namespace IL2DCE.MissionObjectModel
 
         #region WriteTo
 
-        public void WriteTo(ISectionFile file)
+        public void WriteTo(ISectionFile file, bool overwrite)
         {
             SilkySkyCloDFile.Write(file, SectionMain, KeyDateTime, DateTime.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat), true);
             if (PlayerInfo != null)
             {
-                PlayerInfo.WriteTo(file);
+                PlayerInfo.WriteTo(file, overwrite);
             }
-            AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-            GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-            Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-            Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-            GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+            AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
         }
 
-        public void UpdateWriteTo(ISectionFile file, int reinForceDay)
+        public void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite)
         {
             MissionStatus missionStatusPrevious = MissionStatus.Create(file, Random);
 
@@ -2096,33 +2241,50 @@ namespace IL2DCE.MissionObjectModel
             SilkySkyCloDFile.Write(file, SectionMain, KeyDateTime, DateTime.ToString(Config.DateTimeDefaultLongFormat, Config.DateTimeFormat), true);
             if (PlayerInfo != null)
             {
-                PlayerInfo.WriteTo(file);
+                PlayerInfo.WriteTo(file, overwrite);
             }
 
             if (missionStatusPrevious != null)
             {
                 // AirGroup
-                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.AirGroups);
+                UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.AirGroups);
 
                 // GroundGroups
-                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.GroundGroups);
+                UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.GroundGroups);
 
                 // Stationary
-                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.Stationaries);
+                UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.Stationaries);
 
                 // Aircraft
-                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.Aircrafts);
+                UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.Aircrafts);
 
                 // GroundActor
-                UpdateWriteTo(file, reinForceDay, missionStatusPrevious.GroundActors);
+                UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.GroundActors);
             }
             else
             {
-                AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+#if false
+                //AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                //GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                //Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                //Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+                //GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+#else
+                // AirGroup
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<AirGroupObject>());
+
+                // GroundGroups
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundGroupObject>());
+
+                // Stationary
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<StationaryObject>());
+
+                // Aircraft
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<AircraftObject>());
+
+                // GroundActor
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundObject>());
+#endif
             }
         }
 
@@ -2135,19 +2297,21 @@ namespace IL2DCE.MissionObjectModel
             };
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<AirGroupObject> airGroups)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AirGroupObject> airGroups)
         {
             foreach (var item in AirGroups.OrderBy(x => x.Name))
             {
                 try
                 {
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
-                    AirGroupObject previousAirGroup = airGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
+                    AirGroupObject previousAirGroup = airGroups.Where(x => string.Compare(x.SquadronName, item.SquadronName, true) == 0 && string.Compare(item.SquadronName, ValueNoName, true) != 0).LastOrDefault();
                     if (item.InitNums > 0/* && item.Nums > 0*/)
                     {
                         float rate = (item.InitNums - item.DiedNums) / (float)item.InitNums;
                         if (previousAirGroup != null)
                         {
+                            SilkySkyCloDFile.Delete(file, SectionAirGroups, previousAirGroup.Name);
+                            previousAirGroup.Name = item.Name;
                             DateTime? reinForceDate = previousAirGroup.ReinForceDate;
                             if (reinForceDate == null)
                             {
@@ -2182,7 +2346,10 @@ namespace IL2DCE.MissionObjectModel
                         }
                         else
                         {
-                            item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            if (rate < 1)
+                            {
+                                item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            }
                             airGroups.Add(item);
                         }
                     }
@@ -2191,6 +2358,7 @@ namespace IL2DCE.MissionObjectModel
                         if (previousAirGroup != null)
                         {
                             // previousGroundObject = item;
+                            SilkySkyCloDFile.Delete(file, SectionAirGroups, previousAirGroup.Name);
                             airGroups.Remove(previousAirGroup);
                         }
                         item.IsAlive = false;
@@ -2203,17 +2371,17 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(AirGroupObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            airGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+            airGroups.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<GroundGroupObject> groundGroups)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundGroupObject> groundGroups)
         {
             foreach (var item in GroundGroups.OrderBy(x => x.Name))
             {
                 try
                 {
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
-                    GroundGroupObject previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).FirstOrDefault();
+                    GroundGroupObject previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0 && string.Compare(item.Name, ValueNoName, true) != 0).LastOrDefault();
                     if (item.Nums > 0/* && item.AliveNums > 0*/)
                     {
                         float rate = item.AliveNums / (float)item.Nums;
@@ -2252,7 +2420,10 @@ namespace IL2DCE.MissionObjectModel
                         }
                         else
                         {
-                            item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            if (rate < 1)
+                            {
+                                item.ReinForceDate = DateTime.AddDays(reinForce[(int)ReinForcePart.Day]).AddHours(reinForce[(int)ReinForcePart.Hour]);
+                            }
                             groundGroups.Add(item);
                         }
                     }
@@ -2273,10 +2444,10 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(GroundGroupObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            groundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+            groundGroups.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<StationaryObject> stationaries)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<StationaryObject> stationaries)
         {
             foreach (var item in Stationaries.OrderBy(x => x.Name))
             {
@@ -2331,10 +2502,10 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(StationaryObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+            stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<AircraftObject> aircrafts)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AircraftObject> aircrafts)
         {
             foreach (var item in Aircrafts.OrderBy(x => x.Name))
             {
@@ -2390,10 +2561,10 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(AircraftObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+            aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, List<GroundObject> groundActors)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundObject> groundActors)
         {
             foreach (var item in GroundActors.OrderBy(x => x.Name))
             {
@@ -2449,7 +2620,7 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(GroundObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            groundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
+            groundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
         }
 
         #endregion

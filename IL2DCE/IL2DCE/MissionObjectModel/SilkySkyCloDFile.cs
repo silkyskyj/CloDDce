@@ -444,7 +444,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public static void Write(ISectionFile file, string section, string key, string value)
+        public static void Add(ISectionFile file, string section, string key, string value)
         {
             file.add(section, key, value);
         }
@@ -525,7 +525,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         value = value.Replace(item, newValue);
                     }
-                    Write(fileDest, section, key, value);
+                    Add(fileDest, section, key, value);
                     count++;
                 }
             }
@@ -547,7 +547,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         value = value.Replace(item, newValue);
                     }
-                    Write(fileDest, section, key, value);
+                    Add(fileDest, section, key, value);
                     keys.Add(key);
                 }
             }

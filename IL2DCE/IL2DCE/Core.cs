@@ -292,17 +292,21 @@ namespace IL2DCE
                 career.MissionFileName = missionFileName;
 
                 // Load MissionStatus
-                string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.MissionStatusResultFileName);
-                string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
-                ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName) : gameInterface.SectionFileCreate();
-                MissionStatus missionStatus = MissionStatus.Create(missionStatusFile, Random);
-
-                // ReinForce & Save
-                if (missionStatus != null)
+                MissionStatus missionStatus = null;
+                if (career.StrictMode)
                 {
-                    generator.ReinForce(missionStatus, career.Date.Value);
-                    missionStatus.WriteTo(missionStatusFile);
-                    missionStatusFile.save(missionStatusFileName);
+                    string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.MissionStatusResultFileName);
+                    string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
+                    ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName) : gameInterface.SectionFileCreate();
+                    missionStatus = MissionStatus.Create(missionStatusFile, Random);
+
+                    // ReinForce & Save
+                    if (missionStatus != null)
+                    {
+                        generator.ReinForce(missionStatus, career.Date.Value);
+                        missionStatus.WriteTo(missionStatusFile, true);
+                        missionStatusFile.save(missionStatusFileName);
+                    }
                 }
 
                 // Generate the next mission based on the template.
@@ -326,7 +330,7 @@ namespace IL2DCE
 #if DEBUG
                 Config.Debug = 1;
 #endif
-                if (Config.Debug == 1)
+                if (Config.Debug >= 1)
                 {
                     if (!Directory.Exists(this._debugFolderSystemPath))
                     {
@@ -400,7 +404,7 @@ namespace IL2DCE
 #if DEBUG
             Config.Debug = 1;
 #endif
-            if (Config.Debug == 1)
+            if (Config.Debug >= 1)
             {
                 if (!Directory.Exists(this._debugFolderSystemPath))
                 {
@@ -426,7 +430,7 @@ namespace IL2DCE
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
             string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
             ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName): gameInterface.SectionFileCreate();
-            missionStatus.UpdateWriteTo(missionStatusFile, Config.ReinForceDay);
+            missionStatus.UpdateWriteTo(missionStatusFile, Config.ReinForceDay, true);
             missionStatusFile.save(missionStatusFileName);
         }
 
@@ -523,7 +527,7 @@ namespace IL2DCE
         {
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
             ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileCreate();
-            missionStatus.WriteTo(missionStatusFile);
+            missionStatus.WriteTo(missionStatusFile, true);
             missionStatusFile.save(missionStatusFileName);
         }
 
@@ -542,9 +546,9 @@ namespace IL2DCE
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, fileName);
             ISectionFile missionStatusFile = forceCreate ? gameInterface.SectionFileCreate() : gameInterface.SectionFileLoad(missionStatusFileName);
             // MissionStatus.Update(missionStatusFile, GamePlay as IGame, playerActorName);
-            MissionStatus missionStatus = new MissionStatus(Random);
-            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime);
-            missionStatus.WriteTo(missionStatusFile);
+            MissionStatus missionStatus = new MissionStatus(Random, career.Date.Value);
+            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime, true);
+            missionStatus.WriteTo(missionStatusFile, true);
             missionStatusFile.save(missionStatusFileName);
 
             ISectionFile missionStatusFileLoad = gameInterface.SectionFileLoad(missionStatusFileName);

@@ -149,7 +149,10 @@ namespace IL2DCE.Pages
                 else
                 {
                     Mission.Mission mission = Game.Core.Mission as Mission.Mission;
-                    Game.Core.UpdateMissionResult(mission.MissionStatus);
+                    if (career.StrictMode)
+                    {
+                        Game.Core.UpdateMissionResult(mission.MissionStatus);
+                    }
                     PlayerStat.Update(career, career.Date.Value);
                     PlayerStat.UpdateSkills(career.PlayerAirGroupSkill, (Game as IGameSingle).BattleResult, mission.MissionStatus);
                     career.Status = (int)(PlayerStat.IsPlayerAlive() ? EPlayerStatus.Alive : EPlayerStatus.Dead);

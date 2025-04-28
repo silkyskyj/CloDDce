@@ -371,7 +371,7 @@ namespace IL2DCE.MissionObjectModel
             IEnumerable<AiActor> actorDamageInitiatorsArray = battleDamageVictims.ToArray().Where(x => x is AiActor && !(x as AiActor).IsAlive()).Select(x => x as AiActor);
             foreach (AiActor actor in actorDamageInitiatorsArray)
             {
-                Debug.WriteLine("battleGetDamageVictims Actor={0} Army={1} IsValid={2} IsAlive={3}", actor.Army(), actor.Name(), actor.IsValid(), actor.IsAlive());
+                Debug.WriteLine("battleGetDamageVictims Army={0} Actor={1} IsValid={2} IsAlive={3}", actor.Army(), actor.Name(), actor.IsValid(), actor.IsAlive());
                 IEnumerable<DamagerScore> damages = Game.battleGetDamageInitiators(actor).ToArray().Where(x => x is DamagerScore).Select(x => x as DamagerScore);
 
                 if (calcKillsScoreOver)

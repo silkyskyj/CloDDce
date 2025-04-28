@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.3)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.4)
 =============================================================================================================================
-                                                                                                                   04/27/2025
+                                                                                                                   04/29/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -36,7 +36,7 @@ Main functions
  - Campaign (mission file for IL2DCE)
  - Air Group
  - Campaign Period
- - Filter display function for existing career list (Army/Air Force/Campaign/StrictMode/Playabe)
+ - Filter display function for existing career list (Filter Army/Air Force/Campaign/StrictMode/Playabe/Aircraft & Sort Logic) 
  - Strict Mode
  - Spawn Parked
  - Initial AirGroup Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file)
@@ -112,6 +112,8 @@ History
 
   Ver      Date       Comment
 
+  0.6.4    04/29/2025 Fixed: Strict and other modes are not properly separated(Campaign). When the number of flights in a squadron changes, it is treated as a separate unit, and continuation of the state, reinfoce, etc. are not performed properly (Campaign StrictMode). An error occurs if you proceed to the next step without fighting, and in StrictMode the campaign ends. 
+                      Added: some sort and filter functions to the career selection in the campaign.
   0.6.3    04/27/2025 Fixed: Battle results statistics show nothing. In Campaign Strict Mode, some groups and units do not inherit their status or reinforce properly.
   0.6.2    04/25/2025 Fixed: not work AdditionalStationaries in Campaign, not carried over GroundGroup disable & position[Campaign StrictMode], if a group's units are reduced to 0, they will disappear forever[Campaign StrictMode]
   0.6.1    04/24/2025 Fixed: Temporary solution to CloD specification where AI aircraft will not take off if AirGroup is set idle.

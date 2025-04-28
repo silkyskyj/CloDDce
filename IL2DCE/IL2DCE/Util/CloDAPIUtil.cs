@@ -17,6 +17,7 @@
 using maddox.game.world;
 using System.Diagnostics;
 using System;
+using System.Text;
 
 namespace IL2DCE.Util
 {
@@ -119,6 +120,34 @@ namespace IL2DCE.Util
                 Debug.WriteLine(ex.Message);
             }
             return null;
+        }
+
+        public static string ActorInfo(AiActor actor)
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                if (actor != null)
+                {
+                    sb.Append(actor.Army());
+                    sb.AppendFormat(" {0}", actor.Name());
+                    if (actor is AiCart)
+                    {
+                        sb.AppendFormat("({0})", (actor as AiCart).InternalTypeName());
+                    }
+                    AiGroup group = actor.Group();
+                    if (group != null)
+                    {
+                        sb.AppendFormat("[{0}]", group.Name());
+                    }
+                    return sb.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return string.Empty;
         }
     }
 }

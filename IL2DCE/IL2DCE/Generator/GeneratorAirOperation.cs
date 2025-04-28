@@ -1405,7 +1405,7 @@ namespace IL2DCE.Generator
                 double distance = airGroup.Position.distance(ref position);
                 if (distance < 1000)
                 {
-                    if (Config.Debug == 1)
+                    if (Config.Debug >= 1)
                     {
                         AirGroup unavailableAirGroup = AvailableAirGroups[i];
 
