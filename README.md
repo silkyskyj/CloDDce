@@ -20,8 +20,9 @@ AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
 
 * If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.
 
-\[Current Bugs\]
- - 
+
+\[Current Bug\]
+ 
 
 This is the silkyskyj version of IL2DCE.
 
@@ -56,7 +57,7 @@ Career
  - PilotName
  - Campaign (mission file for IL2DCE)
  - Air Group
- - Campaign Period - Filter display function for existing career list (Army/Air Force/Campaign/StrictMode/Playabe)
+ - Filter display function for existing career list (Filter Army/Air Force/Campaign/StrictMode/Playabe/Aircraft & Sort Logic) <- v0.6.4
  - Strict Mode <- v0.6.0
  - Spawn Parked <- v0.6.0
  - Initial AirGroup Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file) <- v0.6.0
