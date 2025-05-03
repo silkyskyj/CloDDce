@@ -1,13 +1,10 @@
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.4 04/29/2025)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.7.0 05/04/2025)
 https://github.com/silkyskyj/il2dce/releases
 
+Added: 
+ - Dynamic generation of operations during mission battles, and the option to spawn groups and stationary units.
 Fixed:
- - Strict and other modes are not properly separated(Campaign).
- - When the number of flights in a squadron changes, it is treated as a separate unit, and continuation of the state, reinfoce, etc. are not performed properly (Campaign StrictMode).
- - An error occurs if you proceed to the next step without fighting, and in StrictMode the campaign ends.
-
-Added:
- - some sort and filter functions to the career selection in the campaign.
+ - AirGroup group name generation and other minor fixes.
 
 *In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.
 
@@ -93,7 +90,10 @@ Career
 Items that can be selected and set commonly in 1. 2.
  - Max Additional Air Operations \[1-12\]
  - Max Additional Ground Operations \[10-300\]
- - Random Air Group Spawn Location \[Player/Friendly/Enemy\]
+ - Automatically add Air Groups (this adds to Random if there are few AirGroups)
+ - Automatically Ground Groups / Stationary Units <- v0.6.0
+ - Keep nums of Groups/Units (Dynamic Spawn) <- v0.7.0 
+ - Random Air Group Spawn Location \[Player/Friendly/Enemy\] 
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
  - Time(Spawn delay) 15-1800\[sec\] \[Friendly/Enemy\]
  - Auto re-Arm (bullets only) <- v0.5.6
