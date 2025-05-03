@@ -18,10 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
+using maddox.game.play;
+using maddox.game.world;
 using maddox.GP;
 using static IL2DCE.MissionObjectModel.MissionStatus;
 using static IL2DCE.MissionObjectModel.Spawn;
@@ -68,19 +71,26 @@ namespace IL2DCE.Generator
             set;
         }
 
+        private Config Config
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Constructor
 
         public Generator(IGamePlay gamePlay, IRandom random, Config config, Career career)
-            : base (gamePlay, random, config)
+            : base(gamePlay, random)
         {
             Career = career;
+            Config = config;
         }
 
         #endregion
 
-        public void GenerateMission(ISectionFile missionTemplateFileName, string missionId, MissionStatus missionStatus, out ISectionFile missionFile, out BriefingFile briefingFile)
+        public void GenerateMission(ISectionFile missionTemplateFileName, IMissionStatus missionStatus, out ISectionFile missionFile, out BriefingFile briefingFile)
         {
             CampaignInfo campaignInfo = Career.CampaignInfo;
             MissionFile missionTemplateFile = new MissionFile(missionTemplateFileName, campaignInfo.AirGroupInfos);
@@ -98,7 +108,7 @@ namespace IL2DCE.Generator
             }
 
             // Player Air Group
-            AirGroup airGroup = missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.ToString(), Career.AirGroup, true) == 0).FirstOrDefault();
+            AirGroup airGroup = missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.SquadronName, Career.AirGroup, true) == 0).FirstOrDefault();
             if (airGroup == null)
             {
                 throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
@@ -110,8 +120,8 @@ namespace IL2DCE.Generator
 
             // TODO: UpdateFrontMarker
 
-            GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Random, Config, missionStatus, missionTemplateFile.BattleArea, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries,
-                missionTemplateFile.FrontMarkers, Career.GroundGroupGenerateType, Career.StationaryGenerateType, Career.ArmorUnitNumsSet, Career.ShipUnitNumsSet,
+            GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Random, missionStatus, missionTemplateFile.BattleArea, missionTemplateFile.GroundGroups, missionTemplateFile.Stationaries,
+                missionTemplateFile.FrontMarkers, false, Career.GroundGroupGenerateType, Career.StationaryGenerateType, Career.ArmorUnitNumsSet, Career.ShipUnitNumsSet,
                 Career.ArtilleryTimeout, Career.ArtilleryRHide, Career.ArtilleryZOffset, Career.ShipSleep, Career.ShipSkill, Career.ShipSlowfire);
 
             // For now generate a random supply ship on one of the routes to a harbour.
@@ -162,32 +172,31 @@ namespace IL2DCE.Generator
 
             GeneratorGroundOperation.SetGroundObjects(groundGroupsUpdate, stationaryUpdate);
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
-            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Random, Config, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionStatus, missionTemplateFile.BattleArea, missionTemplateFile.AirGroups, airGroup, Career.AISkill);
+            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Random, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionStatus, missionTemplateFile.BattleArea, missionTemplateFile.AirGroups, airGroup, Career.AISkill, Config.Skills, Config.EnableMissionMultiAssign, Config.FlightCount, Config.FlightSize, Config.SpawnParked, true);
 
             if (Career.AdditionalAirGroups)
             {
                 IEnumerable<string> aircraftsRed;
                 IEnumerable<string> aircraftsBlue;
                 GetRandomAircraftList(missionTemplateFile, out aircraftsRed, out aircraftsBlue);
-                GeneratorAirOperation.AddRandomAirGroups(Career.AdditionalAirOperations, aircraftsRed, aircraftsBlue);
+                GeneratorAirOperation.AddRandomAirGroupsByOperations(Career.AdditionalAirOperations, aircraftsRed, aircraftsBlue);
             }
 
             if (Career.AdditionalGroundGroups)
             {
                 IEnumerable<IEnumerable<string>> groundActors;
                 GetRandomGroundActorList(missionTemplateFile, out groundActors);
-                GeneratorGroundOperation.AddRandomGroundGroups(Career.AdditionalGroundOperations, groundActors);
+                GeneratorGroundOperation.AddRandomGroundGroupsByOperations(Career.AdditionalGroundOperations, groundActors);
             }
 
             if (Career.AdditionalStationaries)
             {
                 IEnumerable<IEnumerable<string>> stationaries;
                 GetRandomStationaryList(missionTemplateFile, out stationaries);
-                GeneratorGroundOperation.AddRandomStationaries(Career.AdditionalGroundOperations, stationaries);
+                GeneratorGroundOperation.AddRandomStationariesByOperations(Career.AdditionalGroundOperations, stationaries);
             }
 
             briefingFile = new BriefingFile();
-            briefingFile.MissionName = missionId;
             briefingFile.MissionDescription = string.Empty;
 
             // Add things to the template file.
@@ -250,7 +259,7 @@ namespace IL2DCE.Generator
 
             if (!result)
             {
-                throw new ArgumentException(string.Format("no available Player Mission[{0}] AirGroup[{1}]", missionId, airGroup.DisplayDetailName));
+                throw new ArgumentException(string.Format("no available Player Mission[{0}] AirGroup[{1}]", campaignInfo.Id, airGroup.DisplayDetailName));
             }
 
             // Determine the aircraft that is controlled by the player.
@@ -323,6 +332,168 @@ namespace IL2DCE.Generator
 #endif
         }
 
+        public bool GenerateSubMission(IMissionStatus missionStatus, out ISectionFile subMissionFile, out BriefingFile subBriefingFile)
+        {
+            subMissionFile = null;
+            subBriefingFile = null;
+
+            CampaignInfo campaignInfo = Career.CampaignInfo;
+            MissionFile missionTemplateFile = new MissionFile(GamePlay, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, Career.SpawnDynamicStationaries ? MissionFile.LoadLevel.AirGroundGroupUnit : Career.SpawnDynamicGroundGroups ? MissionFile.LoadLevel.AirGroundGroup : MissionFile.LoadLevel.AirGroup);
+
+            IMissionStatus missionStatusTotal = GetTotalMissionStatus();
+
+            IEnumerable<string> airGroups;
+            int needAirGroups;
+            bool addAirGroups = IsAddAirGroups(missionTemplateFile, missionStatus, missionStatusTotal, out airGroups, out needAirGroups, false);
+
+            IEnumerable<string> groundGroups;
+            int needGoundGroups;
+            bool addGoundGroups = IsAddGroundGroups(missionTemplateFile, missionStatus, missionStatusTotal, out groundGroups, out needGoundGroups);
+
+            IEnumerable<string> groundUnits;
+            int needGroundUnits;
+            bool addGroundUnits = IsAddGroundUnits(missionTemplateFile, missionStatus, missionStatusTotal, out groundUnits, out needGroundUnits);
+
+            if (!addAirGroups && !addGoundGroups && !addGroundUnits && !Career.AdditionalAirGroups && !Career.AdditionalGroundGroups && !Career.AdditionalStationaries)
+            {
+                return false;
+            }
+
+            // Create Base Mission file info for the generated mission.
+            subMissionFile = GamePlay.gpCreateSectionFile();
+
+            MissionFile missionFile = new MissionFile(GamePlay, new string[] { Career.MissionFileName }, campaignInfo.AirGroupInfos);
+
+            // Player Air Group
+            AirGroup airGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.SquadronName, Career.AirGroup, true) == 0).FirstOrDefault();
+            if (airGroup == null)
+            {
+                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
+            }
+
+            // Remove & RePoint AirGouup / GrounGroup / Stationary  if !IsAlive or rate < Config.DisableRate
+            OptimizeMissionObjects(missionFile, missionStatus, airGroup);
+
+            if (needAirGroups > 0)
+            {
+                if (airGroups != null)
+                {
+                    var targets = missionTemplateFile.AirGroups.Where(x => airGroups.Contains(x.SquadronName));
+                    missionFile.AirGroups.AddRange(targets);
+                    needAirGroups -= Math.Min(needAirGroups, targets.Count());
+                }
+            }
+
+            if (needGoundGroups > 0)
+            {
+                if (groundGroups != null)
+                {
+                    var targets = missionTemplateFile.GroundGroups.Where(x => groundGroups.Contains(x.Id));
+                    missionFile.GroundGroups.AddRange(targets);
+                    needGoundGroups -= Math.Min(needGoundGroups, targets.Count());
+                }
+            }
+
+            if (needGroundUnits > 0)
+            {
+                if (groundUnits != null)
+                {
+                    var targets = missionTemplateFile.Stationaries.Where(x => groundUnits.Contains(x.Id));
+                    missionFile.Stationaries.AddRange(targets);
+                    needGroundUnits -= Math.Min(needGroundUnits, targets.Count());
+                }
+            }
+
+            GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Random, missionStatus, missionFile.BattleArea, missionFile.GroundGroups, missionFile.Stationaries,
+            missionFile.FrontMarkers, true, Career.GroundGroupGenerateType, Career.StationaryGenerateType, Career.ArmorUnitNumsSet, Career.ShipUnitNumsSet,
+            Career.ArtilleryTimeout, Career.ArtilleryRHide, Career.ArtilleryZOffset, Career.ShipSleep, Career.ShipSkill, Career.ShipSlowfire);
+
+            GeneratorBriefing = new GeneratorBriefing(GamePlay);
+            GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Random, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionStatus, missionFile.BattleArea, missionFile.AirGroups, airGroup, Career.AISkill, Config.Skills, Config.EnableMissionMultiAssign, Config.FlightCount, Config.FlightSize, Config.SpawnParked, false);
+
+            if (Career.AdditionalAirGroups && needAirGroups > 0)
+            {
+                IEnumerable<string> aircraftsRed;
+                IEnumerable<string> aircraftsBlue;
+                GetRandomAircraftList(missionFile, out aircraftsRed, out aircraftsBlue);
+                needAirGroups -= GeneratorAirOperation.AddRandomAirGroups(needAirGroups, aircraftsRed, aircraftsBlue);
+            }
+
+            if (Career.AdditionalGroundGroups && needGoundGroups > 0)
+            {
+                IEnumerable<IEnumerable<string>> groundActors;
+                GetRandomGroundActorList(missionFile, out groundActors);
+                needGoundGroups -= GeneratorGroundOperation.AddRandomGroundGroups(needGoundGroups, groundActors);
+            }
+
+            if (Career.AdditionalStationaries && needGroundUnits > 0)
+            {
+                IEnumerable<IEnumerable<string>> stationaries;
+                GetRandomStationaryList(missionFile, out stationaries);
+                needGroundUnits -= GeneratorGroundOperation.AddRandomStationaries(needGroundUnits, stationaries);
+            }
+
+            GeneratorGroundOperation.OptimizeMissionObjects();
+            GeneratorAirOperation.OptimizeMissionObjects();
+
+            subBriefingFile = new BriefingFile();
+            subBriefingFile.MissionDescription = string.Empty;
+
+            Spawn spawn = new Spawn(Career.Spawn, Career.SpawnRandomAltitudeFriendly, Career.SpawnRandomAltitudeEnemy, 
+                new SpawnLocation(Career.SpawnRandomLocationPlayer, Career.SpawnRandomLocationFriendly, Career.SpawnRandomLocationEnemy), false, false, null);
+
+            int AddCounts = 0;
+            int i = 0;
+            // Add additional air operations.
+            if (GeneratorAirOperation.HasAvailableAirGroup)
+            {
+                spawn = Spawn.Create((int)ESpawn.Default, spawn);
+                i = 0;
+                while (i < Career.AdditionalAirOperations && GeneratorAirOperation.HasAvailableAirGroup)
+                {
+                    AirGroup randomAirGroup = GeneratorAirOperation.GetAvailableRandomAirGroup();
+                    if (GeneratorAirOperation.CreateRandomAirOperation(subMissionFile, subBriefingFile, randomAirGroup, spawn))
+                    {
+                        i++;
+                    }
+                }
+            }
+            AddCounts += i;
+
+            // Add additional ground operations.
+            i = 0;
+            if (GeneratorGroundOperation.HasAvailableGroundGroup)
+            {
+                while (i < Career.AdditionalGroundOperations && GeneratorGroundOperation.HasAvailableGroundGroup)
+                {
+                    GroundGroup randomGroundGroup = GeneratorGroundOperation.GetAvailableRandomGroundGroup();
+                    if (GeneratorGroundOperation.CreateRandomGroundOperation(subMissionFile, randomGroundGroup))
+                    {
+                        i++;
+                    }
+                }
+            }
+            AddCounts += i;
+
+            // Add all stationaries.
+            AddCounts += GeneratorGroundOperation.StationaryWriteTo(subMissionFile);
+
+            return AddCounts > 0;
+        }
+
+        private IMissionStatus GetTotalMissionStatus()
+        {
+            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
+            string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, Career.PilotName, Config.MissionStatusResultFileName);
+            string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
+            if (File.Exists(missionStatusFileNameSystemPath)) 
+            {
+                ISectionFile missionStatusFile = gameInterface.SectionFileLoad(missionStatusFileName);
+                return MissionStatus.Create(missionStatusFile, Random);
+            }
+            return null;
+        }
+
         private void GetRandomAircraftList(MissionFile missionFile, out IEnumerable<string> aircraftsRed, out IEnumerable<string> aircraftsBlue)
         {
             IEnumerable<string> dlc = missionFile.DLC;
@@ -355,7 +526,7 @@ namespace IL2DCE.Generator
 
             if (campaignInfo.GroundVehicleRandomRed.Any() && campaignInfo.GroundVehicleRandomBlue.Any())
             {
-                groundActors = new IEnumerable<string>[(int)EGroundGroupType.Count * (int)EArmy.Count] 
+                groundActors = new IEnumerable<string>[(int)EGroundGroupType.Count * (int)EArmy.Count]
                     {
                         campaignInfo.GroundVehicleRandomRed, campaignInfo.GroundVehicleRandomBlue,
                         campaignInfo.GroundArmorRandomRed, campaignInfo.GroundArmorRandomBlue,
@@ -366,7 +537,7 @@ namespace IL2DCE.Generator
             }
             else
             {
-                groundActors = new IEnumerable<string> [(int)EGroundGroupType.Count * (int)EArmy.Count]
+                groundActors = new IEnumerable<string>[(int)EGroundGroupType.Count * (int)EArmy.Count]
                     {
                         Config.GroundVehicleRandomRed, Config.GroundVehicleRandomBlue,
                         Config.GroundArmorRandomRed, Config.GroundArmorRandomBlue,
@@ -486,9 +657,9 @@ namespace IL2DCE.Generator
             return aircraftOrder;
         }
 
-        public void ReinForce(MissionStatus missionStatus, DateTime dateTime)
+        public void ReinForce(IMissionStatus missionStatus, DateTime dateTime)
         {
-                                                                                    // 2
+            // 2
             int reinForceHour = Config.ReinForceDay * 24;                                       // 72
             double IntervalHour = (dateTime - missionStatus.DateTime).TotalHours;               // 48
             double rate = IntervalHour / reinForceHour;                                         // 0.7
@@ -502,7 +673,7 @@ namespace IL2DCE.Generator
                     {
                         if (reinForceDate.Value <= dateTime)
                         {
-                            item.Nums = item.InitNums > 0 ? item.InitNums: 1;
+                            item.Nums = item.InitNums > 0 ? item.InitNums : 1;
                             item.InitNums = item.Nums;
                             item.DiedNums = 0;
                             item.ReinForceDate = null;
@@ -522,7 +693,7 @@ namespace IL2DCE.Generator
                     {
                         if (reinForceDate.Value <= dateTime)
                         {
-                            item.AliveNums = item.Nums > 0 ? item.Nums: 1;
+                            item.AliveNums = item.Nums > 0 ? item.Nums : 1;
                             item.Nums = item.AliveNums;
                             item.ReinForceDate = null;
                             item.IsAlive = true;
@@ -573,14 +744,14 @@ namespace IL2DCE.Generator
             }
         }
 
-        private void OptimizeMissionObjects(MissionFile missionFile, MissionStatus missionStatus, AirGroup airGroupPlayer, DateTime dateTime)
+        private void OptimizeMissionObjects(MissionFile missionFile, IMissionStatus missionStatus, AirGroup airGroupPlayer, DateTime dateTime)
         {
             if (missionStatus != null)
             {
                 double IntervalHour = (dateTime - missionStatus.DateTime).TotalHours;
                 if (IntervalHour < CampaignProgress.AnyTimeBebin)
                 {
-                    IntervalHour = Career.CampaignProgress == ECampaignProgress.AnyTime || Career.CampaignProgress == ECampaignProgress.AnyDayAnyTime ? 
+                    IntervalHour = Career.CampaignProgress == ECampaignProgress.AnyTime || Career.CampaignProgress == ECampaignProgress.AnyDayAnyTime ?
                                     CampaignProgress.AnyTimeBebin : CampaignProgress.AnyDayBebin * 24;
                 }
 
@@ -599,9 +770,9 @@ namespace IL2DCE.Generator
                 for (int i = stationaries.Count - 1; i >= 0; i--)
                 {
                     Stationary stationary = stationaries[i];
-                    MissionStatus.StationaryObject stationaryObject = missionStatus.Stationaries.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 && 
+                    StationaryObj stationaryObject = missionStatus.Stationaries.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 &&
                                                                 string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
-                    MissionStatus.GroundObject groundObject = missionStatus.GroundActors.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 && 
+                    GroundObj groundObject = missionStatus.GroundActors.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 &&
                                                                 string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
                     // Debug.WriteLine("stationary[{0}] StationaryObject={1}[{2}] GroundObject={1}[{2}]", stationary.Id, stationaryObject != null ? stationaryObject.IsAlive.ToString() : "NONE", groundObject != null ? groundObject.IsAlive.ToString() : "NONE");
                     if (stationaryObject != null && !stationaryObject.IsAlive || groundObject != null && !groundObject.IsAlive)
@@ -616,13 +787,13 @@ namespace IL2DCE.Generator
                 for (int i = airGroups.Count - 1; i >= 0; i--)
                 {
                     AirGroup airGroup = airGroups[i];
-//                    if (airGroup != airGroupPlayer)
+                    //                    if (airGroup != airGroupPlayer)
                     {
-                        IEnumerable<Stationary> substitutes = stationaries.Where(x => x.Type == EStationaryType.Aircraft && x.Army == airGroup.Army && 
+                        IEnumerable<Stationary> substitutes = stationaries.Where(x => x.Type == EStationaryType.Aircraft && x.Army == airGroup.Army &&
                                                                 string.Compare(x.Class.Replace(ValueStationary, ValueAircraft), airGroup.Class, true) == 0);
-                        substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 && 
+                        substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 &&
                                                                 string.Compare(x.Class, y.Class, true) == 0 && y.IsAlive));
-                        MissionStatus.AirGroupObject airGroupObject = missionStatus.AirGroups.Where(x => string.Compare(x.SquadronName, airGroup.SquadronName, true) == 0).FirstOrDefault();
+                        AirGroupObj airGroupObject = missionStatus.AirGroups.Where(x => string.Compare(x.SquadronName, airGroup.SquadronName, true) == 0).FirstOrDefault();
                         if (airGroupObject != null)
                         {
                             // Substitute Aircraft  
@@ -635,7 +806,8 @@ namespace IL2DCE.Generator
 
                             // Position ?
 
-                            if (airGroupObject.Nums == 0 || airGroupObject.InitNums == 0 || /*!airGroupObject.IsAlive || !airGroupObject.IsValid || */((airGroupObject.InitNums - airGroupObject.DiedNums) / (float)airGroupObject.InitNums) < Config.GroupDisableRate)
+                            if (airGroupObject.Nums == 0 || airGroupObject.InitNums == 0 || /*!airGroupObject.IsAlive || !airGroupObject.IsValid || */
+                                ((airGroupObject.InitNums - airGroupObject.DiedNums) / (float)airGroupObject.InitNums) < Config.GroupDisableRate)
                             {
                                 if (airGroup != airGroupPlayer)
                                 {
@@ -670,7 +842,7 @@ namespace IL2DCE.Generator
                         string.Compare(MissionObjBase.CreateClassShortShortName(x.Class), MissionObjBase.CreateClassShortShortName(groundGroup.Class), true) == 0 &&
                         !x.Id.StartsWith(groundGroup.Id, true, CultureInfo.InvariantCulture));
                     substitutes = substitutes.Where(x => missionStatus.Stationaries.Any(y => string.Compare(x.Id, y.Name, true) == 0 && string.Compare(x.Class, y.Class, true) == 0 && y.IsAlive));
-                    MissionStatus.GroundGroupObject groundGroupObject = missionStatus.GroundGroups.Where(x => string.Compare(x.Name, groundGroup.Id, true) == 0 && x.Army == groundGroup.Army &&
+                    GroundGroupObj groundGroupObject = missionStatus.GroundGroups.Where(x => string.Compare(x.Name, groundGroup.Id, true) == 0 && x.Army == groundGroup.Army &&
                         string.Compare(MissionObjBase.CreateClassShortShortName(x.Class), MissionObjBase.CreateClassShortShortName(groundGroup.Class), true) == 0).FirstOrDefault();
                     if (groundGroupObject != null)
                     {
@@ -693,21 +865,24 @@ namespace IL2DCE.Generator
                         else
                         {
                             // Position
-                            GroundGroupWaypoint wayPoint = groundGroup.Waypoints.FirstOrDefault();
-                            if (wayPoint != null)
+                            if (groundGroupObject.IsValidPoint)
                             {
-                                Point3d? pos = GeneratorGroundOperation.CreateRandomPoint(GamePlay, Random, groundGroup.Army,
-                                                (float)groundGroupObject.X, (float)groundGroupObject.Y, (float)(100 * IntervalHour / 10), (float)groundGroupObject.Z,
-                                                GroundGroup.GetLandTypes(groundGroup.Type));
-                                if (pos != null)
+                                GroundGroupWaypoint wayPoint = groundGroup.Waypoints.FirstOrDefault();
+                                if (wayPoint != null)
                                 {
-                                    Debug.WriteLine("Position Update GroundGroup {0}[{1}] ({2},{3}) -> ({4},{5})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y, pos.Value.x, pos.Value.y);
-                                    wayPoint.X = pos.Value.x;
-                                    wayPoint.Y = pos.Value.y;
-                                }
-                                else
-                                {
-                                    Debug.WriteLine("Position No Update GroundGroup {0}[{1}] ({2},{3})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y);
+                                    Point3d? pos = GeneratorGroundOperation.CreateRandomPoint(GamePlay, Random, groundGroup.Army,
+                                                    (float)groundGroupObject.X, (float)groundGroupObject.Y, (float)(100 * IntervalHour / 10), (float)groundGroupObject.Z,
+                                                    GroundGroup.GetLandTypes(groundGroup.Type));
+                                    if (pos != null)
+                                    {
+                                        Debug.WriteLine("Position Update GroundGroup {0}[{1}] ({2},{3}) -> ({4},{5})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y, pos.Value.x, pos.Value.y);
+                                        wayPoint.X = pos.Value.x;
+                                        wayPoint.Y = pos.Value.y;
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("Position No Update GroundGroup {0}[{1}] ({2},{3})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y);
+                                    }
                                 }
                             }
                         }
@@ -743,6 +918,168 @@ namespace IL2DCE.Generator
                     missionFile.FrontMarkers.AddRange(frontMarkers);
                 }
             }
+        }
+
+        private void OptimizeMissionObjects(MissionFile missionFile, IMissionStatus missionStatus, AirGroup airGroupPlayer)
+        {
+            if (missionStatus != null)
+            {
+                // Stationaries
+#if DEBUG && false
+                foreach (var item in missionStatus.Stationaries)
+                {
+                    Debug.WriteLine("Stationaries[{0}/{1}/{2}]", item.Name, item.Class, item.IsAlive);
+                }
+                foreach (var item in missionStatus.GroundActors)
+                {
+                    Debug.WriteLine("GroundActors[{0}/{1}/{2}]", item.Name, item.Class, item.IsAlive);
+                }
+#endif
+                List<Stationary> stationaries = missionFile.Stationaries;
+                for (int i = stationaries.Count - 1; i >= 0; i--)
+                {
+                    Stationary stationary = stationaries[i];
+                    StationaryObj stationaryObject = missionStatus.Stationaries.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 &&
+                                                                string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
+                    GroundObj groundObject = missionStatus.GroundActors.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 &&
+                                                                string.Compare(x.Class, stationary.Class, true) == 0).FirstOrDefault();
+                    // Debug.WriteLine("stationary[{0}] StationaryObject={1}[{2}] GroundObject={1}[{2}]", stationary.Id, stationaryObject != null ? stationaryObject.IsAlive.ToString() : "NONE", groundObject != null ? groundObject.IsAlive.ToString() : "NONE");
+                    if (stationaryObject != null && !stationaryObject.IsAlive || groundObject != null && !groundObject.IsAlive)
+                    {
+                        Debug.WriteLine("Remove Stationary {0}[{1}]", stationary.Id, stationary.Class);
+                        stationaries.Remove(stationary);
+                    }
+                }
+
+                // AirGroups
+                List<AirGroup> airGroups = missionFile.AirGroups;
+                for (int i = airGroups.Count - 1; i >= 0; i--)
+                {
+                    AirGroup airGroup = airGroups[i];
+                    //                    if (airGroup != airGroupPlayer)
+                    {
+                        AirGroupObj airGroupObject = missionStatus.AirGroups.Where(x => string.Compare(x.SquadronName, airGroup.SquadronName, true) == 0).FirstOrDefault();
+                        if (airGroupObject != null)
+                        {
+                            if ((airGroupObject.Nums == 0 || airGroupObject.InitNums == 0) && airGroup != airGroupPlayer)
+                            {
+                                Debug.WriteLine("Remove AirGroups {0}[{1}]", airGroup.Id, airGroup.Class);
+                                airGroups.Remove(airGroup);
+                            }
+                            else
+                            {
+                                // Position
+                                if (airGroupObject.IsValidPoint)
+                                {
+                                    AirGroupWaypoint wayPoint = airGroup.Waypoints.FirstOrDefault();
+                                    Point3d pos = airGroupObject.Point;
+                                    Debug.WriteLine("Position Update AirGroups {0}[{1}] ({2},{3},{4}) -> ({5},{6},{7})", airGroup.Id, airGroup.Class, wayPoint.X, wayPoint.Y, wayPoint.Z, pos.x, pos.y, pos.z);
+                                    airGroup.UpdateStartPoint(ref pos, AirGroupWaypoint.AirGroupWaypointTypes.NORMFLY);
+                                    airGroup.MissionType = EMissionType.RESERVE;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // GroundGroups
+                List<GroundGroup> groundGroups = missionFile.GroundGroups;
+                for (int i = groundGroups.Count - 1; i >= 0; i--)
+                {
+                    GroundGroup groundGroup = groundGroups[i];
+                    GroundGroupObj groundGroupObject = missionStatus.GroundGroups.Where(x => string.Compare(x.Name, groundGroup.Id, true) == 0 && x.Army == groundGroup.Army &&
+                        string.Compare(MissionObjBase.CreateClassShortShortName(x.Class), MissionObjBase.CreateClassShortShortName(groundGroup.Class), true) == 0).FirstOrDefault();
+                    if (groundGroupObject != null)
+                    {
+                        if (groundGroupObject.Nums == 0)
+                        {
+                            groundGroups.Remove(groundGroup);
+                            Debug.WriteLine("Remove GroundGroup {0}[{1}]", groundGroup.Id, groundGroup.Class);
+                        }
+                        else
+                        {
+                            // Position
+                            if (groundGroupObject.IsValidPoint)
+                            {
+                                Point3d pos = groundGroupObject.Point;
+                                GroundGroupWaypoint wayPoint = groundGroup.Waypoints.FirstOrDefault();
+                                wayPoint.X = pos.x;
+                                wayPoint.Y = pos.y;
+                                Debug.WriteLine("Position Update GroundGroup {0}[{1}] ({2},{3}) -> ({4},{5})", groundGroup.Id, groundGroup.Class, wayPoint.X, wayPoint.Y, pos.x, pos.y);
+                                groundGroup.MissionAssigned = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool IsAddAirGroups(MissionFile missionFile, IMissionStatus missionStatus, IMissionStatus missionStatusTotal, out IEnumerable<string> airGroups, out int needAirGroups, bool aliveMissionStatus = true)
+        {
+            bool result = false;
+            airGroups = null;
+            needAirGroups = 0;
+            if (Career.SpawnDynamicAirGroups)
+            {
+                AiAirGroup[] aiAirGroups;
+                int aliveCount = aliveMissionStatus ? missionStatus.AirGroups.Where(x => x.Nums > 0).Count() : 
+                                        ((aiAirGroups = GamePlay.gpAirGroups((int)EArmy.Red)) != null ? aiAirGroups.Count(x => x.NOfAirc > 0) : 0) +
+                                        ((aiAirGroups = GamePlay.gpAirGroups((int)EArmy.Blue)) != null ? aiAirGroups.Count(x => x.NOfAirc > 0) : 0) +
+                                        ((aiAirGroups = GamePlay.gpAirGroups((int)EArmy.None)) != null ? aiAirGroups.Count(x => x.NOfAirc > 0) : 0);
+                int averages = Career.AdditionalAirOperations * Config.AverageAirOperationAirGroupCount;
+                needAirGroups = averages - aliveCount;
+                Debug.WriteLine("Need AirGroups={0}[{1}/{2}]", needAirGroups, aliveCount, averages);
+                airGroups = missionFile.AirGroups.Select(x => x.SquadronName).Except(missionStatus.AirGroups.Select(x => x.SquadronName));
+                if (missionStatusTotal != null)
+                {
+                    airGroups = airGroups.Except(missionStatusTotal.AirGroups.Select(x => x.SquadronName));
+                }
+                result = needAirGroups > 0 && airGroups.Any();
+            }
+            return result;
+        }
+
+        private bool IsAddGroundGroups(MissionFile missionFile, IMissionStatus missionStatus, IMissionStatus missionStatusTotal, out IEnumerable<string> groundGroups, out int needGoundGroups)
+        {
+            bool result = false;
+            groundGroups = null;
+            needGoundGroups = 0;
+            if (Career.SpawnDynamicGroundGroups)
+            {
+                int aliveCount = missionStatus.GroundGroups.Where(x => x.AliveNums >= 0).Count();
+                int averages = Career.AdditionalGroundOperations * Config.AverageGroundOperationGroundGroupCount;
+                needGoundGroups = averages - aliveCount;
+                Debug.WriteLine("Need GroundGroups={0}[{1}/{2}]", needGoundGroups, aliveCount, averages);
+                groundGroups = missionFile.GroundGroups.Select(x => x.Id).Except(missionStatus.GroundGroups.Select(x => x.Name));
+                if (missionStatusTotal != null)
+                {
+                    groundGroups = groundGroups.Except(missionStatusTotal.GroundGroups.Select(x => x.Name));
+                }
+                result = needGoundGroups > 0 && groundGroups.Any();
+            }
+            return result;
+        }
+
+        private bool IsAddGroundUnits(MissionFile missionFile, IMissionStatus missionStatus, IMissionStatus missionStatusTotal, out IEnumerable<string> groundUnits, out int needGroundUnits)
+        {
+            bool result = false;
+            groundUnits = null;
+            needGroundUnits = 0;
+            if (Career.SpawnDynamicStationaries)
+            {
+                int aliveCount = missionStatus.Stationaries.Where(x => x.IsAlive).Count();
+                int averages = Career.AdditionalGroundOperations * Config.AverageStationaryOperationUnitCount;
+                int aliveGroundGroups = missionStatus.GroundGroups.Where(x => x.AliveNums >= 0).Count();
+                needGroundUnits = averages - aliveCount - aliveGroundGroups;
+                Debug.WriteLine("Need GroundUnits={0}[{1}/{2}]", needGroundUnits, aliveCount, averages);
+                groundUnits = missionFile.Stationaries.Select(x => x.Id).Except(missionStatus.Stationaries.Select(x => x.Name)).Except(missionStatus.GroundActors.Select(x => x.Name));
+                if (missionStatusTotal != null)
+                {
+                    groundUnits = groundUnits.Except(missionStatusTotal.Stationaries.Select(x => x.Name)).Except(missionStatusTotal.GroundActors.Select(x => x.Name));
+                }
+                result = needGroundUnits > 0 && groundUnits.Any();
+            }
+            return result;
         }
     }
 }

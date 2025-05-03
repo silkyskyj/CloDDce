@@ -25,6 +25,7 @@ using maddox.game;
 using maddox.game.world;
 using maddox.GP;
 using XLAND;
+using static IL2DCE.MissionObjectModel.MissionStatus;
 using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.Generator
@@ -44,7 +45,7 @@ namespace IL2DCE.Generator
 
         #endregion
 
-        private MissionStatus MissionStatus
+        private IMissionStatus MissionStatus
         {
             get;
             set;
@@ -68,6 +69,20 @@ namespace IL2DCE.Generator
             {
                 return AvailableGroundGroups.Count > 0;
             }
+        }
+
+        public bool HasAssignedGroundGroup
+        {
+            get
+            {
+                return AssigneGroundGroups.Count > 0;
+            }
+        }
+
+        private bool EnableMissionMultiAssign
+        {
+            get;
+            set;
         }
 
         private int ArtilleryTimeout
@@ -139,21 +154,19 @@ namespace IL2DCE.Generator
         private List<GroundGroup> AvailableGroundGroups = new List<GroundGroup>();
         private List<GroundGroup> AssigneGroundGroups = new List<GroundGroup>();
         private List<Stationary> AvailableStationaries = new List<Stationary>();
+        private List<GroundGroup> AllGroundGroups = new List<GroundGroup>();
+        private List<Stationary> AllStationaries = new List<Stationary>();
 
         private IEnumerable<Point3d> FrontMarkers;
 
-        public GeneratorGroundOperation(IGamePlay gamePlay, IRandom random, Config config, MissionStatus missionStatus, wRECTF rangeBattleArea, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IEnumerable<Point3d> frontMarkers, EGroundGroupGenerateType groundGroupGenerateType, EStationaryGenerateType stationaryGenerateType, EArmorUnitNumsSet armorUnitNumsSet, EShipUnitNumsSet shipUnitNumsSet, int artilleryTimeout = ArtilleryOption.TimeoutMissionDefault, int artilleryRHide = ArtilleryOption.RHideMissionDefault, int artilleryZOffset = ArtilleryOption.ZOffsetMissionDefault, int shipSleep = ShipOption.SleepMissionDefault, ESkillSetShip shipSkil = ESkillSetShip.Random, float shipSlowfire = ShipOption.SlowFireMissionDefault)
-            : base(gamePlay, random, config)
+        public GeneratorGroundOperation(IGamePlay gamePlay, IRandom random, IMissionStatus missionStatus, wRECTF rangeBattleArea, IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries, IEnumerable<Point3d> frontMarkers, bool enableMissionMultiAssign, EGroundGroupGenerateType groundGroupGenerateType, EStationaryGenerateType stationaryGenerateType, EArmorUnitNumsSet armorUnitNumsSet, EShipUnitNumsSet shipUnitNumsSet, int artilleryTimeout = ArtilleryOption.TimeoutMissionDefault, int artilleryRHide = ArtilleryOption.RHideMissionDefault, int artilleryZOffset = ArtilleryOption.ZOffsetMissionDefault, int shipSleep = ShipOption.SleepMissionDefault, ESkillSetShip shipSkil = ESkillSetShip.Random, float shipSlowfire = ShipOption.SlowFireMissionDefault)
+            : base(gamePlay, random)
         {
             MissionStatus = missionStatus;
             RangeBattleArea = rangeBattleArea;
 
-            AvailableGroundGroups.Clear();
-            AvailableStationaries.Clear();
-            AvailableGroundGroups.AddRange(groundGroups);
-            AvailableStationaries.AddRange(stationaries);
-
-            SetRange(AvailableGroundGroups.Select(x => x.Position).Concat(AvailableStationaries.Select(x => x.Position)));
+            SetGroundObjects(groundGroups, stationaries);
+            EnableMissionMultiAssign = enableMissionMultiAssign;
 
             FrontMarkers = frontMarkers;
             Debug.WriteLine("FrontMarkers");
@@ -183,9 +196,13 @@ namespace IL2DCE.Generator
         public void SetGroundObjects(IEnumerable<GroundGroup> groundGroups, IEnumerable<Stationary> stationaries)
         {
             AvailableGroundGroups.Clear();
-            AvailableStationaries.Clear();
             AvailableGroundGroups.AddRange(groundGroups);
+            AvailableStationaries.Clear();
             AvailableStationaries.AddRange(stationaries);
+            AllGroundGroups.Clear();
+            AllGroundGroups.AddRange(groundGroups);
+            AllStationaries.Clear();
+            AllStationaries.AddRange(stationaries);
 
             SetRange(AvailableGroundGroups.Select(x => x.Position).Concat(AvailableStationaries.Select(x => x.Position)));
         }
@@ -203,95 +220,142 @@ namespace IL2DCE.Generator
 
             AvailableGroundGroups.Remove(groundGroup);
 
-            //if (groundGroup.Type == EGroundGroupType.Ship)
-            //{
-            //    if (groundGroup is ShipGroup)
-            //    {
-            //        SetSkill(groundGroup as ShipGroup);
-            //    }
-            //    // Ships already have the correct waypoint from the mission template. Only remove some waypoints to make the position more random, but leave at least 2 waypoints.
-            //    groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
-            //    groundGroup.WriteTo(missionFile);
-            //    generateColumnFormation(missionFile, groundGroup, formationCount);
-            //    result = true;
-            //}
-            //else 
-            if (groundGroup.Type == EGroundGroupType.Train)
+            if (!groundGroup.MissionAssigned)
             {
-                groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
-                groundGroup.WriteTo(missionFile);
-                result = true;
-            }
-            else
-            {     // Vehicle Armor Unknown
-                IEnumerable<Point3d> friendlyMarkers = FrontMarkers.Where(x => x.z == groundGroup.Army);
-                if (friendlyMarkers.Any())
-                {
-                    List<Point3d> availableFriendlyMarkers = new List<Point3d>(friendlyMarkers);
 
-                    // Find closest friendly marker
-                    Point3d? nearestMarker = GetNearestPoint(groundGroup.Position, availableFriendlyMarkers);
-                    if (nearestMarker != null && nearestMarker.HasValue)
+                //if (groundGroup.Type == EGroundGroupType.Ship)
+                //{
+                //    if (groundGroup is ShipGroup)
+                //    {
+                //        SetSkill(groundGroup as ShipGroup);
+                //    }
+                //    // Ships already have the correct waypoint from the mission template. Only remove some waypoints to make the position more random, but leave at least 2 waypoints.
+                //    groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
+                //    groundGroup.WriteTo(missionFile);
+                //    generateColumnFormation(missionFile, groundGroup, formationCount);
+                //    result = true;
+                //}
+                //else 
+                if (groundGroup.Type == EGroundGroupType.Train)
+                {
+                    groundGroup.Waypoints.RemoveRange(0, Random.Next(0, groundGroup.Waypoints.Count - 1));
+                    if (groundGroup.Waypoints.Count >= 2)
                     {
-                        if (groundGroup is Armor && (groundGroup.Type == EGroundGroupType.Armor || groundGroup.Type == EGroundGroupType.Vehicle))
+                        groundGroup.WriteTo(missionFile);
+                        result = true;
+                    }
+                }
+                else
+                {     // Vehicle Armor Unknown
+                    IEnumerable<Point3d> friendlyMarkers = FrontMarkers.Where(x => x.z == groundGroup.Army);
+                    if (friendlyMarkers.Any())
+                    {
+                        List<Point3d> availableFriendlyMarkers = new List<Point3d>(friendlyMarkers);
+
+                        // Find closest friendly marker
+                        Point3d? nearestMarker = GetNearestPoint(groundGroup.Position, availableFriendlyMarkers);
+                        if (nearestMarker != null && nearestMarker.HasValue)
                         {
-                            Armor armor = groundGroup as Armor;
-                            int numUnits = GetArmorNumUnitsCount();
-                            if (numUnits != -1)
+                            if (groundGroup is Armor && (groundGroup.Type == EGroundGroupType.Armor || groundGroup.Type == EGroundGroupType.Vehicle))
                             {
-                                armor.SetNumUnits(numUnits);
+                                Armor armor = groundGroup as Armor;
+                                int numUnits = GetArmorNumUnitsCount();
+                                if (numUnits != -1)
+                                {
+                                    armor.SetNumUnits(numUnits);
+                                }
+                                Point2d start = groundGroup.Position;
+                                Point3d? point = CreateRandomPoint(groundGroup.Army, (float)nearestMarker.Value.x, (float)nearestMarker.Value.y, 5000, 0, GroundGroup.GetLandTypes(groundGroup.Type));
+                                Point2d end = point != null ? new Point2d(point.Value.x, point.Value.y) : new Point2d(nearestMarker.Value.x, nearestMarker.Value.y);
+                                IEnumerable<GroundGroupWaypoint> wayPoints = CreateWaypoints(armor.Type, armor.Army, start, end);
+                                if (wayPoints != null && wayPoints.Count() >= 2)
+                                {
+                                    armor.Waypoints.Clear();
+                                    armor.Waypoints.AddRange(wayPoints);
+                                }
+                                if (armor.Waypoints != null && armor.Waypoints.Count >= 2)
+                                {
+                                    armor.WriteTo(missionFile);
+                                    result = true;
+                                }
                             }
-                            Point2d start = groundGroup.Position;
-                            Point3d? point = CreateRandomPoint(groundGroup.Army, (float)nearestMarker.Value.x, (float)nearestMarker.Value.y, 5000, 0, GroundGroup.GetLandTypes(groundGroup.Type));
-                            Point2d end = point != null ? new Point2d(point.Value.x, point.Value.y) : new Point2d(nearestMarker.Value.x, nearestMarker.Value.y);
-                            IEnumerable<GroundGroupWaypoint> wayPoints = CreateWaypoints(armor.Type, armor.Army, start, end);
-                            if (wayPoints != null && wayPoints.Any())
-                            {
-                                armor.Waypoints.Clear();
-                                armor.Waypoints.AddRange(wayPoints);
-                            }
-                            armor.WriteTo(missionFile);
-                            result = true;
-                        }
-                        else
-                        {   // Ship & Unknouw
-                            Debug.Assert(groundGroup.Type == EGroundGroupType.Ship);
-                            if (groundGroup is ShipGroup && groundGroup.Type == EGroundGroupType.Ship)
-                            {
-                                SetSkill(groundGroup as ShipGroup);
-                            }
-                            Point2d start = groundGroup.Position;
+                            else
+                            {   // Ship & Unknouw
+                                Debug.Assert(groundGroup.Type == EGroundGroupType.Ship);
+                                if (groundGroup is ShipGroup && groundGroup.Type == EGroundGroupType.Ship)
+                                {
+                                    SetSkill(groundGroup as ShipGroup);
+                                }
+                                Point2d start = groundGroup.Position;
 #if true
-                            Point3d? point = CreateRandomPoint(groundGroup.Army, (float)start.x, (float)start.y, 20000, 0, GroundGroup.GetLandTypes(groundGroup.Type));
-                            Point2d end = point != null ? new Point2d(point.Value.x, point.Value.y) : new Point2d(nearestMarker.Value.x, nearestMarker.Value.y);
+                                Point3d? point = CreateRandomPoint(groundGroup.Army, (float)start.x, (float)start.y, 20000, 0, GroundGroup.GetLandTypes(groundGroup.Type));
+                                Point2d end = point != null ? new Point2d(point.Value.x, point.Value.y) : new Point2d(nearestMarker.Value.x, nearestMarker.Value.y);
 #else
                                 wRECTF rect = RangeBattleArea;
                                 float r = Math.Min(rect.x2 - rect.x1, rect.x2 - rect.x1) / 4;
                                 Point3d? posEnd = CreateRandomPoint((float)start.x, (float)start.y, r, 0, new LandTypes[] { LandTypes.WATER });
                                 end = posEnd != null ? new Point2d(posEnd.Value.x, posEnd.Value.y): end;
 #endif
-                            IEnumerable<GroundGroupWaypoint> wayPoints = CreateWaypoints(groundGroup.Type, groundGroup.Army, start, end);
-                            if (wayPoints != null && wayPoints.Any())
-                            {
-                                groundGroup.Waypoints.Clear();
-                                groundGroup.Waypoints.AddRange(wayPoints);
+                                IEnumerable<GroundGroupWaypoint> wayPoints = CreateWaypoints(groundGroup.Type, groundGroup.Army, start, end);
+                                if (wayPoints != null && wayPoints.Count() >= 2)
+                                {
+                                    groundGroup.Waypoints.Clear();
+                                    groundGroup.Waypoints.AddRange(wayPoints);
+                                }
+                                if (groundGroup.Waypoints != null && groundGroup.Waypoints.Count >= 2)
+                                {
+                                    groundGroup.WriteTo(missionFile);
+                                    if (formationCount == -1)
+                                    {
+                                        formationCount = GetFormationCount();
+                                    }
+                                    generateColumnFormation(missionFile, groundGroup, formationCount);
+                                    result = true;
+                                }
                             }
-                            groundGroup.WriteTo(missionFile);
-                            if (formationCount == -1)
-                            {
-                                formationCount = GetFormationCount();
-                            }
-                            generateColumnFormation(missionFile, groundGroup, formationCount);
-                            result = true;
                         }
                     }
                 }
-            }
-            if (result)
-            {
-                AssigneGroundGroups.Add(groundGroup);
+                if (result)
+                {
+                    AssigneGroundGroups.Add(groundGroup);
+                    groundGroup.MissionAssigned = true;
+                }
             }
             return result;
+        }
+
+        public void OptimizeMissionObjects(IMissionStatus missionStatus = null)
+        {
+            if (missionStatus == null)
+            {
+                missionStatus = MissionStatus;
+            }
+
+            for (int i = AvailableGroundGroups.Count - 1; i >= 0; i--)
+            {
+                GroundGroup groundGroup = AvailableGroundGroups[i];
+                GroundGroupObj groundGroupObject = missionStatus.GroundGroups.Where(x => string.Compare(x.Name, groundGroup.Id, true) == 0).FirstOrDefault();
+                if (groundGroupObject != null)
+                {
+                    groundGroup.MissionAssigned = true;
+                    AvailableGroundGroups.Remove(groundGroup);
+                    AssigneGroundGroups.Add(groundGroup);
+                }
+            }
+
+            for (int i = AvailableStationaries.Count - 1; i >= 0; i--)
+            {
+                Stationary stationary = AvailableStationaries[i];
+                StationaryObj stationaryObj = missionStatus.Stationaries.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 /*&&
+                                                            string.Compare(x.Class, stationary.Class, true) == 0*/).FirstOrDefault();
+                GroundObj groundObject = missionStatus.GroundActors.Where(x => string.Compare(x.Name, stationary.Id, true) == 0 /*&&
+                                                            string.Compare(x.Class, stationary.Class, true) == 0*/).FirstOrDefault();
+                if (stationaryObj != null || groundObject != null)
+                {
+                    AvailableStationaries.Remove(stationary);
+                }
+            }
         }
 
         private Point3d? GetNearestPoint(Point2d point, IEnumerable<Point3d> points)
@@ -517,10 +581,17 @@ namespace IL2DCE.Generator
                             {
                                 // TODO: Fix calculated param
 
-                                //string s = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2}", 
-                                //    aiGroundWayPoint.P.x, aiGroundWayPoint.P.y, aiGroundWayPoint.P.z, aiGroundWayPoint.roadWidth);
-
-                                GroundGroupWaypoint groundGroupSubWaypoint = new GroundGroupWaypointLine(point.x, point.x, point.z, null);
+                                GroundGroupWaypoint groundGroupSubWaypoint;
+                                if (aiGroundWayPoint.Speed > 0)
+                                {
+                                    string s = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2}",
+                                        aiGroundWayPoint.P.x, aiGroundWayPoint.P.y, aiGroundWayPoint.P.z, aiGroundWayPoint.roadWidth);
+                                    groundGroupSubWaypoint = new GroundGroupWaypointSpline(point.x, point.y, point.z, s);
+                                }
+                                else
+                                {
+                                    groundGroupSubWaypoint = new GroundGroupWaypointLine(point.x, point.y, point.z, null);
+                                }
                                 lastGroundGroupWaypoint.SubWaypoints.Add(groundGroupSubWaypoint);
                             }
                         }
@@ -595,12 +666,13 @@ namespace IL2DCE.Generator
             return null;
         }
 
-        private void generateColumnFormation(ISectionFile missionFile, GroundGroup groundGroup, int columnSize)
+        private bool generateColumnFormation(ISectionFile missionFile, GroundGroup groundGroup, int columnSize)
         {
             string groundGroupId = groundGroup.Id;
 
             const int offsetBase = 500;
 
+            int count = 0;
             List<GroundGroupWaypoint> waypoints = groundGroup.Waypoints;
             for (int i = 1; i < columnSize; i++)
             {
@@ -655,8 +727,14 @@ namespace IL2DCE.Generator
 
                 groundGroup.UpdateId(string.Format(Config.NumberFormat, "{0}.{1}", groundGroupId, i));
 
-                groundGroup.WriteTo(missionFile);
+                if (waypoints.Count >= 2)
+                {
+                    groundGroup.WriteTo(missionFile);
+                    count++;
+                }
             }
+
+            return count > 0;
         }
 
         #region GroundGroup
@@ -674,13 +752,13 @@ namespace IL2DCE.Generator
 
         public IEnumerable<GroundGroup> getAvailableEnemyGroundGroups(int armyIndex)
         {
-            return AvailableGroundGroups.Where(x => x.Army != armyIndex);
+            return EnableMissionMultiAssign ? AllGroundGroups.Where(x => x.Army != armyIndex): AvailableGroundGroups.Where(x => x.Army != armyIndex);
         }
 
-        public IEnumerable<GroundGroup> getAvailableFriendlyGroundGroups(int armyIndex)
-        {
-            return AvailableGroundGroups.Where(x => x.Army == armyIndex);
-        }
+        //public IEnumerable<GroundGroup> getAvailableFriendlyGroundGroups(int armyIndex)
+        //{
+        //    return AvailableGroundGroups.Where(x => x.Army == armyIndex);
+        //}
 
         public IEnumerable<GroundGroup> getAvailableEnemyGroundGroups(int armyIndex, IEnumerable<EGroundGroupType> groundGroupTypes)
         {
@@ -688,24 +766,30 @@ namespace IL2DCE.Generator
             return groundGroups.Where(x => groundGroupTypes.Contains(x.Type));
         }
 
-        public IEnumerable<GroundGroup> getAvailableFriendlyGroundGroups(int armyIndex, IEnumerable<EGroundGroupType> groundGroupTypes)
-        {
-            IEnumerable<GroundGroup> groundGroups = getAvailableFriendlyGroundGroups(armyIndex);
-            return groundGroups.Where(x => groundGroupTypes.Contains(x.Type));
-        }
-
-        public GroundGroup getAvailableRandomEnemyGroundGroup(int armyIndex)
+        public bool HasAvailableEnemyGroundGroups(int armyIndex, IEnumerable<EGroundGroupType> groundGroupTypes)
         {
             IEnumerable<GroundGroup> groundGroups = getAvailableEnemyGroundGroups(armyIndex);
-            if (groundGroups.Any())
-            {
-                return groundGroups.ElementAt(Random.Next(groundGroups.Count()));
-            }
-            else
-            {
-                return null;
-            }
+            return groundGroups.Any(x => groundGroupTypes.Contains(x.Type));
         }
+
+        //public IEnumerable<GroundGroup> getAvailableFriendlyGroundGroups(int armyIndex, IEnumerable<EGroundGroupType> groundGroupTypes)
+        //{
+        //    IEnumerable<GroundGroup> groundGroups = getAvailableFriendlyGroundGroups(armyIndex);
+        //    return groundGroups.Where(x => groundGroupTypes.Contains(x.Type));
+        //}
+
+        //public GroundGroup getAvailableRandomEnemyGroundGroup(int armyIndex)
+        //{
+        //    IEnumerable<GroundGroup> groundGroups = getAvailableEnemyGroundGroups(armyIndex);
+        //    if (groundGroups.Any())
+        //    {
+        //        return groundGroups.ElementAt(Random.Next(groundGroups.Count()));
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
 
         public GroundGroup getAvailableRandomEnemyGroundGroup(AirGroup airGroup, EMissionType missionType)
         {
@@ -749,33 +833,33 @@ namespace IL2DCE.Generator
             }
         }
 
-        public GroundGroup getAvailableRandomFriendlyGroundGroup(AirGroup airGroup)
-        {
-            IEnumerable<GroundGroup> groundGroups = getAvailableFriendlyGroundGroups(airGroup.ArmyIndex);
-            if (groundGroups.Any())
-            {
-                //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
-                return getRandomTargetBasedOnRange(groundGroups, airGroup);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //public GroundGroup getAvailableRandomFriendlyGroundGroup(AirGroup airGroup)
+        //{
+        //    IEnumerable<GroundGroup> groundGroups = getAvailableFriendlyGroundGroups(airGroup.ArmyIndex);
+        //    if (groundGroups.Any())
+        //    {
+        //        //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
+        //        return getRandomTargetBasedOnRange(groundGroups, airGroup);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
 
-        public GroundGroup getAvailableRandomFriendlyGroundGroup(AirGroup airGroup, IEnumerable<EGroundGroupType> groundGroupTypes)
-        {
-            IEnumerable<GroundGroup> groundGroups = getAvailableFriendlyGroundGroups(airGroup.ArmyIndex, groundGroupTypes);
-            if (groundGroups.Any())
-            {
-                //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
-                return getRandomTargetBasedOnRange(groundGroups, airGroup);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //public GroundGroup getAvailableRandomFriendlyGroundGroup(AirGroup airGroup, IEnumerable<EGroundGroupType> groundGroupTypes)
+        //{
+        //    IEnumerable<GroundGroup> groundGroups = getAvailableFriendlyGroundGroups(airGroup.ArmyIndex, groundGroupTypes);
+        //    if (groundGroups.Any())
+        //    {
+        //        //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
+        //        return getRandomTargetBasedOnRange(groundGroups, airGroup);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
 
         #endregion
 
@@ -962,15 +1046,22 @@ namespace IL2DCE.Generator
             return groundGroups;
         }
 
-        public void AddRandomGroundGroups(int additionalGroundOperations, IEnumerable<IEnumerable<string>> groundActors)
+        public int AddRandomGroundGroupsByOperations(int additionalGroundOperations, IEnumerable<IEnumerable<string>> groundActors)
         {
-            const int MaxGroundOperationGroundGroupCount = 1;
-            int needGroups = (additionalGroundOperations * MaxGroundOperationGroundGroupCount - AvailableGroundGroups.Count) / Random.Next(2, 6);
+            int needGroups = (additionalGroundOperations * Config.AverageGroundOperationGroundGroupCount - AllGroundGroups.Count) / Random.Next(2, 6);
+            return AddRandomGroundGroups(needGroups, groundActors);
+        }
+
+        public int AddRandomGroundGroups(int needGroups, IEnumerable<IEnumerable<string>> groundActors)
+        {
             if (needGroups > 0)
             {
                 IEnumerable<GroundGroup> groundGroups = GetRandomGroundGroups(needGroups, groundActors);
                 AvailableGroundGroups.AddRange(groundGroups);
+                AllGroundGroups.AddRange(groundGroups);
+                return groundGroups.Count();
             }
+            return 0;
         }
 
         private IEnumerable<GroundGroup> GetRandomGroundGroups(int needGroups, IEnumerable<IEnumerable<string>> groundActors)
@@ -1050,7 +1141,7 @@ namespace IL2DCE.Generator
             while (reTry++ <= MaxRetryCreateAllGroundGroups)
             {
                 id = string.Format("{0}_{1}", idx.ToString(Config.NumberFormat), MissionFile.KeyChief);
-                if (!groundGroups.Any(x => string.Compare(x.Id, id) == 0) && !AvailableGroundGroups.Any(x => string.Compare(x.Id, id) == 0))
+                if (!groundGroups.Any(x => string.Compare(x.Id, id) == 0) && !AllGroundGroups.Any(x => string.Compare(x.Id, id) == 0))
                 {
                     return id;
                 }
@@ -1131,13 +1222,13 @@ namespace IL2DCE.Generator
 
         public IEnumerable<Stationary> getAvailableEnemyStationaries(int armyIndex)
         {
-            return AvailableStationaries.Where(x => x.Army != armyIndex);
+            return EnableMissionMultiAssign ? AllStationaries.Where(x => x.Army != armyIndex): AvailableStationaries.Where(x => x.Army != armyIndex);
         }
 
-        public IEnumerable<Stationary> getAvailableFriendlyStationaries(int armyIndex)
-        {
-            return AvailableStationaries.Where(x => x.Army == armyIndex);
-        }
+        //public IEnumerable<Stationary> getAvailableFriendlyStationaries(int armyIndex)
+        //{
+        //    return AvailableStationaries.Where(x => x.Army == armyIndex);
+        //}
 
         public IEnumerable<Stationary> getAvailableEnemyStationaries(int armyIndex, IEnumerable<EStationaryType> stationaryTypes)
         {
@@ -1145,24 +1236,30 @@ namespace IL2DCE.Generator
             return stationaries.Where(x => stationaryTypes.Contains(x.Type));
         }
 
-        public IEnumerable<Stationary> getAvailableFriendlyStationaries(int armyIndex, IEnumerable<EStationaryType> stationaryTypes)
-        {
-            IEnumerable<Stationary> stationaries = getAvailableFriendlyStationaries(armyIndex);
-            return stationaries.Where(x => stationaryTypes.Contains(x.Type));
-        }
-
-        public Stationary getAvailableRandomEnemyStationary(int armyIndex)
+        public bool HasAvailableEnemyStationaries(int armyIndex, IEnumerable<EStationaryType> stationaryTypes)
         {
             IEnumerable<Stationary> stationaries = getAvailableEnemyStationaries(armyIndex);
-            if (stationaries.Any())
-            {
-                return stationaries.ElementAt(Random.Next(stationaries.Count()));
-            }
-            else
-            {
-                return null;
-            }
+            return stationaries.Any(x => stationaryTypes.Contains(x.Type));
         }
+
+        //public IEnumerable<Stationary> getAvailableFriendlyStationaries(int armyIndex, IEnumerable<EStationaryType> stationaryTypes)
+        //{
+        //    IEnumerable<Stationary> stationaries = getAvailableFriendlyStationaries(armyIndex);
+        //    return stationaries.Where(x => stationaryTypes.Contains(x.Type));
+        //}
+
+        //public Stationary getAvailableRandomEnemyStationary(int armyIndex)
+        //{
+        //    IEnumerable<Stationary> stationaries = getAvailableEnemyStationaries(armyIndex);
+        //    if (stationaries.Any())
+        //    {
+        //        return stationaries.ElementAt(Random.Next(stationaries.Count()));
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
 
         public Stationary getAvailableRandomEnemyStationary(AirGroup airGroup, EMissionType missionType)
         {
@@ -1209,33 +1306,33 @@ namespace IL2DCE.Generator
             }
         }
 
-        public Stationary getAvailableRandomFriendlyStationary(AirGroup airGroup)
-        {
-            IEnumerable<Stationary> stationaries = getAvailableFriendlyStationaries(airGroup.ArmyIndex);
-            if (stationaries.Any())
-            {
-                //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
-                return getRandomTargetBasedOnRange(stationaries, airGroup);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //public Stationary getAvailableRandomFriendlyStationary(AirGroup airGroup)
+        //{
+        //    IEnumerable<Stationary> stationaries = getAvailableFriendlyStationaries(airGroup.ArmyIndex);
+        //    if (stationaries.Any())
+        //    {
+        //        //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
+        //        return getRandomTargetBasedOnRange(stationaries, airGroup);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
 
-        public Stationary getAvailableRandomFriendlyStationary(AirGroup airGroup, IEnumerable<EStationaryType> stationaryTypes)
-        {
-            IEnumerable<Stationary> stationaries = getAvailableFriendlyStationaries(airGroup.ArmyIndex, stationaryTypes);
-            if (stationaries.Any())
-            {
-                //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
-                return getRandomTargetBasedOnRange(stationaries, airGroup);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //public Stationary getAvailableRandomFriendlyStationary(AirGroup airGroup, IEnumerable<EStationaryType> stationaryTypes)
+        //{
+        //    IEnumerable<Stationary> stationaries = getAvailableFriendlyStationaries(airGroup.ArmyIndex, stationaryTypes);
+        //    if (stationaries.Any())
+        //    {
+        //        //GroundGroup targetGroundGroup = groundGroups[Random.Next(groundGroups.Count)];
+        //        return getRandomTargetBasedOnRange(stationaries, airGroup);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}                                                       
 
         #endregion
 
@@ -1343,8 +1440,9 @@ namespace IL2DCE.Generator
             return groundObjects;
         }
 
-        public void StationaryWriteTo(ISectionFile file)
+        public int StationaryWriteTo(ISectionFile file)
         {
+            int count = 0;
             foreach (Stationary stationary in AvailableStationaries.OrderBy(x => x.Id))
             {
                 if (stationary is ShipUnit)
@@ -1358,18 +1456,27 @@ namespace IL2DCE.Generator
                 }
 
                 stationary.WriteTo(file);
+                count++;
             }
+            return count;
         }
 
-        public void AddRandomStationaries(int additionalStationaries, IEnumerable<IEnumerable<string>> stationaries)
+        public int AddRandomStationariesByOperations(int additionalStationaries, IEnumerable<IEnumerable<string>> stationaries)
         {
-            const int MaxStationaryOperationUnitCount = 1;
-            int needGroups = additionalStationaries * MaxStationaryOperationUnitCount - AvailableGroundGroups.Count - AvailableStationaries.Count;
-            if (needGroups > 0)
+            int needUnits = additionalStationaries * Config.AverageStationaryOperationUnitCount - AllGroundGroups.Count - AllStationaries.Count;
+            return AddRandomStationaries(needUnits, stationaries);
+        }
+
+        public int AddRandomStationaries(int needUnits, IEnumerable<IEnumerable<string>> stationaries)
+        {
+            if (needUnits > 0)
             {
-                IEnumerable<Stationary> stationariesRandom = GetRandomStationaries(needGroups, stationaries);
+                IEnumerable<Stationary> stationariesRandom = GetRandomStationaries(needUnits, stationaries);
                 AvailableStationaries.AddRange(stationariesRandom);
+                AllStationaries.AddRange(stationariesRandom);
+                return stationariesRandom.Count();
             }
+            return 0;
         }
 
         private IEnumerable<Stationary> GetRandomStationaries(int needUnitNums, IEnumerable<IEnumerable<string>> stationaries)
@@ -1433,7 +1540,7 @@ namespace IL2DCE.Generator
             while (reTry++ <= MaxRetryCreateAllStationary)
             {
                 id = string.Format("{0}{1}", MissionFile.KeyStatic, idx.ToString(Config.NumberFormat));
-                if (!stationaries.Any(x => string.Compare(x.Id, id) == 0) && !AvailableStationaries.Any(x => string.Compare(x.Id, id) == 0))
+                if (!stationaries.Any(x => string.Compare(x.Id, id) == 0) && !AllStationaries.Any(x => string.Compare(x.Id, id) == 0))
                 {
                     return id;
                 }

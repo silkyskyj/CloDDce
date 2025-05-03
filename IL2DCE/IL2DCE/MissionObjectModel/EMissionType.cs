@@ -83,5 +83,8 @@ namespace IL2DCE.MissionObjectModel
 
         [Description("Transfer")]
         TRANSFER,
+
+        [Description("Reserve")]
+        RESERVE,
     };
 }

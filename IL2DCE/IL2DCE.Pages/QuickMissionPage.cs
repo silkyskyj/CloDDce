@@ -702,6 +702,9 @@ namespace IL2DCE
                     career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
                     career.AdditionalGroundGroups= generalSettings.SelectedAdditionalGroundGroups;
                     career.AdditionalStationaries = generalSettings.SelectedAdditionalStasionaries;
+                    career.SpawnDynamicAirGroups = generalSettings.SelectedKeepTotalAirGroups;
+                    career.SpawnDynamicGroundGroups = generalSettings.SelectedKeepTotalGroundGroups;
+                    career.SpawnDynamicStationaries = generalSettings.SelectedKeepTotalStationaries;
                     career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
                     career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
                     career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;
@@ -1548,6 +1551,9 @@ namespace IL2DCE
                 generalSettings.checkBoxAdditionalAirGroups.IsChecked = career.AdditionalAirGroups;
                 generalSettings.checkBoxAdditionalGroundGroups.IsChecked = career.AdditionalGroundGroups;
                 generalSettings.checkBoxAdditionalStationaryUnits.IsChecked = career.AdditionalStationaries;
+                generalSettings.checkBoxKeepUnitsAirGroups.IsChecked = career.SpawnDynamicAirGroups;
+                generalSettings.checkBoxKeepUnitsGroundGroups.IsChecked = career.SpawnDynamicGroundGroups;
+                generalSettings.checkBoxKeepUnitsStationaryUnits.IsChecked = career.SpawnDynamicStationaries;
                 generalSettings.checkBoxSpawnRandomLocationFriendly.IsChecked = career.SpawnRandomLocationFriendly;
                 generalSettings.checkBoxSpawnRandomLocationEnemy.IsChecked = career.SpawnRandomLocationEnemy;
                 generalSettings.checkBoxSpawnRandomLocationPlayer.IsChecked = career.SpawnRandomLocationPlayer;

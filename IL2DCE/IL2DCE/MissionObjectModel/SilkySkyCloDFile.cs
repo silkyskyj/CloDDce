@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -561,10 +562,18 @@ namespace IL2DCE.MissionObjectModel
             {
                 string key;
                 string value;
-                fileSrc.get(section, i, out key, out value);
-                if (string.Compare(key, keyDelete, true) == 0)
+                try
                 {
-                    fileSrc.delete(section, i);
+                    fileSrc.get(section, i, out key, out value);
+                    if (string.Compare(key, keyDelete, true) == 0)
+                    {
+                        fileSrc.delete(section, i);
+                        lines = fileSrc.lines(section);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error SilkySkyCloDFile Delete {0} Section={1} i={2}", ex.Message, section, i);
                 }
             }
         }

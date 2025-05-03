@@ -14,14 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game.world;
-using maddox.game;
-using maddox.GP;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System;
 using System.Text;
+using IL2DCE.Util;
+using maddox.game;
+using maddox.game.world;
+using maddox.GP;
 
 namespace IL2DCE.MissionObjectModel
 {
@@ -135,9 +136,40 @@ namespace IL2DCE.MissionObjectModel
         }
 
         [Conditional("DEBUG")]
+        public static void TraceAirGroupInfo(IGame game)
+        {
+            Debug.WriteLine(DateTime.Now);
+            AiAirGroup[] aiAirGroupRed = game.gpAirGroups((int)EArmy.Red);
+            if (aiAirGroupRed != null)
+            {
+                foreach (var item in aiAirGroupRed)
+                {
+                    TraceAiAirGroup(game, item, false, false, true, true, true);
+                }
+            }
+            AiAirGroup[] aiAirGroupBlue = game.gpAirGroups((int)EArmy.Blue);
+            if (aiAirGroupBlue != null)
+            {
+                foreach (var item in aiAirGroupBlue)
+                {
+                    TraceAiAirGroup(game, item, false, false, true, true, true);
+                }
+            }
+            AiAirGroup[] aiAirGroupNone = game.gpAirGroups((int)EArmy.None);
+            if (aiAirGroupNone != null)
+            {
+                foreach (var item in aiAirGroupNone)
+                {
+                    TraceAiAirGroup(game, item, false, false, true, true, true);
+                }
+            }
+
+        }
+
+        [Conditional("DEBUG")]
         public static void TraceActorCreated(IGame game, int missionNumber, string shortName, AiActor actor)
         {
-            if (string.Compare(shortName, MissionStatus.ValueNoName, true) != 0)
+            // if (string.Compare(shortName, MissionStatus.ValueNoName, true) != 0)
             {
                 // Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
 
@@ -157,7 +189,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2})", missionNumber, shortName, actor.Name());
                         AiAirGroup airGroup = actor as AiAirGroup;
-                        MissionDebug.TraceAiAirGroup(game, actor as AiAirGroup, true, false, false, false, false);
+                        TraceAiAirGroup(game, actor as AiAirGroup, true, true, false, false, false);
                     }
                     else if (actor is AiGroundGroup)
                     {
@@ -172,11 +204,11 @@ namespace IL2DCE.MissionObjectModel
                     //TraceAiPerson(actor as AiPerson);
                 }
             }
-            else
-            {
-                //Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2}) Army={3}, Tag={4}, AirGroup={5}, Pos={6}, Type={7}", 
-                //                        missionNumber, shortName, actor.Name(), actor.Army(), actor.Tag != null ? actor.Tag: string.Empty, actor.Group() != null ? actor.Group().Name() :string.Empty, actor.Pos(), actor.GetType().Name);
-            }
+            //else
+            //{
+            //    //Debug.WriteLine("Mission.OnActorCreated({0}, {1}, {2}) Army={3}, Tag={4}, AirGroup={5}, Pos={6}, Type={7}", 
+            //    //                        missionNumber, shortName, actor.Name(), actor.Army(), actor.Tag != null ? actor.Tag: string.Empty, actor.Group() != null ? actor.Group().Name() :string.Empty, actor.Pos(), actor.GetType().Name);
+            //}
         }
 
         [Conditional("DEBUG")]
@@ -201,7 +233,8 @@ namespace IL2DCE.MissionObjectModel
             {
                 try
                 {
-                    AiAircraft aiAircraft = airGroup.GetItems()?.FirstOrDefault() as AiAircraft ?? null;
+                    AiActor[] actors = CloDAPIUtil.GetItems(airGroup);
+                    AiAircraft aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft : null;
                     Debug.WriteLine("  AiAirGroup: Army={0,1}, ID={1,3}, Name={2,-30}, Type={3,-35}, NOf={4,2}, Init={5,2}, Died={6,2}, Valid={7,-5}, Alive={8,-5}, Way=[{9,2}/{10,2}], Task={11,-15}, Idle={12,-5}, Pos={13,-65}",
                         airGroup.Army(), airGroup.ID(), airGroup.Name(), aiAircraft?.InternalTypeName() ?? string.Empty, airGroup.NOfAirc, airGroup.InitNOfAirc, airGroup.DiedAircrafts,
                         airGroup.IsValid(), airGroup.IsAlive(), airGroup.NOfAirc > 0 ? airGroup.GetCurrentWayPoint() : -1,
@@ -220,7 +253,7 @@ namespace IL2DCE.MissionObjectModel
                     }
                     if (items)
                     {
-                        AiActor[] actors = airGroup.GetItems();
+                        actors = CloDAPIUtil.GetItems(airGroup);
                         if (actors != null)
                         {
                             foreach (AiAircraft item in actors)
@@ -240,7 +273,8 @@ namespace IL2DCE.MissionObjectModel
                             {
                                 if (item.IsValid() && item.IsAlive() && item.NOfAirc > 0)
                                 {
-                                    aiAircraft = item.GetItems().FirstOrDefault() as AiAircraft;
+                                    actors = CloDAPIUtil.GetItems(item);
+                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft: null;
                                     Debug.WriteLine("    Enemies: ID={0}, Name={1}, TypeName={2}, NOf={3}, Init={4}, Died={5}, IsValid={6}, IsAlive={7}, Way=[{8}/{9}], Task={10}, Idle={11}, Pos={12}",
                                         item.ID(), item.Name(), aiAircraft != null ? aiAircraft.InternalTypeName() : string.Empty, item.NOfAirc, item.InitNOfAirc, item.DiedAircrafts, item.IsValid(), item.IsAlive(), item.GetWay() != null ? item.GetCurrentWayPoint() : -1, item.GetWay() != null ? item.GetWay().Length : -1, item.getTask().ToString(), item.Idle, item.Pos().ToString());
                                 }
@@ -257,7 +291,8 @@ namespace IL2DCE.MissionObjectModel
                             {
                                 if (item.IsValid() && item.IsAlive() && item.NOfAirc > 0)
                                 {
-                                    aiAircraft = item.GetItems().FirstOrDefault() as AiAircraft;
+                                    actors = CloDAPIUtil.GetItems(item);
+                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft : null;
                                     Debug.WriteLine("    Candidates: ID={0}, Name={1}, TypeName={2}, NOf={3}, Init={4}, Died={5}, IsValid={6}, IsAlive={7}, Way=[{8}/{9}], Task={10}, Idle={11}, Pos={12}",
                                         item.ID(), item.Name(), aiAircraft != null ? aiAircraft.InternalTypeName() : string.Empty, item.NOfAirc, item.InitNOfAirc, item.DiedAircrafts, item.IsValid(), item.IsAlive(), item.GetWay() != null ? item.GetCurrentWayPoint() : -1, item.GetWay() != null ? item.GetWay().Length : -1, item.getTask().ToString(), item.Idle, item.Pos().ToString());
                                 }
@@ -274,7 +309,8 @@ namespace IL2DCE.MissionObjectModel
                             {
                                 if (item.IsValid() && item.IsAlive() && item.NOfAirc > 0)
                                 {
-                                    aiAircraft = item.GetItems().FirstOrDefault() as AiAircraft;
+                                    actors = CloDAPIUtil.GetItems(item);
+                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft: null;
                                     Debug.WriteLine("    AttachedGroups: ID={0}, Name={1}, TypeName={2}, NOf={3}, Init={4}, Died={5}, IsValid={6}, IsAlive={7}, Way=[{8}/{9}], Task={10}, Idle={11}, Pos={12}",
                                         item.ID(), item.Name(), aiAircraft != null ? aiAircraft.InternalTypeName() : string.Empty, item.NOfAirc, item.InitNOfAirc, item.DiedAircrafts, item.IsValid(), item.IsAlive(), item.GetWay() != null ? item.GetCurrentWayPoint() : -1, item.GetWay() != null ? item.GetWay().Length : -1, item.getTask().ToString(), item.Idle, item.Pos().ToString());
                                 }
@@ -297,7 +333,7 @@ namespace IL2DCE.MissionObjectModel
                 try
                 {
                     StringBuilder sb = new StringBuilder();
-                    AiActor[] aiActors = groundGroup.GetItems();
+                    AiActor[] aiActors = CloDAPIUtil.GetItems(groundGroup);
                     AiGroundActor aiActor = aiActors != null ? aiActors.FirstOrDefault() as AiGroundActor : null;
                     sb.AppendFormat("  AiGroundGroup: Army={0,1}, Name={1,-30}, Type={2,-35}, Count={3,2}, IsAlive={4,-5}",
                         groundGroup.Army(),groundGroup.Name(), aiActor != null ? aiActor.InternalTypeName() : string.Empty, aiActors != null ? aiActors.Count() : 0, groundGroup.IsAlive());
@@ -327,7 +363,7 @@ namespace IL2DCE.MissionObjectModel
                     }
                     if (items)
                     {
-                        AiActor[] actors = groundGroup.GetItems();
+                        AiActor[] actors = CloDAPIUtil.GetItems(groundGroup);
                         if (actors != null)
                         {
                             foreach (AiGroundActor item in actors)
@@ -400,7 +436,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 try
                 {
-                    Debug.WriteLine("  AiPerson: Army={0}, Id={1}, Name={2}, Player={3}, Health={4}, Valid={5}, Alive={6}, Alive={7}, Task={8}, Pos={9}",
+                    Debug.WriteLine("  AiPerson: Army={0}, Id={1}, Name={2}, Player={3}, Health={4}, Valid={5}, Alive={6}, Task={7}, Pos={8}",
                         aiPerson.Army(), aiPerson.Id, aiPerson.Name(), aiPerson.Player() != null ? aiPerson.Player().Name() : string.Empty, aiPerson.Health, aiPerson.IsValid(),
                         aiPerson.IsAlive(), aiPerson.IsTaskComplete(), aiPerson.Pos());
                 }
@@ -410,7 +446,6 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
         }
-
 
         [Conditional("DEBUG")]
         public static void TraceGroundStationary(IGame game, GroundStationary groundStationary)

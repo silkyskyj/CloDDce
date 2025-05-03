@@ -234,7 +234,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return CreateSquadronString(CreateDisplayName(AirGroupKey), SquadronIndex);
+                return CreateSquadronString(AirGroupKey, SquadronIndex);
             }
         }
 
@@ -510,7 +510,7 @@ namespace IL2DCE.MissionObjectModel
 
         public override string ToString()
         {
-            return CreateSquadronString(AirGroupKey, SquadronIndex);
+            return SquadronName;
         }
 
         public static string CreateSquadronString(string airGroupKey, int squadronIndex)
@@ -687,7 +687,7 @@ namespace IL2DCE.MissionObjectModel
                     flightMask = (flightMask | bit);
                 }
             }
-            Id = ToString() + flightMask.ToString("X");
+            Id = SquadronName + flightMask.ToString("X");
         }
 
         #region Operation

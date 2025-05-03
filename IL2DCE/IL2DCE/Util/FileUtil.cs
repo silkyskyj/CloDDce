@@ -15,14 +15,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using maddox.game;
 
 namespace IL2DCE.Util
 {
     public class FileUtil
     {
-        public static bool IsFileWritable(string path)
+        public static bool IsFileWritable(string path, bool errorLog = false)
         {
             try
             {
@@ -35,7 +38,14 @@ namespace IL2DCE.Util
             catch (Exception ex)
             {
                 string message = string.Format("IsFileWritable[Error={0}][Path={1}]", ex.Message, path);
-                Core.WriteLog(message);
+                if (errorLog)
+                {
+                    Core.WriteLog(message);
+                }
+                else
+                {
+                    Debug.WriteLine(message);
+                }
             }
             return false;
         }
@@ -43,6 +53,144 @@ namespace IL2DCE.Util
         public static string AsciitoUtf8String(string str)
         {
             return Encoding.UTF8.GetString(Encoding.ASCII.GetBytes(str));
+        }
+
+        public static void DeleteGameFile(GameIterface gameIterface, string pathGame, bool errorLog = false)
+        {
+            try
+            {
+                string systemPath = gameIterface.ToFileSystemPath(pathGame);
+                if (!string.IsNullOrEmpty(systemPath) && File.Exists(systemPath))
+                {
+                    File.Delete(systemPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("FileUtil.DeleteFile[Error={0}][Path={1}]", ex.Message, pathGame);
+                if (errorLog)
+                {
+                    Core.WriteLog(message);
+                }
+                else
+                {
+                    Debug.WriteLine(message);
+                }
+            }
+        }
+
+        public static void MoveFile(string src, string dest, bool errorLog = false)
+        {
+            try
+            {
+                if (File.Exists(dest))
+                {
+                    File.Delete(dest);
+                }
+                File.Move(src, dest);
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("FileUtil.MoveFile[Error={0}][Path={1} -> {2}]", ex.Message, src, dest);
+                if (errorLog)
+                {
+                    Core.WriteLog(message);
+                }
+                else
+                {
+                    Debug.WriteLine(message);
+                }
+            }
+        }
+
+        public static long FileLength(string path, bool errorLog = false)
+        {
+            try
+            {
+                FileInfo fileInfo = new FileInfo(path);
+                fileInfo.Refresh();
+                return fileInfo.Length;
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("FileUtil.FileLength[Error={0}][Path={1}]", ex.Message, path);
+                if (errorLog)
+                {
+                    Core.WriteLog(message);
+                }
+                else
+                {
+                    Debug.WriteLine(message);
+                }
+            }
+            return 0;
+        }
+
+        public static void BackupFiles(string path, int backupCount, bool errorLog = false)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                try
+                {
+                    string dir = Path.GetDirectoryName(path);
+                    string name = Path.GetFileNameWithoutExtension(path);
+                    string ext = Path.GetExtension(path);
+
+                    for (int i = backupCount - 1; i >= 0; i--)
+                    {
+                        string old = CreatePath(dir, name, ext, ".", i);
+                        if (File.Exists(old) && FileLength(old, errorLog) > 0)
+                        {
+                            MoveFile(old, CreatePath(dir, name, ext, ".", i + 1), errorLog);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string message = string.Format("FileUtil.BackupFiles[Error={0}][path={1}]", ex.Message, path);
+                    if (errorLog)
+                    {
+                        Core.WriteLog(message);
+                    }
+                    else
+                    {
+                        Debug.WriteLine(message);
+                    }
+                }
+            }
+        }
+
+        public static string CreatePath(string dir, string name, string ext, string separator, int idx)
+        {
+            return string.Format("{0}{1}{2}{3}{4}", dir, Path.DirectorySeparatorChar, name, idx > 0 ? string.Format(Config.NumberFormat, "{0}{1:D}", separator, idx) : string.Empty, ext);
+        }
+
+        public static string CreateWritablePath(string path, int maxErrorCount, bool errorLog = false)
+        {
+            try
+            {
+                string dir = Path.GetDirectoryName(path);
+                string name = Path.GetFileNameWithoutExtension(path);
+                string ext = Path.GetExtension(path);
+                int i = 0;
+                while (!IsFileWritable(path, errorLog) && i < maxErrorCount)
+                {
+                    path = CreatePath(dir, name, ext, "-", ++i);
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("FileUtil.CreateWritablePath[Error={0}][path={1}]", ex.Message, path);
+                if (errorLog)
+                {
+                    Core.WriteLog(message);
+                }
+                else
+                {
+                    Debug.WriteLine(message);
+                }
+            }
+            return path;
         }
     }
 }

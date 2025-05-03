@@ -27,6 +27,7 @@ using IL2DCE.Generator;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
+using static IL2DCE.MissionObjectModel.MissionStatus;
 using static IL2DCE.MissionObjectModel.Skill;
 
 namespace IL2DCE.MissionObjectModel
@@ -810,10 +811,17 @@ namespace IL2DCE.MissionObjectModel
             return listDamage.ToArray().Where(x => x is DamagerScore && (x as DamagerScore).initiator.Player != null).ToArray() as DamagerScore[];
         }
 
-        public bool IsPlayerAlive()
+        public bool IsPlayerAlive(bool primary = false)
         {
             IPlayer player = (Game as IGameSingle).gameInterface.Player();
-            return player.PersonPrimary() != null && player.PersonPrimary().IsAlive();
+            if (primary)
+            {
+                return player.PersonPrimary() != null && player.PersonPrimary().IsAlive();
+            }
+            else
+            {
+                return player.GetBattleStat().deaths == 0;
+            }
         }
 
         public void UpdateSkill(float[] skills, EBattleResult result, MissionStatus missionStatus)
@@ -865,7 +873,7 @@ namespace IL2DCE.MissionObjectModel
 
                 if (missionStatus != null)
                 {
-                    MissionStatus.AirGroupObject airGroup = missionStatus.GetPlayerAirGroup();
+                    AirGroupObj airGroup = missionStatus.GetPlayerAirGroup();
                     if (airGroup != null)
                     {
                         if (airGroup.DiedNums > 0)

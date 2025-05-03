@@ -32,17 +32,10 @@ namespace IL2DCE.Generator
             set;
         }
 
-        protected Config Config
-        {
-            get;
-            set;
-        }
-
-        internal GeneratorBase(IGamePlay gamePlay, IRandom random, Config config)
+        internal GeneratorBase(IGamePlay gamePlay, IRandom random)
         {
             GamePlay = gamePlay;
             Random = random;
-            Config = config;
         }
     }
 }

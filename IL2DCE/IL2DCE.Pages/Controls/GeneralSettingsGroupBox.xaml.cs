@@ -142,6 +142,48 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
+        public bool SelectedKeepTotalAirGroups
+        {
+            get
+            {
+                bool? isCheckd = checkBoxKeepUnitsAirGroups.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
+        public bool SelectedKeepTotalGroundGroups
+        {
+            get
+            {
+                bool? isCheckd = checkBoxKeepUnitsGroundGroups.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
+        public bool SelectedKeepTotalStationaries
+        {
+            get
+            {
+                bool? isCheckd = checkBoxKeepUnitsStationaryUnits.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
         public bool SelectedSpawnRandomLocationFriendly
         {
             get
@@ -616,6 +658,9 @@ namespace IL2DCE.Pages.Controls
             checkBoxAdditionalAirGroups.IsChecked = false;
             checkBoxAdditionalGroundGroups.IsChecked = false;
             checkBoxAdditionalStationaryUnits.IsChecked = false;
+            checkBoxKeepUnitsAirGroups.IsChecked = false;
+            checkBoxKeepUnitsGroundGroups.IsChecked = false;
+            checkBoxKeepUnitsStationaryUnits.IsChecked = false;
 
             if (comboBoxSelectUnitNumsArmor.IsEnabled && comboBoxSelectUnitNumsArmor.Visibility == Visibility.Visible)
             {
@@ -996,6 +1041,10 @@ namespace IL2DCE.Pages.Controls
             file.add(SectionGeneralSettings, checkBoxAdditionalGroundGroups.Name, checkBoxAdditionalGroundGroups.IsChecked != null && checkBoxAdditionalGroundGroups.IsChecked.Value ? "1" : "0");
             file.add(SectionGeneralSettings, checkBoxAdditionalStationaryUnits.Name, checkBoxAdditionalStationaryUnits.IsChecked != null && checkBoxAdditionalStationaryUnits.IsChecked.Value ? "1" : "0");
 
+            file.add(SectionGeneralSettings, checkBoxKeepUnitsAirGroups.Name, checkBoxKeepUnitsAirGroups.IsChecked != null && checkBoxKeepUnitsAirGroups.IsChecked.Value ? "1" : "0");
+            file.add(SectionGeneralSettings, checkBoxKeepUnitsGroundGroups.Name, checkBoxKeepUnitsGroundGroups.IsChecked != null && checkBoxKeepUnitsGroundGroups.IsChecked.Value ? "1" : "0");
+            file.add(SectionGeneralSettings, checkBoxKeepUnitsStationaryUnits.Name, checkBoxKeepUnitsStationaryUnits.IsChecked != null && checkBoxKeepUnitsStationaryUnits.IsChecked.Value ? "1" : "0");
+
             file.add(SectionGeneralSettings, comboBoxSelectUnitNumsArmor.Name, comboBoxSelectUnitNumsArmor.Text);
             file.add(SectionGeneralSettings, comboBoxSelectUnitNumsShip.Name, comboBoxSelectUnitNumsShip.Text);
             file.add(SectionGeneralSettings, checkBoxGroundGroupGeneric.Name, checkBoxGroundGroupGeneric.IsChecked != null && checkBoxGroundGroupGeneric.IsChecked.Value ? "1" : "0");
@@ -1032,6 +1081,10 @@ namespace IL2DCE.Pages.Controls
             checkBoxAdditionalAirGroups.IsChecked = file.get(SectionGeneralSettings, checkBoxAdditionalAirGroups.Name, false);
             checkBoxAdditionalGroundGroups.IsChecked = file.get(SectionGeneralSettings, checkBoxAdditionalGroundGroups.Name, false);
             checkBoxAdditionalStationaryUnits.IsChecked = file.get(SectionGeneralSettings, checkBoxAdditionalStationaryUnits.Name, false);
+
+            checkBoxKeepUnitsAirGroups.IsChecked = file.get(SectionGeneralSettings, checkBoxKeepUnitsAirGroups.Name, false);
+            checkBoxKeepUnitsGroundGroups.IsChecked = file.get(SectionGeneralSettings, checkBoxKeepUnitsGroundGroups.Name, false);
+            checkBoxKeepUnitsStationaryUnits.IsChecked = file.get(SectionGeneralSettings, checkBoxKeepUnitsStationaryUnits.Name, false);
 
             if (comboBoxSelectUnitNumsArmor.IsEnabled && comboBoxSelectUnitNumsArmor.Visibility == Visibility.Visible)
             {

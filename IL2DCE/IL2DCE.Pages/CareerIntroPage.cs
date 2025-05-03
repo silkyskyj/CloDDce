@@ -419,7 +419,7 @@ namespace IL2DCE.Pages
             {
                 string pilotName = SelectedPilotName;
                 ToolTip toolTip = FrameworkElement.textBoxPilotName.ToolTip as ToolTip;
-                if (IsErrorPilotName = Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0))
+                if (IsErrorPilotName = string.IsNullOrEmpty(pilotName) || Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0))
                 {
                     FrameworkElement.textBoxPilotName.BorderBrush = Brushes.Red;
                     if (toolTip == null)
@@ -591,8 +591,11 @@ namespace IL2DCE.Pages
                 career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
                 career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
                 career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
-                career.AdditionalGroundGroups = generalSettings.SelectedAdditionalAirGroups;
+                career.AdditionalGroundGroups = generalSettings.SelectedAdditionalGroundGroups;
                 career.AdditionalStationaries = generalSettings.SelectedAdditionalStasionaries;
+                career.SpawnDynamicAirGroups = generalSettings.SelectedKeepTotalAirGroups;
+                career.SpawnDynamicGroundGroups = generalSettings.SelectedKeepTotalGroundGroups;
+                career.SpawnDynamicStationaries = generalSettings.SelectedKeepTotalStationaries;
                 career.ArmorUnitNumsSet = generalSettings.SelectedUnitNumsArmor;
                 career.ShipUnitNumsSet = generalSettings.SelectedUnitNumsShip;
                 career.GroundGroupGenerateType = generalSettings.SelectedGroundGroupGeneric ? EGroundGroupGenerateType.Generic : EGroundGroupGenerateType.Default;

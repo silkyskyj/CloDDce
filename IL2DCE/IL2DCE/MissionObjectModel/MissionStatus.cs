@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -23,10 +24,50 @@ using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
+using static IL2DCE.MissionObjectModel.MissionStatus;
 
 namespace IL2DCE.MissionObjectModel
 {
-    public class MissionStatus
+
+    public interface IMissionStatus
+    {
+        DateTime DateTime
+        {
+            get;
+        }
+
+        PlayerObj PlayerInfo
+        {
+            get;
+        }
+
+        List<AirGroupObj> AirGroups
+        {
+            get;
+        }
+
+        List<GroundGroupObj> GroundGroups
+        {
+            get;
+        }
+
+        List<StationaryObj> Stationaries
+        {
+            get;
+        }
+
+        List<AircraftObj> Aircrafts
+        {
+            get;
+        }
+
+        List<GroundObj> GroundActors
+        {
+            get;
+        }
+    }
+
+    public class MissionStatus : IMissionStatus
     {
 
         #region Definition
@@ -265,7 +306,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class PlayerObject : MissionObjBase
+        public class PlayerObj : MissionObjBase
         {
             public int Army
             {
@@ -303,7 +344,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public static PlayerObject Create(string name, string[] values)
+            public static PlayerObj Create(string name, string[] values)
             {
                 if (values != null && values.Length >= 11)
                 {
@@ -324,7 +365,7 @@ namespace IL2DCE.MissionObjectModel
                         double.TryParse(values[7], NumberStyles.Float, Config.NumberFormat, out x) && double.TryParse(values[8], NumberStyles.Float, Config.NumberFormat, out y) &&
                         double.TryParse(values[9], NumberStyles.Float, Config.NumberFormat, out z))
                     {
-                        return new PlayerObject()
+                        return new PlayerObj()
                         {
                             Name = name,
                             Army = (int)army,
@@ -350,20 +391,23 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public static PlayerObject Create(maddox.game.Player player, string playerActorName)
+            public static PlayerObj Create(maddox.game.Player player, string playerActorName)
             {
                 try
                 {
                     if (player != null)
                     {
                         AiPerson person = player.PersonPrimary();
+#if DEBUG
+                        MissionDebug.TraceAiPerson(null, person);
+#endif
                         AiActor actor = player.Place();
                         AiAircraft aircraft = actor != null ? actor as AiAircraft : null;
                         AiAirGroup airGroup = aircraft != null ? aircraft.Group() as AiAirGroup : null;
                         string airGroupName = CreateShortName(airGroup != null ? airGroup.Name() : string.Empty);
                         string aircraftName = CreateShortName(aircraft != null ? aircraft.Name() : string.Empty);
                         Point3d pos = aircraft != null ? aircraft.Pos() : new Point3d(0, 0, 0);
-                        return new PlayerObject()
+                        return new PlayerObj()
                         {
                             Name = player.Name(),
                             Army = player.Army(),
@@ -398,7 +442,7 @@ namespace IL2DCE.MissionObjectModel
                 return base.ReinForceRate();
             }
 
-            public bool Update(PlayerObject playerObject)
+            public bool Update(PlayerObj playerObject)
             {
                 bool updated = false;
                 try
@@ -469,9 +513,15 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class AirGroupObject : MissionObjBase
+        public class AirGroupObj : MissionObjBase
         {
             public int Id
+            {
+                get;
+                set;
+            }
+
+            public string NameItem
             {
                 get;
                 set;
@@ -533,6 +583,14 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
+            public string SquadronNameItem
+            {
+                get
+                {
+                    return Name2SquadronName(NameItem);
+                }
+            }
+
             public override double ReinForceRate()
             {
                 AircraftType type;
@@ -540,10 +598,10 @@ namespace IL2DCE.MissionObjectModel
                 {
                     type = AircraftType.UNKNOWN;
                 }
-                return AircraftObject.ReinForceRate(type);
+                return AircraftObj.ReinForceRate(type);
             }
 
-            public static AirGroupObject Create(string name, string[] values)
+            public static AirGroupObj Create(string name, string[] values)
             {
                 if (values != null && values.Length >= 13)
                 {
@@ -564,7 +622,7 @@ namespace IL2DCE.MissionObjectModel
                         Variable.TryParse(values[8], out isTaskComplete) && double.TryParse(values[9], NumberStyles.Float, Config.NumberFormat, out x) &&
                         double.TryParse(values[10], NumberStyles.Float, Config.NumberFormat, out y) && double.TryParse(values[11], NumberStyles.Float, Config.NumberFormat, out z))
                     {
-                        return new AirGroupObject()
+                        return new AirGroupObj()
                         {
                             Id = 0,
                             Name = name,
@@ -591,7 +649,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public static AirGroupObject Create(AiAirGroup airGroup)
+            public static AirGroupObj Create(AiAirGroup airGroup)
             {
                 try
                 {
@@ -600,11 +658,13 @@ namespace IL2DCE.MissionObjectModel
                         string name = CreateShortName(airGroup.Name());
                         AiActor[] actors = CloDAPIUtil.GetItems(airGroup);
                         AiAircraft aircraft = actors != null ? actors.FirstOrDefault() as AiAircraft : null;
+                        string nameItem = aircraft != null ? CreateShortName(aircraft.Name()): string.Empty;
                         Point3d pos = airGroup.Pos();
-                        return new AirGroupObject()
+                        return new AirGroupObj()
                         {
                             Id = airGroup.ID(),
                             Name = name,
+                            NameItem = nameItem,
                             Army = airGroup.Army(),
                             Class = CreateActorName(aircraft != null ? aircraft.InternalTypeName() : string.Empty),
                             Type = aircraft != null ? aircraft.Type().ToString() : string.Empty,
@@ -633,10 +693,10 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public bool Update(AirGroupObject airGroupObject)
+            public bool Update(AirGroupObj airGroupObject)
             {
-                Debug.WriteLine("  AirGroupObject.Update[Id={0}] Name={1} Nums={2}->{3} InitNums={4}->{5} DiedNums={6}->{7}, IsValid={8}->{9}, IsAlive={10}->{11}, IsTaskComplete{12}->{13}",
-                    airGroupObject.Id, airGroupObject.Name, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
+                Debug.WriteLine("  AirGroupObject.Update[Id={0}] Name={1}[{2}] Nums={3}->{4} InitNums={5}->{6} DiedNums={7}->{8}, IsValid={9}->{10}, IsAlive={11}->{12}, IsTaskComplete{13}->{14}",
+                    airGroupObject.Id, airGroupObject.Name, airGroupObject.NameItem, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
                 bool updated = false;
 
                 try
@@ -653,6 +713,12 @@ namespace IL2DCE.MissionObjectModel
                     if (Update(ref target, airGroupObject.Name))
                     {
                         Name = target;
+                    }
+
+                    target = NameItem;
+                    if (Update(ref target, airGroupObject.NameItem))
+                    {
+                        NameItem = target;
                     }
 
                     target = Class;
@@ -732,7 +798,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class GroundGroupObject : MissionObjBase
+        public class GroundGroupObj : MissionObjBase
         {
             public int Army
             {
@@ -788,10 +854,10 @@ namespace IL2DCE.MissionObjectModel
 
             public static double ReinForceRate(AiGroundActorType type)
             {
-                return GroundObject.ReinForceRate(type);
+                return GroundObj.ReinForceRate(type);
             }
 
-            public static GroundGroupObject Create(string name, string[] values)
+            public static GroundGroupObj Create(string name, string[] values)
             {
                 try
                 {
@@ -813,7 +879,7 @@ namespace IL2DCE.MissionObjectModel
                             Variable.TryParse(values[7], out isTaskComplete) && double.TryParse(values[8], NumberStyles.Float, Config.NumberFormat, out x) &&
                              double.TryParse(values[9], NumberStyles.Float, Config.NumberFormat, out y) && double.TryParse(values[10], NumberStyles.Float, Config.NumberFormat, out z))
                         {
-                            return new GroundGroupObject()
+                            return new GroundGroupObj()
                             {
                                 Name = name,
                                 Army = (int)army,
@@ -843,7 +909,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public static GroundGroupObject Create(AiGroundGroup groundGroup)
+            public static GroundGroupObj Create(AiGroundGroup groundGroup)
             {
                 try
                 {
@@ -854,7 +920,7 @@ namespace IL2DCE.MissionObjectModel
                         AiGroundActor groundActor = aiActors != null && aiActors.Length > 0 ? aiActors.FirstOrDefault() as AiGroundActor : null;
                         Point3d pos = groundGroup.Pos();
 
-                        return new GroundGroupObject()
+                        return new GroundGroupObj()
                         {
                             Name = name,
                             Army = groundGroup.Army(),
@@ -883,7 +949,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public bool Update(GroundGroupObject groundGroupObject)
+            public bool Update(GroundGroupObj groundGroupObject)
             {
                 Debug.WriteLine("  GroundGroupObject.Update[{0}] Nums={1}->{2} AliveNums={3}->{4}, IsValid={5}->{6}, IsAlive={7}->{8}, IsTaskComplete{9}->{10}",
                                 groundGroupObject.Name, Nums, groundGroupObject.Nums, AliveNums, groundGroupObject.AliveNums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
@@ -961,7 +1027,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class StationaryObject : MissionObjBase
+        public class StationaryObj : MissionObjBase
         {
             public string Id
             {
@@ -1005,10 +1071,10 @@ namespace IL2DCE.MissionObjectModel
 
             public static double ReinForceRate(AiGroundActorType type)
             {
-                return GroundObject.ReinForceRate(type);
+                return GroundObj.ReinForceRate(type);
             }
 
-            public static StationaryObject Create(string name, string[] values)
+            public static StationaryObj Create(string name, string[] values)
             {
                 try
                 {
@@ -1024,7 +1090,7 @@ namespace IL2DCE.MissionObjectModel
                             Variable.TryParse(values[4], out isAlive) && double.TryParse(values[5], NumberStyles.Float, Config.NumberFormat, out x) &&
                              double.TryParse(values[6], NumberStyles.Float, Config.NumberFormat, out y) && double.TryParse(values[7], NumberStyles.Float, Config.NumberFormat, out z))
                         {
-                            return new StationaryObject()
+                            return new StationaryObj()
                             {
                                 Id = string.Empty,
                                 Name = name,
@@ -1052,7 +1118,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public static StationaryObject Create(GroundStationary groundStationary)
+            public static StationaryObj Create(GroundStationary groundStationary)
             {
                 try
                 {
@@ -1061,7 +1127,7 @@ namespace IL2DCE.MissionObjectModel
                         string name = CreateShortName(groundStationary.Name);
                         Point3d pos = groundStationary.pos;
                         string category = groundStationary.Category;
-                        return new StationaryObject()
+                        return new StationaryObj()
                         {
                             Id = name,
                             Name = name,
@@ -1088,7 +1154,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public bool Update(StationaryObject stationaryObject)
+            public bool Update(StationaryObj stationaryObject)
             {
                 bool updated = false;
                 try
@@ -1166,7 +1232,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class AircraftObject : MissionObjBase
+        public class AircraftObj : MissionObjBase
         {
             public int Army
             {
@@ -1267,7 +1333,7 @@ namespace IL2DCE.MissionObjectModel
                 return 1 / rate;
             }
 
-            public static AircraftObject Create(string name, string[] values)
+            public static AircraftObj Create(string name, string[] values)
             {
                 try
                 {
@@ -1286,7 +1352,7 @@ namespace IL2DCE.MissionObjectModel
                             Variable.TryParse(values[4], out isAlive) && Variable.TryParse(values[5], out isTaskComplete) && double.TryParse(values[6], NumberStyles.Float, Config.NumberFormat, out x) &&
                             double.TryParse(values[7], NumberStyles.Float, Config.NumberFormat, out y) && double.TryParse(values[8], NumberStyles.Float, Config.NumberFormat, out z))
                         {
-                            return new AircraftObject()
+                            return new AircraftObj()
                             {
                                 Name = name,
                                 Army = (int)army,
@@ -1314,7 +1380,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public static AircraftObject Create(AiAircraft aiAircraft)
+            public static AircraftObj Create(AiAircraft aiAircraft)
             {
                 try
                 {
@@ -1322,7 +1388,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         string name = CreateShortName(aiAircraft.Name());
                         Point3d pos = aiAircraft.Pos();
-                        return new AircraftObject()
+                        return new AircraftObj()
                         {
                             Name = name,
                             Army = aiAircraft.Army(),
@@ -1349,7 +1415,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public bool Update(AircraftObject aircraftObject)
+            public bool Update(AircraftObj aircraftObject)
             {
                 bool updated = false;
                 try
@@ -1419,7 +1485,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class GroundObject : MissionObjBase
+        public class GroundObj : MissionObjBase
         {
             public int Army
             {
@@ -1592,7 +1658,7 @@ namespace IL2DCE.MissionObjectModel
                 return 1 / rate;
             }
 
-            public static GroundObject Create(string name, string[] values)
+            public static GroundObj Create(string name, string[] values)
             {
                 if (values != null && values.Length >= 10)
                 {
@@ -1609,7 +1675,7 @@ namespace IL2DCE.MissionObjectModel
                         Variable.TryParse(values[4], out isAlive) && Variable.TryParse(values[5], out isTaskComplete) && double.TryParse(values[6], NumberStyles.Float, Config.NumberFormat, out x) &&
                         double.TryParse(values[7], NumberStyles.Float, Config.NumberFormat, out y) && double.TryParse(values[8], NumberStyles.Float, Config.NumberFormat, out z))
                     {
-                        return new GroundObject()
+                        return new GroundObj()
                         {
                             Name = name,
                             Army = (int)army,
@@ -1632,7 +1698,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public static GroundObject Create(AiGroundActor aiGroundActor)
+            public static GroundObj Create(AiGroundActor aiGroundActor)
             {
                 try
                 {
@@ -1640,7 +1706,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         string name = CreateShortName(aiGroundActor.Name());
                         Point3d pos = aiGroundActor.Pos();
-                        return new GroundObject()
+                        return new GroundObj()
                         {
                             Name = name,
                             Army = aiGroundActor.Army(),
@@ -1667,7 +1733,7 @@ namespace IL2DCE.MissionObjectModel
                 return null;
             }
 
-            public bool Update(GroundObject groundObject)
+            public bool Update(GroundObj groundObject)
             {
                 bool updated = false;
                 try
@@ -1736,7 +1802,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        #endregion
+#endregion
 
         #region Property
 
@@ -1746,37 +1812,37 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-        public PlayerObject PlayerInfo
+        public PlayerObj PlayerInfo
         {
             get;
             private set;
         }
 
-        public List<AirGroupObject> AirGroups
+        public List<AirGroupObj> AirGroups
         {
             get;
             private set;
         }
 
-        public List<GroundGroupObject> GroundGroups
+        public List<GroundGroupObj> GroundGroups
         {
             get;
             private set;
         }
 
-        public List<StationaryObject> Stationaries
+        public List<StationaryObj> Stationaries
         {
             get;
             private set;
         }
 
-        public List<AircraftObject> Aircrafts
+        public List<AircraftObj> Aircrafts
         {
             get;
             private set;
         }
 
-        public List<GroundObject> GroundActors
+        public List<GroundObj> GroundActors
         {
             get;
             private set;
@@ -1797,23 +1863,23 @@ namespace IL2DCE.MissionObjectModel
             Random = random;
             DateTime = dateTime;
             PlayerInfo = null;
-            AirGroups = new List<AirGroupObject>();
-            GroundGroups = new List<GroundGroupObject>();
-            Stationaries = new List<StationaryObject>();
-            Aircrafts = new List<AircraftObject>();
-            GroundActors = new List<GroundObject>();
+            AirGroups = new List<AirGroupObj>();
+            GroundGroups = new List<GroundGroupObj>();
+            Stationaries = new List<StationaryObj>();
+            Aircrafts = new List<AircraftObj>();
+            GroundActors = new List<GroundObj>();
         }
 
-        public MissionStatus(IRandom random, DateTime dateTime, PlayerObject playerInfo, IEnumerable<AirGroupObject> airGroups, IEnumerable<GroundGroupObject> groundGroups, IEnumerable<StationaryObject> stationaries, IEnumerable<AircraftObject> aircrafts, IEnumerable<GroundObject> groundActors)
+        public MissionStatus(IRandom random, DateTime dateTime, PlayerObj playerInfo, IEnumerable<AirGroupObj> airGroups, IEnumerable<GroundGroupObj> groundGroups, IEnumerable<StationaryObj> stationaries, IEnumerable<AircraftObj> aircrafts, IEnumerable<GroundObj> groundActors)
         {
             Random = random;
             DateTime = dateTime;
             PlayerInfo = playerInfo;
-            AirGroups = new List<AirGroupObject>(airGroups);
-            GroundGroups = new List<GroundGroupObject>(groundGroups);
-            Stationaries = new List<StationaryObject>(stationaries);
-            Aircrafts = new List<AircraftObject>(aircrafts);
-            GroundActors = new List<GroundObject>(groundActors);
+            AirGroups = new List<AirGroupObj>(airGroups);
+            GroundGroups = new List<GroundGroupObj>(groundGroups);
+            Stationaries = new List<StationaryObj>(stationaries);
+            Aircrafts = new List<AircraftObj>(aircrafts);
+            GroundActors = new List<GroundObj>(groundActors);
         }
 
         #endregion
@@ -1832,63 +1898,63 @@ namespace IL2DCE.MissionObjectModel
                 if (lines > 0)
                 {
                     file.get(SectionPlayer, 0, out key, out value);
-                    PlayerObject player = PlayerObject.Create(key, value.Split(SplitChars));
+                    PlayerObj player = PlayerObj.Create(key, value.Split(SplitChars));
 
                     int i;
-                    List<AirGroupObject> airGroups = new List<AirGroupObject>();
+                    List<AirGroupObj> airGroups = new List<AirGroupObj>();
                     lines = file.lines(SectionAirGroups);
                     for (i = 0; i < lines; i++)
                     {
                         file.get(SectionAirGroups, i, out key, out value);
-                        AirGroupObject airGroup = AirGroupObject.Create(key, value.Split(SplitChars));
+                        AirGroupObj airGroup = AirGroupObj.Create(key, value.Split(SplitChars));
                         if (airGroup != null)
                         {
                             airGroups.Add(airGroup);
                         }
                     }
 
-                    List<GroundGroupObject> groundGroups = new List<GroundGroupObject>();
+                    List<GroundGroupObj> groundGroups = new List<GroundGroupObj>();
                     lines = file.lines(SectionChiefs);
                     for (i = 0; i < lines; i++)
                     {
                         file.get(SectionChiefs, i, out key, out value);
-                        GroundGroupObject groundGroup = GroundGroupObject.Create(key, value.Split(SplitChars));
+                        GroundGroupObj groundGroup = GroundGroupObj.Create(key, value.Split(SplitChars));
                         if (groundGroup != null)
                         {
                             groundGroups.Add(groundGroup);
                         }
                     }
 
-                    List<StationaryObject> stationaries = new List<StationaryObject>();
+                    List<StationaryObj> stationaries = new List<StationaryObj>();
                     lines = file.lines(SectionStationary);
                     for (i = 0; i < lines; i++)
                     {
                         file.get(SectionStationary, i, out key, out value);
-                        StationaryObject stationary = StationaryObject.Create(key, value.Split(SplitChars));
+                        StationaryObj stationary = StationaryObj.Create(key, value.Split(SplitChars));
                         if (stationary != null)
                         {
                             stationaries.Add(stationary);
                         }
                     }
 
-                    List<AircraftObject> aircrafts = new List<AircraftObject>();
+                    List<AircraftObj> aircrafts = new List<AircraftObj>();
                     lines = file.lines(SectionAircraft);
                     for (i = 0; i < lines; i++)
                     {
                         file.get(SectionAircraft, i, out key, out value);
-                        AircraftObject aircraft = AircraftObject.Create(key, value.Split(SplitChars));
+                        AircraftObj aircraft = AircraftObj.Create(key, value.Split(SplitChars));
                         if (aircraft != null)
                         {
                             aircrafts.Add(aircraft);
                         }
                     }
 
-                    List<GroundObject> groundActors = new List<GroundObject>();
+                    List<GroundObj> groundActors = new List<GroundObj>();
                     lines = file.lines(SectionGroundActor);
                     for (i = 0; i < lines; i++)
                     {
                         file.get(SectionGroundActor, i, out key, out value);
-                        GroundObject groundActor = GroundObject.Create(key, value.Split(SplitChars));
+                        GroundObj groundActor = GroundObj.Create(key, value.Split(SplitChars));
                         if (groundActor != null)
                         {
                             groundActors.Add(groundActor);
@@ -1994,7 +2060,7 @@ namespace IL2DCE.MissionObjectModel
 
         public void Update(maddox.game.Player player, string playerActorName)
         {
-            PlayerObject playerInfoNew = PlayerObject.Create(player, playerActorName);
+            PlayerObj playerInfoNew = PlayerObj.Create(player, playerActorName);
             if (playerInfoNew != null)
             {
                 if (PlayerInfo == null)
@@ -2010,14 +2076,14 @@ namespace IL2DCE.MissionObjectModel
 
         private void Update(AiAirGroup aiAirGroup, bool items = false)
         {
-            AirGroupObject airGroupNew = AirGroupObject.Create(aiAirGroup);
+            AirGroupObj airGroupNew = AirGroupObj.Create(aiAirGroup);
             if (airGroupNew != null)
             {
-                AirGroupObject airGroup = airGroupNew.Id > 0 ? AirGroups.Where(x => x.Id == airGroupNew.Id).FirstOrDefault() :
+                AirGroupObj airGroup = airGroupNew.Id > 0 ? AirGroups.Where(x => x.Id == airGroupNew.Id).FirstOrDefault() :
                     !string.IsNullOrEmpty(airGroupNew.Name) ? AirGroups.Where(x => string.Compare(x.SquadronName, airGroupNew.SquadronName, true) == 0).FirstOrDefault() : null;
                 if (airGroup == null)
                 {
-                    Debug.WriteLine("  AiAirGroup.Add(Id={0,2} {1,-30} Class={2,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.Class);
+                    Debug.WriteLine("  AiAirGroup.Add(Id={0,2} {1,-30}[{2}] Class={3,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.NameItem, airGroupNew.Class);
                     AirGroups.Add(airGroupNew);
                 }
                 else
@@ -2042,10 +2108,10 @@ namespace IL2DCE.MissionObjectModel
 
         private void Update(AiGroundGroup aiGroundGroup, bool items = false)
         {
-            GroundGroupObject groundGroupNew = GroundGroupObject.Create(aiGroundGroup);
+            GroundGroupObj groundGroupNew = GroundGroupObj.Create(aiGroundGroup);
             if (groundGroupNew != null)
             {
-                GroundGroupObject groundGroup = !string.IsNullOrEmpty(groundGroupNew.Name) ? GroundGroups.Where(x => string.Compare(x.Name, groundGroupNew.Name) == 0).FirstOrDefault() : null;
+                GroundGroupObj groundGroup = !string.IsNullOrEmpty(groundGroupNew.Name) ? GroundGroups.Where(x => string.Compare(x.Name, groundGroupNew.Name) == 0).FirstOrDefault() : null;
                 if (groundGroup == null)
                 {
                     Debug.WriteLine("  AiGroundGroup.Add({0,-30} Class={1,-35})", groundGroupNew.Name, groundGroupNew.Class);
@@ -2074,10 +2140,10 @@ namespace IL2DCE.MissionObjectModel
 
         public void Update(GroundStationary groundStationary)
         {
-            StationaryObject stationaryNew = StationaryObject.Create(groundStationary);
+            StationaryObj stationaryNew = StationaryObj.Create(groundStationary);
             if (stationaryNew != null)
             {
-                StationaryObject stationary = !string.IsNullOrEmpty(stationaryNew.Id) ? Stationaries.Where(x => x.Id == stationaryNew.Id).FirstOrDefault() :
+                StationaryObj stationary = !string.IsNullOrEmpty(stationaryNew.Id) ? Stationaries.Where(x => x.Id == stationaryNew.Id).FirstOrDefault() :
                     !string.IsNullOrEmpty(stationaryNew.Name) ? Stationaries.Where(x => x.Name == stationaryNew.Name).FirstOrDefault() : null;
                 if (stationary == null)
                 {
@@ -2093,10 +2159,10 @@ namespace IL2DCE.MissionObjectModel
         private void Update(AiAircraft aiAircraft, bool group = false)
         {
             Debug.WriteLine("  AiAircraft Army={0}, Name={1}, TypeName={2}, Group={3}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
-            AircraftObject aircraftNew = AircraftObject.Create(aiAircraft);
+            AircraftObj aircraftNew = AircraftObj.Create(aiAircraft);
             if (aircraftNew != null)
             {
-                AircraftObject aircraft = !string.IsNullOrEmpty(aircraftNew.Name) ? Aircrafts.Where(x => string.Compare(x.Name, aircraftNew.Name) == 0).FirstOrDefault() : null;
+                AircraftObj aircraft = !string.IsNullOrEmpty(aircraftNew.Name) ? Aircrafts.Where(x => string.Compare(x.Name, aircraftNew.Name) == 0).FirstOrDefault() : null;
                 if (aircraft == null)
                 {
                     Aircrafts.Add(aircraftNew);
@@ -2128,10 +2194,10 @@ namespace IL2DCE.MissionObjectModel
         private void Update(AiGroundActor aiGroundActor, bool group = false)
         {
             Debug.WriteLine("  AiGroundActor Army={0}, Name={1}, TypeName={2}, Group={3}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
-            GroundObject groundActorNew = GroundObject.Create(aiGroundActor);
+            GroundObj groundActorNew = GroundObj.Create(aiGroundActor);
             if (groundActorNew != null)
             {
-                GroundObject groundActor = !string.IsNullOrEmpty(groundActorNew.Name) ? GroundActors.Where(x => string.Compare(x.Name, groundActorNew.Name) == 0).FirstOrDefault() : null;
+                GroundObj groundActor = !string.IsNullOrEmpty(groundActorNew.Name) ? GroundActors.Where(x => string.Compare(x.Name, groundActorNew.Name) == 0).FirstOrDefault() : null;
                 if (groundActor == null)
                 {
                     GroundActors.Add(groundActorNew);
@@ -2226,11 +2292,26 @@ namespace IL2DCE.MissionObjectModel
             {
                 PlayerInfo.WriteTo(file, overwrite);
             }
-            AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
-            GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
-            Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
-            Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
-            GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            foreach (var item in AirGroups.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
+            foreach (var item in GroundGroups.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
+            foreach (var item in Stationaries.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
+            foreach (var item in Aircrafts.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
+            foreach (var item in GroundActors.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
         }
 
         public void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite)
@@ -2263,28 +2344,20 @@ namespace IL2DCE.MissionObjectModel
             }
             else
             {
-#if false
-                //AirGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                //GroundGroups.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                //Stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                //Aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-                //GroundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file));
-#else
                 // AirGroup
-                UpdateWriteTo(file, reinForceDay, overwrite, new List<AirGroupObject>());
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<AirGroupObj>());
 
                 // GroundGroups
-                UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundGroupObject>());
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundGroupObj>());
 
                 // Stationary
-                UpdateWriteTo(file, reinForceDay, overwrite, new List<StationaryObject>());
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<StationaryObj>());
 
                 // Aircraft
-                UpdateWriteTo(file, reinForceDay, overwrite, new List<AircraftObject>());
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<AircraftObj>());
 
                 // GroundActor
-                UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundObject>());
-#endif
+                UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundObj>());
             }
         }
 
@@ -2297,15 +2370,22 @@ namespace IL2DCE.MissionObjectModel
             };
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AirGroupObject> airGroups)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AirGroupObj> airGroups)
         {
-            foreach (var item in AirGroups.OrderBy(x => x.Name))
+            IEnumerable<string> squadronNames = AirGroups.Select(x => string.Compare(x.Name, ValueNoName, true) != 0 ? x.SquadronName : x.SquadronNameItem).Distinct();
+            foreach (var squadronName in squadronNames)
             {
+                IEnumerable<AirGroupObj> targets = AirGroups.Where(x => string.Compare(string.Compare(x.Name, ValueNoName, true) != 0 ? x.SquadronName : x.SquadronNameItem, squadronName, true) == 0);
                 try
                 {
+                    AirGroupObj item = targets.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).FirstOrDefault()?? targets.First();
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
-                    AirGroupObject previousAirGroup = airGroups.Where(x => string.Compare(x.SquadronName, item.SquadronName, true) == 0 && string.Compare(item.SquadronName, ValueNoName, true) != 0).LastOrDefault();
-                    if (item.InitNums > 0/* && item.Nums > 0*/)
+                    AirGroupObj previousAirGroup = airGroups.Where(x => string.Compare(x.SquadronName, squadronName, true) == 0).LastOrDefault();
+                    item.InitNums = targets.Max(x => x.InitNums);
+                    item.Nums = targets.Sum(x => x.Nums);
+                    item.DiedNums = targets.Sum(x => x.DiedNums);
+                    item.Name = string.Compare(item.Name, ValueNoName, true) != 0 ? item.Name : squadronName + "0";
+                    if (item.InitNums > 0/* && nums > 0*/)
                     {
                         float rate = (item.InitNums - item.DiedNums) / (float)item.InitNums;
                         if (previousAirGroup != null)
@@ -2371,17 +2451,20 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(AirGroupObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            airGroups.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            foreach (var item in airGroups.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundGroupObject> groundGroups)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundGroupObj> groundGroups)
         {
             foreach (var item in GroundGroups.OrderBy(x => x.Name))
             {
                 try
                 {
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
-                    GroundGroupObject previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0 && string.Compare(item.Name, ValueNoName, true) != 0).LastOrDefault();
+                    GroundGroupObj previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).LastOrDefault();
                     if (item.Nums > 0/* && item.AliveNums > 0*/)
                     {
                         float rate = item.AliveNums / (float)item.Nums;
@@ -2444,16 +2527,19 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(GroundGroupObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            groundGroups.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            foreach (var item in groundGroups.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<StationaryObject> stationaries)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<StationaryObj> stationaries)
         {
             foreach (var item in Stationaries.OrderBy(x => x.Name))
             {
                 try
                 {
-                    StationaryObject previousStationary = stationaries.Where(x => x.Country == item.Country && x.Class == item.Class && (x.Name == item.Name || x.IsSamePosition(item))).FirstOrDefault();
+                    StationaryObj previousStationary = stationaries.Where(x => x.Country == item.Country && x.Class == item.Class && (x.Name == item.Name || x.IsSamePosition(item))).FirstOrDefault();
                     if (!item.IsAlive)
                     {
                         int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
@@ -2502,16 +2588,19 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(StationaryObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            stationaries.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            foreach (var item in stationaries.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AircraftObject> aircrafts)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AircraftObj> aircrafts)
         {
             foreach (var item in Aircrafts.OrderBy(x => x.Name))
             {
                 try
                 {
-                    AircraftObject previousAircraft = aircrafts.Where(x => x.Army == item.Army && x.Name == item.Name && x.Class == item.Class).FirstOrDefault();
+                    AircraftObj previousAircraft = aircrafts.Where(x => x.Army == item.Army && x.Name == item.Name && x.Class == item.Class).FirstOrDefault();
                     if (!item.IsAlive)
                     {
                         int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
@@ -2561,16 +2650,19 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(AircraftObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            aircrafts.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            foreach (var item in aircrafts.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
         }
 
-        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundObject> groundActors)
+        private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundObj> groundActors)
         {
             foreach (var item in GroundActors.OrderBy(x => x.Name))
             {
                 try
                 {
-                    GroundObject previousGroundObject = groundActors.Where(x => x.Army == item.Army && x.Class == item.Class && (x.Name == item.Name || x.IsSamePosition(item))).FirstOrDefault();
+                    GroundObj previousGroundObject = groundActors.Where(x => x.Army == item.Army && x.Class == item.Class && (x.Name == item.Name || x.IsSamePosition(item))).FirstOrDefault();
                     if (!item.IsAlive)
                     {
                         int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
@@ -2620,12 +2712,15 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine("Error MissionStatus.UpdateWriteTo(GroundObject): {0} {1}", ex.Message, ex.StackTrace);
                 }
             }
-            groundActors.OrderBy(x => x.Name).ToList().ForEach(x => x.WriteTo(file, overwrite));
+            foreach (var item in groundActors.OrderBy(x => x.Name))
+            {
+                item.WriteTo(file, overwrite);
+            }
         }
 
         #endregion
 
-        public AirGroupObject GetPlayerAirGroup()
+        public AirGroupObj GetPlayerAirGroup()
         {
             if (PlayerInfo != null && !string.IsNullOrEmpty(PlayerInfo.AirGroup))
             {

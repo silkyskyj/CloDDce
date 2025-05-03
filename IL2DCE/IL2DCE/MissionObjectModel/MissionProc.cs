@@ -14,23 +14,199 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using IL2DCE.Util;
+using maddox.game;
 using maddox.game.world;
 
 namespace IL2DCE.MissionObjectModel
 {
-    internal class MissionProc
+    public class MissionProc
     {
+        #region Definition
+
+        class SpawnDynamicProcArgs
+        {
+            public IGame Game
+            {
+                get;
+                set;
+            }
+
+            public IRandom Random
+            {
+                get;
+                set;
+            }
+
+            public Config Config
+            {
+                get;
+                set;
+            }
+
+            public Career Career
+            {
+                get;
+                set;
+            }
+
+            public MissionFile MissionFile
+            {
+                get;
+                set;
+            }
+
+            public IMissionStatus MissionStatus
+            {
+                get;
+                set;
+            }
+        }
+
+        #endregion
+
+        #region Property
+
         private IGame Game
         {
             get;
             set;
         }
 
-        MissionProc(IGame game)
+        private IRandom Random
+        {
+            get;
+            set;
+        }
+
+        private Config Config
+        {
+            get;
+            set;
+        }
+
+        private Career Career
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Variable
+
+        private MissionFile missionFile;
+        private BackgroundWorker worker;
+        private string spawnFilePath;
+        private object spawnFileNameObject = new object();
+
+        #endregion
+
+        public MissionProc(IGame game, IRandom random, Config config, Career career)
         {
             Game = game;
+            Config = config;
+            Random = random;
+            Career  = career;
+
+            worker = null;
+            spawnFilePath = string.Empty;
+
+            missionFile = new MissionFile(Game, new string[] { career.MissionFileName }, career.AirGroupInfos, 
+                career.SpawnDynamicStationaries ? MissionFile.LoadLevel.AirGroundGroupUnit : career.SpawnDynamicGroundGroups ? MissionFile.LoadLevel.AirGroundGroup : MissionFile.LoadLevel.AirGroup);
+        }
+
+        public void SpawnDynamic(IMissionStatus missionStatus)
+        {
+            if (Career.SpawnDynamicAirGroups || Career.SpawnDynamicGroundGroups || Career.SpawnDynamicStationaries)
+            {
+                lock (spawnFileNameObject)
+                {
+                    if (!string.IsNullOrEmpty(spawnFilePath))
+                    {
+                        //ISectionFile file = Game.gpLoadSectionFile(spawnFilePath);
+                        //Game.gpPostMissionLoad(file);
+                        Game.gpPostMissionLoad(spawnFilePath);
+#if !DEBUG && false
+                        FileUtil.DeleteFile(Game.gameInterface, spawnFilePath);
+#endif
+                        spawnFilePath = string.Empty;
+                    }
+                    else
+                    {
+                        if (worker == null)
+                        {
+                            worker = new BackgroundWorker();
+                            worker.WorkerSupportsCancellation = true;
+                            worker.DoWork += DoWorkSpawnDynamic;
+                            worker.RunWorkerCompleted += RunWorkerCompletedSpawnDynamic;
+                            worker.RunWorkerAsync(new SpawnDynamicProcArgs()
+                            {
+                                Game = Game,
+                                Random = Random,
+                                Config = Config,
+                                Career = Career,
+                                MissionFile = missionFile,
+                                MissionStatus = missionStatus,
+                            });
+                        }
+                        else
+                        {
+                            ;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DoWorkSpawnDynamic(object sender, DoWorkEventArgs e)
+        {
+            SpawnDynamicProcArgs args = e.Argument as SpawnDynamicProcArgs;
+
+            try
+            {
+                Generator.Generator generator = new Generator.Generator(args.Game, args.Random, args.Config, args.Career);
+                ISectionFile missionFile;
+                BriefingFile briefingFile;
+                if (generator.GenerateSubMission(args.MissionStatus, out missionFile, out briefingFile))
+                {
+                    string missionFilePath = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, args.Career.PilotName, Config.DynamicSpawnFileName, Config.MissionFileExt);
+                    FileUtil.BackupFiles(args.Game.gameInterface.ToFileSystemPath(missionFilePath), 5, false);
+                    missionFile.save(missionFilePath);
+                    string briefingFilePath = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, args.Career.PilotName, Config.DynamicSpawnFileName, Config.BriefingFileExt);
+                    string briefingFileSystemPath = args.Game.gameInterface.ToFileSystemPath(briefingFilePath);
+                    FileUtil.BackupFiles(briefingFileSystemPath, 5, false);
+                    briefingFile.SaveTo(briefingFileSystemPath, Config.DynamicSpawnFileName);
+                    e.Result = missionFilePath;
+                }
+                else
+                {
+                    e.Result = null;
+                }
+            }
+            catch(Exception ex)
+            {
+                string message = string.Format("DoWorkSpawnDynamic Error[{0} {1}]", ex.Message, ex.StackTrace);
+                Core.WriteLog(message);
+                e.Result = null;
+            }
+        }
+
+        private void RunWorkerCompletedSpawnDynamic(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (!e.Cancelled && e.Error == null && e.Result != null)
+            {
+                lock (spawnFileNameObject)
+                {
+                    spawnFilePath = e.Result as string;
+                }
+            }
+            worker.Dispose();
+            worker = null;
         }
 
         private void UpdateTasks()
@@ -162,7 +338,8 @@ namespace IL2DCE.MissionObjectModel
 
         private void UpdateTask(AiGroundGroup aiGroundGroup)
         {
-            if (aiGroundGroup.IsValid() && aiGroundGroup.IsAlive() && aiGroundGroup.GetItems() != null && aiGroundGroup.GetItems().Where(x => x.IsAlive()).Any())
+            AiActor [] actors = CloDAPIUtil.GetItems(aiGroundGroup);
+            if (aiGroundGroup.IsValid() && aiGroundGroup.IsAlive() && actors != null && actors.Where(x => x.IsAlive()).Any())
             {
                 int army = aiGroundGroup.Army();
                 AiWayPoint[] ways = aiGroundGroup.GetWay();

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
@@ -62,6 +63,9 @@ namespace IL2DCE
         public const string KeyAdditionalStationaries = "AdditionalStationaries";
         public const string KeyStationaryGenerateType = "StationaryGenerateType";
         public const string KeyGroundGroupGenerateType = "GroundGroupGenerateType";
+        public const string KeySpawnDynamicAirGroups = "SpawnDynamicAirGroups";
+        public const string KeySpawnDynamicGroundGroups = "SpawnDynamicGroundGroups";
+        public const string KeySpawnDynamicStationaries = "SpawnDynamicStationaries";
         public const string KeyArmorUnitNumsSet = "ArmorUnitNumstSet";
         public const string KeyShipUnitNumsSet = "ShipUnitNumsSet";
         public const string KeySpawnParked = "SpawnParked";
@@ -144,7 +148,15 @@ namespace IL2DCE
         {
             get
             {
-                return CampaignInfo != null ? CampaignInfo.ToString(): !string.IsNullOrEmpty(MissionFileName) ? MissionFileName: string.Empty;
+                return CampaignInfo != null ? CampaignInfo.ToString() : !string.IsNullOrEmpty(MissionFileName) ? MissionFileName : string.Empty;
+            }
+        }
+
+        public IEnumerable<string> CampaignMissionFiles
+        {
+            get
+            {
+                return CampaignInfo != null ? CampaignInfo.InitialMissionTemplateFiles : null;
             }
         }
 
@@ -160,13 +172,13 @@ namespace IL2DCE
             set;
         }
 
-        public string MissionTemplateFileName
-        {
-            get
-            {
-                return MissionFileName.Replace(Config.MissionFileExt, "_Template.mis");
-            }
-        }
+        //public string MissionTemplateFileName
+        //{
+        //    get
+        //    {
+        //        return MissionFileName.Replace(Config.MissionFileExt, "_Template.mis");
+        //    }
+        //}
 
         public string AirGroup
         {
@@ -191,6 +203,14 @@ namespace IL2DCE
             get
             {
                 return string.IsNullOrEmpty(AirGroupDisplay) ? MissionObjectModel.AirGroup.CreateDisplayName(AirGroup) : AirGroupDisplay;
+            }
+        }
+
+        public AirGroupInfos AirGroupInfos
+        {
+            get
+            {
+                return CampaignInfo != null ? CampaignInfo.AirGroupInfos: null;
             }
         }
 
@@ -219,6 +239,24 @@ namespace IL2DCE
         }
 
         public bool AdditionalStationaries
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnDynamicAirGroups
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnDynamicGroundGroups
+        {
+            get;
+            set;
+        }
+
+        public bool SpawnDynamicStationaries
         {
             get;
             set;
@@ -601,6 +639,10 @@ namespace IL2DCE
             AdditionalAirGroups = false;
             AdditionalGroundGroups = false;
             AdditionalStationaries = false;
+            SpawnDynamicAirGroups = false;
+            SpawnDynamicGroundGroups = false;
+            SpawnDynamicStationaries = false;
+
             GroundGroupGenerateType = EGroundGroupGenerateType.Default;
             StationaryGenerateType = EStationaryGenerateType.Default;
             ArmorUnitNumsSet = EArmorUnitNumsSet.Random;
@@ -692,6 +734,9 @@ namespace IL2DCE
             AdditionalAirGroups = careerFile.get(SectionCampaign, KeyAdditionalAirGroups, false);
             AdditionalGroundGroups = careerFile.get(SectionCampaign, KeyAdditionalGroundGroups, false);
             AdditionalStationaries = careerFile.get(SectionCampaign, KeyAdditionalStationaries, false);
+            SpawnDynamicAirGroups = careerFile.get(SectionCampaign, KeySpawnDynamicAirGroups, false);
+            SpawnDynamicGroundGroups = careerFile.get(SectionCampaign, KeySpawnDynamicGroundGroups, false);
+            SpawnDynamicStationaries = careerFile.get(SectionCampaign, KeySpawnDynamicStationaries, false);
 
             string val = careerFile.get(SectionCampaign, KeyGroundGroupGenerateType, string.Empty);
             GroundGroupGenerateType = (Enum.IsDefined(typeof(EGroundGroupGenerateType), val)) ? (EGroundGroupGenerateType)Enum.Parse(typeof(EGroundGroupGenerateType), val) : EGroundGroupGenerateType.Default;
@@ -880,6 +925,9 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyAdditionalAirGroups, AdditionalAirGroups ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAdditionalGroundGroups, AdditionalGroundGroups ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAdditionalStationaries, AdditionalStationaries ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnDynamicAirGroups, SpawnDynamicAirGroups ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnDynamicGroundGroups, SpawnDynamicGroundGroups ? "1" : "0");
+            careerFile.add(SectionCampaign, KeySpawnDynamicStationaries, SpawnDynamicStationaries ? "1" : "0");
             careerFile.add(SectionCampaign, KeyStationaryGenerateType, StationaryGenerateType.ToString());
             careerFile.add(SectionCampaign, KeyGroundGroupGenerateType, GroundGroupGenerateType.ToString());
             careerFile.add(SectionCampaign, KeyArmorUnitNumsSet, ArmorUnitNumsSet.ToString());

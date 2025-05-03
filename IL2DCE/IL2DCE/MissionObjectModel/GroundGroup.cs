@@ -49,7 +49,7 @@ namespace IL2DCE.MissionObjectModel
 
         public static readonly string[][] DefaultClasses = new string[(int)EGroundGroupType.Count][]
         {
-            new string [] { "Vehicle.Morris_CS", "Vehicle.Ford_G917", "/num_units 8", }, // Vehicle
+            new string [] { "Vehicle.Morris_CS8", "Vehicle.Ford_G917", "/num_units 8", }, // Vehicle
             new string [] { "Armor.Cruiser_Mk_IVA", "Armor.Pz_38t", "/num_units 8", }, // Armor
             new string [] { "Ship.Tanker_Medium1", "Ship.Tanker_Medium2", "/sleep 0/skill 2/slowfire 1", }, // Ship
             new string [] { "Train.57xx_0-6-0PT_c0", "Train.BR56-00_c2", "", }, // Train
@@ -124,6 +124,12 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public bool MissionAssigned
+        {
+            get;
+            set;
+        }
+
         public GroundGroup(string id, string @class, int army, ECountry country, string options, List<GroundGroupWaypoint> waypoints, string customChief = null, IEnumerable<string> customChiefValues = null)
             : base(id, @class, army, country, -1, -1, -1)
         {
@@ -132,6 +138,8 @@ namespace IL2DCE.MissionObjectModel
             Waypoints = waypoints;
             CustomChief = customChief;
             CustomChiefValues = customChiefValues;
+
+            MissionAssigned = false;
         }
 
         public static GroundGroup Create(ISectionFile sectionFile, string id)
@@ -287,32 +295,40 @@ namespace IL2DCE.MissionObjectModel
                 // Road
                 // Write all waypoints except for the last one.
                 string section = string.Format("{0}_{1}", Id, MissionFile.SectionRoad);
-                for (int i = 0; i < Waypoints.Count - 1; i++)
+                for (int i = 0; i < Waypoints.Count; i++)
                 {
                     if (Waypoints[i] is GroundGroupWaypointLine)
                     {
-                        if (Waypoints[i].V.HasValue)
-                        {
+                        //if (Waypoints[i].V.HasValue)
+                        //{
                             sectionFile.add(section, Waypoints[i].X.ToString(Config.PointValueFormat, Config.NumberFormat),
                                             string.Format(Config.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}",
                                                             Waypoints[i].Y,
                                                             (Waypoints[i] as GroundGroupWaypointLine).Z,
                                                             (Waypoints[i].SubWaypoints.Count + 2),
-                                                            Waypoints[i].V.Value));
-                        }
+                                                            Waypoints[i].V.HasValue ? Waypoints[i].V.Value: 0));
+                        //}
+                        //else
+                        //{
+                        //    Debug.Assert(false);
+                        //}
                     }
                     else if (Waypoints[i] is GroundGroupWaypointSpline)
                     {
-                        if (Waypoints[i].V.HasValue)
-                        {
+                        //if (Waypoints[i].V.HasValue)
+                        //{
                             sectionFile.add(section, "S",
                                             string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}  0 {3} {4:F2}",
                                                             (Waypoints[i] as GroundGroupWaypointSpline).S,
                                                             Waypoints[i].X,
                                                             Waypoints[i].Y,
                                                             (Waypoints[i].SubWaypoints.Count + 2),
-                                                            Waypoints[i].V.Value));
-                        }
+                                                            Waypoints[i].V.HasValue ? Waypoints[i].V.Value: 0));
+                        //}
+                        //else
+                        //{
+                        //    Debug.Assert(false);
+                        //}
                     }
 
                     foreach (GroundGroupWaypoint subWaypoint in Waypoints[i].SubWaypoints)
@@ -327,6 +343,10 @@ namespace IL2DCE.MissionObjectModel
                             sectionFile.add(section, "S",
                                 string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}",
                                 (subWaypoint as GroundGroupWaypointSpline).S, subWaypoint.X, subWaypoint.Y));
+                        }
+                        else
+                        {
+                            Debug.Assert(false);
                         }
                     }
                 }
@@ -344,6 +364,10 @@ namespace IL2DCE.MissionObjectModel
                     sectionFile.add(section, "S",
                                     string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}",
                                                             (wayPointLast as GroundGroupWaypointSpline).S, wayPointLast.X, wayPointLast.Y));
+                }
+                else
+                {
+                    Debug.Assert(false);
                 }
 
                 // CustomChief

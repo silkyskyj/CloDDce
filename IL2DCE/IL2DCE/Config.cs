@@ -57,16 +57,15 @@ namespace IL2DCE
         public const string UserMissionFolder = "$user/mission/IL2DCE";
         public const string UserMissionsFolder = "$user/missions/IL2DCE";
         public const string DebugFolderName = "debug";
-        public const string DebugMissionTemplateFileName = "IL2DCEDebugTemplate.mis";
-        public const string DebugMissionFileName = "IL2DCEDebug.mis";
-        public const string DebugBriefingFileName = "IL2DCEDebug.briefing";
-        public const string DebugMissionScriptFileName = "IL2DCEDebug.cs";
+        public const string DebugFileName = "IL2DCEDebug";
         public const string MissionStatusStartFileName = "MissionStatusStart.ini";
         public const string MissionStatusEndFileName = "MissionStatusEnd.ini";
         public const string MissionStatusResultFileName = "MissionStatusResult.ini";
         public const string RecordFileExt = ".trk";
         public const string MissionFileExt = ".mis";
         public const string ScriptFileExt = ".cs";
+        public const string BriefingFileExt = ".briefing";
+        
         public const string IniFileExt = ".ini";
 
         public const string SectionMain = "Main";
@@ -107,11 +106,14 @@ namespace IL2DCE
         public const string KeyEnableMissionMultiAssign = "EnableMissionMultiAssign";
         public const string KeyProcessTimeReArm = "ProcessTimeReArm";
         public const string KeyProcessTimeReFuel = "ProcessTimeReFuel";
+        public const string KeyProcessInterval = "ProcessInterval";
         public const string KeyKillsHistoryMax = "KillsHistoryMax";
         public const string KeyRandomTimeBegin = "RandomTimeBegin";
         public const string KeyRandomTimeEnd = "RandomTimeEnd";
         public const string KeyGroupDisableRate = "GroupDisableRate";
         public const string KeyReinForceDay = "ReinForceDay";
+
+        public const string DynamicSpawnFileName = "DynamicSpawn";
 
         public const string LogFileName = "il2dce.log";
         public const string ConvertLogFileName = "Convert.log";
@@ -134,11 +136,16 @@ namespace IL2DCE
         public const int DefaultAdditionalGroundOperations = 100;
         public const int MaxAdditionalGroundOperations = 300;
         public const int MinAdditionalGroundOperations = 10;
+        public const int DefaultProcessInterval = 30;
         public const int DefaultProcessTimeReArm = 300;
         public const int DefaultProcessTimeReFuel = 300;
         public const int KillsHistoryMaxDefault = 1000;
 
         public const int GroundGroupFormationCountDefault = 3;
+
+        public const int AverageAirOperationAirGroupCount = 3;
+        public const int AverageGroundOperationGroundGroupCount = 1;
+        public const int AverageStationaryOperationUnitCount = 1;
 
         public const int RankupExp = 1000;
         public const int ExpSuccess = 200;
@@ -538,6 +545,12 @@ namespace IL2DCE
             private set;
         }
 
+        public int ProcessInterval
+        {
+            get;
+            private set;
+        }
+
         public int ProcessTimeReArm
         {
             get;
@@ -667,6 +680,7 @@ namespace IL2DCE
                 double.TryParse(value, NumberStyles.Float, NumberFormat, out _statKillsOver);
             }
 
+            ProcessInterval = confFile.get(SectionCore, KeyProcessInterval, DefaultProcessInterval);
             ProcessTimeReArm = confFile.get(SectionCore, KeyProcessTimeReArm, DefaultProcessTimeReArm);
             ProcessTimeReFuel = confFile.get(SectionCore, KeyProcessTimeReFuel, DefaultProcessTimeReFuel);
 

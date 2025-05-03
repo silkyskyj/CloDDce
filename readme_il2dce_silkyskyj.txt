@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.6.4)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.0)
 =============================================================================================================================
-                                                                                                                   04/29/2025
+                                                                                                                   05/04/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -112,6 +112,8 @@ History
 
   Ver      Date       Comment
 
+  0.7.0    05/04/2025 Added: Dynamic generation of operations during mission battles, and the option to spawn groups and stationary units.
+                      Fixed: AirGroup group name generation and other minor fixes.
   0.6.4    04/29/2025 Fixed: Strict and other modes are not properly separated(Campaign). When the number of flights in a squadron changes, it is treated as a separate unit, and continuation of the state, reinfoce, etc. are not performed properly (Campaign StrictMode). An error occurs if you proceed to the next step without fighting, and in StrictMode the campaign ends. 
                       Added: some sort and filter functions to the career selection in the campaign.
   0.6.3    04/27/2025 Fixed: Battle results statistics show nothing. In Campaign Strict Mode, some groups and units do not inherit their status or reinforce properly.

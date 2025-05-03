@@ -24,7 +24,6 @@ using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.play;
 
 namespace IL2DCE
 {
@@ -124,7 +123,10 @@ namespace IL2DCE
 
             if (writerLog == null)
             {
-                writerLog = new StreamWriter(new FileStream(CreatetLogFilePath(), FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+                string path = (GamePlay as IGame).gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.LogFileName));
+                FileUtil.BackupFiles(path, 5, false);
+                path = FileUtil.CreateWritablePath(path, 10);
+                writerLog = new StreamWriter(new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
             }
 
             GameIterface gameInterface = game.gameInterface;
@@ -143,6 +145,21 @@ namespace IL2DCE
         }
 
         #endregion
+
+        private void Initialize()
+        {
+            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
+            string userMissionFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
+            if (!Directory.Exists(userMissionFolderSystemPath))
+            {
+                Directory.CreateDirectory(userMissionFolderSystemPath);
+            }
+            string userMissionsFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionsFolder);
+            if (!Directory.Exists(userMissionsFolderSystemPath))
+            {
+                Directory.CreateDirectory(userMissionsFolderSystemPath);
+            }
+        }
 
         public void ReadCampaignInfo()
         {
@@ -216,6 +233,11 @@ namespace IL2DCE
                     }                                                               
                 }
             }
+        }
+
+        public void InitCampaign()
+        {
+
         }
 
         public void ResetCampaign(IGame game)
@@ -313,7 +335,7 @@ namespace IL2DCE
                 ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
                 ISectionFile missionFile = null;
                 BriefingFile briefingFile = null;
-                generator.GenerateMission(missionTemplateFile, missionId, missionStatus, out missionFile, out briefingFile);
+                generator.GenerateMission(missionTemplateFile, missionStatus, out missionFile, out briefingFile);
 
                 // Save mission file
                 missionFile.save(missionFileName);
@@ -324,8 +346,8 @@ namespace IL2DCE
                 File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
                 // Save briefing file
-                string briefingFileSystemPath = string.Format(_careersFolderSystemPath + "\\" + career.PilotName + "\\{0}.briefing", missionId);
-                briefingFile.SaveTo(briefingFileSystemPath);
+                string briefingFileSystemPath = string.Format(_careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
+                briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
 #if DEBUG
                 Config.Debug = 1;
@@ -336,10 +358,10 @@ namespace IL2DCE
                     {
                         Directory.CreateDirectory(this._debugFolderSystemPath);
                     }
-                    missionTemplateFile.save(string.Format("{0}/{1}/{2}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugMissionTemplateFileName));
-                    missionFile.save(string.Format("{0}/{1}/{2}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugMissionFileName));
-                    briefingFile.SaveTo(string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugBriefingFileName));
-                    File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugMissionScriptFileName), true);
+                    missionTemplateFile.save(string.Format("{0}/{1}/{2}Template{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
+                    missionFile.save(string.Format("{0}/{1}/{2}{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
+                    briefingFile.SaveTo(string.Format("{0}\\{1}{2}", _debugFolderSystemPath, Config.DebugFileName, Config.BriefingFileExt), missionId);
+                    File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugFileName, Config.ScriptFileExt), true);
                 }
             }
 
@@ -387,7 +409,7 @@ namespace IL2DCE
             ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
             ISectionFile missionFile = null;
             BriefingFile briefingFile = null;
-            generator.GenerateMission(missionTemplateFile, missionId, null, out missionFile, out briefingFile);
+            generator.GenerateMission(missionTemplateFile, null, out missionFile, out briefingFile);
 
             // Save mission file
             missionFile.save(missionFileName);
@@ -398,8 +420,8 @@ namespace IL2DCE
             File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
             // Save briefing file
-            string briefingFileSystemPath = string.Format(_careersFolderSystemPath + "\\" + career.PilotName + "\\{0}.briefing", missionId);
-            briefingFile.SaveTo(briefingFileSystemPath);
+            string briefingFileSystemPath = string.Format(_careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
+            briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
 #if DEBUG
             Config.Debug = 1;
@@ -410,10 +432,10 @@ namespace IL2DCE
                 {
                     Directory.CreateDirectory(this._debugFolderSystemPath);
                 }
-                missionTemplateFile.save(string.Format("{0}/{1}/{2}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugMissionTemplateFileName));
-                missionFile.save(string.Format("{0}/{1}/{2}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugMissionFileName));
-                briefingFile.SaveTo(string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugBriefingFileName));
-                File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugMissionScriptFileName), true);
+                missionTemplateFile.save(string.Format("{0}/{1}/{2}Template{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
+                missionFile.save(string.Format("{0}/{1}/{2}{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
+                briefingFile.SaveTo(string.Format("{0}\\{1}{2}", _debugFolderSystemPath, Config.DebugFileName, Config.BriefingFileExt), missionId);
+                File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}{2}", _debugFolderSystemPath, Config.DebugFileName, Config.ScriptFileExt), true);
             }
 
             string statsFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.StatsInfoFileName);
@@ -440,11 +462,6 @@ namespace IL2DCE
             ISectionFile statsFile = GamePlay.gpCreateSectionFile();
             career.WriteResult(statsFile, Config.KillsHistoryMax);
             statsFile.save(statsFileName);
-        }
-
-        public void InitCampaign()
-        {
-
         }
 
         public void DeleteCareer(Career career)
@@ -482,42 +499,21 @@ namespace IL2DCE
             }
         }
 
-        private void Initialize()
-        {
-            GameIterface gameInterface = (GamePlay as IGame).gameInterface;
-            string userMissionFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
-            if (!Directory.Exists(userMissionFolderSystemPath))
-            {
-                Directory.CreateDirectory(userMissionFolderSystemPath);
-            }
-            string userMissionsFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionsFolder);
-            if (!Directory.Exists(userMissionsFolderSystemPath))
-            {
-                Directory.CreateDirectory(userMissionsFolderSystemPath);
-            }
-        }
-
-        private string CreatetLogFilePath()
-        {
-            const int MaxErrorCount = 10;
-            string logFileSystemPath = string.Empty;
-            int i = 0;
-            do
-            {
-                string logFilePath = string.Format("{0}/{1}", Config.UserMissionsFolder, i == 0 ? Config.LogFileName :
-                                        Path.GetFileNameWithoutExtension(Config.ConvertLogFileName) + i + Path.GetExtension(Config.ConvertLogFileName));
-                logFileSystemPath = (GamePlay as IGame).gameInterface.ToFileSystemPath(logFilePath);
-            }
-            while (!FileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
-            return logFileSystemPath;
-        }
-
         public static void WriteLog(string message)
         {
             Debug.WriteLine(message);
             lock (writerLogObject)
             {
-                writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString(Config.DateTimeDefaultLongLongFormat, Config.DateTimeFormat), message.Replace("\"", "\"\"").Replace("\n", "|"));
+                try
+                {
+                    writerLog.WriteLine("{0} \"{1}\"", DateTime.Now.ToString(Config.DateTimeDefaultLongLongFormat, Config.DateTimeFormat), message.Replace("\"", "\"\"").Replace("\n", "|"));
+                    writerLog.Flush();
+                }
+                catch (Exception ex)
+                {
+                    string error = string.Format("Error: WriteLog {0} {1} [{2}]", ex.Message, ex.StackTrace, message);
+                    Debug.WriteLine(error);
+                }
             }
         }
 
@@ -527,7 +523,7 @@ namespace IL2DCE
         {
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
             ISectionFile missionStatusFile = (GamePlay as IGame).gameInterface.SectionFileCreate();
-            missionStatus.WriteTo(missionStatusFile, true);
+            missionStatus.WriteTo(missionStatusFile, false);
             missionStatusFile.save(missionStatusFileName);
         }
 
@@ -547,7 +543,7 @@ namespace IL2DCE
             ISectionFile missionStatusFile = forceCreate ? gameInterface.SectionFileCreate() : gameInterface.SectionFileLoad(missionStatusFileName);
             // MissionStatus.Update(missionStatusFile, GamePlay as IGame, playerActorName);
             MissionStatus missionStatus = new MissionStatus(Random, career.Date.Value);
-            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime, true);
+            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime, false);
             missionStatus.WriteTo(missionStatusFile, true);
             missionStatusFile.save(missionStatusFileName);
 
