@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -332,7 +333,7 @@ namespace IL2DCE.Generator
 #endif
         }
 
-        public bool GenerateSubMission(IMissionStatus missionStatus, out ISectionFile subMissionFile, out BriefingFile subBriefingFile)
+        public bool GenerateSubMission(IMissionStatus missionStatus, out ISectionFile subMissionFile, out BriefingFile subBriefingFile, DoWorkEventArgs eventArgs)
         {
             subMissionFile = null;
             subBriefingFile = null;
@@ -363,6 +364,11 @@ namespace IL2DCE.Generator
             subMissionFile = GamePlay.gpCreateSectionFile();
 
             MissionFile missionFile = new MissionFile(GamePlay, new string[] { Career.MissionFileName }, campaignInfo.AirGroupInfos);
+
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
 
             // Player Air Group
             AirGroup airGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.SquadronName, Career.AirGroup, true) == 0).FirstOrDefault();
@@ -404,12 +410,22 @@ namespace IL2DCE.Generator
                 }
             }
 
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
+
             GeneratorGroundOperation = new GeneratorGroundOperation(GamePlay, Random, missionStatus, missionFile.BattleArea, missionFile.GroundGroups, missionFile.Stationaries,
             missionFile.FrontMarkers, true, Career.GroundGroupGenerateType, Career.StationaryGenerateType, Career.ArmorUnitNumsSet, Career.ShipUnitNumsSet,
             Career.ArtilleryTimeout, Career.ArtilleryRHide, Career.ArtilleryZOffset, Career.ShipSleep, Career.ShipSkill, Career.ShipSlowfire);
 
             GeneratorBriefing = new GeneratorBriefing(GamePlay);
             GeneratorAirOperation = new GeneratorAirOperation(GamePlay, Random, GeneratorGroundOperation, GeneratorBriefing, campaignInfo, missionStatus, missionFile.BattleArea, missionFile.AirGroups, airGroup, Career.AISkill, Config.Skills, Config.EnableMissionMultiAssign, Config.FlightCount, Config.FlightSize, Config.SpawnParked, false);
+
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
 
             if (Career.AdditionalAirGroups && needAirGroups > 0)
             {
@@ -419,11 +435,21 @@ namespace IL2DCE.Generator
                 needAirGroups -= GeneratorAirOperation.AddRandomAirGroups(needAirGroups, aircraftsRed, aircraftsBlue);
             }
 
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
+
             if (Career.AdditionalGroundGroups && needGoundGroups > 0)
             {
                 IEnumerable<IEnumerable<string>> groundActors;
                 GetRandomGroundActorList(missionFile, out groundActors);
                 needGoundGroups -= GeneratorGroundOperation.AddRandomGroundGroups(needGoundGroups, groundActors);
+            }
+
+            if (eventArgs.Cancel)
+            {
+                return false;
             }
 
             if (Career.AdditionalStationaries && needGroundUnits > 0)
@@ -433,8 +459,18 @@ namespace IL2DCE.Generator
                 needGroundUnits -= GeneratorGroundOperation.AddRandomStationaries(needGroundUnits, stationaries);
             }
 
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
+
             GeneratorGroundOperation.OptimizeMissionObjects();
             GeneratorAirOperation.OptimizeMissionObjects();
+
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
 
             subBriefingFile = new BriefingFile();
             subBriefingFile.MissionDescription = string.Empty;
@@ -456,6 +492,11 @@ namespace IL2DCE.Generator
                     {
                         i++;
                     }
+
+                    if (eventArgs.Cancel)
+                    {
+                        return false;
+                    }
                 }
             }
             AddCounts += i;
@@ -470,6 +511,11 @@ namespace IL2DCE.Generator
                     if (GeneratorGroundOperation.CreateRandomGroundOperation(subMissionFile, randomGroundGroup))
                     {
                         i++;
+                    }
+
+                    if (eventArgs.Cancel)
+                    {
+                        return false;
                     }
                 }
             }

@@ -65,10 +65,12 @@ Main functions
 Items that can be selected and set commonly in 1. 2.
  - Max Additional Air Operations [1-12]
  - Max Additional Ground Operations [10-300]
+ - Automatically add Air Groups (this adds to Random if there are few AirGroups)
+ - Automatically Ground Groups / Stationary Units
+ - Keep nums of Groups/Units (Dynamic Spawn)
  - Random Air Group Spawn Location [Player/Friendly/Enemy]
  - Random Air Group Spawn Altitude [Friendly/Enemy]
  - Time(Spawn delay) 15-1800[sec] [Friendly/Enemy]
- - Automatically add Air Groups (this adds to Random if there are few AirGroups)
  - Auto re-Arm (bullets only)
  - Auto re-Fuel
  - Track Recording

@@ -95,6 +95,14 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
+        public bool IsBusy
+        {
+            get
+            {
+                return worker != null && worker.IsBusy;
+            }
+        }
+
         #endregion
 
         #region Variable
@@ -163,6 +171,14 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        public void Cancel()
+        {
+            if (IsBusy)
+            {
+                worker.CancelAsync();
+            }
+        }
+
         private void DoWorkSpawnDynamic(object sender, DoWorkEventArgs e)
         {
             SpawnDynamicProcArgs args = e.Argument as SpawnDynamicProcArgs;
@@ -172,7 +188,7 @@ namespace IL2DCE.MissionObjectModel
                 Generator.Generator generator = new Generator.Generator(args.Game, args.Random, args.Config, args.Career);
                 ISectionFile missionFile;
                 BriefingFile briefingFile;
-                if (generator.GenerateSubMission(args.MissionStatus, out missionFile, out briefingFile))
+                if (generator.GenerateSubMission(args.MissionStatus, out missionFile, out briefingFile, e))
                 {
                     string missionFilePath = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, args.Career.PilotName, Config.DynamicSpawnFileName, Config.MissionFileExt);
                     FileUtil.BackupFiles(args.Game.gameInterface.ToFileSystemPath(missionFilePath), 5, false);

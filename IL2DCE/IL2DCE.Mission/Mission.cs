@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
@@ -251,6 +252,15 @@ namespace IL2DCE
                     // Trace(DataDictionary);
                     Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()), true);
 #endif
+                }
+
+                if (MissionProc != null)
+                {
+                    MissionProc.Cancel();
+                    while (MissionProc.IsBusy)
+                    {
+                        Thread.Sleep(0);
+                    }
                 }
 
 #if false
