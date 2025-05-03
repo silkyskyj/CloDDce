@@ -1,9 +1,13 @@
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.3 04/27/2025)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.6.4 04/29/2025)
 https://github.com/silkyskyj/il2dce/releases
 
 Fixed:
- - Battle results statistics show nothing.
- - In Campaign Strict Mode, some groups and units do not inherit their status or reinforce properly.
+ - Strict and other modes are not properly separated(Campaign).
+ - When the number of flights in a squadron changes, it is treated as a separate unit, and continuation of the state, reinfoce, etc. are not performed properly (Campaign StrictMode).
+ - An error occurs if you proceed to the next step without fighting, and in StrictMode the campaign ends.
+
+Added:
+ - some sort and filter functions to the career selection in the campaign.
 
 *In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.
 
