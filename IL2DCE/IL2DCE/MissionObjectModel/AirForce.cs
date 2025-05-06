@@ -21,61 +21,67 @@ namespace IL2DCE.MissionObjectModel
 {
     public enum EAirForceRed
     {
-        [Description("Royal Air Force")]
+        [Description("イギリス空軍")]
         Raf = 1,
-        [Description("Armee de l'air")]
+        [Description("フランス空軍")]
         Aa = 2,
-        [Description("United States Army Air Forces")]
+        [Description("アメリカ陸軍航空軍")]
         Usaaf = 3,
-        [Description("Soviet Air Force")]
+        [Description("ソビエト空軍")]
         Ru = 4,
-        [Description("Polish Air Force")]
+        [Description("ポーランド空軍")]
         Pl = 5,
-        [Description("Czechoslovak Air Force")]
+        [Description("チェコスロバキア空軍")]
         Cz = 6,
-        [Description("Royal Netherlands Air Force")]
+        [Description("オランダ空軍")]
         Nl = 7,
-        [Description("Belgian Air Component")]
+        [Description("ベルギー空軍")]
         Be = 8,
     };
 
     public enum EAirForceBlue
     {
-        [Description("Luftwaffe")]
+        [Description("ドイツ空軍")]
         Lw = 1,
-        [Description("Regia Aeronautica")]
+        [Description("イタリア空軍")]
         Ra = 2,
-        [Description("Hungarian Air Force")]
+        [Description("ハンガリー空軍")]
         Hu = 3,
-        [Description("Romanian Air Force")]
+        [Description("ルーマニア空軍")]
         Ro = 4,
-        [Description("Finnish Air Force")]
+        [Description("フィンランド空軍")]
         Fi = 5,
-        [Description("Slovak Air Force")]
+        [Description("スロバキア空軍")]
         Sv = 6,
+        [Description("大日本帝国陸軍")]
+        Ja = 7,
+        [Description("大日本帝国海軍")]
+        Jn = 8,
     };
 
     public class AirForce
     {
         public static readonly string[] PilotNameRedDefault = new string[] {
             "",
-            "Joe Bloggs",
-            "Jean Dupont",
-            "John Smith",
-            "Ivanov Ivanovich",
-            "Jan Kowalski" ,
-            "Josef Janousek" ,
-            "Martijn Jansen" ,
-            "Gabriel Maes" ,
+            "ジョー ブログス",
+            "ジーン デュポン",
+            "ジョン スミス",
+            "イワン イワノビッチ",
+            "ジャン コワルスキー" ,
+            "ジョセフ ジャノーセク" ,
+            "マージン ジャンセン" ,
+            "ガブリエル メース" ,
         };
         public static readonly string[] PilotNameBlueDefault = new string[] {
             "",
-            "Max Mustermann",
-            "Mario Rossi",
-            "Kis Janos",
-            "Ion Costescu",
-            "Matti Meikalainen",
-            "Jozef Pavlík",
+            "マックス マスターマン",
+            "マリオ ロッシ",
+            "キス ジャノス",
+            "イオン コステッシュ",
+            "マッチ メイカライネン",
+            "ジョセフ パブリック",
+            "上坊 良太郎",
+            "岩本 徹三",
         };
 
         public int ArmyIndex
@@ -168,6 +174,10 @@ namespace IL2DCE.MissionObjectModel
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Fi], Rank.Fi));
             Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Sv, EAirForceBlue.Sv.ToString(), EAirForceBlue.Sv.ToDescription(),
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Sv], Rank.Sv));
+            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Ja, EAirForceBlue.Sv.ToString(), EAirForceBlue.Ja.ToDescription(),
+                            AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Ja], Rank.Ja));
+            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Jn, EAirForceBlue.Sv.ToString(), EAirForceBlue.Ja.ToDescription(),
+                            AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Jn], Rank.Jn));
         }
     }
 }

@@ -146,5 +146,23 @@ namespace IL2DCE.MissionObjectModel
             "Stotník let.",
             "Major let.",
         };
+
+        public static readonly string[] Ja = new string[] {
+            "少尉",
+            "中尉",
+            "大尉",
+            "少佐",
+            "中佐",
+            "大佐",
+        };
+
+        public static readonly string[] Jn = new string[] {
+            "少尉",
+            "中尉",
+            "大尉",
+            "少佐",
+            "中佐",
+            "大佐",
+        };
     }
 }
