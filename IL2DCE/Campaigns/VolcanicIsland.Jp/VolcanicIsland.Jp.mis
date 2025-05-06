@@ -1,0 +1,18 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  MAP Land$Online_Volcanic_Island
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 393215 393215 5000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
