@@ -64,6 +64,8 @@
   BoB_LW_KuFlGr_706.01
   BoB_LW_LG2_I.01
   BoB_RA_56St_20Gruppo_353Sq.01
+  g04.01
+  g04.11
 [BoB_RAF_B_218Sqn.01]
   Flight0 1
   Class Aircraft.WellingtonMkIc
@@ -520,9 +522,37 @@
 [BoB_RA_56St_20Gruppo_353Sq.01_Way]
   NORMFLY 10881.22 34726.66 2500.00 300.00
   NORMFLY 16555.71 42022.70 500.00 300.00
+[g04.01]
+  VirtualAirGroupKey Bulgaria_Fighter_01
+  Flight0  1
+  Class Aircraft.Bf-109E-4
+  Formation FINGERFOUR
+  CallSign 31
+  Fuel 100
+  Weapons 1 1
+  SetOnPark 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[g04.01_Way]
+  TAKEOFF 39912.60 20149.07 0 0
+  NORMFLY 41644.96 19009.75 500.00 300.00
+[g04.11]
+  VirtualAirGroupKey 15_Staffel_JG52
+  Flight0  1
+  Class Aircraft.Bf-109E-4
+  Formation FINGERFOUR
+  CallSign 8
+  Fuel 100
+  Weapons 1 1
+  SetOnPark 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[g04.11_Way]
+  TAKEOFF 28572.00 55403.44 0 0
+  NORMFLY 30242.76 56839.97 500.00 300.00
 [Aircraft]
-  RandomRed Aircraft.AnsonMkI Aircraft.DefiantMkI Aircraft.SunderlandMkI Aircraft.WalrusMkI tobruk:Aircraft.SunderlandMkI_Trop tobruk:Aircraft.WalrusMkI_Trop
-  RandomBlue Aircraft.Do-17Z-1 Aircraft.Do-17Z-2 Aircraft.Do-215B-1 Aircraft.FW-200C-1 Aircraft.He-115B-2
+  RandomRed Aircraft.HurricaneMkI_dH5-20 Aircraft.SpitfireMkIa tobruk:Aircraft.SpitfireMkVa tobruk:Aircraft.TomahawkMkII tobruk:Aircraft.MartletMkIII Aircraft.BlenheimMkIV tobruk:Aircraft.BeaufighterMkIC tobruk:Aircraft.WellingtonMkIc_Late
+  RandomBlue Aircraft.Bf-109E-3 Aircraft.Bf-109E-4 Aircraft.Bf-110C-4 tobruk:Aircraft.Bf-109F-1 tobruk:Aircraft.Macchi-C202-SeriesIII Aircraft.Ju-87B-2 tobruk:Aircraft.Ju-88A-5 tobruk:Aircraft.He-111H-6
 [CustomChiefs]
 [Chiefs]
   0_Chief Ship.tobruk:Type_VIIC_SS de /sleep 0/skill 1/slowfire 1

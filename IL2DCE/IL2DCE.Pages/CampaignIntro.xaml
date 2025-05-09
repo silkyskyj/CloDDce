@@ -6,8 +6,8 @@
              mc:Ignorable="d" xmlns:my="clr-namespace:maddox.game.page;assembly=gamePages" xmlns:my1="clr-namespace:maddox.game.play;assembly=gamePages" Height="914" Width="1672">
     <Grid Height="898" Width="1652" HorizontalAlignment="Left" VerticalAlignment="Center">
         <Label Content="Campaign Intro [IL2DCE]" Height="100" HorizontalAlignment="Left" Margin="12,12,0,0" Name="labelCampaignIntro" VerticalAlignment="Top" FontSize="64" FontWeight="Bold" Foreground="#FF791313" />
-        <my1:ButtonAsMenuItem Content="Start" Height="77" HorizontalAlignment="Left" Margin="1434,809,0,0" Name="Start" VerticalAlignment="Top" Width="206" RenderTransformOrigin="6.394,7.367" />
-        <my1:ButtonAsMenuItem Content="Back" Height="77" HorizontalAlignment="Left" Margin="38,809,0,0" Name="Back" VerticalAlignment="Top" Width="206" />
+        <my1:ButtonAsMenuItem Content="Start" HorizontalAlignment="Left" Margin="1434,809,0,0" Name="Start" VerticalAlignment="Top" RenderTransformOrigin="6.394,7.367" />
+        <my1:ButtonAsMenuItem Content="Back" HorizontalAlignment="Left" Margin="38,809,0,0" Name="Back" VerticalAlignment="Top" />
         <ComboBox Height="63" HorizontalAlignment="Left" Margin="36,220,0,0" Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="900" FontSize="28" Foreground="#FFA0854A">
             <ComboBox.Background>
                 <SolidColorBrush />

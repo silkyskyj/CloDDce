@@ -294,8 +294,10 @@ namespace IL2DCE
                 Career career = SelectedCareer;
                 if (career != null && career.CampaignInfo != null)
                 {
+                    AirGroup airGroup = SelecedtAirGroup;
                     career.BattleType = EBattleType.Campaign;
-                    career.PlayerAirGroup = SelecedtAirGroup;
+                    career.PlayerAirGroup = airGroup;
+                    career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                     career.Aircraft = career.CampaignInfo.GetAircraftInfo(SelecedtAirGroup.Class).DisplayName;
                     career.UpdatePlayerAirGroupSkill();
                     Game.Core.CurrentCareer = career;

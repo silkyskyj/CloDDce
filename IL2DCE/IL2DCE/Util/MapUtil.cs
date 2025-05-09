@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using IL2DCE.MissionObjectModel;
 using maddox.GP;
 using XLAND;
 

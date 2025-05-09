@@ -110,7 +110,7 @@ namespace IL2DCE.MissionObjectModel
         private MissionFile missionFile;
         private BackgroundWorker worker;
         private string spawnFilePath;
-        private object spawnFileNameObject = new object();
+        private object spawnFilePathObject = new object();
 
         #endregion
 
@@ -132,7 +132,7 @@ namespace IL2DCE.MissionObjectModel
         {
             if (Career.SpawnDynamicAirGroups || Career.SpawnDynamicGroundGroups || Career.SpawnDynamicStationaries)
             {
-                lock (spawnFileNameObject)
+                lock (spawnFilePathObject)
                 {
                     if (!string.IsNullOrEmpty(spawnFilePath))
                     {
@@ -216,7 +216,7 @@ namespace IL2DCE.MissionObjectModel
         {
             if (!e.Cancelled && e.Error == null && e.Result != null)
             {
-                lock (spawnFileNameObject)
+                lock (spawnFilePathObject)
                 {
                     spawnFilePath = e.Result as string;
                 }

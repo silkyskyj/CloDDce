@@ -24,7 +24,6 @@ using System.Linq;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.play;
 using maddox.game.world;
 using maddox.GP;
 using static IL2DCE.MissionObjectModel.MissionStatus;
@@ -567,17 +566,17 @@ namespace IL2DCE.Generator
 
         private void GetRandomGroundActorList(MissionFile missionFile, out IEnumerable<IEnumerable<string>> groundActors)
         {
-            IEnumerable<string> dlc = missionFile.DLC;
+            IEnumerable<string> dlc = missionFile.DLC.Select(x => string.Format(".{0}:", x));
             CampaignInfo campaignInfo = Career.CampaignInfo;
 
             if (campaignInfo.GroundVehicleRandomRed.Any() && campaignInfo.GroundVehicleRandomBlue.Any())
             {
                 groundActors = new IEnumerable<string>[(int)EGroundGroupType.Count * (int)EArmy.Count]
                     {
-                        campaignInfo.GroundVehicleRandomRed, campaignInfo.GroundVehicleRandomBlue,
-                        campaignInfo.GroundArmorRandomRed, campaignInfo.GroundArmorRandomBlue,
-                        campaignInfo.GroundShipRandomRed, campaignInfo.GroundShipRandomBlue,
-                        campaignInfo.GroundTrainRandomRed, campaignInfo.GroundTrainRandomBlue,
+                        CompatibleGroundTypeDLC(campaignInfo.GroundVehicleRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.GroundVehicleRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.GroundArmorRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.GroundArmorRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.GroundShipRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.GroundShipRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.GroundTrainRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.GroundTrainRandomBlue, dlc),
                         new string [] { "" }, new string [] { "" },
                     };
             }
@@ -585,10 +584,10 @@ namespace IL2DCE.Generator
             {
                 groundActors = new IEnumerable<string>[(int)EGroundGroupType.Count * (int)EArmy.Count]
                     {
-                        Config.GroundVehicleRandomRed, Config.GroundVehicleRandomBlue,
-                        Config.GroundArmorRandomRed, Config.GroundArmorRandomBlue,
-                        Config.GroundShipRandomRed, Config.GroundShipRandomBlue,
-                        Config.GroundTrainRandomRed, Config.GroundTrainRandomBlue,
+                        CompatibleGroundTypeDLC(Config.GroundVehicleRandomRed, dlc), CompatibleGroundTypeDLC(Config.GroundVehicleRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.GroundArmorRandomRed, dlc), CompatibleGroundTypeDLC(Config.GroundArmorRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.GroundShipRandomRed, dlc), CompatibleGroundTypeDLC(Config.GroundShipRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.GroundTrainRandomRed, dlc), CompatibleGroundTypeDLC(Config.GroundTrainRandomBlue, dlc),
                         new string [] { "" }, new string [] { "" },
                     };
             }
@@ -603,44 +602,49 @@ namespace IL2DCE.Generator
             {
                 stationaries = new IEnumerable<string>[(int)EStationaryType.Count * (int)EArmy.Count]
                     {
-                        campaignInfo.StationaryRadarRandomRed, campaignInfo.StationaryRadarRandomBlue,
-                        campaignInfo.StationaryAircraftRandomRed, campaignInfo.StationaryAircraftRandomBlue,
-                        campaignInfo.StationaryArtilleryRandomRed, campaignInfo.StationaryArtilleryRandomBlue,
-                        campaignInfo.StationaryFlakRandomRed, campaignInfo.StationaryFlakRandomBlue,
-                        campaignInfo.StationaryDepotRandomRed, campaignInfo.StationaryDepotRandomBlue,
-                        campaignInfo.StationaryShipRandomRed, campaignInfo.StationaryShipRandomBlue,
-                        campaignInfo.StationaryAmmoRandomRed, campaignInfo.StationaryAmmoRandomBlue,
-                        campaignInfo.StationaryWeaponsRandomRed, campaignInfo.StationaryWeaponsRandomBlue,
-                        campaignInfo.StationaryCarRandomRed, campaignInfo.StationaryCarRandomBlue,
-                        campaignInfo.StationaryConstCarRandomRed, campaignInfo.StationaryConstCarRandomBlue,
-                        campaignInfo.StationaryEnvironmentRandomRed, campaignInfo.StationaryEnvironmentRandomBlue,
-                        campaignInfo.StationarySearchlightRandomRed, campaignInfo.StationarySearchlightRandomBlue,
-                        campaignInfo.StationaryAeroanchoredRandomRed, campaignInfo.StationaryAeroanchoredRandomBlue,
-                        campaignInfo.StationaryAirfieldRandomRed, campaignInfo.StationaryAirfieldRandomBlue,
-                        campaignInfo.StationaryUnknownRandomRed, campaignInfo.StationaryUnknownRandomBlue,
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryRadarRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryRadarRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryAircraftRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryAircraftRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryArtilleryRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryArtilleryRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryFlakRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryFlakRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryDepotRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryDepotRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryShipRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryShipRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryAmmoRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryAmmoRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryWeaponsRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryWeaponsRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryCarRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryCarRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryConstCarRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryConstCarRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryEnvironmentRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryEnvironmentRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationarySearchlightRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationarySearchlightRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryAeroanchoredRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryAeroanchoredRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryAirfieldRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryAirfieldRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(campaignInfo.StationaryUnknownRandomRed, dlc), CompatibleGroundTypeDLC(campaignInfo.StationaryUnknownRandomBlue, dlc),
                     };
             }
             else
             {
                 stationaries = new IEnumerable<string>[(int)EStationaryType.Count * (int)EArmy.Count]
                     {
-                        Config.StationaryRadarRandomRed, Config.StationaryRadarRandomBlue,
-                        Config.StationaryAircraftRandomRed, Config.StationaryAircraftRandomBlue,
-                        Config.StationaryArtilleryRandomRed, Config.StationaryArtilleryRandomBlue,
-                        Config.StationaryFlakRandomRed, Config.StationaryFlakRandomBlue,
-                        Config.StationaryDepotRandomRed, Config.StationaryDepotRandomBlue,
-                        Config.StationaryShipRandomRed, Config.StationaryShipRandomBlue,
-                        Config.StationaryAmmoRandomRed, Config.StationaryAmmoRandomBlue,
-                        Config.StationaryWeaponsRandomRed, Config.StationaryWeaponsRandomBlue,
-                        Config.StationaryCarRandomRed, Config.StationaryCarRandomBlue,
-                        Config.StationaryConstCarRandomRed, Config.StationaryConstCarRandomBlue,
-                        Config.StationaryEnvironmentRandomRed, Config.StationaryEnvironmentRandomBlue,
-                        Config.StationarySearchlightRandomRed, Config.StationarySearchlightRandomBlue,
-                        Config.StationaryAeroanchoredRandomRed, Config.StationaryAeroanchoredRandomBlue,
-                        Config.StationaryAirfieldRandomRed, Config.StationaryAirfieldRandomBlue,
-                        Config.StationaryUnknownRandomRed, Config.StationaryUnknownRandomBlue,
+                        CompatibleGroundTypeDLC(Config.StationaryRadarRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryRadarRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryAircraftRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryAircraftRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryArtilleryRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryArtilleryRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryFlakRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryFlakRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryDepotRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryDepotRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryShipRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryShipRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryAmmoRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryAmmoRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryWeaponsRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryWeaponsRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryCarRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryCarRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryConstCarRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryConstCarRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryEnvironmentRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryEnvironmentRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationarySearchlightRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationarySearchlightRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryAeroanchoredRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryAeroanchoredRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryAirfieldRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryAirfieldRandomBlue, dlc),
+                        CompatibleGroundTypeDLC(Config.StationaryUnknownRandomRed, dlc), CompatibleGroundTypeDLC(Config.StationaryUnknownRandomBlue, dlc),
                     };
             }
+        }
+
+        private IEnumerable<string> CompatibleGroundTypeDLC(IEnumerable<string> target, IEnumerable<string> dlc)
+        {
+            return target.Where(x => x.IndexOf(":") == -1 || dlc.Any(y => x.IndexOf(y, StringComparison.InvariantCultureIgnoreCase) != -1));
         }
 
         private static IEnumerable<string> determineAircraftOrder(AirGroup airGroup)

@@ -76,6 +76,7 @@
       <DependentUpon>VersionLabel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Input\Command.cs" />
+    <Compile Include="MissionPage.cs" />
     <Compile Include="QuickMissionPage.cs" />
     <Compile Include="QuickMission.xaml.cs">
       <DependentUpon>QuickMission.xaml</DependentUpon>
@@ -117,6 +118,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="WSteam">

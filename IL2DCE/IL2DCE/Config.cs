@@ -56,6 +56,7 @@ namespace IL2DCE
         public const string MissionScriptFileName = "MissionSingle.cs";
         public const string UserMissionFolder = "$user/mission/IL2DCE";
         public const string UserMissionsFolder = "$user/missions/IL2DCE";
+        public const string UserMissionsDefaultFolder = "$user/missions";
         public const string DebugFolderName = "debug";
         public const string DebugFileName = "IL2DCEDebug";
         public const string MissionStatusStartFileName = "MissionStatusStart.ini";

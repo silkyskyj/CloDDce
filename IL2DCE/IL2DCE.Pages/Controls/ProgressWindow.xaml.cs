@@ -25,9 +25,9 @@ namespace IL2DCE.Pages.Controls
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public delegate void BackgrowndWorkerEventHandler(object sender, BackgrowndWorkerEventArgs e);
+        public delegate void BackgroundWorkerEventHandler(object sender, BackgrowndWorkerEventArgs e);
 
-        public event BackgrowndWorkerEventHandler BackgrowndWorkerEvent;
+        public event BackgroundWorkerEventHandler BackgroundWorkerEvent;
 
         private BackgroundWorker worker = new BackgroundWorker();
 
@@ -49,14 +49,14 @@ namespace IL2DCE.Pages.Controls
             set;
         }
 
-        public ProgressWindow(ProgressWindowModel context, BackgrowndWorkerEventHandler action)
+        public ProgressWindow(ProgressWindowModel context, BackgroundWorkerEventHandler action)
         {
             InitializeComponent();
 
             Model = context;
             // Model.PropertyChanged += new PropertyChangedEventHandler(this.PropertyChanged);
 
-            this.BackgrowndWorkerEvent += action;
+            this.BackgroundWorkerEvent += action;
 
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;
@@ -94,9 +94,9 @@ namespace IL2DCE.Pages.Controls
 
         private void DoWork(object sender, DoWorkEventArgs e)
         {
-            if (BackgrowndWorkerEvent != null)
+            if (BackgroundWorkerEvent != null)
             {
-                BackgrowndWorkerEvent(sender, new BackgrowndWorkerEventArgs(e));
+                BackgroundWorkerEvent(sender, new BackgrowndWorkerEventArgs(e));
             }
         }
 

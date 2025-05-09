@@ -276,22 +276,16 @@ namespace IL2DCE.MissionObjectModel
             // airGroupId = <airGroupKey>.<squadronIndex><flightMask>
 
             // AirGroupKey
-            AirGroupKey = id.Substring(0, id.IndexOf("."));
+            AirGroupKey = CreateAirGroupKey(id);
 
             // SquadronIndex
-            int val;
-            if (!int.TryParse(id.Substring(id.LastIndexOf(".") + 1, 1), NumberStyles.Integer, Config.NumberFormat, out val))
-            {
-                Debug.Assert(false);
-                throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
-            }
-            SquadronIndex = val;
+            SquadronIndex = CreateSquadronIndex(id);
 
             // KeyVirtualAirGroupKey
-            if (sectionFile.exist(id, MissionFile.KeyVirtualAirGroupKey))
-            {
-                VirtualAirGroupKey = sectionFile.get(id, MissionFile.KeyVirtualAirGroupKey);
-            }
+            //if (sectionFile.exist(id, MissionFile.KeyVirtualAirGroupKey))
+            //{
+            //    VirtualAirGroupKey = sectionFile.get(id, MissionFile.KeyVirtualAirGroupKey);
+            //}
 
             // Flight
             Flights = new Dictionary<int, IList<string>>();
@@ -321,6 +315,7 @@ namespace IL2DCE.MissionObjectModel
             Formation = sectionFile.get(id, MissionFile.KeyFormation, string.Empty);
 
             // CallSign
+            int val;
             int.TryParse(sectionFile.get(id, MissionFile.KeyCallSign, "0"), NumberStyles.Integer, Config.NumberFormat, out val);
             CallSign = val;
 
@@ -427,16 +422,10 @@ namespace IL2DCE.MissionObjectModel
             : base(id, string.Empty, (int)EArmy.None, ECountry.nn)
         {
             // AirGroupKey
-            AirGroupKey = id.Substring(0, id.IndexOf("."));
+            AirGroupKey = CreateAirGroupKey(id);
 
             // SquadronIndex
-            int val;
-            if (!int.TryParse(id.Substring(id.LastIndexOf(".") + 1, 1), NumberStyles.Integer, Config.NumberFormat, out val))
-            {
-                Debug.Assert(false);
-                throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
-            }
-            SquadronIndex = val;
+            SquadronIndex = CreateSquadronIndex(id);
 
             // KeyVirtualAirGroupKey
 
@@ -518,6 +507,42 @@ namespace IL2DCE.MissionObjectModel
             return string.Format(Config.NumberFormat, SquadronFormat, airGroupKey, squadronIndex);
         }
 
+        public static string CreateAirGroupKey(string id)
+        {
+            int idx = id.IndexOf(".");          // "abc.12" => abc
+            if (idx != -1)
+            {
+                return id.Substring(0, idx);
+            }
+            Debug.Assert(false);
+            // throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
+            return id;
+        }
+        
+        public static int CreateSquadronIndex(string id)
+        {
+            int val;                            // "abc.12" => 1
+            if (!int.TryParse(id.Substring(id.LastIndexOf(".") + 1, 1), NumberStyles.Integer, Config.NumberFormat, out val))
+            {
+                Debug.Assert(false);
+                throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
+            }
+            return val;
+        }
+
+        public static string CreateSquadronName(string id)
+        {
+            if (!string.IsNullOrEmpty(id))      // "abc.12" => abc.1
+            {
+                int idx = id.LastIndexOf('.');
+                if (idx != -1 && idx < id.Length - 2)
+                {
+                    return id.Substring(0, idx + 2);
+                }
+            }
+            return id;
+        }
+
         public static string CreateDisplayName(string airGroupKey)
         {
             // tobruk:Tobruk_RA_30St_87_Gruppo_192Sq -> Tobruk_RA_30St_87_Gruppo_192Sq
@@ -534,10 +559,10 @@ namespace IL2DCE.MissionObjectModel
                 SilkySkyCloDFile.Write(sectionFile, MissionFile.SectionAirGroups, Id, string.Empty, true);
 
                 // VirtualAirGroupKey
-                if (!String.IsNullOrEmpty(VirtualAirGroupKey))
-                {
-                    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyVirtualAirGroupKey, VirtualAirGroupKey, true);
-                }
+                //if (!String.IsNullOrEmpty(VirtualAirGroupKey))
+                //{
+                //    SilkySkyCloDFile.Write(sectionFile, Id, MissionFile.KeyVirtualAirGroupKey, VirtualAirGroupKey, true);
+                //}
 
                 // Flight
                 foreach (int flightIndex in Flights.Keys)
@@ -1197,6 +1222,12 @@ namespace IL2DCE.MissionObjectModel
         {
             AirGroupInfo = airGroupInfo;
             ArmyIndex = airGroupInfo.ArmyIndex;
+            var targets = airGroupInfo.SquadronInfo.Where(x => string.Compare(x.Value, SquadronName, true) == 0);
+            if (targets.Any())
+            {
+                VirtualAirGroupKey = targets.First().Key;
+                Debug.Assert(targets.Count() == 1);
+            }
         }
 
         public void Optimize()

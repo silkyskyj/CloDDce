@@ -45,6 +45,16 @@
   g05.07
   g02.03
   g04.03
+  gb01_Late.14
+  gb01_Late.21
+  BoB_RAF_F_87Sqn_Late.01
+  tobruk:Channel_AA_GCI3_SPA69.01
+  tobruk:Tobruk_USAAF_F_65Sqn.01
+  BoB_LW_JG3_I.01
+  BoB_LW_KG26_Stab.01
+  BoB_RA_56St_20Gruppo_353Sq.01
+  g04.24
+  g04.11
 [BoB_RAF_B_101Sqn.01]
   Flight0  1 2 3 4 5 6
   Class Aircraft.BlenheimMkIV
@@ -290,6 +300,127 @@
   NORMFLY 22611.35 11073.67 1500.00 300.00
   GATTACK_POINT 12699.69 15667.88 1500.00 300.00
   LANDING 20350.07 9118.86 500.00 300.00
+[gb01_Late.14]
+  Flight2  21
+  Class tobruk:Aircraft.SpitfireMkVb
+  Formation FINGERFOUR
+  CallSign 30
+  Fuel 100
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[gb01_Late.14_Way]
+  NORMFLY 12639.39 23336.36 500.00 300.00
+  NORMFLY 13932.85 21873.52 500.00 300.00
+[gb01_Late.21]
+  Flight0  1
+  Class tobruk:Aircraft.SpitfireMkVb
+  Formation FINGERFOUR
+  CallSign 8
+  Fuel 100
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[gb01_Late.21_Way]
+  NORMFLY 10699.22 22982.20 500.00 300.00
+  NORMFLY 10945.59 20687.86 500.00 300.00
+[BoB_RAF_F_87Sqn_Late.01]
+  Flight0  1
+  Class tobruk:Aircraft.SpitfireMkIIb
+  Formation FINGERFOUR
+  CallSign 8
+  Fuel 100
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RAF_F_87Sqn_Late.01_Way]
+  NORMFLY 11746.30 24260.25 500.00 300.00
+  NORMFLY 12531.61 22551.05 500.00 300.00
+[tobruk:Channel_AA_GCI3_SPA69.01]
+  Flight0  1
+  Class tobruk:Aircraft.D520_Serie1
+  Formation VIC3
+  CallSign 17
+  Fuel 50
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Channel_AA_GCI3_SPA69.01_Way]
+  NORMFLY 10144.88 21473.17 500.00 300.00
+  NORMFLY 10883.99 19748.57 500.00 300.00
+[tobruk:Tobruk_USAAF_F_65Sqn.01]
+  Flight0  1
+  Class tobruk:Aircraft.MartletMkIII
+  Formation FINGERFOUR
+  CallSign 24
+  Fuel 100
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[tobruk:Tobruk_USAAF_F_65Sqn.01_Way]
+  NORMFLY 9113.20 24306.45 500.00 300.00
+  NORMFLY 10206.47 23012.99 500.00 300.00
+[BoB_LW_JG3_I.01]
+  Flight0  1
+  Class tobruk:Aircraft.Bf-109F-1
+  Formation FINGERFOUR
+  CallSign 26
+  BombSpacing 20
+  Fuel 100
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_LW_JG3_I.01_Way]
+  NORMFLY 23562.47 9129.45 500.00 300.00
+  NORMFLY 22015.33 10723.02 500.00 300.00
+[BoB_LW_KG26_Stab.01]
+  Flight0  1
+  Class tobruk:Aircraft.He-111H-6
+  Formation VIC3
+  CallSign 29
+  Fuel 57
+  Weapons 1 1 1 1 1 1 3 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_LW_KG26_Stab.01_Way]
+  NORMFLY 23593.42 8371.35 500.00 300.00
+  NORMFLY 22154.57 9779.26 500.00 300.00
+[BoB_RA_56St_20Gruppo_353Sq.01]
+  Flight0  1
+  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
+  Formation VIC3
+  CallSign 3
+  Fuel 58
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RA_56St_20Gruppo_353Sq.01_Way]
+  NORMFLY 20916.85 8402.30 500.00 300.00
+  NORMFLY 18735.37 9593.60 500.00 300.00
+[g04.24]
+  Flight2  21
+  Class Aircraft.Bf-109E-4
+  Formation FINGERFOUR
+  CallSign 26
+  Fuel 100
+  Weapons 1 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[g04.24_Way]
+  NORMFLY 24212.27 10042.27 500.00 300.00
+  NORMFLY 23283.99 11806.02 500.00 300.00
+[g04.11]
+  Flight0  1
+  Class Aircraft.Bf-109E-4
+  Formation FINGERFOUR
+  CallSign 4
+  Fuel 100
+  Weapons 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[g04.11_Way]
+  NORMFLY 21644.01 9454.36 500.00 300.00
+  NORMFLY 20344.41 10769.43 500.00 300.00
 [CustomChiefs]
 [Chiefs]
   0_Chief Ship.Minensuchboote de /sleep 0/skill 1/slowfire 1

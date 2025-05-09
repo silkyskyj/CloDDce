@@ -29,9 +29,9 @@ namespace IL2DCE.MissionObjectModel
         Usaaf = 3,
         [Description("Soviet Air Force")]
         Ru = 4,
-        [Description("Polish Air Force")]
+        [Description("Air Force of Polish government-in-exile")]
         Pl = 5,
-        [Description("Czechoslovak Air Force")]
+        [Description("Air Force of Czechoslovak government-in-exile")]
         Cz = 6,
         [Description("Royal Netherlands Air Force")]
         Nl = 7,
@@ -45,14 +45,18 @@ namespace IL2DCE.MissionObjectModel
         Lw = 1,
         [Description("Regia Aeronautica")]
         Ra = 2,
-        [Description("Hungarian Air Force")]
+        [Description("Royal Hungarian Air Force")]
         Hu = 3,
-        [Description("Romanian Air Force")]
+        [Description("Royal Romanian Air Force")]
         Ro = 4,
         [Description("Finnish Air Force")]
         Fi = 5,
         [Description("Slovak Air Force")]
         Sv = 6,
+        [Description("Bulgarian Air Force")]
+        Bg = 7,
+        [Description("Air Force of the Independent State of Croatia")]
+        Nd = 8,
     };
 
     public class AirForce
@@ -76,6 +80,8 @@ namespace IL2DCE.MissionObjectModel
             "Ion Costescu",
             "Matti Meikalainen",
             "Jozef Pavlík",
+            "Stoyan Spisarevski",
+            "Ljudevit Acinger",
         };
 
         public int ArmyIndex
@@ -168,6 +174,10 @@ namespace IL2DCE.MissionObjectModel
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Fi], Rank.Fi));
             Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Sv, EAirForceBlue.Sv.ToString(), EAirForceBlue.Sv.ToDescription(),
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Sv], Rank.Sv));
+            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Bg, EAirForceBlue.Bg.ToString(), EAirForceBlue.Bg.ToDescription(),
+                            AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Bg], Rank.Bg));
+            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Nd, EAirForceBlue.Nd.ToString(), EAirForceBlue.Nd.ToDescription(),
+                            AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Nd], Rank.Nd));
         }
     }
 }

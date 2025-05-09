@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,18 +22,14 @@ using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
-using maddox.game;
-using maddox.game.play;
 using maddox.GP;
 using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Pages
 {
-    public class CareerIntroPage : PageDefImpl
+    public class CareerIntroPage : MissionPage
     {
         #region Definition
-
-        private const string MissionDefaultFormat = "Mission Default: {0}";
 
         public class PageArgs
         {
@@ -84,15 +79,6 @@ namespace IL2DCE.Pages
             }
         }
 
-        private IGame Game
-        {
-            get
-            {
-                return _game;
-            }
-        }
-        private IGame _game;
-
         private int SelectedArmyIndex
         {
             get
@@ -135,7 +121,7 @@ namespace IL2DCE.Pages
             }
         }
 
-        private CampaignInfo SelectedCampaign
+        protected override CampaignInfo SelectedCampaign
         {
             get
             {
@@ -241,9 +227,6 @@ namespace IL2DCE.Pages
 
         private bool hookComboSelectionChanged = false;
 
-        private MissionFile currentMissionFile = null;
-        private bool missionLoaded = false;
-
         #region StrictModeSaveSelectedInfo
 
         private string comboBoxSelectUnitNumsArmorText;
@@ -272,9 +255,13 @@ namespace IL2DCE.Pages
             FrameworkElement.comboBoxSelectProgress.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectProgress_SelectionChanged);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxSelectionChangedEvent += new SelectionChangedEventHandler(GeneralSettingsGroupBox_ComboBoxSelectionChangedEvent);
             FrameworkElement.GeneralSettingsGroupBox.ComboBoxTextChangedEvent += new TextChangedEventHandler(GeneralSettingsGroupBox_ComboBoxTextChangedEvent);
-            FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
             FrameworkElement.checkBoxStrictMode.Checked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
             FrameworkElement.checkBoxStrictMode.Unchecked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
+
+            FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(ImportMission);
+            FrameworkElement.buttonImportMissionFolder.Click += new RoutedEventHandler(ImportMissionFolder);
+            FrameworkElement.buttonImportMissionFile.Click += new RoutedEventHandler(ImportMissionFile);
+            FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(MissionLoad);
         }
 
         public override void _enter(maddox.game.IGame play, object arg)
@@ -282,8 +269,6 @@ namespace IL2DCE.Pages
             base._enter(play, arg);
 
             // FrameworkElement.comboBoxSelectArmy.Items.Clear();
-
-            _game = play as IGame;
 
             FrameworkElement.GeneralSettingsGroupBox.GameInterface = play.gameInterface;
             FrameworkElement.GeneralSettingsGroupBox.Config = Game.Core.Config;
@@ -311,8 +296,6 @@ namespace IL2DCE.Pages
         public override void _leave(maddox.game.IGame play, object arg)
         {
             base._leave(play, arg);
-
-            _game = null;
         }
 
         #region EventHandler
@@ -526,32 +509,6 @@ namespace IL2DCE.Pages
 
         #region Button Click
 
-        private void buttonMissionLoad_Click(object sender, RoutedEventArgs e)
-        {
-            CampaignInfo campaignInfo = SelectedCampaign;
-            if (campaignInfo != null)
-            {
-                GameIterface gameIterface = Game.gameInterface;
-                if (gameIterface.BattleIsRun())
-                {
-                    gameIterface.BattleStop();
-                }
-                try
-                {
-                    gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
-                    gameIterface.MissionLoad(campaignInfo.InitialMissionTemplateFiles.First());
-                    missionLoaded = true;
-                    UpdateAirGroupComboBoxContent();
-                    gameIterface.BattleStart();
-                    gameIterface.BattleStop();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                }
-            }
-        }
-
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (Game.gameInterface.BattleIsRun())
@@ -647,6 +604,16 @@ namespace IL2DCE.Pages
         }
 
         #endregion
+
+        #endregion
+
+        #region Import and Convert Mission File
+
+        protected override void ImportMissionProgressWindow(ProgressWindowModel model)
+        {
+            base.ImportMissionProgressWindow(model);
+            Game.gameInterface.PageChange(new CareerIntroPage(), null);
+        }
 
         #endregion
 
@@ -823,7 +790,7 @@ namespace IL2DCE.Pages
             comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
         }
 
-        private void UpdateAirGroupComboBoxContent()
+        protected override void UpdateAirGroupContent()
         {
             CampaignInfo campaignInfo = SelectedCampaign;
             foreach (ComboBoxItem item in FrameworkElement.comboBoxSelectAirGroup.Items)

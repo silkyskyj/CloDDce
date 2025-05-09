@@ -15,13 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using IL2DCE.Generator;
@@ -29,7 +24,6 @@ using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.game.play;
 using maddox.GP;
 using static IL2DCE.MissionObjectModel.Spawn;
 
@@ -37,8 +31,9 @@ namespace IL2DCE
 {
     namespace Pages
     {
-        public class QuickMissionPage : PageDefImpl
+        public class QuickMissionPage : MissionPage
         {
+            #region Definition
 
             #region Constant
 
@@ -47,8 +42,9 @@ namespace IL2DCE
 
             private const string RandomString = "[Random]";
             private const string DefaultString = "Default";
-            private const string MissionDefaultFormat = "Mission Default: {0}";
             private const string MissionTypeDefaultFormat = "Mission Type Default: {0}";
+
+            #endregion
 
             #endregion
 
@@ -62,16 +58,7 @@ namespace IL2DCE
                 }
             }
 
-            private IGame Game
-            {
-                get
-                {
-                    return _game;
-                }
-            }
-            private IGame _game;
-
-            private CampaignInfo SelectedCampaign
+            protected override CampaignInfo SelectedCampaign
             {
                 get
                 {
@@ -279,9 +266,6 @@ namespace IL2DCE
 
             #region Variable
 
-            private MissionFile currentMissionFile = null;
-            private bool missionLoaded = false;
-
             private bool hookComboSelectionChanged = false;
 
             private int defaultMissionAltitude = 0;
@@ -315,9 +299,11 @@ namespace IL2DCE
                 FrameworkElement.checkBoxSelectAirgroupFilter.Checked += new RoutedEventHandler(checkBoxSelectAirgroupFilter_CheckedChange);
                 FrameworkElement.checkBoxSelectAirgroupFilter.Unchecked += new RoutedEventHandler(checkBoxSelectAirgroupFilter_CheckedChange);
 
-                FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(buttonImportMission_Click);
+                FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(ImportMission);
+                FrameworkElement.buttonImportMissionFolder.Click += new RoutedEventHandler(ImportMissionFolder);
+                FrameworkElement.buttonImportMissionFile.Click += new RoutedEventHandler(ImportMissionFile);
                 FrameworkElement.buttonReload.Click += new RoutedEventHandler(buttonReload_Click);
-                FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(buttonMissionLoad_Click);
+                FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(MissionLoad);
                 FrameworkElement.buttonStats.Click += new RoutedEventHandler(buttonStats_Click);
                 FrameworkElement.buttonUserLoad.Click += new RoutedEventHandler(buttonUserLoad_Click);
                 FrameworkElement.buttonUserSave.Click += new RoutedEventHandler(buttonUserSave_Click);
@@ -332,8 +318,6 @@ namespace IL2DCE
             public override void _enter(maddox.game.IGame play, object arg)
             {
                 base._enter(play, arg);
-
-                _game = play as IGame;
 
                 FrameworkElement.GeneralSettingsGroupBox.GameInterface = play.gameInterface;
                 FrameworkElement.GeneralSettingsGroupBox.Config = Game.Core.Config;
@@ -357,8 +341,6 @@ namespace IL2DCE
             public override void _leave(maddox.game.IGame play, object arg)
             {
                 base._leave(play, arg);
-
-                _game = null;
             }
 
             #region Event Handler
@@ -550,87 +532,11 @@ namespace IL2DCE
 
             #region Button Click
 
-            private void buttonImportMission_Click(object sender, RoutedEventArgs e)
-            {
-                if (MessageBox.Show("The system will convert and import existing mission files in the CloD folder for use in IL2DCE.\n" +
-                    "The copyright of files converted by this process belongs to the original author, not you, and they cannot be distributed or shared without the consent of the original author.\n" +
-                    "The converted files can only be used by you and on this PC.\n" +
-                    "\nDo you agree to this ?",
-                    "Confimation [IL2DCE]",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    ProgressWindowModel model = new ProgressWindowModel();
-                    ProgressWindow window = new ProgressWindow(model, BackgrowndWorkerEventHandler);
-                    window.Title = "Mission file Conversion and Import in progress ... [IL2DCE]";
-                    bool? result = window.ShowDialog();
-
-                    object[] results = model.Result as object[];
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendFormat("{0} to Import Missions", window.IsCanceled ? "Canceled" : "Completed");
-                    sb.AppendLine();
-                    sb.AppendLine();
-                    sb.AppendFormat("Total files: {0}", (int)results[0]);
-                    sb.AppendLine();
-                    sb.AppendFormat("  Completed: {0}", (int)results[1]);
-                    sb.AppendLine();
-                    if ((int)results[2] > 0)
-                    {
-                        sb.AppendFormat("  Error: {0}", (int)results[2]);
-                        sb.AppendLine();
-                    }
-                    sb.AppendLine();
-                    sb.AppendFormat("Log File: {0}", results[3] as string);
-                    sb.AppendLine();
-                    sb.AppendLine();
-                    sb.AppendLine("Do you want to open this log file ?");
-                    if (MessageBox.Show(sb.ToString(), "Information [IL2DCE] Convert & Import", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-                    {
-                        Process.Start(results[3] as string);
-                    }
-
-                    Game.Core.ReadCampaignInfo();
-                    Game.Core.ReadCareerInfo();
-
-                    Game.gameInterface.PageChange(new QuickMissionPage(), null);
-                }
-            }
-
             private void buttonReload_Click(object sender, RoutedEventArgs e)
             {
-                if (MessageBox.Show("Your current selections will be lost.\nDo you want to reload this page ?", "Confimation [IL2DCE]",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (Reload(sender, e))
                 {
-                    Game.Core.ReadCampaignInfo();
-                    Game.Core.ReadCareerInfo();
-
                     Game.gameInterface.PageChange(new QuickMissionPage(), null);
-                }
-            }
-
-            private void buttonMissionLoad_Click(object sender, RoutedEventArgs e)
-            {
-                CampaignInfo campaignInfo = SelectedCampaign;
-                if (campaignInfo != null)
-                {
-                    GameIterface gameIterface = Game.gameInterface;
-                    if (gameIterface.BattleIsRun())
-                    {
-                        gameIterface.BattleStop();
-                    }
-                    try
-                    {
-                        gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
-                        gameIterface.MissionLoad(campaignInfo.InitialMissionTemplateFiles.First());
-                        missionLoaded = true;
-                        UpdateAirGroupComboBoxContent();
-                        gameIterface.BattleStart();
-                        gameIterface.BattleStop();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                    }
                 }
             }
 
@@ -797,106 +703,10 @@ namespace IL2DCE
 
             #region Import and Convert Mission File
 
-            private void BackgrowndWorkerEventHandler(object sender, BackgrowndWorkerEventArgs e)
+            protected override void ImportMissionProgressWindow(ProgressWindowModel model)
             {
-                BackgroundWorker worker = sender as BackgroundWorker;
-                DoWorkEventArgs args = e.Args;
-                ProgressWindowModel model = args.Argument as ProgressWindowModel;
-
-                MissionFileConverter converter = new MissionFileConverter(Game.gameInterface);
-                Config config = Game.Core.Config;
-
-#if DEBUG && false
-                string destFolder = string.Format("{0}/{1}", Config.HomeFolder, "CampaignsImported");
-#else
-                string destFolder = Config.CampaignsFolderDefault;
-#endif
-                string logFileSystemPath = string.Empty;
-                int files = 0;
-                int count = 0;
-                int error = 0;
-                try
-                {
-                    IEnumerable<string> filesFileType = converter.GetFiles(config.SorceFolderFileName).Distinct().OrderBy(x => x);
-                    IEnumerable<string> filesFolderType = converter.GetFiles(config.SorceFolderFolderName).Distinct().OrderBy(x => x);
-                    files = filesFileType.Count() + filesFolderType.Count();
-
-                    logFileSystemPath = CreateConvertLogFilePath();
-                    using (FileStream stream = new FileStream(logFileSystemPath, FileMode.Create, FileAccess.Write, FileShare.Read))
-                    {
-                        using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
-                        {
-                            bool result;
-                            string name;
-                            worker.ReportProgress(-1, string.Format(CultureInfo.InvariantCulture, "{0}|{1}", 0, files));
-                            foreach (var item in filesFileType)
-                            {
-                                worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
-                                if (worker.CancellationPending)
-                                {
-                                    args.Cancel = true;
-                                    break;
-                                }
-                                name = Path.GetFileNameWithoutExtension(item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).LastOrDefault());
-                                converter.ErrorMsg.Clear();
-                                error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
-                                WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
-                                count++;
-                            }
-                            foreach (var item in filesFolderType)
-                            {
-                                worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
-                                if (worker.CancellationPending)
-                                {
-                                    args.Cancel = true;
-                                    break;
-                                }
-                                string[] str = item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
-                                if (str.Length >= 2)
-                                {
-                                    name = string.Format("{0}_{1}", str[str.Length - 2], Path.GetFileNameWithoutExtension(str[str.Length - 1]));
-                                    converter.ErrorMsg.Clear();
-                                    error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
-                                    WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
-                                }
-                                count++;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    string message = string.Format("{0} - {1} {2} {3}", "QuickMissionPage.buttonImportMissi_Click", ex.Message, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
-                    Core.WriteLog(message);
-                    MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Stop);
-                }
-
-                model.Result = new object[] { files, converter.CovertedMission.Count, error, logFileSystemPath, };
-            }
-
-            private void WriteConvertLog(StreamWriter writer, bool result, string name, string path, List<string> errorMsg)
-            {
-                // Result,Name(ID),FilePath,Error
-                char[] del = new char[] { '\n' };
-                const string ResultsSuccess = "Success";
-                const string ResultsFail = "Fail";
-                string error = string.Join("|", errorMsg.Select(x => x.Replace("\"", "\"\"").TrimEnd(del)));
-                writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", result ? ResultsSuccess : ResultsFail, name, path, error);
-            }
-
-            private string CreateConvertLogFilePath()
-            {
-                const int MaxErrorCount = 10;
-                string logFileSystemPath = string.Empty;
-                int i = 0;
-                do
-                {
-                    string logFilePath = string.Format("{0}/{1}", Config.UserMissionsFolder, i == 0 ? Config.ConvertLogFileName :
-                                            Path.GetFileNameWithoutExtension(Config.ConvertLogFileName) + i + Path.GetExtension(Config.ConvertLogFileName));
-                    logFileSystemPath = Game.gameInterface.ToFileSystemPath(logFilePath);
-                }
-                while (!FileUtil.IsFileWritable(logFileSystemPath) && i++ < MaxErrorCount);
-                return logFileSystemPath;
+                base.ImportMissionProgressWindow(model);
+                Game.gameInterface.PageChange(new QuickMissionPage(), null);
             }
 
             #endregion
@@ -1042,7 +852,7 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
-            private void UpdateAirGroupComboBoxContent()
+            protected override void UpdateAirGroupContent()
             {
                 CampaignInfo campaignInfo = SelectedCampaign;
                 foreach (ComboBoxItem item in FrameworkElement.comboBoxSelectAirGroup.Items)

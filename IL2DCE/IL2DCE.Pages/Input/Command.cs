@@ -28,7 +28,7 @@ namespace IL2DCE.Pages.Input
                 return action;
             }
         }
-        public Action action = null;
+        private Action action = null;
 
         public event EventHandler CanExecuteChanged;
 

@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.0)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.1)
 =============================================================================================================================
-                                                                                                                   05/04/2025
+                                                                                                                   05/10/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -27,10 +27,7 @@ Main functions
 1. In Dynamic Campaign, you can select and set the following items.
  Career
  - Army (Red/Blue)
- - Air Force
-     Red: RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Royal Netherlands Air Force/Belgian Air Component
-     Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
-     *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
+ - Air Force(*)
  - Rank
  - PilotName
  - Campaign (mission file for IL2DCE)
@@ -45,10 +42,7 @@ Main functions
 2. The following items can be selected and set in Dynamic Quick Mission.
  - Campaign (mission file for IL2DCE)
  - Army (Red/Blue)
- - Air Force
-     Red: RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Royal Netherlands Air Force/Belgian Air Component
-     Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
-     *Mission files and setting files must be compatible with your own extension. Please refer to the attached sample mission.
+ - Air Force(*)
  - Rank
  - Air Group
  - Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file)
@@ -62,7 +56,13 @@ Main functions
  - Weather
  - Cloud Altitude
 
+ (*)Air Force
+     Red: Royal Air Force/Armee de l'air/United States Army Air Forces/Soviet Air Force/Air Force of Polish government-in-exile/Air Force of Czechoslovak government-in-exile/Royal Netherlands Air Force/Belgian Air Component
+     Blue: Lufutwaffe/Regia Aeronautica/Royal Hungarian Air Force/Royal Romanian Air Force/Finissh Air Force/Slovak Air Force/Bulgarian Air Force/Air Force of the Independent State of Croatia
+     *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
+
 Items that can be selected and set commonly in 1. 2.
+ - Ability to convert and import existing mission files
  - Max Additional Air Operations [1-12]
  - Max Additional Ground Operations [10-300]
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
@@ -83,17 +83,17 @@ Items that can be selected and set commonly in 1. 2.
  - Save/Load general settings
 
 Sample mission (7 mission files)
- - Adlerangriff RAF/Lufutwaffe
- - Cross v Round.Tobruk [*] RAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Hungarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
- - Isles of Doom.Tobruk [*] RAF/French Air Force/USAAF/Lufutwaffe/Regia Aeronautica
- - Kanalkampf RAF/Lufutwaffe
- - Steppe.Tobruk [*] RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force/Royal Netherlands Air Force/Belgian Air Component
- - Supply Wars RAF/Lufutwaffe/Regia Aeronautica
- - Supply Wars.Tobruk [*] RAF/French Air Force/USAAF/Regia Aeronautica
+ - Adlerangriff - Royal Air Force/Lufutwaffe
+ - Cross v Round.Tobruk - [*] All Air Forces
+ - Isles of Doom.Tobruk - [*] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
+ - Kanalkampf - Royal Air Force/Lufutwaffe
+ - Steppe.Tobruk - [*] All Air Forces
+ - Supply Wars - Royal Air Force/Lufutwaffe/Regia Aeronautica
+ - Supply Wars.Tobruk - [*] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
 [*]Requires Tobruk DLC
 
 I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
-OS: Windows 10 x64 Home (Development) latest official MS patch
+OS: Windows 10 x64 Home (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
     Windows 11 Home (Test & Play) latest official MS patch
 Software: IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings(DLC) - English Langauage
 Display Resolution: 1920x1080
@@ -114,6 +114,8 @@ History
 
   Ver      Date       Comment
 
+  0.7.1    05/10/2025 Added: Bulgarian Air Force and Air Force of the Independent State of Croatia in Select Air Force. User interface (UI) for specifying folders and files for the mission conversion and import function.
+                      Changed: Some of the names of Air Force and Air Group that have been expanded and added independently.
   0.7.0    05/04/2025 Added: Dynamic generation of operations during mission battles, and the option to spawn groups and stationary units.
                       Fixed: AirGroup group name generation and other minor fixes.
   0.6.4    04/29/2025 Fixed: Strict and other modes are not properly separated(Campaign). When the number of flights in a squadron changes, it is treated as a separate unit, and continuation of the state, reinfoce, etc. are not performed properly (Campaign StrictMode). An error occurs if you proceed to the next step without fighting, and in StrictMode the campaign ends. 

@@ -1,17 +1,17 @@
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.7.0 05/04/2025)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.7.1 05/10/2025)
 https://github.com/silkyskyj/il2dce/releases
 
-Added: 
- - Dynamic generation of operations during mission battles, and the option to spawn groups and stationary units.
-Fixed:
- - AirGroup group name generation and other minor fixes.
+  Added: 
+    User interface (UI) for specifying folders and files for the mission conversion and import function.
+    Bulgarian Air Force and Air Force of the Independent State of Croatia in Select Air Force. 
+
+  Changed: 
+    Some of the names of Air Force and Air Group that have been expanded and added independently.
+
+  (v0.7.1) If you want to use your own AirGroup names in the future, please set them in each [*.AirGroupKeys] section of AirGroupInfo.ini in each campaign folder (in Program Files). Reference: Cross v Roundel.Tobruk, Steppe.Tobruk
 
 *In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.
-
-Artillery (The ship kind and the land kind and the anti-air kind) https://forum.il2sturmovik.com/topic/90957-artillery-the-ship-kind-and-the-land-kind-and-the-anti-air-kind/
-Ship Speed and Convoys (Boat Racing) https://forum.il2sturmovik.com/topic/90951-ship-speed-and-convoys-boat-racing/
-AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
-
+*On battle results page, the results of each battle will be merged and saved after you press the Next button. If you press the Back button, they will not be saved.
 
 *There are cases where files are not properly overwritten by the installer. I recommend uninstalling the old version -> deleting the IL2DCE folder in Program Files -> reinstalling.
 *please re-import any mission files that you have previously imported.
@@ -21,9 +21,7 @@ AI Skill Settings https://forum.il2sturmovik.com/topic/91024-ai-skill-settings/
 
 * If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.
 
-
 \[Current Bug\]
- 
 
 This is the silkyskyj version of IL2DCE.
 
@@ -50,10 +48,7 @@ Main functions
 1.In Dynamic Campaign, you can select and set the following items. 
 Career
  - Army (Red/Blue)
- - Air Force
-     Red: RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Royal Netherlands Air Force/Belgian Air Component
-     Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
-     *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
+ - Air Force(*)
  - Rank
  - PilotName
  - Campaign (mission file for IL2DCE)
@@ -68,10 +63,7 @@ Career
 
  - Campaign (mission file for IL2DCE)
  - Army (Red/Blue)
- - Air Force
-     Red: RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Royal Netherlands Air Force/Belgian Air Component
-     Blue: Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
-     *Mission files and setting files must be compatible with your own extension. Please refer to the attached sample mission.
+ - Air Force(*)
  - Rank
  - Air Group
  - Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file)
@@ -85,9 +77,13 @@ Career
  - Weather
  - Cloud Altitude
 
-  and Ability to convert and import existing mission files
-
+  (*)Air Force
+     Red: Royal Air Force/Armee de l'air/United States Army Air Forces/Soviet Air Force/Air Force of Polish government-in-exile/Air Force of Czechoslovak government-in-exile/Royal Netherlands Air Force/Belgian Air Component
+     Blue: Lufutwaffe/Regia Aeronautica/Royal Hungarian Air Force/Royal Romanian Air Force/Finissh Air Force/Slovak Air Force/Bulgarian Air Force/Air Force of the Independent State of Croatia
+     *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
+- 
 Items that can be selected and set commonly in 1. 2.
+ - Ability to convert and import existing mission files
  - Max Additional Air Operations \[1-12\]
  - Max Additional Ground Operations \[10-300\]
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
@@ -108,17 +104,17 @@ Items that can be selected and set commonly in 1. 2.
  - Save/Load general settings <- v0.6.0
 ---
 Sample mission (7 mission files)
- - Adlerangriff RAF/Lufutwaffe
- - Cross v Round.Tobruk \[*\] RAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Hungarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force
- - Isles of Doom.Tobruk \[*\] RAF/French Air Force/USAAF/Lufutwaffe/Regia Aeronautica
- - Kanalkampf RAF/Lufutwaffe
- - Steppe.Tobruk \[*\] RAF/French Air Force/USAAF/Sovies Air Force/Polish Air Force/Checoslovak Air Force/Lufutwaffe/Regia Aeronautica/Hangarian Air Force/Romanian Air Force/Finissh Air Force/Slovak Air Force/Royal Netherlands Air Force/Belgian Air Component
- - Supply Wars RAF/Lufutwaffe/Regia Aeronautica
- - Supply Wars.Tobruk \[*\] RAF/French Air Force/USAAF/Regia Aeronautica
+ - Adlerangriff - Royal Air Force/Lufutwaffe
+ - Cross v Round.Tobruk - \[*\] All Air Forces
+ - Isles of Doom.Tobruk - \[*\] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
+ - Kanalkampf - Royal Air Force/Lufutwaffe
+ - Steppe.Tobruk - \[*\] All Air Forces
+ - Supply Wars - Royal Air Force/Lufutwaffe/Regia Aeronautica
+ - Supply Wars.Tobruk - \[*\] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
 \[*\]Requires Tobruk DLC
 
 I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
-OS: Windows 10 x64 Home (Development) latest official MS patch
+OS: Windows 10 x64 Home (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
     Windows 11 Home (Test & Play) latest official MS patch
 Software: IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings(DLC) - English Langauage
 Display Resolution: 1920x1080

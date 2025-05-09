@@ -146,5 +146,23 @@ namespace IL2DCE.MissionObjectModel
             "Stotník let.",
             "Major let.",
         };
+
+        public static readonly string[] Bg = new string[] {
+            "Leytenant",
+            "Starsi Leytenant",
+            "Kaptain",
+            "Mayor",
+            "Podpolkovnik",
+            "Polkovnik",
+        };
+
+        public static readonly string[] Nd = new string[] {
+            "Poručnik",
+            "Natporučnik",
+            "Satnik",
+            "Nadsatnik",
+            "Podpukovnik",
+            "Pukovnik",
+        };
     }
 }

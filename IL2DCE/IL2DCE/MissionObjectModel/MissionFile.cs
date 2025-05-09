@@ -340,8 +340,8 @@ namespace IL2DCE.MissionObjectModel
                 file.get(SectionAirGroups, i, out key, out value);
 
                 AirGroup airGroup = new AirGroup(file, key);
-                string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
-                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGoupKey, airGroup.Class, false);
+                //string airGoupKey = string.IsNullOrEmpty(airGroup.VirtualAirGroupKey) ? airGroup.AirGroupKey : airGroup.VirtualAirGroupKey;
+                IEnumerable<AirGroupInfo> airGroupInfo = GetAirGroupInfo(airGroup.SquadronName, airGroup.Class, true);
                 if (airGroupInfo.Any())
                 {
                     AirGroupInfo airGroupInfoTarget = airGroupInfo.FirstOrDefault();
@@ -357,7 +357,7 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
-                    Debug.WriteLine("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGoupKey, airGroup.Class, "AirGroupInfo.ini");
+                    Core.WriteLog(string.Format("no AirGroup info[{0}] and aircraft [{1}] in the file[{2}]", airGroup.SquadronName, airGroup.Class, "AirGroupInfo.ini"));
                     Debug.Assert(false);
                 }
             }
@@ -515,14 +515,14 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private IEnumerable<AirGroupInfo> GetAirGroupInfo(string airGroupKey, string aircraft, bool ignoreCase)
+        private IEnumerable<AirGroupInfo> GetAirGroupInfo(string squadron, string aircraft, bool ignoreCase)
         {
             IEnumerable<AirGroupInfo> airGroupInfo;
-            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Any())
+            if (airGroupInfos != null && (airGroupInfo = airGroupInfos.GetAirGroupInfo(squadron, aircraft, ignoreCase)).Any())
             {
                 return airGroupInfo;
             }
-            else if (AirGroupInfos.Default != null && (airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(airGroupKey, aircraft, ignoreCase)).Any())
+            else if (AirGroupInfos.Default != null && (airGroupInfo = AirGroupInfos.Default.GetAirGroupInfo(squadron, aircraft, ignoreCase)).Any())
             {
                 return airGroupInfo;
             }
