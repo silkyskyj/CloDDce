@@ -45,7 +45,7 @@ Main functions
 1. Dynamic Campaign
 2. Dynamic Quick Misson
 ---
-1.In Dynamic Campaign, you can select and set the following items. 
+1. In Dynamic Campaign, you can select and set the following items. 
 Career
  - Army (Red/Blue)
  - Air Force(*)
@@ -77,12 +77,15 @@ Career
  - Weather
  - Cloud Altitude
 
-(*)Air Force
-     Red: Royal Air Force/Armee de l'air/United States Army Air Forces/Soviet Air Force/Air Force of Polish government-in-exile/Air Force of Czechoslovak government-in-exile/Royal Netherlands Air Force/Belgian Air Component
-     Blue: Lufutwaffe/Regia Aeronautica/Royal Hungarian Air Force/Royal Romanian Air Force/Finissh Air Force/Slovak Air Force/Bulgarian Air Force/Air Force of the Independent State of Croatia
+(*) Air Force
+
+Red: Royal Air Force/Armee de l'air/United States Army Air Forces/Soviet Air Force/Air Force of Polish government-in-exile/Air Force of Czechoslovak government-in-exile/Royal Netherlands Air Force/Belgian Air Component
+
+Blue: Lufutwaffe/Regia Aeronautica/Royal Hungarian Air Force/Royal Romanian Air Force/Finissh Air Force/Slovak Air Force/Bulgarian Air Force/Air Force of the Independent State of Croatia
+
      *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
 
-- 
+ 
 Items that can be selected and set commonly in 1. 2.
  - Ability to convert and import existing mission files
  - Max Additional Air Operations \[1-12\]
