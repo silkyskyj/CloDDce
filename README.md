@@ -1,29 +1,29 @@
 A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Current Version 0.7.1 05/10/2025)
 https://github.com/silkyskyj/il2dce/releases
 
-  Added: 
-    User interface (UI) for specifying folders and files for the mission conversion and import function.
-    Bulgarian Air Force and Air Force of the Independent State of Croatia in Select Air Force. 
+  Added:  
+    User interface (UI) for specifying folders and files for the mission conversion and import function.  
+    Bulgarian Air Force and Air Force of the Independent State of Croatia in Select Air Force.  
 
-  Changed: 
-    Some of the names of Air Force and Air Group that have been expanded and added independently.
+  Changed:  
+    Some of the names of Air Force and Air Group that have been expanded and added independently.  
+  
+  (v0.7.1) If you want to use your own AirGroup names in the future, please set them in each [*.AirGroupKeys] section of AirGroupInfo.ini in each campaign folder (in Program Files). Reference: Cross v Roundel.Tobruk, Steppe.Tobruk  
+  
+*In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.  
+*On battle results page, the results of each battle will be merged and saved after you press the Next button. If you press the Back button, they will not be saved.  
+  
+*There are cases where files are not properly overwritten by the installer. I recommend uninstalling the old version -> deleting the IL2DCE folder in Program Files -> reinstalling.  
+*please re-import any mission files that you have previously imported.  
+* \[Kill count may differ from game default\] sorry, since the method for counting the number of kills in the game has not been made public, we cannot guarantee that the numbers will be the same. The calculation method is different.This is the current specification of IL2DCE. If you don't like this number, please use CloD PlayerStat API statType 1.   
+  
+04/22/2025 In the future, please refrain from posting any bugs or similar posts that have no evidence of the bugs described in this topic, as I cannot determine whether they are bugs, misunderstandings, or other reasons.  If you post something like that or if you do not understand that it is AGPL, I may hide it, so we appreciate your understanding.  
+  
+* If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.  
+  
+\[Current Bug\]  
 
-  (v0.7.1) If you want to use your own AirGroup names in the future, please set them in each [*.AirGroupKeys] section of AirGroupInfo.ini in each campaign folder (in Program Files). Reference: Cross v Roundel.Tobruk, Steppe.Tobruk
-
-*In an existing campaign, the new settings will take effect from the next after next campaign mission. The next campaign mission will be created with the previous settings.
-*On battle results page, the results of each battle will be merged and saved after you press the Next button. If you press the Back button, they will not be saved.
-
-*There are cases where files are not properly overwritten by the installer. I recommend uninstalling the old version -> deleting the IL2DCE folder in Program Files -> reinstalling.
-*please re-import any mission files that you have previously imported.
-* \[Kill count may differ from game default\] sorry, since the method for counting the number of kills in the game has not been made public, we cannot guarantee that the numbers will be the same. The calculation method is different.This is the current specification of IL2DCE. If you don't like this number, please use CloD PlayerStat API statType 1. 
-
-04/22/2025 In the future, please refrain from posting any bugs or similar posts that have no evidence of the bugs described in this topic, as I cannot determine whether they are bugs, misunderstandings, or other reasons.  If you post something like that or if you do not understand that it is AGPL, I may hide it, so we appreciate your understanding.
-
-* If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.
-
-\[Current Bug\]
-
-This is the silkyskyj version of IL2DCE.
+This is the silkyskyj version of IL2DCE.  
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
 I have forked the source code and customized it under the AGPL3.0 license terms, and am releasing it this time.
@@ -77,16 +77,12 @@ Career
  - Weather
  - Cloud Altitude
 
-(*) Air Force
-
-Red: Royal Air Force/Armee de l'air/United States Army Air Forces/Soviet Air Force/Air Force of Polish government-in-exile/Air Force of Czechoslovak government-in-exile/Royal Netherlands Air Force/Belgian Air Component
-
-Blue: Lufutwaffe/Regia Aeronautica/Royal Hungarian Air Force/Royal Romanian Air Force/Finissh Air Force/Slovak Air Force/Bulgarian Air Force/Air Force of the Independent State of Croatia
-
-     *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
-
- 
-Items that can be selected and set commonly in 1. 2.
+(*) Air Force  
+Red: Royal Air Force/Armee de l'air/United States Army Air Forces/Soviet Air Force/Air Force of Polish government-in-exile/Air Force of Czechoslovak government-in-exile/Royal Netherlands Air Force/Belgian Air Component  
+Blue: Lufutwaffe/Regia Aeronautica/Royal Hungarian Air Force/Royal Romanian Air Force/Finissh Air Force/Slovak Air Force/Bulgarian Air Force/Air Force of the Independent State of Croatia  
+     *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.  
+  
+Items that can be selected and set commonly in 1. 2.  
  - Ability to convert and import existing mission files
  - Max Additional Air Operations \[1-12\]
  - Max Additional Ground Operations \[10-300\]
@@ -117,11 +113,11 @@ Sample mission (7 mission files)
  - Supply Wars.Tobruk - \[*\] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
 \[*\]Requires Tobruk DLC
 
-I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
-OS: Windows 10 x64 Home (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
-    Windows 11 Home (Test & Play) latest official MS patch
-Software: IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings(DLC) - English Langauage
-Display Resolution: 1920x1080
+I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.  
+OS: Windows 10 x64 Home (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti  
+    Windows 11 Home (Test & Play) latest official MS patch  
+    Software: IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings(DLC) - English Langauage  
+Display Resolution: 1920x1080  
 
 ---
 \[Default install location\]
