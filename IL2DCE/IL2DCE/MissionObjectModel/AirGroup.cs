@@ -324,7 +324,7 @@ namespace IL2DCE.MissionObjectModel
             Fuel = val;
 
             // Weapons
-            string weaponsLine = sectionFile.get(id, MissionFile.KeyWeapons);
+            string weaponsLine = sectionFile.get(id, MissionFile.KeyWeapons, string.Empty);
             string[] weaponsList = weaponsLine.Split(new char[] { ' ' });
             if (weaponsList != null && weaponsList.Length > 0)
             {
