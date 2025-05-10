@@ -191,13 +191,16 @@ namespace IL2DCE.Pages
 
             object[] results = model.Result as object[];
 
+
+            int complated = (int)results[1];
+
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} to Import Missions", window.IsCanceled ? "Canceled" : "Completed");
             sb.AppendLine();
             sb.AppendLine();
             sb.AppendFormat("Total files: {0}", (int)results[0]);
             sb.AppendLine();
-            sb.AppendFormat("  Completed: {0}", (int)results[1]);
+            sb.AppendFormat("  Completed: {0}", complated);
             sb.AppendLine();
             if ((int)results[2] > 0)
             {
@@ -214,8 +217,11 @@ namespace IL2DCE.Pages
                 Process.Start(results[3] as string);
             }
 
-            Game.Core.ReadCampaignInfo();
-            Game.Core.ReadCareerInfo();
+            if (complated > 0)
+            {
+                Game.Core.ReadCampaignInfo();
+                Game.Core.ReadCareerInfo();
+            }
         }
 
         protected void BackgrowndWorkerEventHandler(object sender, BackgrowndWorkerEventArgs e)

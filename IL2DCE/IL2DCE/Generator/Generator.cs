@@ -743,8 +743,8 @@ namespace IL2DCE.Generator
                     {
                         if (reinForceDate.Value <= dateTime)
                         {
-                            item.AliveNums = item.Nums > 0 ? item.Nums : 1;
-                            item.Nums = item.AliveNums;
+                            item.Nums = item.InitNums > 0 ? item.InitNums : 1;
+                            item.InitNums = item.Nums;
                             item.ReinForceDate = null;
                             item.IsAlive = true;
                             item.IsValid = true;
@@ -897,14 +897,14 @@ namespace IL2DCE.Generator
                     if (groundGroupObject != null)
                     {
                         // Substitute Unit  
-                        if (groundGroupObject.Nums - groundGroupObject.AliveNums > 0 && substitutes.Any())
+                        if (groundGroupObject.InitNums - groundGroupObject.Nums > 0 && substitutes.Any())
                         {
-                            int numsAdd = Math.Min(groundGroupObject.Nums - groundGroupObject.AliveNums, substitutes.Count());
-                            groundGroupObject.AliveNums += numsAdd;
+                            int numsAdd = Math.Min(groundGroupObject.InitNums - groundGroupObject.Nums, substitutes.Count());
+                            groundGroupObject.Nums += numsAdd;
                             substitutes.Take(numsAdd).ToList().ForEach(x => stationaries.Remove(x));
                         }
 
-                        if (groundGroupObject.Nums == 0 || /*!groundGroupObject.IsAlive || !groundGroupObject.IsValid || */(groundGroupObject.AliveNums / (float)groundGroupObject.Nums) < Config.GroupDisableRate)
+                        if (groundGroupObject.InitNums == 0 || /*!groundGroupObject.IsAlive || !groundGroupObject.IsValid || */(groundGroupObject.Nums / (float)groundGroupObject.InitNums) < Config.GroupDisableRate)
                         {
                             groundGroups.Remove(groundGroup);
                             Debug.WriteLine("Remove GroundGroup {0}[{1}]", groundGroup.Id, groundGroup.Class);
@@ -1041,7 +1041,7 @@ namespace IL2DCE.Generator
                         string.Compare(MissionObjBase.CreateClassShortShortName(x.Class), MissionObjBase.CreateClassShortShortName(groundGroup.Class), true) == 0).FirstOrDefault();
                     if (groundGroupObject != null)
                     {
-                        if (groundGroupObject.Nums == 0)
+                        if (groundGroupObject.InitNums == 0)
                         {
                             groundGroups.Remove(groundGroup);
                             Debug.WriteLine("Remove GroundGroup {0}[{1}]", groundGroup.Id, groundGroup.Class);
@@ -1096,7 +1096,7 @@ namespace IL2DCE.Generator
             needGoundGroups = 0;
             if (Career.SpawnDynamicGroundGroups)
             {
-                int aliveCount = missionStatus.GroundGroups.Where(x => x.AliveNums >= 0).Count();
+                int aliveCount = missionStatus.GroundGroups.Where(x => x.Nums >= 0).Count();
                 int averages = Career.AdditionalGroundOperations * Config.AverageGroundOperationGroundGroupCount;
                 needGoundGroups = averages - aliveCount;
                 Debug.WriteLine("Need GroundGroups={0}[{1}/{2}]", needGoundGroups, aliveCount, averages);
@@ -1119,7 +1119,7 @@ namespace IL2DCE.Generator
             {
                 int aliveCount = missionStatus.Stationaries.Where(x => x.IsAlive).Count();
                 int averages = Career.AdditionalGroundOperations * Config.AverageStationaryOperationUnitCount;
-                int aliveGroundGroups = missionStatus.GroundGroups.Where(x => x.AliveNums >= 0).Count();
+                int aliveGroundGroups = missionStatus.GroundGroups.Where(x => x.Nums >= 0).Count();
                 needGroundUnits = averages - aliveCount - aliveGroundGroups;
                 Debug.WriteLine("Need GroundUnits={0}[{1}/{2}]", needGroundUnits, aliveCount, averages);
                 groundUnits = missionFile.Stationaries.Select(x => x.Id).Except(missionStatus.Stationaries.Select(x => x.Name)).Except(missionStatus.GroundActors.Select(x => x.Name));

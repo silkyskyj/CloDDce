@@ -81,7 +81,6 @@ namespace IL2DCE.MissionObjectModel
 
         public static string CreateDisplayString(int value)
         {
-
             if (Enum.IsDefined(typeof(EFlight), value))
             {
                 return ((EFlight)value).ToDescription();

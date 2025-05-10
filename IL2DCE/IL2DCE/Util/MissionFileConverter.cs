@@ -31,6 +31,7 @@ namespace IL2DCE.Util
         public const string DefaultFileSearchPettern = "*.mis";
         public const string ErrorFormatSectionOrKey = "no avialable Section or Key[{0}]";
         public const string ErrorFormatNotNnough = "not enough info[{0}]";
+        public const string ErrorFormatDuplicateSquadron = "duplicate squadron[{0}]";
 
         private GameIterface gameInterface;
         private ISectionFile globalAircraftInfoFile;
@@ -145,7 +146,6 @@ namespace IL2DCE.Util
             //    3. & 4. 
             if (airGroups.Count < 2)
             {
-                ErrorMsg.Add(string.Format(ErrorFormatNotNnough, MissionFile.SectionAirGroups));
             }
 
             var armys = airGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
@@ -206,9 +206,18 @@ namespace IL2DCE.Util
             foreach (var army in armys)
             {
                 var airGroupsArmy = airGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
+                string squadronNameOld = string.Empty;
                 foreach (var airGroup in airGroupsArmy)
                 {
-                    airGroup.WriteTo(fileMissionInitial);
+                    if (string.Compare(airGroup.SquadronName, squadronNameOld, true) != 0)
+                    {
+                        airGroup.WriteTo(fileMissionInitial);
+                    }
+                    else
+                    {
+                        ErrorMsg.Add(string.Format(ErrorFormatDuplicateSquadron, squadronNameOld));
+                    }
+                    squadronNameOld = airGroup.SquadronName;
                 }
             }
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionSplines);

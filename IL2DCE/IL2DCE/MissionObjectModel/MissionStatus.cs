@@ -286,6 +286,23 @@ namespace IL2DCE.MissionObjectModel
                 return false;
             }
 
+            protected void UpdateName(MissionObjBase src)
+            {
+                string target = Name;
+                if (Update(ref target, src.Name))
+                {
+                    Name = target;
+                }
+            }
+
+            protected void UpdatePoint(MissionObjBase src)
+            {
+                if (src.IsValidPoint)
+                {
+                    CopyPoint(src);
+                }
+            }
+
             public virtual double ReinForceRate()
             {
                 return 1.0;
@@ -303,29 +320,51 @@ namespace IL2DCE.MissionObjectModel
             {
                 ;
             }
+
+            public void CopyPoint(MissionObjBase src)
+            {
+                X = src.X; 
+                Y = src.Y; 
+                Z = src.Z;
+            }
         }
 
-        public class PlayerObj : MissionObjBase
+        public class MissionObjEx : MissionObjBase
+        {
+            public string Class
+            {
+                get;
+                set;
+            }
+
+            public string Type
+            {
+                get;
+                set;
+            }
+
+            protected void UpdateClass(MissionObjEx src)
+            {
+                string target = Class;
+                if (Update(ref target, src.Class))
+                {
+                    Class = target;
+                }
+            }
+
+            protected void UpdateType(MissionObjEx src)
+            {
+                string target = Type;
+                if (Update(ref target, src.Type))
+                {
+                    Type = target;
+                }
+            }
+        }
+
+        public class MissionActorObj : MissionObjEx
         {
             public int Army
-            {
-                get;
-                set;
-            }
-
-            public string AirGroup
-            {
-                get;
-                set;
-            }
-
-            public string ActorName
-            {
-                get;
-                set;
-            }
-
-            public string Class
             {
                 get;
                 set;
@@ -338,6 +377,31 @@ namespace IL2DCE.MissionObjectModel
             }
 
             public bool IsTaskComplete
+            {
+                get;
+                set;
+            }
+        }
+
+        public class MissionGroupObj : MissionActorObj
+        {
+            public int InitNums
+            {
+                get;
+                set;
+            }
+
+            public int Nums
+            {
+                get;
+                set;
+            }
+        }
+
+        public class PlayerObj : MissionActorObj
+        {
+
+            public string AirGroup
             {
                 get;
                 set;
@@ -369,7 +433,7 @@ namespace IL2DCE.MissionObjectModel
                             Name = name,
                             Army = (int)army,
                             AirGroup = values[1],
-                            ActorName = values[2],
+                            Type = values[2],
                             Class = values[3],
                             IsValid = isValid,
                             IsAlive = isAlive,
@@ -411,7 +475,7 @@ namespace IL2DCE.MissionObjectModel
                             Name = player.Name(),
                             Army = player.Army(),
                             AirGroup = airGroupName,
-                            ActorName = aircraft != null ? aircraftName : playerActorName ?? string.Empty,
+                            Type = aircraft != null ? aircraftName : playerActorName ?? string.Empty,
                             Class = aircraft != null ? CreateActorName(aircraft.InternalTypeName()) : string.Empty,
                             IsValid = aircraft != null ? aircraft.IsValid() : false,
                             IsAlive = aircraft != null ? aircraft.IsAlive() : false,
@@ -456,24 +520,9 @@ namespace IL2DCE.MissionObjectModel
                         AirGroup = target;
                     }
 
-                    target = ActorName;
-                    if (Update(ref target, playerObject.ActorName))
-                    {
-                        ActorName = target;
-                    }
-
-                    target = Class;
-                    if (Update(ref target, playerObject.Class))
-                    {
-                        Class = target;
-                    }
-
-                    if (playerObject.IsValidPoint)
-                    {
-                        X = playerObject.X;
-                        Y = playerObject.Y;
-                        Z = playerObject.Z;
-                    }
+                    UpdateType(playerObject);
+                    UpdateClass(playerObject);
+                    UpdatePoint(playerObject);
                 }
                 catch (Exception ex)
                 {
@@ -493,7 +542,7 @@ namespace IL2DCE.MissionObjectModel
                         {
                             Army.ToString(Config.NumberFormat),                             // Amry
                             AirGroup ?? string.Empty,                                       // AirGroup Name
-                            ActorName ?? string.Empty,                                      // ActorName
+                            Type ?? string.Empty,                                      // ActorName
                             Class ?? string.Empty,                                          // Class
                             IsValid ? "1" : "0",                                            // Valid
                             IsAlive ? "1" : "0",                                            // Alive 
@@ -512,7 +561,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class AirGroupObj : MissionObjBase
+        public class AirGroupObj : MissionGroupObj
         {
             public int Id
             {
@@ -526,49 +575,7 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
-            public int Army
-            {
-                get;
-                set;
-            }
-
-            public string Class
-            {
-                get;
-                set;
-            }
-
-            public string Type
-            {
-                get;
-                set;
-            }
-
-            public int Nums
-            {
-                get;
-                set;
-            }
-
-            public int InitNums
-            {
-                get;
-                set;
-            }
-
             public int DiedNums
-            {
-                get;
-                set;
-            }
-
-            public bool IsValid
-            {
-                get;
-                set;
-            }
-
-            public bool IsTaskComplete
             {
                 get;
                 set;
@@ -707,37 +714,17 @@ namespace IL2DCE.MissionObjectModel
                     IsValid = airGroupObject.IsValid;
                     IsAlive = airGroupObject.IsAlive;
                     IsTaskComplete = airGroupObject.IsTaskComplete;
+                    UpdateName(airGroupObject);
 
-                    string target = Name;
-                    if (Update(ref target, airGroupObject.Name))
-                    {
-                        Name = target;
-                    }
-
-                    target = NameItem;
+                    string target = NameItem;
                     if (Update(ref target, airGroupObject.NameItem))
                     {
                         NameItem = target;
                     }
 
-                    target = Class;
-                    if (Update(ref target, airGroupObject.Class))
-                    {
-                        Class = target;
-                    }
-
-                    target = Type;
-                    if (Update(ref target, airGroupObject.Type))
-                    {
-                        Type = target;
-                    }
-
-                    if (airGroupObject.IsValidPoint)
-                    {
-                        X = airGroupObject.X;
-                        Y = airGroupObject.Y;
-                        Z = airGroupObject.Z;
-                    }
+                    UpdateClass(airGroupObject);
+                    UpdateType(airGroupObject);
+                    UpdatePoint(airGroupObject);
                 }
                 catch (Exception ex)
                 {
@@ -797,50 +784,8 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class GroundGroupObj : MissionObjBase
+        public class GroundGroupObj : MissionGroupObj
         {
-            public int Army
-            {
-                get;
-                set;
-            }
-
-            public string Class
-            {
-                get;
-                set;
-            }
-
-            public string Type
-            {
-                get;
-                set;
-            }
-
-            public int Nums
-            {
-                get;
-                set;
-            }
-
-            public int AliveNums
-            {
-                get;
-                set;
-            }
-
-            public bool IsValid
-            {
-                get;
-                set;
-            }
-
-            public bool IsTaskComplete
-            {
-                get;
-                set;
-            }
-
             public override double ReinForceRate()
             {
                 AiGroundActorType type;
@@ -884,8 +829,8 @@ namespace IL2DCE.MissionObjectModel
                                 Army = (int)army,
                                 Class = values[1],
                                 Type = values[2],
-                                Nums = nums,
-                                AliveNums = aliveNums,
+                                InitNums = nums,
+                                Nums = aliveNums,
                                 IsValid = isValid,
                                 IsAlive = isAlive,
                                 IsTaskComplete = isTaskComplete,
@@ -925,8 +870,8 @@ namespace IL2DCE.MissionObjectModel
                             Army = groundGroup.Army(),
                             Class = CreateActorName(groundActor != null ? groundActor.InternalTypeName() : string.Empty),
                             Type = groundActor != null ? groundActor.Type().ToString() : string.Empty,
-                            Nums = aiActors != null ? aiActors.Length : 0,
-                            AliveNums = aiActors != null ? aiActors.Where(x => x.IsAlive()).Count() : 0,
+                            InitNums = aiActors != null ? aiActors.Length : 0,
+                            Nums = aiActors != null ? aiActors.Where(x => x.IsAlive()).Count() : 0,
                             IsValid = groundGroup.IsValid(),
                             IsAlive = groundGroup.IsAlive(),
                             IsTaskComplete = groundGroup.IsTaskComplete(),
@@ -951,36 +896,19 @@ namespace IL2DCE.MissionObjectModel
             public bool Update(GroundGroupObj groundGroupObject)
             {
                 Debug.WriteLine("  GroundGroupObject.Update[{0}] Nums={1}->{2} AliveNums={3}->{4}, IsValid={5}->{6}, IsAlive={7}->{8}, IsTaskComplete{9}->{10}",
-                                groundGroupObject.Name, Nums, groundGroupObject.Nums, AliveNums, groundGroupObject.AliveNums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
+                                groundGroupObject.Name, InitNums, groundGroupObject.InitNums, Nums, groundGroupObject.Nums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
                 bool updated = false;
                 try
                 {
+                    InitNums = groundGroupObject.InitNums;
                     Nums = groundGroupObject.Nums;
-                    AliveNums = groundGroupObject.AliveNums;
                     IsValid = groundGroupObject.IsValid;
                     IsAlive = groundGroupObject.IsAlive;
                     IsTaskComplete = groundGroupObject.IsTaskComplete;
-                    string target = Name;
-                    if (Update(ref target, groundGroupObject.Name))
-                    {
-                        Name = target;
-                    }
-                    target = Class;
-                    if (Update(ref target, groundGroupObject.Class))
-                    {
-                        Class = target;
-                    }
-                    target = Type;
-                    if (Update(ref target, groundGroupObject.Type))
-                    {
-                        Type = target;
-                    }
-                    if (groundGroupObject.IsValidPoint)
-                    {
-                        X = groundGroupObject.X;
-                        Y = groundGroupObject.Y;
-                        Z = groundGroupObject.Z;
-                    }
+                    UpdateName(groundGroupObject);
+                    UpdateClass(groundGroupObject);
+                    UpdateType(groundGroupObject);
+                    UpdatePoint(groundGroupObject);
                 }
                 catch (Exception ex)
                 {
@@ -1000,8 +928,8 @@ namespace IL2DCE.MissionObjectModel
                         Army.ToString(Config.NumberFormat),
                         Class,
                         Type,
+                            InitNums.ToString(Config.NumberFormat),
                             Nums.ToString(Config.NumberFormat),
-                            AliveNums.ToString(Config.NumberFormat),
                             IsValid ? "1" : "0",
                             IsAlive ? "1" : "0",
                             IsTaskComplete ? "1" : "0",
@@ -1026,7 +954,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class StationaryObj : MissionObjBase
+        public class StationaryObj : MissionObjEx
         {
             public string Id
             {
@@ -1035,18 +963,6 @@ namespace IL2DCE.MissionObjectModel
             }
 
             public string Country
-            {
-                get;
-                set;
-            }
-
-            public string Class
-            {
-                get;
-                set;
-            }
-
-            public string Type
             {
                 get;
                 set;
@@ -1159,30 +1075,16 @@ namespace IL2DCE.MissionObjectModel
                 try
                 {
                     IsAlive = stationaryObject.IsAlive;
+                    UpdateName(stationaryObject);
 
-                    string target = Name;
-                    if (Update(ref target, stationaryObject.Name))
-                    {
-                        Name = target;
-                    }
-
-                    target = Country;
+                    string target = Country;
                     if (Update(ref target, stationaryObject.Country))
                     {
                         Country = target;
                     }
 
-                    target = Class;
-                    if (Update(ref target, stationaryObject.Class))
-                    {
-                        Class = target;
-                    }
-
-                    target = Type;
-                    if (Update(ref target, stationaryObject.Type))
-                    {
-                        Type = target;
-                    }
+                    UpdateClass(stationaryObject);
+                    UpdateType(stationaryObject);
 
                     target = Category;
                     if (Update(ref target, stationaryObject.Category))
@@ -1190,12 +1092,7 @@ namespace IL2DCE.MissionObjectModel
                         Category = target;
                     }
 
-                    if (stationaryObject.IsValidPoint)
-                    {
-                        X = stationaryObject.X;
-                        Y = stationaryObject.Y;
-                        Z = stationaryObject.Z;
-                    }
+                    UpdatePoint(stationaryObject);
                 }
                 catch (Exception ex)
                 {
@@ -1231,38 +1128,8 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class AircraftObj : MissionObjBase
+        public class AircraftObj : MissionActorObj
         {
-            public int Army
-            {
-                get;
-                set;
-            }
-
-            public string Class
-            {
-                get;
-                set;
-            }
-
-            public string Type
-            {
-                get;
-                set;
-            }
-
-            public bool IsValid
-            {
-                get;
-                set;
-            }
-
-            public bool IsTaskComplete
-            {
-                get;
-                set;
-            }
-
             public override double ReinForceRate()
             {
                 AircraftType type;
@@ -1422,31 +1289,10 @@ namespace IL2DCE.MissionObjectModel
                     IsValid = aircraftObject.IsValid;
                     IsAlive = aircraftObject.IsAlive;
                     IsTaskComplete = aircraftObject.IsTaskComplete;
-
-                    string target = Name;
-                    if (Update(ref target, aircraftObject.Name))
-                    {
-                        Name = target;
-                    }
-
-                    target = Class;
-                    if (Update(ref target, aircraftObject.Class))
-                    {
-                        Class = target;
-                    }
-
-                    target = Type;
-                    if (Update(ref target, aircraftObject.Type))
-                    {
-                        Type = target;
-                    }
-
-                    if (aircraftObject.IsValidPoint)
-                    {
-                        X = aircraftObject.X;
-                        Y = aircraftObject.Y;
-                        Z = aircraftObject.Z;
-                    }
+                    UpdateName(aircraftObject);
+                    UpdateClass(aircraftObject);
+                    UpdateType(aircraftObject);
+                    UpdatePoint(aircraftObject);
                 }
                 catch (Exception ex)
                 {
@@ -1484,38 +1330,8 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public class GroundObj : MissionObjBase
+        public class GroundObj : MissionActorObj
         {
-            public int Army
-            {
-                get;
-                set;
-            }
-
-            public string Class
-            {
-                get;
-                set;
-            }
-
-            public string Type
-            {
-                get;
-                set;
-            }
-
-            public bool IsValid
-            {
-                get;
-                set;
-            }
-
-            public bool IsTaskComplete
-            {
-                get;
-                set;
-            }
-
             public override double ReinForceRate()
             {
                 AiGroundActorType type;
@@ -1740,31 +1556,10 @@ namespace IL2DCE.MissionObjectModel
                     IsValid = groundObject.IsValid;
                     IsAlive = groundObject.IsAlive;
                     IsTaskComplete = groundObject.IsTaskComplete;
-
-                    string target = Name;
-                    if (Update(ref target, groundObject.Name))
-                    {
-                        Name = target;
-                    }
-
-                    target = Class;
-                    if (Update(ref target, groundObject.Class))
-                    {
-                        Class = target;
-                    }
-
-                    target = Type;
-                    if (Update(ref target, groundObject.Type))
-                    {
-                        Type = target;
-                    }
-
-                    if (groundObject.IsValidPoint)
-                    {
-                        X = groundObject.X;
-                        Y = groundObject.Y;
-                        Z = groundObject.Z;
-                    }
+                    UpdateName(groundObject);
+                    UpdateClass(groundObject);
+                    UpdateType(groundObject);
+                    UpdatePoint(groundObject);
                 }
                 catch (Exception ex)
                 {
@@ -2208,9 +2003,7 @@ namespace IL2DCE.MissionObjectModel
                     groundActor.IsTaskComplete = groundActorNew.IsTaskComplete;
                     if (groundActorNew.IsValidPoint)
                     {
-                        groundActor.X = groundActorNew.X;
-                        groundActor.Y = groundActorNew.Y;
-                        groundActor.Z = groundActorNew.Z;
+                        groundActor.CopyPoint(groundActorNew);
                     }
                 }
             }
@@ -2414,9 +2207,7 @@ namespace IL2DCE.MissionObjectModel
                             // previousAirGroup.IsAlive = false;//item.IsAlive;
                             if (item.IsValidPoint)
                             {
-                                previousAirGroup.X = item.X;
-                                previousAirGroup.Y = item.Y;
-                                previousAirGroup.Z = item.Z;
+                                previousAirGroup.CopyPoint(item);
                             }
                             previousAirGroup.Nums = item.Nums;
                             previousAirGroup.InitNums = item.InitNums;
@@ -2464,9 +2255,9 @@ namespace IL2DCE.MissionObjectModel
                 {
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
                     GroundGroupObj previousGroundGroup = groundGroups.Where(x => string.Compare(x.Name, item.Name, true) == 0).LastOrDefault();
-                    if (item.Nums > 0/* && item.AliveNums > 0*/)
+                    if (item.InitNums > 0/* && item.AliveNums > 0*/)
                     {
-                        float rate = item.AliveNums / (float)item.Nums;
+                        float rate = item.Nums / (float)item.InitNums;
                         if (previousGroundGroup != null)
                         {
                             DateTime? reinForceDate = previousGroundGroup.ReinForceDate;
@@ -2492,12 +2283,10 @@ namespace IL2DCE.MissionObjectModel
                             // previousGroundGroup.IsAlive = false;//item.IsAlive;
                             if (item.IsValidPoint)
                             {
-                                previousGroundGroup.X = item.X;
-                                previousGroundGroup.Y = item.Y;
-                                previousGroundGroup.Z = item.Z;
+                                previousGroundGroup.CopyPoint(item);
                             }
+                            previousGroundGroup.InitNums = item.InitNums;
                             previousGroundGroup.Nums = item.Nums;
-                            previousGroundGroup.AliveNums = item.AliveNums;
                             previousGroundGroup.IsTaskComplete = item.IsTaskComplete;
                         }
                         else
@@ -2561,9 +2350,7 @@ namespace IL2DCE.MissionObjectModel
                             previousStationary.IsAlive = false; // item.IsAlive;
                             if (item.IsValidPoint)
                             {
-                                previousStationary.X = item.X;
-                                previousStationary.Y = item.Y;
-                                previousStationary.Z = item.Z;
+                                previousStationary.CopyPoint(item);
                             }
                         }
                         else
@@ -2622,9 +2409,7 @@ namespace IL2DCE.MissionObjectModel
                             previousAircraft.IsAlive = false;// item.IsAlive;
                             if (item.IsValidPoint)
                             {
-                                previousAircraft.X = item.X;
-                                previousAircraft.Y = item.Y;
-                                previousAircraft.Z = item.Z;
+                                previousAircraft.CopyPoint(item);
                             }
                             previousAircraft.IsTaskComplete = item.IsTaskComplete;
                         }
@@ -2684,9 +2469,7 @@ namespace IL2DCE.MissionObjectModel
                             previousGroundObject.IsAlive = false;//item.IsAlive;
                             if (item.IsValidPoint)
                             {
-                                previousGroundObject.X = item.X;
-                                previousGroundObject.Y = item.Y;
-                                previousGroundObject.Z = item.Z;
+                                previousGroundObject.CopyPoint(item);
                             }
                             previousGroundObject.IsTaskComplete = item.IsTaskComplete;
                         }
