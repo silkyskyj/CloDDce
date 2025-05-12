@@ -15,13 +15,14 @@ https://github.com/silkyskyj/il2dce/releases
   
 *There are cases where files are not properly overwritten by the installer. I recommend uninstalling the old version -> deleting the IL2DCE folder in Program Files -> reinstalling.  
 *please re-import any mission files that you have previously imported.  
-* \[Kill count may differ from game default\] sorry, since the method for counting the number of kills in the game has not been made public, we cannot guarantee that the numbers will be the same. The calculation method is different.This is the current specification of IL2DCE. If you don't like this number, please use CloD PlayerStat API statType 1.   
+*\[Kill count may differ from game default\] sorry, since the method for counting the number of kills in the game has not been made public, we cannot guarantee that the numbers will be the same. The calculation method is different.This is the current specification of IL2DCE. If you don't like this number, please use CloD PlayerStat API statType 1.   
   
 04/22/2025 In the future, please refrain from posting any bugs or similar posts that have no evidence of the bugs described in this topic, as I cannot determine whether they are bugs, misunderstandings, or other reasons.  If you post something like that or if you do not understand that it is AGPL, I may hide it, so we appreciate your understanding.  
   
-* If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.  
+*If there is a release, it will be done on the weekend. If there is a problem, please revert to the old version and use it for a while.  
   
 \[Current Bug\]  
+-The mission conversion and import function should error out missions with duplicate squadrons, but imports them as a success. (In IL2DCE, the number of Flights is set randomly, so only one AirGroup can participate in one Squadron.)
 
 This is the silkyskyj version of IL2DCE.  
 
@@ -41,12 +42,12 @@ I'm very sorry, but please use this product only if you understand these points.
 
 #sorry, I can't speak English, so I translate or paraphrase everything I read and write. Please understand that there may be some minor mistakes in the expressions.
 
-Main functions
-1. Dynamic Campaign
-2. Dynamic Quick Misson
----
-1. In Dynamic Campaign, you can select and set the following items. 
-Career
+Main functions  
+1.Dynamic Campaign  
+2.Dynamic Quick Misson  
+
+1.In Dynamic Campaign, you can select and set the following items.  
+  Career
  - Army (Red/Blue)
  - Air Force(*)
  - Rank
@@ -59,7 +60,7 @@ Career
  - Initial AirGroup Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file) <- v0.6.0
  - Progress (AnyTime/Daily/AnyDay/AnyDayAnyTime) <- v0.6.0
 
-2. The following items can be selected and set in Dynamic Quick Mission.
+2.The following items can be selected and set in Dynamic Quick Mission.  
 
  - Campaign (mission file for IL2DCE)
  - Army (Red/Blue)
