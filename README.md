@@ -170,7 +170,7 @@ The original authors' discussions on other forums regarding the Dynamic campaign
 http://forum.fulqrumpublishing.com/showthread.php?p=405610
 
 \[Upcoming features\]
-- Controlling the actions of each unit and group during a mission (if possible)
+
 
 ---
 A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
