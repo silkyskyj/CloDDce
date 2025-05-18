@@ -22,6 +22,10 @@ namespace IL2DCE.Generator
 {
     public class AircraftParametersInfo
     {
+        public const string DefaulLoadoutId = "Default";
+        public const int DefaultMinAltitude = 0;
+        public const int DefaultMaxAltitude = 5000;
+
         public string LoadoutId
         {
             get

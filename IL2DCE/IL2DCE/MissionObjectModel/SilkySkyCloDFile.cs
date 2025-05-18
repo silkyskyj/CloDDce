@@ -511,6 +511,39 @@ namespace IL2DCE.MissionObjectModel
             return keys;
         }
 
+        public static IEnumerable<string> CopySectionGetValue(ISectionFile fileSrc, ISectionFile fileDest, string section, int indexValue = -1, bool overwrite = true)
+        {
+            List<string> values = new List<string>();
+            if (fileSrc.exist(section))
+            {
+                string key;
+                string value;
+                int lines = fileSrc.lines(section);
+                for (int i = 0; i < lines; i++)
+                {
+                    fileSrc.get(section, i, out key, out value);
+                    if (!fileDest.exist(section, key) || overwrite)
+                    {
+                        fileDest.add(section, key, value);
+                    }
+                    // Debug.WriteLine("{0} {1} Key={2} Value={3}", section, i, key, value);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        if (indexValue >= 0)
+                        {
+                            string [] vals = value.Split(MissionFile.SplitChars);
+                            value = indexValue < vals.Length ? vals[indexValue].Trim() : string.Empty;
+                        }
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            values.Add(value);
+                        }
+                    }
+                }
+            }
+            return values;
+        }
+
         public static int CopySectionReplace(ISectionFile fileSrc, ISectionFile fileDest, string section, IEnumerable<string> oldValue, string newValue)
         {
             int count = 0;

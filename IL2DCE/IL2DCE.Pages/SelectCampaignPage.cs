@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
+using maddox.game;
 using maddox.game.page;
 using maddox.game.play;
 
@@ -110,7 +112,9 @@ namespace IL2DCE
                 {
                     CampaignInfo campaignInfo = e.AddedItems[0] as CampaignInfo;
 
-                    MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+                    string missionTemplateFileName = campaignInfo.InitialMissionTemplateFile;
+                    ISectionFile missionTemplateSectionFile = Game.gpLoadSectionFile(missionTemplateFileName);
+                    MissionFile campaignTemplate = new MissionFile(missionTemplateSectionFile, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
 
                     string description = "Available AirGroups:\n";
 

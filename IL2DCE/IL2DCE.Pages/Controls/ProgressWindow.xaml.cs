@@ -27,7 +27,7 @@ namespace IL2DCE.Pages.Controls
     {
         public delegate void BackgroundWorkerEventHandler(object sender, BackgrowndWorkerEventArgs e);
 
-        public event BackgroundWorkerEventHandler BackgroundWorkerEvent;
+        private event BackgroundWorkerEventHandler BackgroundWorkerEvent;
 
         private BackgroundWorker worker = new BackgroundWorker();
 
@@ -102,7 +102,11 @@ namespace IL2DCE.Pages.Controls
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (e.ProgressPercentage >= 0)
+            if (e.ProgressPercentage == int.MaxValue)
+            {
+                labelStatus.Content = e.UserState as string;
+            }
+            else if (e.ProgressPercentage >= 0)
             {
                 progressBar.Value = e.ProgressPercentage;
                 labelStatus.Content = e.UserState as string;

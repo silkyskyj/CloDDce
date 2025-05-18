@@ -60,14 +60,14 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return _missionDescription;
+                return missionDescription;
             }
             set
             {
-                _missionDescription = value;
+                missionDescription = value;
             }
         }
-        private string _missionDescription = "";
+        private string missionDescription = "";
 
         public IDictionary<string, string> Name
         {
@@ -82,10 +82,10 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return _description;
+                return description;
             }
         }
-        private Dictionary<string, Text> _description = new Dictionary<string, Text>();
+        private Dictionary<string, Text> description = new Dictionary<string, Text>();
 
         public void SaveTo(string systemFileName, string missionName)
         {

@@ -42,6 +42,7 @@
     <Compile Include="MissionObjectModel\Army.cs" />
     <Compile Include="MissionObjectModel\Artillery.cs" />
     <Compile Include="MissionObjectModel\CampaignProgress.cs" />
+    <Compile Include="MissionObjectModel\Map.cs" />
     <Compile Include="MissionObjectModel\MissionDebug.cs" />
     <Compile Include="MissionObjectModel\MissionProc.cs" />
     <Compile Include="MissionObjectModel\MissionStatus.cs" />
@@ -115,6 +116,10 @@
     </Reference>
     <Reference Include="gameWorld">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gameWorld.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="part">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\part.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

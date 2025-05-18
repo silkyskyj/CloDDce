@@ -16,9 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using maddox.game;
@@ -28,10 +30,13 @@ namespace IL2DCE.Util
 {
     public class MissionFileConverter
     {
-        public const string DefaultFileSearchPettern = "*.mis";
-        public const string ErrorFormatSectionOrKey = "no avialable Section or Key[{0}]";
-        public const string ErrorFormatNotNnough = "not enough info[{0}]";
-        public const string ErrorFormatDuplicateSquadron = "duplicate squadron[{0}]";
+        public static readonly char[] SplitChars = Environment.NewLine.ToCharArray();
+        public const string DefaultMissionFileSearchPettern = "*.mis";
+        public const string DefaultCampaignFileSearchPettern = Config.CampaignFileName;
+        public const string ErrorFormatSectionOrKey = "Error:No available Section or Key[{0}]";
+        public const string ErrorFormatNotNnough = "Error:Not enough info[{0}]";
+        public const string WarnFormatDuplicateSquadron = "Warn:Duplicate squadron[{0}]";
+        public const string WarnNoAviableAddedGenericOne = "Warn:No avialable[{0}] Converter added generic one";
 
         private GameIterface gameInterface;
         private ISectionFile globalAircraftInfoFile;
@@ -39,20 +44,27 @@ namespace IL2DCE.Util
 
         private string homeFolder;
         private string userFolder;
+        private BackgroundWorker worker;
 
-        public List<string> ErrorMsg
+        public List<string> ErrorWarnMsg
         {
             get;
             private set;
         }
 
-        public List<string> CovertedMission
+        public int Index
         {
             get;
             private set;
         }
 
-        public MissionFileConverter(GameIterface gameInterface, ISectionFile globalAircraftInfoFile = null, AirGroupInfos airGroupInfos = null)
+        public int CovertedMissionCount
+        {
+            get;
+            private set;
+        }
+
+        public MissionFileConverter(GameIterface gameInterface, ISectionFile globalAircraftInfoFile = null, AirGroupInfos airGroupInfos = null, BackgroundWorker worker = null)
         {
             this.gameInterface = gameInterface;
             homeFolder = gameInterface.ToFileSystemPath(Config.HomeFolder);
@@ -68,59 +80,185 @@ namespace IL2DCE.Util
                 airGroupInfos = AirGroupInfos.Create(globalAirGroupInfoFile);
             }
             this.airGroupInfos = airGroupInfos;
-            ErrorMsg = new List<string>();
-            CovertedMission = new List<string>();
+            this.worker = worker;
+            ErrorWarnMsg = new List<string>();
+            Index = 0;
+            CovertedMissionCount = 0;
         }
 
-        public bool Convert(string filePathSrc, string name, string outputBasetFolder = null)
+        public bool ConvertSystemPath(string fileSystemPath, string name, string outputBasetFolder = null)
         {
-#if false
-            // string filePathSrcSystemPath = gameInterface.ToFileSystemPath(filePathSrc.Trim());
-            SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(filePathSrc, false);
-#else
-            ISectionFile fileSorce = gameInterface.SectionFileLoad(filePathSrc.Trim());
-#endif
-            if (string.IsNullOrEmpty(name))
-            {
-                int idx = filePathSrc.LastIndexOf("/");
-                if (idx == -1)
-                {
-                    idx = filePathSrc.LastIndexOf("\\");
-                }
-                if (idx != -1)
-                {
-                    name = name.Substring(idx);
-                }
-            }
-            return Convert(fileSorce, name, outputBasetFolder);
-        }
-
-        public bool ConvertSystemPath(string filePathSrcSystem, string name, string outputBasetFolder = null)
-        {
+            Debug.WriteLine("MissionFileConverter.ConvertSystemPath({0}, {1}, {2})", fileSystemPath, name, outputBasetFolder != null ? outputBasetFolder : string.Empty);
 #if true
             // string filePathSrcSystemPath = gameInterface.ToFileSystemPath(filePathSrc.Trim());
-            SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(filePathSrcSystem, false);
+            SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(fileSystemPath, false);
 #else
             ISectionFile fileSorce = gameInterface.SectionFileLoad(filePathSrc.Trim());
 #endif
             if (string.IsNullOrEmpty(name))
             {
-                int idx = filePathSrcSystem.LastIndexOf("/");
-                if (idx == -1)
-                {
-                    idx = filePathSrcSystem.LastIndexOf("\\");
-                }
-                if (idx != -1)
-                {
-                    name = name.Substring(idx);
-                }
+                name = GetMissionName(fileSystemPath);
+            }
+            if (worker != null)
+            {
+                worker.ReportProgress(Index, string.Join("\n", SplitTargetSystemPathInfo(fileSystemPath)));
             }
             return Convert(fileSorce, name, outputBasetFolder);
         }
 
-        public bool Convert(ISectionFile fileSorce, string name, string outputBasetFolder = null)
+        private bool Convert(ISectionFile fileSorce, string name, string outputBasetFolder = null)
         {
             Debug.WriteLine("MissionFileConverter.Convert({0}, {1})", name, outputBasetFolder != null ? outputBasetFolder : string.Empty);
+
+            StringBuilder sb = new StringBuilder();
+            int error = 0;
+
+            try
+            {
+                // 1. Initialize
+                if (string.IsNullOrEmpty(outputBasetFolder))
+                {
+                    outputBasetFolder = Config.CampaignsFolderDefault;
+                }
+                string fileName = name.Replace(",", " ");
+
+                string outputBasetFolderrSystemPath = gameInterface.ToFileSystemPath(outputBasetFolder);
+
+                // 2. Create AircraftInfo.ini 
+                ISectionFile fileAircraft = gameInterface.SectionFileCreate();
+
+                // 3. Create AirGroupInfo.ini 
+                ISectionFile fileAirGroup = gameInterface.SectionFileCreate();
+
+                // 4. Read Mission File
+                MissionFile missionFile = new MissionFile(fileSorce, airGroupInfos, MissionFile.LoadLevel.AirGroup);
+
+                // 5. Create Mission initialTemplate File
+                //      2. AircraftInfo.ini
+                //      3. AirGroupInfo.ini 
+                ISectionFile fileMissionInitial = gameInterface.SectionFileCreate();
+                ConvertCore(fileSorce, missionFile, name, fileMissionInitial, fileAircraft, fileAirGroup, ref error, sb, outputBasetFolder);
+
+                if (error == 0)
+                {
+                    string fileNameMissionInitial = string.Format("{0}{1}", fileName, Config.MissionFileExt);
+                    string filePathMissionInitial = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionInitial);
+
+                    // 7. Create CampaignInfo.ini 
+                    ISectionFile fileCampaign = gameInterface.SectionFileCreate();
+                    string filePathCampaign = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.CampaignInfoFileName);
+                    IEnumerable<KeyValuePair<int, string>> mapPeriods = Map.GetDefaultMapPeriod(missionFile.Map);
+                    CampaignInfo campaignInfo = new CampaignInfo(name, ECampaignMode.Default, new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, null, null, mapPeriods);
+                    campaignInfo.Write(fileCampaign);
+
+                    // 8. Create Mission Folder (Mission Filename without Extension)
+                    string missionFolderSystemPath = string.Format("{0}\\{1}", outputBasetFolderrSystemPath, fileName);
+                    if (!Directory.Exists(missionFolderSystemPath))
+                    {
+                        Directory.CreateDirectory(missionFolderSystemPath);
+                    }
+
+                    // 9. Save All Files
+                    string filePathAircraft = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AircraftInfoFileName);
+                    fileAircraft.save(filePathAircraft);
+                    string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
+                    fileAirGroup.save(filePathAirGroup);
+                    fileMissionInitial.save(filePathMissionInitial);
+                    
+                    // 10. Create Mission Script File
+                    string filePathScriptSystemPathSrc = string.Format("{0}\\{1}", gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault), Config.MissionScriptFileName);
+                    string filePathScriptSystemPathDst = string.Format("{0}\\{1}\\{2}", outputBasetFolderrSystemPath, fileName, Config.MissionScriptFileName);
+                    File.Copy(filePathScriptSystemPathSrc, filePathScriptSystemPathDst, true);
+                    fileCampaign.save(filePathCampaign);
+
+                    CovertedMissionCount += 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("{0} - {1} {2} {3}", "MissionFileConverter.ConvertSystemPath", ex.Message, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
+                Core.WriteLog(message);
+                sb.AppendLine(message);
+                error++;
+            }
+
+            Index += 1;
+            if (sb.Length > 0)
+            {
+                ErrorWarnMsg.Add(sb.ToString());
+            }
+
+            return error == 0;
+        }
+
+        private void CreateAndWriteFrontMarker(ISectionFile file, MissionFile missionFile)
+        {
+            IEnumerable<Point3d> positionsRed = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)
+                                .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Red));
+            IEnumerable<Point3d> positionsBlue = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)
+                                .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Blue));
+
+            
+            
+            // TODO: Create FrontMarker
+
+
+
+            WriteFrontMarkers(file, missionFile.FrontMarkers);
+        }
+
+        private void WriteFrontMarkers(ISectionFile file, IEnumerable<Point3d> frontMarkers)
+        {
+            int i = 0;
+            foreach (Point3d point in frontMarkers)
+            {
+                string key = string.Format(Config.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
+                string value = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
+                file.add(MissionFile.SectionFrontMarker, key, value);
+                i++;
+            }
+        }
+
+        public bool ConvertCampaign(string fileSystemPath, string name = null, string outputBasetFolder = null)
+        {
+            Debug.WriteLine("MissionFileConverter.ConvertCampaign({0}, {1}, {2})", fileSystemPath, name, outputBasetFolder != null ? outputBasetFolder : string.Empty);
+
+#if true
+            // string filePathSrcSystemPath = gameInterface.ToFileSystemPath(filePathSrc.Trim());
+            SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(fileSystemPath, false);
+#else
+            ISectionFile fileSorce = gameInterface.SectionFileLoad(filePathSrc.Trim());
+#endif
+            string dirSystemPath = Path.GetDirectoryName(fileSystemPath);
+
+            if (string.IsNullOrEmpty(name))
+            {
+                name = GetMissionName(dirSystemPath);
+            }
+
+            List<string> missionNameLists = new List<string>();
+            string key;
+            string value;
+            int lines = fileSorce.lines(Config.SectionBattles);
+            for (int i = 0; i < lines; i++)
+            {
+                if (fileSorce.Get(Config.SectionBattles, i, out key, out value))
+                {
+                    string missionName = string.IsNullOrEmpty(value) ? key : string.Format("{0} {1}", key, value);
+                    string[] missionNames = missionName.Split(missionName.IndexOfAny(Config.SplitDQ) != -1 ? Config.SplitDQ: Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+                    if (missionNames.Length > 0)
+                    {
+                        missionNameLists.Add(missionNames.First());
+                    }
+                }
+            }
+
+            return ConvertCampaign(dirSystemPath, missionNameLists, name, outputBasetFolder);
+        }
+
+        private bool ConvertCampaign(string dirSystemPath, IEnumerable<string> missionNames, string name, string outputBasetFolder = null)
+        {
+            Debug.WriteLine("MissionFileConverter.ConvertCampaign({0}, {1})", name, outputBasetFolder != null ? outputBasetFolder : string.Empty);
 
             // 1. Initialize
             if (string.IsNullOrEmpty(outputBasetFolder))
@@ -131,31 +269,125 @@ namespace IL2DCE.Util
 
             string outputBasetFolderrSystemPath = gameInterface.ToFileSystemPath(outputBasetFolder);
 
-            // 2. Read Mission File
-            MissionFile missionFile = new MissionFile(fileSorce, airGroupInfos, MissionFile.LoadLevel.AirGroup);
-
-            // 3. Create AircraftInfo.ini 
+            // 2. Create AircraftInfo.ini 
             ISectionFile fileAircraft = gameInterface.SectionFileCreate();
-            string filePathAircraft = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AircraftInfoFileName);
 
-            // 4. Create AirGroupInfo.ini 
+            // 3. Create AirGroupInfo.ini 
             ISectionFile fileAirGroup = gameInterface.SectionFileCreate();
-            string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
 
+            Dictionary<string, ISectionFile> missionPaths = new Dictionary<string, ISectionFile>();
+            IEnumerable<KeyValuePair<int, string>> mapPeriods = null;
+
+            string pathCampaign = string.Format("{0}{1}{2}", dirSystemPath, Path.DirectorySeparatorChar, Config.CampaignFileName);
+
+            int success = 0;
+            int error;
+            foreach (var missionName in missionNames)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(missionName);
+                error = 0;
+                try
+                {
+                    if (worker != null)
+                    {
+                        worker.ReportProgress(Index, string.Format("{0} - [{1}{2}]", string.Join("\n", SplitTargetSystemPathInfo(pathCampaign)), missionName, Config.MissionFileExt));
+                        if (worker.CancellationPending)
+                        {
+                            break;
+                        }
+                    }
+
+                    // 4. Read Mission File
+                    string path = string.Format("{0}{1}{2}{3}", dirSystemPath, Path.DirectorySeparatorChar, missionName, Config.MissionFileExt);
+
+                    SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(path, false);
+                    MissionFile missionFile = new MissionFile(fileSorce, airGroupInfos, MissionFile.LoadLevel.AirGroup);
+
+                    // 5. Create Mission initialTemplate File
+                    //      2. AircraftInfo.ini
+                    //      3. AirGroupInfo.ini 
+                    ISectionFile fileMissionInitial = gameInterface.SectionFileCreate();
+                    ConvertCore(fileSorce, missionFile, name, fileMissionInitial, fileAircraft, fileAirGroup, ref error, sb, outputBasetFolder);
+
+                    if (mapPeriods == null || !mapPeriods.Any())
+                    {
+                        mapPeriods = Map.GetDefaultMapPeriod(missionFile.Map);
+                    }
+
+                    if (error == 0)
+                    {
+                        string fileNameMissionInitial = string.Format("{0}{1}", missionName, Config.MissionFileExt);
+                        string filePathMissionInitial = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionInitial);
+                        missionPaths.Add(filePathMissionInitial, fileMissionInitial);
+                        success++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string message = string.Format("{0} - {1} {2} {3}", "MissionFileConverter.ConvertCampaign", ex.Message, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
+                    Core.WriteLog(message);
+                    sb.AppendLine(message);
+                    error++;
+                }
+                sb.AppendLine(error.ToString(Config.NumberFormat));
+                ErrorWarnMsg.Add(sb.ToString());
+                Index += 1;
+            }
+
+            if (success > 0)
+            {
+                // 7. Create CampaignInfo.ini 
+                ISectionFile fileCampaign = gameInterface.SectionFileCreate();
+                string filePathCampaign = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.CampaignInfoFileName);
+                CampaignInfo campaignInfo = new CampaignInfo(name, ECampaignMode.Progress, missionPaths.Select(x => Path.GetFileName(x.Key)), Config.MissionScriptFileName, null, null, mapPeriods);
+                campaignInfo.Write(fileCampaign);
+
+                // 8. Create Mission Folder (Mission Filename without Extension)
+                string missionFolderSystemPath = string.Format("{0}\\{1}", outputBasetFolderrSystemPath, fileName);
+                if (!Directory.Exists(missionFolderSystemPath))
+                {
+                    Directory.CreateDirectory(missionFolderSystemPath);
+                }
+
+                // 9. Save All Files
+                string filePathAircraft = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AircraftInfoFileName);
+                fileAircraft.save(filePathAircraft);
+                string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
+                fileAirGroup.save(filePathAirGroup);
+                foreach (var item in missionPaths)
+                {
+                    item.Value.save(item.Key);
+                    CovertedMissionCount += 1;
+                }
+
+                // 10. Create Mission Script File
+                string filePathScriptSystemPathSrc = string.Format("{0}\\{1}", gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault), Config.MissionScriptFileName);
+                string filePathScriptSystemPathDst = string.Format("{0}\\{1}\\{2}", outputBasetFolderrSystemPath, fileName, Config.MissionScriptFileName);
+                File.Copy(filePathScriptSystemPathSrc, filePathScriptSystemPathDst, true);
+                fileCampaign.save(filePathCampaign);
+            }
+
+            return success > 0;
+        }
+
+        private void ConvertCore(ISectionFile fileSorce, MissionFile missionFile, string name, ISectionFile fileMissionInitial, ISectionFile fileAircraft, ISectionFile fileAirGroup, ref int error, StringBuilder sb, string outputBasetFolder = null)
+        {
             IList<AirGroup> airGroups = missionFile.AirGroups;
-            //    3. & 4. 
-            if (airGroups.Count < 2)
+            // 2. AircraftInfo.ini
+            // 3. AirGroupInfo.ini 
+            var armys = airGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
+            if (armys.Count() < 1)
             {
+                error++;
+                sb.AppendLine(string.Format(ErrorFormatNotNnough, "Army"));
             }
 
-            var armys = airGroups.Select(x => x.ArmyIndex).Distinct().OrderBy(x => x);
-            if (armys.Count() < 2)
-            {
-                ErrorMsg.Add(string.Format(ErrorFormatNotNnough, "Army"));
-            }
             foreach (var army in armys)
             {
+                int enemy = Army.Enemy(army);
                 var airGroupsArmy = airGroups.Where(x => x.ArmyIndex == army).OrderBy(x => x.Id);
+                bool addMissionTransfer = armys.Count() == 1 || (missionFile.GroundGroups.Where(x => x.Army == enemy).Count() + missionFile.Stationaries.Where(x => x.Army == enemy).Count()) < (airGroupsArmy.Count() / 2);
                 foreach (var airGroup in airGroupsArmy)
                 {
                     if (globalAircraftInfoFile.exist(AircraftInfo.SectionMain, airGroup.Class))
@@ -166,36 +398,36 @@ namespace IL2DCE.Util
                             try
                             {
                                 AircraftInfo aircraftInfo = new AircraftInfo(globalAircraftInfoFile, airGroup.Class);
-                                aircraftInfo.Write(fileAircraft);           //  AircraftInfo.ini
+                                aircraftInfo.Write(fileAircraft, addMissionTransfer);           //  AircraftInfo.ini
                                 airGroup.AirGroupInfo.Write(fileAirGroup, airGoupKey, airGroup.Class);  //  AirGroupInfo.ini
                             }
                             catch (Exception ex)
                             {
-                                string message = string.Format("Error [{0}] AirGroup Info[{1}] MissionFile:[{2}]\n", ex.Message, airGoupKey, name);
+                                string message = string.Format("Error [{0}] AirGroup Info[{1}] MissionFile:[{2}]", ex.Message, airGoupKey, name);
                                 Core.WriteLog(message);
-                                ErrorMsg.Add(message);
+                                sb.AppendLine(message);
+                                error++;
                             }
                         }
                         else
                         {
-                            string message = string.Format("No AirGroup Info[{0}] MissionFile:[{1}]\n", airGoupKey, name);
-                            ErrorMsg.Add(message);
+                            string message = string.Format("No AirGroup Info[{0}] MissionFile:[{1}]", airGoupKey, name);
+                            sb.AppendLine(message);
                             Core.WriteLog(message);
+                            error++;
                         }
                     }
                     else
                     {
-                        string message = string.Format("No Aircraft Info[{0}] MissionFile:[{1}]\n", airGroup.Class, name);
-                        ErrorMsg.Add(message);
+                        string message = string.Format("No Aircraft Info[{0}] MissionFile:[{1}]", airGroup.Class, name);
+                        sb.AppendLine(message);
                         Core.WriteLog(message);
+                        error++;
                     }
                 }
             }
 
             // 5. Create Mission initialTemplate File
-            ISectionFile fileMissionInitial = gameInterface.SectionFileCreate();
-            string fileNameMissionInitial = string.Format("{0}_Initial{1}", fileName, Config.MissionFileExt);
-            string filePathMissionInitial = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, fileNameMissionInitial);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionParts);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionMain);
             int i = 0;
@@ -215,12 +447,16 @@ namespace IL2DCE.Util
                     }
                     else
                     {
-                        ErrorMsg.Add(string.Format(ErrorFormatDuplicateSquadron, squadronNameOld));
+                        sb.AppendLine(string.Format(WarnFormatDuplicateSquadron, squadronNameOld));
                     }
                     squadronNameOld = airGroup.SquadronName;
                 }
             }
-            SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionSplines);
+            IEnumerable<string> values = SilkySkyCloDFile.CopySectionGetValue(fileSorce, fileMissionInitial, MissionFile.SectionSplines, 0);
+            foreach (var item in values)
+            {
+                SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, item);
+            }
             IEnumerable<string> countries = Country.ToStrings().Select(x => string.Format(" {0} ", x));
             IEnumerable<string> keys = SilkySkyCloDFile.CopySectionGetKey(fileSorce, fileMissionInitial, MissionFile.SectionChiefs);
             foreach (var item in keys)
@@ -232,6 +468,7 @@ namespace IL2DCE.Util
             {
                 SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, item);
             }
+            SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionNpc);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionStationary);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionBuildings);
             SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionBuildingsLinks);
@@ -243,123 +480,36 @@ namespace IL2DCE.Util
             }
             if (SilkySkyCloDFile.CopySection(fileSorce, fileMissionInitial, MissionFile.SectionFrontMarker) == 0)
             {
-                ErrorMsg.Add(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionFrontMarker));
-            }
-
-            // 6. Create Mission Script File
-            string filePathScriptSystemPathSrc = string.Format("{0}\\{1}", gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault), Config.MissionScriptFileName);
-            string filePathScriptSystemPathDst = string.Format("{0}\\{1}\\{2}", outputBasetFolderrSystemPath, fileName, Config.MissionScriptFileName);
-
-            // 7. Create CampaignInfo.ini 
-            ISectionFile fileCampaign = gameInterface.SectionFileCreate();
-            string filePathCampaign = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.CampaignInfoFileName);
-            CampaignInfo campaignInfo = new CampaignInfo(name, new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, new System.DateTime(1940, 07, 10), new System.DateTime(1940, 8, 11));
-            campaignInfo.Write(fileCampaign);
-
-            if (ErrorMsg.Count == 0)
-            {
-                // 8. Create Mission Folder (Mission Filename without Extension)
-                string missionFolderSystemPath = string.Format("{0}\\{1}", outputBasetFolderrSystemPath, fileName);
-                if (!Directory.Exists(missionFolderSystemPath))
+                IEnumerable<Point3d> frontMarkers = Map.GetDefaultFrontMarkers(missionFile.Map);
+                if (frontMarkers == null)
                 {
-                    Directory.CreateDirectory(missionFolderSystemPath);
+                    sb.AppendLine(string.Format(ErrorFormatSectionOrKey, MissionFile.SectionFrontMarker));
+                    error++;
                 }
-
-                // 9. Save All Files
-                fileAircraft.save(filePathAircraft);
-                fileAirGroup.save(filePathAirGroup);
-                fileMissionInitial.save(filePathMissionInitial);
-                File.Copy(filePathScriptSystemPathSrc, filePathScriptSystemPathDst, true);
-                fileCampaign.save(filePathCampaign);
-
-                CovertedMission.Add(name);
+                else
+                {
+                    sb.AppendLine(string.Format(WarnNoAviableAddedGenericOne, MissionFile.SectionFrontMarker));
+                    fileMissionInitial.delete(MissionFile.SectionFrontMarker);
+                    WriteFrontMarkers(fileMissionInitial, frontMarkers);
+                }
             }
-
-            return ErrorMsg.Count == 0;
         }
 
-
-        private void CreateAndWriteFrontMarker(ISectionFile file, MissionFile missionFile)
+        private string GetMissionName(string path)
         {
-            IEnumerable<Point3d> positionsRed = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)
-                                .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Red));
-            IEnumerable<Point3d> positionsBlue = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)
-                                .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Blue));
-
-
-
-            // TODO: Create FrontMarker
-
-
-
-            int i = 0;
-            foreach (Point3d point in missionFile.FrontMarkers)
+            int idx = path.LastIndexOf("/");
+            if (idx == -1)
             {
-                string key = string.Format(Config.NumberFormat, "{0}{1}", MissionFile.SectionFrontMarker, i + 1);
-                string value = string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2}", point.x, point.y, (int)point.z);
-                file.add(MissionFile.SectionFrontMarker, key, value);
-                i++;
+                idx = path.LastIndexOf("\\");
             }
+            if (idx != -1)
+            {
+                path = path.Substring(idx + 1);
+            }
+            return path;
         }
 
-        public bool ConvertFolder(string srcFolder, string destFolder = null, bool useFolderName = false, string fileSearchPattern = DefaultFileSearchPettern)
-        {
-            int error = 0;
-
-            string folderSystemPath = gameInterface.ToFileSystemPath(srcFolder.Trim());
-            if (Directory.Exists(folderSystemPath))
-            {
-                string nameDir = folderSystemPath.Split(Path.DirectorySeparatorChar).LastOrDefault();
-                string[] filesPath = Directory.GetFiles(folderSystemPath, fileSearchPattern);
-                foreach (var filePath in filesPath)
-                {
-                    string nameFile = filePath.Split(Path.DirectorySeparatorChar).LastOrDefault();
-                    string path = string.Format("{0}/{1}", srcFolder, nameFile);
-                    nameFile = Path.GetFileNameWithoutExtension(nameFile);
-                    string name = useFolderName ? string.Format("{0}_{1}", nameDir, nameFile) : nameFile;
-                    if (!Convert(path, name, destFolder))
-                    {
-                        error++;
-                    }
-                }
-
-                string[] subDirs = Directory.GetDirectories(folderSystemPath);
-                foreach (var subDir in subDirs)
-                {
-                    nameDir = subDir.Split(Path.DirectorySeparatorChar).LastOrDefault();
-                    string dir = string.Format("{0}/{1}", srcFolder, nameDir);
-                    if (!ConvertFolder(dir, destFolder, useFolderName))
-                    {
-                        error++;
-                    }
-                }
-            }
-
-            return error == 0;
-        }
-
-        //public static bool Convert(string filePath, string outputBasetFolder)
-        //{
-
-        //    return true;
-        //}
-
-
-        public int CountFiles(IEnumerable<string> folders, string fileSearchPattern = DefaultFileSearchPettern)
-        {
-            int files = 0;
-            foreach (var item in folders)
-            {
-                string folderSystemPath = gameInterface.ToFileSystemPath(item.Trim());
-                if (Directory.Exists(folderSystemPath) && IsTargetFolderSystemPath(folderSystemPath))
-                {
-                    files += GetFiles(folderSystemPath, fileSearchPattern, SearchOption.AllDirectories).Count();
-                }
-            }
-            return files;
-        }
-
-        public IEnumerable<string> GetFiles(IEnumerable<string> folders, string fileSearchPattern = DefaultFileSearchPettern)
+        public IEnumerable<string> GetFiles(IEnumerable<string> folders, string fileSearchPattern = DefaultMissionFileSearchPettern)
         {
             List<string> files = new List<string>();
             foreach (var item in folders)
@@ -371,16 +521,6 @@ namespace IL2DCE.Util
                 }
             }
             return files;
-        }
-
-        public bool IsTargetFolder(string folder)
-        {
-            if (!string.IsNullOrEmpty(folder))
-            {
-                folder = folder.TrimStart();
-                return folder.StartsWith(Config.HomeFolder) || folder.StartsWith(Config.UserFolder);
-            }
-            return false;
         }
 
         public bool IsTargetFolderSystemPath(string folder)
@@ -423,5 +563,121 @@ namespace IL2DCE.Util
             }
              return files;
         }
+
+        public int CountCampaignMissionFiles(string fileSystemPath)
+        {
+            int files = 0;
+
+#if true
+            // string filePathSrcSystemPath = gameInterface.ToFileSystemPath(filePathSrc.Trim());
+            SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(fileSystemPath, false);
+#else
+            ISectionFile fileSorce = gameInterface.SectionFileLoad(filePathSrc.Trim());
+#endif
+            string dirSystemPath = Path.GetDirectoryName(fileSystemPath);
+            string key;
+            string value;
+            int lines = fileSorce.lines(Config.SectionBattles);
+            for (int i = 0; i < lines; i++)
+            {
+                if (fileSorce.Get(Config.SectionBattles, i, out key, out value))
+                {
+                    string missionName = string.IsNullOrEmpty(value) ? key : string.Format("{0} {1}", key, value);
+                    string[] missionNames = missionName.Split(missionName.IndexOfAny(Config.SplitDQ) != -1 ? Config.SplitDQ : Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+                    if (missionNames.Length > 0)
+                    {
+                        files++;
+                    }
+                }
+            }
+            return files;
+        }
+
+        #region Reserve
+
+        private bool IsTargetFolder(string folder)
+        {
+            if (!string.IsNullOrEmpty(folder))
+            {
+                folder = folder.TrimStart();
+                return folder.StartsWith(Config.HomeFolder) || folder.StartsWith(Config.UserFolder);
+            }
+            return false;
+        }
+
+        private bool Convert(string filePathSrc, string name, string outputBasetFolder = null)
+        {
+#if false
+                    // string filePathSrcSystemPath = gameInterface.ToFileSystemPath(filePathSrc.Trim());
+                    SilkySkyCloDFile fileSorce = SilkySkyCloDFile.Load(filePathSrc, false);
+#else
+            ISectionFile fileSorce = gameInterface.SectionFileLoad(filePathSrc.Trim());
+#endif
+            if (string.IsNullOrEmpty(name))
+            {
+                int idx = filePathSrc.LastIndexOf("/");
+                if (idx == -1)
+                {
+                    idx = filePathSrc.LastIndexOf("\\");
+                }
+                if (idx != -1)
+                {
+                    name = filePathSrc.Substring(idx + 1);
+                }
+            }
+            return Convert(fileSorce, name, outputBasetFolder);
+        }
+
+        private bool ConvertFolder(string srcFolder, string destFolder = null, bool useFolderName = false, string fileSearchPattern = DefaultMissionFileSearchPettern)
+        {
+            int error = 0;
+
+            string folderSystemPath = gameInterface.ToFileSystemPath(srcFolder.Trim());
+            if (Directory.Exists(folderSystemPath))
+            {
+                string nameDir = folderSystemPath.Split(Path.DirectorySeparatorChar).LastOrDefault();
+                string[] filesPath = Directory.GetFiles(folderSystemPath, fileSearchPattern);
+                foreach (var filePath in filesPath)
+                {
+                    string nameFile = filePath.Split(Path.DirectorySeparatorChar).LastOrDefault();
+                    string path = string.Format("{0}/{1}", srcFolder, nameFile);
+                    nameFile = Path.GetFileNameWithoutExtension(nameFile);
+                    string name = useFolderName ? string.Format("{0}_{1}", nameDir, nameFile) : nameFile;
+                    if (!Convert(path, name, destFolder))
+                    {
+                        error++;
+                    }
+                }
+
+                string[] subDirs = Directory.GetDirectories(folderSystemPath);
+                foreach (var subDir in subDirs)
+                {
+                    nameDir = subDir.Split(Path.DirectorySeparatorChar).LastOrDefault();
+                    string dir = string.Format("{0}/{1}", srcFolder, nameDir);
+                    if (!ConvertFolder(dir, destFolder, useFolderName))
+                    {
+                        error++;
+                    }
+                }
+            }
+
+            return error == 0;
+        }
+
+        public int CountFiles(IEnumerable<string> folders, string fileSearchPattern = DefaultMissionFileSearchPettern)
+        {
+            int files = 0;
+            foreach (var item in folders)
+            {
+                string folderSystemPath = gameInterface.ToFileSystemPath(item.Trim());
+                if (Directory.Exists(folderSystemPath) && IsTargetFolderSystemPath(folderSystemPath))
+                {
+                    files += GetFiles(folderSystemPath, fileSearchPattern, SearchOption.AllDirectories).Count();
+                }
+            }
+            return files;
+        }
+
+        #endregion
     }
 }

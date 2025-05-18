@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.1)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.2)
 =============================================================================================================================
-                                                                                                                   05/10/2025
+                                                                                                                   05/18/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -31,6 +31,7 @@ Main functions
  - Rank
  - PilotName
  - Campaign (mission file for IL2DCE)
+ - Campaign Mode (Repeat/Progress/Random/...)
  - Air Group
  - Campaign Period
  - Filter display function for existing career list (Filter Army/Air Force/Campaign/StrictMode/Playabe/Aircraft & Sort Logic) 
@@ -38,6 +39,7 @@ Main functions
  - Spawn Parked
  - Initial AirGroup Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file)
  - Progress (AnyTime/Daily/AnyDay/AnyDayAnyTime)
+ - Battle start time range
 
 2. The following items can be selected and set in Dynamic Quick Mission.
  - Campaign (mission file for IL2DCE)
@@ -52,6 +54,7 @@ Main functions
  - Spawn type [idle/Parked/AirStart(Altitude)]
  - Spawn Speed
  - Fuel % value (5% increments)
+ - Date
  - Time
  - Weather
  - Cloud Altitude
@@ -82,7 +85,7 @@ Items that can be selected and set commonly in 1. 2.
  - Convert Generic type
  - Save/Load general settings
 
-Sample mission (7 mission files)
+Sample mission (8 mission files)
  - Adlerangriff - Royal Air Force/Lufutwaffe
  - Cross v Round.Tobruk - [*] All Air Forces
  - Isles of Doom.Tobruk - [*] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
@@ -90,6 +93,7 @@ Sample mission (7 mission files)
  - Steppe.Tobruk - [*] All Air Forces
  - Supply Wars - Royal Air Force/Lufutwaffe/Regia Aeronautica
  - Supply Wars.Tobruk - [*] Royal Air Force/Armee de l'air/United States Army Air Forces/Lufutwaffe/Regia Aeronautica
+ - Transfer - Royal Air Force/Lufutwaffe (Sample of Multiple mission file & Map Change)
 [*]Requires Tobruk DLC
 
 I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
@@ -114,6 +118,9 @@ History
 
   Ver      Date       Comment
 
+  0.7.2    05/18/2025 Added: Campaign Progress Mode(and Random/Repeat). Convert & Improt CloD default type Campaign. Maps change depending on the battle date (the English_Channel_1940/Autumn/Winter map sean changes in the attached sample and convert/import mission). select battle start time range in Dynamic campaign page. select date in Dynamic Quick Mission page. 
+                      Changed: Mission Import & Conversion Logic(Weapons info is null case/Duplicate Squadron)
+                      Fixed: Some minor issues.
   0.7.1    05/10/2025 Added: Bulgarian Air Force and Air Force of the Independent State of Croatia in Select Air Force. User interface (UI) for specifying folders and files for the mission conversion and import function.
                       Changed: Some of the names of Air Force and Air Group that have been expanded and added independently.
   0.7.0    05/04/2025 Added: Dynamic generation of operations during mission battles, and the option to spawn groups and stationary units.

@@ -23,7 +23,6 @@ namespace IL2DCE.Util
 {
     public class CloDAPIUtil
     {
-
         public static string GetActorName(AiDamageInitiator initiator)
         {
             try
@@ -120,6 +119,38 @@ namespace IL2DCE.Util
                 Debug.WriteLine(ex.Message);
             }
             return null;
+        }
+
+        public static AiWayPoint[] GetWays(AiGroup group)
+        {
+            try
+            {
+                if (group != null)
+                {
+                    return group.GetWay();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public static int GetCurrentWayPoint(AiGroup group)
+        {
+            try
+            {
+                if (group != null)
+                {
+                    return group.GetCurrentWayPoint();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return -1;
         }
 
         public static string ActorInfo(AiActor actor)

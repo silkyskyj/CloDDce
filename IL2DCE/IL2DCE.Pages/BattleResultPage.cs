@@ -25,6 +25,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
+using IL2DCE.Util;
 using maddox.game;
 using maddox.game.play;
 using static IL2DCE.MissionObjectModel.Skill;
@@ -157,7 +158,7 @@ namespace IL2DCE.Pages
                     PlayerStat.UpdateSkills(career.PlayerAirGroupSkill, (Game as IGameSingle).BattleResult, mission.MissionStatus);
                     career.Status = (int)(PlayerStat.IsPlayerAlive() ? EPlayerStatus.Alive : EPlayerStatus.Dead);
                     ECampaignStatus status = Game.Core.AdvanceCampaign(Game);
-                    if (status != ECampaignStatus.DateEnd && status != ECampaignStatus.Dead)
+                    if (status != ECampaignStatus.DateEnd && status != ECampaignStatus.Dead && status != ECampaignStatus.ProgressEnd)
                     {
                         Game.gameInterface.PageChange(new BattleIntroPage(), null);
                     }
@@ -190,6 +191,8 @@ namespace IL2DCE.Pages
             int rank = career.RankIndex;
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Campaign: {0}", career.CampaignInfo.Name);
+            sb.AppendLine();
+            sb.AppendFormat("Mission: {0}", FileUtil.GetGameFileNameWithoutExtension(career.MissionTemplateFileName));
             sb.AppendLine();
             sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, career.Date.Value.Hour == 0 ? "Date: {0:M/d/yyyy} - {1}" : "Date: {0:M/d/yyyy h tt} - {1}", career.Date.Value, game.BattleResult.ToString());
             sb.AppendLine();
@@ -225,7 +228,7 @@ namespace IL2DCE.Pages
                 sb.AppendLine();
                 sb.AppendFormat("Flying Time: {0}", ToStringTimeSpan(st.tTotalTypes));
                 sb.AppendLine();
-                sb.AppendFormat("Status: {0}", player.PersonPrimary() != null && player.PersonPrimary().IsAlive() ? EPlayerStatus.Alive.ToDescription() : EPlayerStatus.Dead.ToDescription());
+                sb.AppendFormat("Status: {0}", PlayerStat.IsPlayerAlive() ? EPlayerStatus.Alive.ToDescription() : EPlayerStatus.Dead.ToDescription());
                 sb.AppendLine();
                 sb.AppendLine();
                 sb.Append(PlayerStats.ToStringSummary(st, false, format));

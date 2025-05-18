@@ -52,13 +52,13 @@ namespace IL2DCE.Pages.Controls
         public GameIterface GameInterface
         {
             get;
-            set;
+            private set;
         }
 
         public Config Config
         {
             get;
-            set;
+            private set;
         }
 
         public int SelectedAdditionalAirOperations
@@ -520,6 +520,34 @@ namespace IL2DCE.Pages.Controls
             }
         }
 
+        public double SelectedBattleTimeBegin
+        {
+            get
+            {
+                ComboBoxItem selected = comboBoxSelectBattleTimeBegin.SelectedItem as ComboBoxItem;
+                if (selected != null && selected.Tag != null)
+                {
+                    return (double)selected.Tag;
+                }
+
+                return -1;
+            }
+        }
+
+        public double SelectedBattleTimeEnd
+        {
+            get
+            {
+                ComboBoxItem selected = comboBoxSelectBattleTimeEnd.SelectedItem as ComboBoxItem;
+                if (selected != null && selected.Tag != null)
+                {
+                    return (double)selected.Tag;
+                }
+
+                return -1;
+            }
+        }
+
         #endregion
 
         public GeneralSettingsGroupBox()
@@ -546,6 +574,8 @@ namespace IL2DCE.Pages.Controls
             comboBoxSelectShipSkill.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelect_SelectionChanged);
             comboBoxSelectShipSleep.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelect_SelectionChanged);
             comboBoxSelectShipSlowfire.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelect_SelectionChanged);
+            comboBoxSelectBattleTimeBegin.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelect_SelectionChanged);
+            comboBoxSelectBattleTimeEnd.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelect_SelectionChanged);
             UpdateSelectAdditionalAirOperationsComboBox();
             UpdateSelectAdditionalGroundOperationsComboBox();
             UpdateSelectUnitNumsArmorComboBox();
@@ -559,9 +589,21 @@ namespace IL2DCE.Pages.Controls
             UpdateSelectShipSkillComboBox();
             UpdateSelectShipSleepComboBox();
             UpdateSelectShipSlowfireComboBox();
+            UpdatSelectBattleTimeBeginComboBox();
+            UpdatSelectBattleTimeEndComboBox();
 
             labelSelectArtilleryZOffset.Visibility = Visibility.Hidden;
             comboBoxSelectArtilleryZOffset.Visibility = Visibility.Hidden;
+        }
+
+        public void SetRelationInfo(GameIterface gameInterface, Config config)
+        {
+            GameInterface = gameInterface;
+            Config = config;
+
+            UpdateSkillComboBoxSkillValueInfo(comboBoxSelectAISkill, SelecteAISkill);
+            UpdatSelectBattleTimeBeginComboBox();
+            UpdatSelectBattleTimeEndComboBox();
         }
 
         #region Event Handler
@@ -1033,6 +1075,44 @@ namespace IL2DCE.Pages.Controls
             toolTip.Content = str;
         }
 
+        private void UpdatSelectBattleTimeBeginComboBox()
+        {
+            ComboBox comboBox = comboBoxSelectBattleTimeBegin;
+
+            if (comboBox.Items.Count == 0)
+            {
+                for (double d = MissionTime.Begin; d <= MissionTime.End; d += 0.5)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = d, Content = MissionTime.ToString(d) });
+                }
+            }
+            comboBox.Text = MissionTime.ToString(Config != null ? Config.RandomTimeBegin: MissionTime.Begin); 
+        }
+
+        private void UpdatSelectBattleTimeEndComboBox()
+        {
+            ComboBox comboBox = comboBoxSelectBattleTimeEnd;
+
+            if (comboBox.Items.Count == 0)
+            {
+                for (double d = MissionTime.Begin; d <= MissionTime.End; d += 0.5)
+                {
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = d, Content = MissionTime.ToString(d) });
+                }
+            }
+            comboBox.Text = MissionTime.ToString(Config != null ? Config.RandomTimeEnd: MissionTime.End);
+        }
+
+        public void EnableBattleTimeComboBox(bool enable)
+        {
+            labelSelectBattleTime.Visibility = enable ? Visibility.Visible : Visibility.Hidden;
+            comboBoxSelectBattleTimeBegin.IsEnabled = enable;
+            comboBoxSelectBattleTimeBegin.Visibility = enable ? Visibility.Visible : Visibility.Hidden;
+            labelSelectPeriodRangeBattleTime.Visibility = enable ? Visibility.Visible : Visibility.Hidden;
+            comboBoxSelectBattleTimeEnd.IsEnabled = enable;
+            comboBoxSelectBattleTimeEnd.Visibility = enable ? Visibility.Visible : Visibility.Hidden;
+        }
+
         private void Write(ISectionFile file)
         {
             file.add(SectionGeneralSettings, comboBoxSelectAdditionalAirOperations.Name, comboBoxSelectAdditionalAirOperations.Text);
@@ -1072,6 +1152,9 @@ namespace IL2DCE.Pages.Controls
             file.add(SectionGeneralSettings, checkBoxAutoReArm.Name, checkBoxAutoReArm.IsChecked != null && checkBoxAutoReArm.IsChecked.Value ? "1" : "0");
             file.add(SectionGeneralSettings, checkBoxAutoReFuel.Name, checkBoxAutoReFuel.IsChecked != null && checkBoxAutoReFuel.IsChecked.Value ? "1" : "0");
             file.add(SectionGeneralSettings, checkBoxTrackRecording.Name, checkBoxTrackRecording.IsChecked != null && checkBoxTrackRecording.IsChecked.Value ? "1" : "0");
+
+            file.add(SectionGeneralSettings, comboBoxSelectBattleTimeBegin.Name, comboBoxSelectBattleTimeBegin.Text);
+            file.add(SectionGeneralSettings, comboBoxSelectBattleTimeEnd.Name, comboBoxSelectBattleTimeEnd.Text);
         }
 
         private void Read(ISectionFile file)
@@ -1128,6 +1211,9 @@ namespace IL2DCE.Pages.Controls
             checkBoxAutoReArm.IsChecked = file.get(SectionGeneralSettings, checkBoxAutoReArm.Name, false);
             checkBoxAutoReFuel.IsChecked = file.get(SectionGeneralSettings, checkBoxAutoReFuel.Name, false);
             checkBoxTrackRecording.IsChecked = file.get(SectionGeneralSettings, checkBoxTrackRecording.Name, false);
+
+            comboBoxSelectBattleTimeBegin.Text = file.get(SectionGeneralSettings, comboBoxSelectBattleTimeBegin.Name, MissionTime.ToString(MissionTime.Begin));
+            comboBoxSelectBattleTimeEnd.Text = file.get(SectionGeneralSettings, comboBoxSelectBattleTimeEnd.Name, MissionTime.ToString(MissionTime.End));
         }
 
         public static void SelectReadValue(ISectionFile file, string section, ComboBox comboBox)

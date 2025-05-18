@@ -22,6 +22,7 @@ using System.Windows.Media;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
+using maddox.game;
 using maddox.GP;
 using static IL2DCE.MissionObjectModel.Spawn;
 
@@ -121,11 +122,39 @@ namespace IL2DCE.Pages
             }
         }
 
-        protected override CampaignInfo SelectedCampaign
+        protected CampaignInfo SelectedCampaign
         {
             get
             {
                 return FrameworkElement.comboBoxSelectCampaign.SelectedItem as CampaignInfo;
+            }
+        }
+
+        protected override string SelectedCampaignMission
+        {
+            get
+            {
+                CampaignInfo campaignInfo = SelectedCampaign;
+                if (campaignInfo != null)
+                {
+                    return campaignInfo.InitialMissionTemplateFile;
+                }
+
+                return string.Empty;
+            }
+        }
+
+        protected ECampaignMode SelectedCampaignMode
+        {
+            get
+            {
+                ComboBoxItem selected = FrameworkElement.comboBoxSelectCampaignMode.SelectedItem as ComboBoxItem;
+                if (selected != null)
+                {
+                    return (ECampaignMode)selected.Tag;
+                }
+
+                return ECampaignMode.Default;
             }
         }
 
@@ -259,8 +288,10 @@ namespace IL2DCE.Pages
             FrameworkElement.checkBoxStrictMode.Unchecked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
 
             FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(ImportMission);
-            FrameworkElement.buttonImportMissionFolder.Click += new RoutedEventHandler(ImportMissionFolder);
             FrameworkElement.buttonImportMissionFile.Click += new RoutedEventHandler(ImportMissionFile);
+            FrameworkElement.buttonImportMissionFolder.Click += new RoutedEventHandler(ImportMissionFolder);
+            FrameworkElement.buttonImportCampaignFile.Click += new RoutedEventHandler(ImportCampaignFile);
+            FrameworkElement.buttonImportCampaignFolder.Click += new RoutedEventHandler(ImportCampaignFolder);
             FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(MissionLoad);
         }
 
@@ -270,8 +301,7 @@ namespace IL2DCE.Pages
 
             // FrameworkElement.comboBoxSelectArmy.Items.Clear();
 
-            FrameworkElement.GeneralSettingsGroupBox.GameInterface = play.gameInterface;
-            FrameworkElement.GeneralSettingsGroupBox.Config = Game.Core.Config;
+            FrameworkElement.GeneralSettingsGroupBox.SetRelationInfo(play.gameInterface, Game.Core.Config);
 
             PageArgs pageArgs = arg as PageArgs;
 
@@ -332,7 +362,9 @@ namespace IL2DCE.Pages
                 CampaignInfo campaignInfo = SelectedCampaign;
                 if (campaignInfo != null)
                 {
-                    currentMissionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+                    string missionTemplateFileName = campaignInfo.InitialMissionTemplateFile;
+                    ISectionFile missionTemplateSectionFile = Game.gpLoadSectionFile(missionTemplateFileName);
+                    currentMissionFile = new MissionFile(missionTemplateSectionFile, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
                 }
                 else
                 {
@@ -345,6 +377,8 @@ namespace IL2DCE.Pages
             }
             missionLoaded = false;
 
+            UpdateMapNameInfo();
+            UpdateCampaignModeComboBoxInfo();
             UpdateDataPicker();
             UpdateAirGroupComboBoxInfo();
             UpdateButtonStatus();
@@ -536,10 +570,12 @@ namespace IL2DCE.Pages
                 career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
                 career.BattleType = EBattleType.Campaign;
                 career.CampaignInfo = campaign;
+                career.CampaignMode = SelectedCampaignMode;
+                career.MissionIndex = 0;
                 career.AirGroup = airGroup.ToString();
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 career.PlayerAirGroup = airGroup;
-                career.Aircraft = campaign.GetAircraftInfo(airGroup.Class).DisplayName;
+                career.Aircraft = AircraftInfo.CreateDisplayName(airGroup.Class);
                 career.Spawn = (int)(FrameworkElement.checkBoxSpawnParked.IsEnabled ? SelectedSpawnParked ? ESpawn.Parked : ESpawn.Idle: ESpawn.Default);
                 career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? SelectedSkill != Skill.Default ? new Skill[] { SelectedSkill }: career.UpdatePlayerAirGroupSkill() : null;
                 campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
@@ -576,6 +612,8 @@ namespace IL2DCE.Pages
                 career.ReArmTime = generalSettings.SelectedAutoReArm ? config.ProcessTimeReArm : -1;
                 career.ReFuelTime = generalSettings.SelectedAutoReFuel ? config.ProcessTimeReFuel : -1;
                 career.TrackRecording = generalSettings.SelectedTrackRecoding;
+                career.RandomTimeBegin = generalSettings.SelectedBattleTimeBegin;
+                career.RandomTimeEnd = generalSettings.SelectedBattleTimeEnd;
 
                 career.StrictMode = SelectedStrictMode;
 
@@ -609,9 +647,9 @@ namespace IL2DCE.Pages
 
         #region Import and Convert Mission File
 
-        protected override void ImportMissionProgressWindow(ProgressWindowModel model)
+        protected override void ImportMissionProgressWindow(ProgressWindowModel model, bool isCampaign)
         {
-            base.ImportMissionProgressWindow(model);
+            base.ImportMissionProgressWindow(model, isCampaign);
             Game.gameInterface.PageChange(new CareerIntroPage(), null);
         }
 
@@ -724,7 +762,9 @@ namespace IL2DCE.Pages
 
             foreach (CampaignInfo campaignInfo in Game.Core.CampaignInfos)
             {
-                MissionFile missionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+                string missionTemplateFileName = campaignInfo.InitialMissionTemplateFile;
+                ISectionFile missionTemplateSectionFile = Game.gpLoadSectionFile(missionTemplateFileName);
+                MissionFile missionFile = new MissionFile(missionTemplateSectionFile, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
                 campaignInfo.Data = missionFile.AirGroups.Select(x => new AircraftSummary()
                 {
                     Army = (char)x.ArmyIndex,
@@ -758,6 +798,58 @@ namespace IL2DCE.Pages
             return aircraftSummary != null && aircraftSummary.Any(x => x.Army == SelectedArmyIndex && x.AirForce == SelectedAirForceIndex && x.Flyable == 1);
         }
 
+        private void UpdateMapNameInfo()
+        {
+            string mapName;
+            if (currentMissionFile != null && !string.IsNullOrEmpty(currentMissionFile.Map))
+            {
+                int idx = currentMissionFile.Map.IndexOf("$");
+                mapName = currentMissionFile.Map.Substring(idx != -1 ? idx + 1 : 0);
+            }
+            else
+            {
+                mapName = string.Empty;
+            }
+            FrameworkElement.labelMapName.Content = string.Format(MapFormat, mapName);
+        }
+
+        private void UpdateCampaignModeComboBoxInfo()
+        {
+            ComboBox comboBox = FrameworkElement.comboBoxSelectCampaignMode;
+            comboBox.Items.Clear();
+
+            CampaignInfo campaignInfo = SelectedCampaign;
+            if (campaignInfo == null)
+            {
+                comboBox.SelectedIndex = -1;
+            }
+            else
+            {
+                if (campaignInfo.InitialMissionTemplateFileCount == 1)
+                {
+                    comboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Tag = ECampaignMode.Default,
+                        Content = ECampaignMode.Default.ToDescription(),
+                    });
+                }
+                if (campaignInfo.InitialMissionTemplateFileCount > 1)
+                {
+                    for (ECampaignMode mode = ECampaignMode.Default + 1; mode < ECampaignMode.Count; mode++)
+                    {
+                        comboBox.Items.Add(
+                            new ComboBoxItem()
+                            {
+                                Tag = mode,
+                                Content = mode.ToDescription(),
+                            });
+                    }
+                }
+
+                comboBox.Text = campaignInfo.CampaignMode.ToDescription();
+            }
+        }
+
         private void UpdateAirGroupComboBoxInfo()
         {
             ComboBox comboBox = FrameworkElement.comboBoxSelectAirGroup;
@@ -781,7 +873,6 @@ namespace IL2DCE.Pages
                                 Tag = airGroup,
                                 Content = missionLoaded ? CreateAirGroupContent(airGroup, campaignInfo) : CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo)
                             });
-
                         }
                     }
                 }
@@ -895,6 +986,7 @@ namespace IL2DCE.Pages
             {
                 FrameworkElement.datePickerStart.SelectedDate = campaignInfo.StartDate;
                 FrameworkElement.datePickerEnd.SelectedDate = campaignInfo.EndDate;
+                FrameworkElement.labelDefaultSelectDate.Content = string.Format(Config.DateTimeFormat, MissionDefaultDateFormat, campaignInfo.StartDate, campaignInfo.EndDate);
             }
         }
 
@@ -947,6 +1039,8 @@ namespace IL2DCE.Pages
             int timeBegin = generalSettings.SelectedRandomTimeBegin;
             int timeEnd = generalSettings.SelectedRandomTimeEnd;
             bool timeEnable = generalSettings.SelectedSpawnRandomTimeEnemy || generalSettings.SelectedSpawnRandomTimeFriendly;
+            double timeBattleBegin = generalSettings.SelectedBattleTimeBegin;
+            double timeBattleEnd = generalSettings.SelectedBattleTimeEnd;
             FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 && 
                                                 !IsErrorPilotName/*!Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0)*/ &&
                                                 SelectedCampaign != null && SelectedAirGroup != null &&
@@ -954,7 +1048,8 @@ namespace IL2DCE.Pages
                                                 datePickerStart.SelectedDate.Value <= datePickerEnd.SelectedDate.Value &&
                                                 (datePickerEnd.SelectedDate.Value - datePickerStart.SelectedDate.Value).TotalDays <= CampaignInfo.MaxCampaignPeriod &&
                                                 addGroundOpe >= Config.MinAdditionalGroundOperations && addGroundOpe <= Config.MaxAdditionalGroundOperations &&
-                                                (!timeEnable || timeEnable && timeBegin >= SpawnTime.MinimumBeginSec && timeEnd <= SpawnTime.MaximumEndSec && timeBegin <= timeEnd);
+                                                (!timeEnable || timeEnable && timeBegin >= SpawnTime.MinimumBeginSec && timeEnd <= SpawnTime.MaximumEndSec && timeBegin <= timeEnd) &&
+                                                timeBattleBegin != -1 && timeBattleEnd != -1 && timeBattleBegin <= timeBattleEnd;
         }
     }
 }

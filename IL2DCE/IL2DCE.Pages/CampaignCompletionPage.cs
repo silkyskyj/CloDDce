@@ -17,6 +17,7 @@
 using System.Linq;
 using System.Windows;
 using IL2DCE.MissionObjectModel;
+using maddox.game;
 using maddox.game.play;
 
 namespace IL2DCE.Pages
@@ -55,7 +56,7 @@ namespace IL2DCE.Pages
             Career career = Game.Core.CurrentCareer;
             CampaignInfo campaignInfo = career.CampaignInfo;
 
-            FrameworkElement.textBoxInfo.Text = string.Format("[Campaign]\n{0}\n[Current Status]\n{1}[Skill]\n{2}", 
+            FrameworkElement.textBoxInfo.Text = string.Format("[Campaign]\n{0}\n[Current Status]\n{1}\n\n[Skill]\n{2}", 
                 campaignInfo.ToSummaryString(), career.ToStringCurrestStatus(), Skill.ToDetailDisplayString(career.PlayerAirGroupSkill, ' ', 1));
             FrameworkElement.textBoxStatus.Text = string.Format("[Total Result]\n{0}", career.ToStringTotalResult());
             UpdateAircraftImage(career);
@@ -76,7 +77,8 @@ namespace IL2DCE.Pages
         private void UpdateAircraftImage(Career career)
         {
             CampaignInfo campaignInfo = career.CampaignInfo;
-            MissionFile missionFile = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+            ISectionFile missionTemplateSectionFile = Game.gpLoadSectionFile(career.MissionFileName);
+            MissionFile missionFile = new MissionFile(missionTemplateSectionFile, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
             AirGroup airGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == career.ArmyIndex && string.Compare(x.ToString(), career.AirGroup) == 0).FirstOrDefault();
             FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
         }

@@ -35,62 +35,62 @@ namespace IL2DCE
         {
             get
             {
-                return _config;
+                return config;
             }
         }
-        private Config _config;
+        private Config config;
 
         public Career CurrentCareer
         {
             get
             {
-                return _currentCareer;
+                return currentCareer;
             }
             set
             {
-                if (_currentCareer != value)
+                if (currentCareer != value)
                 {
-                    _currentCareer = value;
+                    currentCareer = value;
                 }
             }
         }
-        private Career _currentCareer;
+        private Career currentCareer;
 
         public IList<Career> AvailableCareers
         {
             get
             {
-                return _availableCareers;
+                return availableCareers;
             }
         }
-        private IList<Career> _availableCareers = new List<Career>();
+        private IList<Career> availableCareers = new List<Career>();
 
         public IList<CampaignInfo> CampaignInfos
         {
             get
             {
-                return _campaigns;
+                return campaigns;
             }
         }
-        private IList<CampaignInfo> _campaigns = new List<CampaignInfo>();
+        private IList<CampaignInfo> campaigns = new List<CampaignInfo>();
 
         public IGamePlay GamePlay
         {
             get
             {
-                return _gamePlay;
+                return gamePlay;
             }
         }
-        private IGamePlay _gamePlay;
+        private IGamePlay gamePlay;
 
         public IRandom Random
         {
             get
             {
-                return _random;
+                return random;
             }
         }
-        private IRandom _random;
+        private IRandom random;
 
         public AMission Mission
         {
@@ -103,9 +103,9 @@ namespace IL2DCE
         private static StreamWriter writerLog;
         private static object writerLogObject = new object();
 
-        private string _debugFolderSystemPath;
-        private string _careersFolderSystemPath;
-        private string _campaignsFolderSystemPath;
+        private string debugFolderSystemPath;
+        private string careersFolderSystemPath;
+        private string campaignsFolderSystemPath;
 
         #region Constructor
 
@@ -116,8 +116,8 @@ namespace IL2DCE
 
         public Core(IGame game, IRandom random)
         {
-            _gamePlay = game;
-            _random = random;
+            gamePlay = game;
+            this.random = random;
 
             Initialize();
 
@@ -133,7 +133,7 @@ namespace IL2DCE
 
             // Config
             ISectionFile confFile = gameInterface.SectionFileLoad(Config.ConfigFilePath);
-            _config = new Config(confFile);
+            config = new Config(confFile);
 
             // CampaignInfo
             ReadCampaignInfo();
@@ -141,7 +141,7 @@ namespace IL2DCE
             // Career
             ReadCareerInfo();
 
-            _debugFolderSystemPath = gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DebugFolderName));
+            debugFolderSystemPath = gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DebugFolderName));
         }
 
         #endregion
@@ -166,9 +166,9 @@ namespace IL2DCE
             CampaignInfos.Clear();
             GameIterface gameInterface = (GamePlay as IGame).gameInterface;
             string campaignsFolderPath = Config.CampaignsFolderDefault;
-            this._campaignsFolderSystemPath = gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault);
-            DirectoryInfo campaignsFolderSystemPath = new DirectoryInfo(_campaignsFolderSystemPath);
-            if (campaignsFolderSystemPath.Exists && campaignsFolderSystemPath.GetDirectories().Length > 0)
+            this.campaignsFolderSystemPath = gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault);
+            DirectoryInfo directoryInfo = new DirectoryInfo(this.campaignsFolderSystemPath);
+            if (directoryInfo.Exists && directoryInfo.GetDirectories().Length > 0)
             {
                 ISectionFile globalAircraftInfoFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}", campaignsFolderPath, Config.AircraftInfoFileName));
 #if DEBUG && false
@@ -176,7 +176,7 @@ namespace IL2DCE
 #endif
                 ISectionFile globalAirGroupInfoFile = gameInterface.SectionFileLoad(string.Format("{0}/{1}", campaignsFolderPath, Config.AirGroupInfoFileName));
                 AirGroupInfos.Default = AirGroupInfos.Create(globalAirGroupInfoFile);
-                foreach (DirectoryInfo campaignFolderSystemPath in campaignsFolderSystemPath.GetDirectories())
+                foreach (DirectoryInfo campaignFolderSystemPath in directoryInfo.GetDirectories())
                 {
                     FileInfo[] fileInfo = campaignFolderSystemPath.GetFiles(Config.CampaignInfoFileName);
                     if (fileInfo.Length == 1)
@@ -209,8 +209,8 @@ namespace IL2DCE
 
             GameIterface gameInterface = (GamePlay as IGame).gameInterface;
 
-            _careersFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
-            DirectoryInfo careersFolder = new DirectoryInfo(_careersFolderSystemPath);
+            careersFolderSystemPath = gameInterface.ToFileSystemPath(Config.UserMissionFolder);
+            DirectoryInfo careersFolder = new DirectoryInfo(careersFolderSystemPath);
             if (careersFolder.Exists)
             {
                 foreach (DirectoryInfo careerFolder in careersFolder.GetDirectories())
@@ -222,7 +222,7 @@ namespace IL2DCE
                         ISectionFile careerFile = gameInterface.SectionFileLoad(path);
                         try
                         {
-                            Career career = new Career(careerFolder.Name, CampaignInfos, careerFile, Config);
+                            Career career = new Career(careerFolder.Name, CampaignInfos, careerFile, Config, fileInfo.First().LastWriteTime);
                             AvailableCareers.Add(career);
                         }
                         catch (Exception ex)
@@ -262,6 +262,7 @@ namespace IL2DCE
                 // It is the first mission.
                 career.InitializeDateTime(Config, Random);
                 career.InitializeExperience();
+                career.InitializeProgressMission();
             }
             else
             {
@@ -275,6 +276,11 @@ namespace IL2DCE
                 {
                     result = ECampaignStatus.Dead;
                 }
+                else if (!career.IsProgressNextMission())
+                {
+                    career.ProgressEndMission();
+                    result = ECampaignStatus.ProgressEnd;
+                }
                 else if (career.Date >= campaignInfo.EndDate)
                 {
                     result = ECampaignStatus.DateEnd;
@@ -286,7 +292,7 @@ namespace IL2DCE
                 }
             }
 
-            string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
+            string missionFolderSystemPath = string.Format("{0}\\{1}", careersFolderSystemPath, career.PilotName);
             if (!Directory.Exists(missionFolderSystemPath))
             {
                 Directory.CreateDirectory(missionFolderSystemPath);
@@ -301,12 +307,8 @@ namespace IL2DCE
                 gameInterface.BattleStop();
             }
 
-            if (result != ECampaignStatus.DateEnd && result != ECampaignStatus.Dead)
+            if (result != ECampaignStatus.DateEnd && result != ECampaignStatus.Dead && result != ECampaignStatus.ProgressEnd)
             {
-                string missionTemplateFileName = campaignInfo.InitialMissionTemplateFiles.FirstOrDefault();
-                // Preload mission file for path calculation.
-                gameInterface.MissionLoad(missionTemplateFileName);
-
                 DateTime dt = career.Date.Value;
                 string missionId = string.Format(Config.NumberFormat,
                                             "{0}_{1:d4}-{2:d2}-{3:d2}_{4:d2}", campaignInfo.Id, dt.Year, dt.Month, dt.Day, dt.Hour);
@@ -331,8 +333,18 @@ namespace IL2DCE
                     }
                 }
 
-                // Generate the next mission based on the template.
+                string missionTemplateFileName = career.ProgressNextMission(Random);
                 ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
+                string mapName = campaignInfo.ProgressMapName(dt);
+                if (!string.IsNullOrEmpty(mapName))
+                {
+                    SilkySkyCloDFile.Write(missionTemplateFile, MissionFile.SectionMain, MissionFile.KeyMap, mapName, true);
+                }
+
+                // Preload mission file for path calculation.
+                gameInterface.MissionLoad(missionTemplateFile);
+
+                // Generate the next mission based on the template.
                 ISectionFile missionFile = null;
                 BriefingFile briefingFile = null;
                 generator.GenerateMission(missionTemplateFile, missionStatus, out missionFile, out briefingFile);
@@ -341,12 +353,12 @@ namespace IL2DCE
                 missionFile.save(missionFileName);
 
                 // Copy mission script file
-                string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", _campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
-                string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", _careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
+                string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
+                string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
                 File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
                 // Save briefing file
-                string briefingFileSystemPath = string.Format(_careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
+                string briefingFileSystemPath = string.Format(careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
                 briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
 #if DEBUG
@@ -354,21 +366,21 @@ namespace IL2DCE
 #endif
                 if (Config.Debug >= 1)
                 {
-                    if (!Directory.Exists(this._debugFolderSystemPath))
+                    if (!Directory.Exists(this.debugFolderSystemPath))
                     {
-                        Directory.CreateDirectory(this._debugFolderSystemPath);
+                        Directory.CreateDirectory(this.debugFolderSystemPath);
                     }
                     missionTemplateFile.save(string.Format("{0}/{1}/{2}Template{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
                     missionFile.save(string.Format("{0}/{1}/{2}{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
-                    briefingFile.SaveTo(string.Format("{0}\\{1}{2}", _debugFolderSystemPath, Config.DebugFileName, Config.BriefingFileExt), missionId);
-                    File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}", _debugFolderSystemPath, Config.DebugFileName, Config.ScriptFileExt), true);
+                    briefingFile.SaveTo(string.Format("{0}\\{1}{2}", debugFolderSystemPath, Config.DebugFileName, Config.BriefingFileExt), missionId);
+                    File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}", debugFolderSystemPath, Config.DebugFileName, Config.ScriptFileExt), true);
                 }
+
+                // Stop the preloaded battle to prevent a postload.
+                gameInterface.BattleStop();
             }
 
-            // Stop the preloaded battle to prevent a postload.
-            gameInterface.BattleStop();
-
-            career.WriteTo(careerFile, Config.KillsHistoryMax);
+            career.WriteTo(careerFile, Config.KillsHistoryMax, DateTime.Now);
             careerFile.save(careerFileName);
 
             return result;
@@ -381,10 +393,10 @@ namespace IL2DCE
             CampaignInfo campaignInfo = career.CampaignInfo;
             GameIterface gameInterface = game.gameInterface;
 
-            career.InitializeDateTime(Config);
+            // career.InitializeDateTime(Config);
             career.InitializeExperience();
 
-            string missionFolderSystemPath = string.Format("{0}\\{1}", _careersFolderSystemPath, career.PilotName);
+            string missionFolderSystemPath = string.Format("{0}\\{1}", careersFolderSystemPath, career.PilotName);
             if (!Directory.Exists(missionFolderSystemPath))
             {
                 Directory.CreateDirectory(missionFolderSystemPath);
@@ -395,18 +407,24 @@ namespace IL2DCE
                 gameInterface.BattleStop();
             }
 
-            string missionTemplateFileName = campaignInfo.InitialMissionTemplateFiles.FirstOrDefault();
-
-            // Preload mission file for path calculation.
-            gameInterface.MissionLoad(missionTemplateFileName);
-            gameInterface.BattleStop();
-
             string missionId = campaignInfo.Id;
             string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
             career.MissionFileName = missionFileName;
 
-            // Generate the next mission based on the new template.
+            // string missionTemplateFileName = campaignInfo.InitialMissionTemplateFile;
+            string missionTemplateFileName = career.MissionTemplateFile(null);
             ISectionFile missionTemplateFile = GamePlay.gpLoadSectionFile(missionTemplateFileName);
+            string mapName = campaignInfo.ProgressMapName(career.Date.Value);
+            if (!string.IsNullOrEmpty(mapName))
+            {
+                SilkySkyCloDFile.Write(missionTemplateFile, MissionFile.SectionMain, MissionFile.KeyMap, mapName, true);
+            }
+
+            // Preload mission file for path calculation.
+            gameInterface.MissionLoad(missionTemplateFile);
+            gameInterface.BattleStop();
+
+            // Generate the next mission based on the new template.
             ISectionFile missionFile = null;
             BriefingFile briefingFile = null;
             generator.GenerateMission(missionTemplateFile, null, out missionFile, out briefingFile);
@@ -415,12 +433,12 @@ namespace IL2DCE
             missionFile.save(missionFileName);
 
             // Copy mission script file
-            string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", _campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
-            string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", _careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
+            string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
+            string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
             File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
 
             // Save briefing file
-            string briefingFileSystemPath = string.Format(_careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
+            string briefingFileSystemPath = string.Format(careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
             briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
 #if DEBUG
@@ -428,14 +446,14 @@ namespace IL2DCE
 #endif
             if (Config.Debug >= 1)
             {
-                if (!Directory.Exists(this._debugFolderSystemPath))
+                if (!Directory.Exists(this.debugFolderSystemPath))
                 {
-                    Directory.CreateDirectory(this._debugFolderSystemPath);
+                    Directory.CreateDirectory(this.debugFolderSystemPath);
                 }
                 missionTemplateFile.save(string.Format("{0}/{1}/{2}Template{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
                 missionFile.save(string.Format("{0}/{1}/{2}{3}", Config.UserMissionsFolder, Config.DebugFolderName, Config.DebugFileName, Config.MissionFileExt));
-                briefingFile.SaveTo(string.Format("{0}\\{1}{2}", _debugFolderSystemPath, Config.DebugFileName, Config.BriefingFileExt), missionId);
-                File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}{2}", _debugFolderSystemPath, Config.DebugFileName, Config.ScriptFileExt), true);
+                briefingFile.SaveTo(string.Format("{0}\\{1}{2}", debugFolderSystemPath, Config.DebugFileName, Config.BriefingFileExt), missionId);
+                File.Copy(scriptSourceFileSystemPath, string.Format("{0}\\{1}{2}", debugFolderSystemPath, Config.DebugFileName, Config.ScriptFileExt), true);
             }
 
             string statsFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, career.PilotName, Config.StatsInfoFileName);
@@ -473,7 +491,7 @@ namespace IL2DCE
             }
 
             List<DirectoryInfo> deleteFolders = new List<DirectoryInfo>();
-            DirectoryInfo careersFolder = new DirectoryInfo(this._careersFolderSystemPath);
+            DirectoryInfo careersFolder = new DirectoryInfo(this.careersFolderSystemPath);
             if (careersFolder.Exists)
             {
                 foreach (DirectoryInfo careerFolder in careersFolder.GetDirectories())

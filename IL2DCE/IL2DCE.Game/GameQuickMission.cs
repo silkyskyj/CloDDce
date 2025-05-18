@@ -26,29 +26,29 @@ namespace IL2DCE
             {
                 get
                 {
-                    return _core;
+                    return core;
                 }
             }
-            private Core _core;
+            private Core core;
 
             public EBattleResult BattleResult
             {
                 get
                 {
-                    return _battleSuccess;
+                    return battleSuccess;
                 }
                 set
                 {
-                    _battleSuccess = value;
+                    battleSuccess = value;
                 }
             }
-            EBattleResult _battleSuccess;
+            private EBattleResult battleSuccess;
 
             public GameQuickMission(GameSingleIterface game)
                 : base(game)
             {
-                _core = new Core(this);
-                _battleSuccess = EBattleResult.DRAW;
+                core = new Core(this);
+                battleSuccess = EBattleResult.DRAW;
             }
 
             public override maddox.game.play.PageInterface getStartPage()

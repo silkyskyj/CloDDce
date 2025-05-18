@@ -111,7 +111,8 @@ namespace IL2DCE
 
             public override bool IsMissionListener(int missionNumber)
             {
-                return base.IsMissionListener(missionNumber);
+                base.IsMissionListener(missionNumber);
+                return true;
             }
 
             public override double GetBattleLengthTicks()
@@ -127,7 +128,6 @@ namespace IL2DCE
                 if ((time.current() - TimeGameLatest) > Core.Config.ProcessInterval)
                 {
 #if DEBUG
-                    MissionDebug.TraceAirGroupInfo(Game, AirGroups.OrderBy(x => x.Army()));
                     MissionDebug.TraceAirGroupInfo(Game);
 #endif
                     if (MissionStatus != null)
@@ -139,6 +139,7 @@ namespace IL2DCE
                     {
                         ProcLandedAircrafts();
                         ProcSpawnDynamic();
+                        ProcUpdateTasks();
                     }
 
                     TimeGameLatest = time.current();
@@ -195,7 +196,7 @@ namespace IL2DCE
                 {
                     Core.Mission = this;
                     MissionStatus = new MissionStatus(Core.Random, Core.CurrentCareer.Date.Value);
-                    MissionProc = new MissionProc(Game, Core.Random, Core.Config, Core.CurrentCareer);
+                    MissionProc = new MissionProc(Game, Core.Random, Core.Config, Core.CurrentCareer, MissionStatus);
                 }
             }
 
@@ -216,8 +217,9 @@ namespace IL2DCE
                 // MissionDebug.Trace(Game, DataDictionary);
                 Core.SaveCurrentStatus(Config.MissionStatusStartFileName, PlayerActorName, career.Date.Value, true);
 
+                MissionDebug.TraceAiAirports(Game);
 #if false
-                TraceGameInfo();
+                MissionDebug.TraceGameInfo(Game);
 #endif
 #endif
                 if (MissionStatus != null)
@@ -347,14 +349,10 @@ namespace IL2DCE
                 base.OnActorCreated(missionNumber, shortName, actor);
 #if DEBUG
                 MissionDebug.TraceActorCreated(Game, missionNumber, shortName, actor);
-                if (actor is AiAirGroup)
-                {
-                    AirGroups.Add(actor as AiAirGroup);
-                }
 #endif
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor);
+                    MissionStatus.Update(actor, false);
                 }
             }
 
@@ -364,11 +362,11 @@ namespace IL2DCE
                     actor is AiAircraft ? "Aircraft" : actor is AiGroundActor ? "AiGroundActor" : string.Empty, actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete());
                 base.OnActorDestroyed(missionNumber, shortName, actor);
 #if DEBUG
-                MissionDebug.TraceActorDestroyed(Game, missionNumber, shortName, actor);
+                //MissionDebug.TraceActorDestroyed(Game, missionNumber, shortName, actor);
 #endif
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor);
+                    MissionStatus.Update(actor, false);
                 }
             }
 
@@ -415,7 +413,7 @@ namespace IL2DCE
                 base.OnActorTaskCompleted(missionNumber, shortName, actor);
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor);
+                    MissionStatus.Update(actor, false);
                 }
 
                 // UpdateTask(actor);
@@ -469,7 +467,7 @@ namespace IL2DCE
 
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(aircraft);
+                    MissionStatus.Update(aircraft, false);
                 }
             }
 
@@ -564,7 +562,7 @@ namespace IL2DCE
 
             public override void OnPersonHealth(AiPerson person, AiDamageInitiator initiator, float deltaHealth)
             {
-                Debug.WriteLine("Mission.OnPersonHealth({0}, {1}, {2})", person.Name(), initiator != null ? CloDAPIUtil.GetName(initiator): string.Empty, deltaHealth);
+                Debug.WriteLine("Mission.OnPersonHealth({0}, {1}, {2})", person.Name(), initiator != null ? CloDAPIUtil.GetName(initiator) : string.Empty, deltaHealth);
                 base.OnPersonHealth(person, initiator, deltaHealth);
             }
 
@@ -596,7 +594,7 @@ namespace IL2DCE
                 }
             }
 
-#endregion
+            #endregion
 
             #region AutoPilot
 
@@ -667,7 +665,7 @@ namespace IL2DCE
                 base.OnUserDeleteUserLabel(ul);
             }
 
-#endregion
+            #endregion
 
             #region Private Implementation
 
@@ -756,9 +754,17 @@ namespace IL2DCE
 
             private void ProcSpawnDynamic()
             {
-                if (MissionProc != null && MissionStatus != null)
+                if (MissionProc != null)
                 {
-                    MissionProc.SpawnDynamic(MissionStatus);
+                    MissionProc.SpawnDynamic();
+                }
+            }
+
+            private void ProcUpdateTasks()
+            {
+                if (MissionProc != null)
+                {
+                    MissionProc.UpdateTasks();
                 }
             }
 

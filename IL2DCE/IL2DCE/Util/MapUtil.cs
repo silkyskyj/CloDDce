@@ -22,7 +22,6 @@ using XLAND;
 
 namespace IL2DCE.Util
 {
-
     public class MapUtil
     {
         public static void Inflate(ref wRECTF rect, float value)

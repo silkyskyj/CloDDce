@@ -55,10 +55,12 @@ namespace IL2DCE.MissionObjectModel
             get;
         }
 
+#if false
         List<AircraftObj> Aircrafts
         {
             get;
         }
+#endif
 
         List<GroundObj> GroundActors
         {
@@ -396,6 +398,19 @@ namespace IL2DCE.MissionObjectModel
                 get;
                 set;
             }
+
+            public long TaskComplateTime
+            {
+                get;
+                set;
+            }
+
+            public AiAirGroupTask RequestTask
+            {
+                get;
+                set;
+            }
+
         }
 
         public class PlayerObj : MissionActorObj
@@ -701,8 +716,8 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(AirGroupObj airGroupObject)
             {
-                Debug.WriteLine("  AirGroupObject.Update[Id={0}] Name={1}[{2}] Nums={3}->{4} InitNums={5}->{6} DiedNums={7}->{8}, IsValid={9}->{10}, IsAlive={11}->{12}, IsTaskComplete{13}->{14}",
-                    airGroupObject.Id, airGroupObject.Name, airGroupObject.NameItem, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
+                Debug.WriteLine("  AirGroupObject.Update[Id={0,2}] Name={1,-35}[{2,-30}] Class={3,-30} Nums={4,2}->{5,2} InitNums={6,2}->{7,2} DiedNums={8,2}->{9,2}, IsValid={10,-5}->{11,-5}, IsAlive={12,-5}->{13,-5}, IsTask={14,-5}->{15,-5}",
+                    airGroupObject.Id, airGroupObject.Name, airGroupObject.NameItem, airGroupObject.Class, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
                 bool updated = false;
 
                 try
@@ -895,8 +910,8 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(GroundGroupObj groundGroupObject)
             {
-                Debug.WriteLine("  GroundGroupObject.Update[{0}] Nums={1}->{2} AliveNums={3}->{4}, IsValid={5}->{6}, IsAlive={7}->{8}, IsTaskComplete{9}->{10}",
-                                groundGroupObject.Name, InitNums, groundGroupObject.InitNums, Nums, groundGroupObject.Nums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
+                //Debug.WriteLine("  GroundGroupObject.Update[{0,-15}] Class={1,-30} Nums={2,2}->{3,2} AliveNums={4,2}->{5,2}, IsValid={6,-5}->{7,-5}, IsAlive={8,-5}->{9,-5}, IsTask={10,-5}->{12,-5}",
+                //                groundGroupObject.Name, groundGroupObject.Type, groundGroupObject.Class, InitNums, groundGroupObject.InitNums, Nums, groundGroupObject.Nums, IsValid, groundGroupObject.IsValid, IsAlive, groundGroupObject.IsAlive, IsTaskComplete, groundGroupObject.IsTaskComplete);
                 bool updated = false;
                 try
                 {
@@ -1630,11 +1645,13 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
+#if false
         public List<AircraftObj> Aircrafts
         {
             get;
             private set;
         }
+#endif
 
         public List<GroundObj> GroundActors
         {
@@ -1648,7 +1665,7 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
-        #endregion
+#endregion
 
         #region Constructor
 
@@ -1660,7 +1677,9 @@ namespace IL2DCE.MissionObjectModel
             AirGroups = new List<AirGroupObj>();
             GroundGroups = new List<GroundGroupObj>();
             Stationaries = new List<StationaryObj>();
+#if false
             Aircrafts = new List<AircraftObj>();
+#endif
             GroundActors = new List<GroundObj>();
         }
 
@@ -1672,11 +1691,13 @@ namespace IL2DCE.MissionObjectModel
             AirGroups = new List<AirGroupObj>(airGroups);
             GroundGroups = new List<GroundGroupObj>(groundGroups);
             Stationaries = new List<StationaryObj>(stationaries);
+#if false
             Aircrafts = new List<AircraftObj>(aircrafts);
+#endif
             GroundActors = new List<GroundObj>(groundActors);
         }
 
-        #endregion
+#endregion
 
         #region Create
 
@@ -1731,6 +1752,7 @@ namespace IL2DCE.MissionObjectModel
                         }
                     }
 
+#if false
                     List<AircraftObj> aircrafts = new List<AircraftObj>();
                     lines = file.lines(SectionAircraft);
                     for (i = 0; i < lines; i++)
@@ -1742,6 +1764,7 @@ namespace IL2DCE.MissionObjectModel
                             aircrafts.Add(aircraft);
                         }
                     }
+#endif
 
                     List<GroundObj> groundActors = new List<GroundObj>();
                     lines = file.lines(SectionGroundActor);
@@ -1757,7 +1780,7 @@ namespace IL2DCE.MissionObjectModel
 
                     if (player != null)
                     {
-                        return new MissionStatus(random, dt, player, airGroups, groundGroups, stationaries, aircrafts, groundActors);
+                        return new MissionStatus(random, dt, player, airGroups, groundGroups, stationaries, /*aircrafts*/null, groundActors);
                     }
                 }
             }
@@ -1765,7 +1788,7 @@ namespace IL2DCE.MissionObjectModel
             return null;
         }
 
-        #endregion
+#endregion
 
         #region Update
 
@@ -1773,7 +1796,9 @@ namespace IL2DCE.MissionObjectModel
         {
             if (aiActor is AiAircraft)
             {
+#if false
                 Update(aiActor as AiAircraft, group);
+#endif
             }
             else if (aiActor is AiGroundActor)
             {
@@ -1877,7 +1902,7 @@ namespace IL2DCE.MissionObjectModel
                     !string.IsNullOrEmpty(airGroupNew.Name) ? AirGroups.Where(x => string.Compare(x.SquadronName, airGroupNew.SquadronName, true) == 0).FirstOrDefault() : null;
                 if (airGroup == null)
                 {
-                    Debug.WriteLine("  AiAirGroup.Add(Id={0,2} {1,-30}[{2}] Class={3,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.NameItem, airGroupNew.Class);
+                    Debug.WriteLine("  AiAirGroup.Add(Id={0,2} Name={1,-35}[{2,-30}] Class={3,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.NameItem, airGroupNew.Class);
                     AirGroups.Add(airGroupNew);
                 }
                 else
@@ -1950,9 +1975,10 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+#if false
         private void Update(AiAircraft aiAircraft, bool group = false)
         {
-            Debug.WriteLine("  AiAircraft Army={0}, Name={1}, TypeName={2}, Group={3}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiAircraft.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-35}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
             AircraftObj aircraftNew = AircraftObj.Create(aiAircraft);
             if (aircraftNew != null)
             {
@@ -1984,10 +2010,11 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
         }
+#endif
 
         private void Update(AiGroundActor aiGroundActor, bool group = false)
         {
-            Debug.WriteLine("  AiGroundActor Army={0}, Name={1}, TypeName={2}, Group={3}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiGroundActor.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-35}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
             GroundObj groundActorNew = GroundObj.Create(aiGroundActor);
             if (groundActorNew != null)
             {
@@ -2073,7 +2100,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        #endregion
+#endregion
 
         #region WriteTo
 
@@ -2096,10 +2123,12 @@ namespace IL2DCE.MissionObjectModel
             {
                 item.WriteTo(file, overwrite);
             }
+#if false
             foreach (var item in Aircrafts.OrderBy(x => x.Name))
             {
                 item.WriteTo(file, overwrite);
             }
+#endif
             foreach (var item in GroundActors.OrderBy(x => x.Name))
             {
                 item.WriteTo(file, overwrite);
@@ -2128,8 +2157,10 @@ namespace IL2DCE.MissionObjectModel
                 // Stationary
                 UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.Stationaries);
 
+#if false
                 // Aircraft
                 UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.Aircrafts);
+#endif
 
                 // GroundActor
                 UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.GroundActors);
@@ -2145,8 +2176,10 @@ namespace IL2DCE.MissionObjectModel
                 // Stationary
                 UpdateWriteTo(file, reinForceDay, overwrite, new List<StationaryObj>());
 
+#if false
                 // Aircraft
                 UpdateWriteTo(file, reinForceDay, overwrite, new List<AircraftObj>());
+#endif
 
                 // GroundActor
                 UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundObj>());
@@ -2380,6 +2413,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+#if false
         private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AircraftObj> aircrafts)
         {
             foreach (var item in Aircrafts.OrderBy(x => x.Name))
@@ -2439,6 +2473,7 @@ namespace IL2DCE.MissionObjectModel
                 item.WriteTo(file, overwrite);
             }
         }
+#endif
 
         private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundObj> groundActors)
         {
@@ -2500,7 +2535,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        #endregion
+#endregion
 
         public AirGroupObj GetPlayerAirGroup()
         {

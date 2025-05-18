@@ -70,7 +70,6 @@
   NORMFLY 11759.53 15684.25 500.00 300.00
   LANDING 12363.81 21661.70 500.00 300.00
 [gb02.01]
-  VirtualAirGroupKey Czechoslovak_Bomber_01
   Flight0  1 2 3 4 5 6
   Class Aircraft.WellingtonMkIc
   Formation LINEABREAST
@@ -121,7 +120,6 @@
   NORMFLY 12196.22 17718.70 500.00 300.00
   HUNTING 17231.26 14524.65 1500.00 300.00
 [gb01.11]
-  VirtualAirGroupKey USSR_Fighter_01
   Flight0  1 2 3 4
   Class tobruk:Aircraft.KittyhawkMkIA
   Formation LINEABREAST
@@ -166,7 +164,6 @@
   NORMFLY 9588.71 23397.95 1500.00 300.00
   HUNTING 14948.29 17210.91 1500.00 300.00
 [g01.03]
-  VirtualAirGroupKey Hungary_Fighter_01
   Flight0  1 2 3 4
   Flight1  11 12
   Class Aircraft.Bf-109E-4
@@ -191,7 +188,6 @@
   NORMFLY 17454.50 13926.18 500.00 300.00
   AATTACK_FIGHTERS 12850.58 17550.35 1500.00 300.00
 [g03.01]
-  VirtualAirGroupKey Romania_Fighter_01
   Flight0  1 2 3 4
   Class tobruk:Aircraft.Bf-109F-2
   Formation LINEABREAST
@@ -213,7 +209,6 @@
   NORMFLY 20594.10 13267.14 1500.00 300.00
   HUNTING 12177.52 16723.43 1500.00 300.00
 [g05.07]
-  VirtualAirGroupKey Finland_Fighter_01
   Flight0  1 2
   Flight1  11 12
   Flight2  21 22
@@ -243,7 +238,6 @@
   NORMFLY 14681.21 9065.24 1500.00 300.00
   LANDING 19745.97 8881.07 1500.00 300.00
 [g02.03]
-  VirtualAirGroupKey Finland_Bomber_01
   Flight0  1 2 3
   Flight1  11 12 13
   Class tobruk:Aircraft.Ju-88A-5
@@ -270,7 +264,6 @@
   NORMFLY 16929.14 13949.74 500.00 300.00
   HUNTING 17877.40 12545.81 1500.00 300.00
 [g04.03]
-  VirtualAirGroupKey Slovakia_Fighter_01
   Flight0  1 2 3 4
   Flight1  11 12 13 14
   Class tobruk:Aircraft.Bf-109E-7

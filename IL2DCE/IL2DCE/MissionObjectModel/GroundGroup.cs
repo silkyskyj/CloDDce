@@ -144,8 +144,6 @@ namespace IL2DCE.MissionObjectModel
 
         public static GroundGroup Create(ISectionFile sectionFile, string id)
         {
-            // _id = id;
-
             string value = sectionFile.get(MissionFile.SectionChiefs, id, string.Empty);
             if (!string.IsNullOrEmpty(value))
             {

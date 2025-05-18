@@ -78,7 +78,7 @@ namespace IL2DCE.Util
 #endif
         }
 
-        public static void OptimizePlayerStatTota(IPlayerStatTotal playerStatTotal)
+        public static void OptimizePlayerStatTotal(IPlayerStatTotal playerStatTotal)
         {
             if (playerStatTotal.Sorties == 0)
             {

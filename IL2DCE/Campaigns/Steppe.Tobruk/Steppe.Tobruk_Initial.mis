@@ -95,7 +95,6 @@
   TAKEOFF 67515.16 69828.07 0 0
   NORMFLY 67549.68 67338.66 500 300
 [gb02.08]
-  VirtualAirGroupKey Czechoslovak_Bomber_01
   Flight3 31
   Class Aircraft.WellingtonMkIc
   Formation LINEABREAST
@@ -154,7 +153,6 @@
   NORMFLY 67119.70 71707.01 2000.00 300.00
   NORMFLY 61647.71 68382.94 500.00 300.00
 [gb01_Late.14]
-  VirtualAirGroupKey BoB_RAF_F_322Sqn_Late
   Flight2 21
   Class tobruk:Aircraft.SpitfireMkVb
   Formation LINEABREAST
@@ -225,7 +223,6 @@
   NORMFLY 53907.75 37673.29 500.00 300.00
   NORMFLY 53099.54 36763.17 500.00 300.00
 [gb01_Late.21]
-  VirtualAirGroupKey BoB_RAF_F_350Sqn_Late
   Flight0 1
   Class tobruk:Aircraft.SpitfireMkIIb
   Formation FINGERFOUR
@@ -282,7 +279,6 @@
   NORMFLY 54100.21 44167.97 2500.00 300.00
   NORMFLY 44202.46 39333.97 500.00 300.00
 [gb01_Late.01]
-  VirtualAirGroupKey USSR_Fighter_01
    Flight0 1
   Class tobruk:Aircraft.KittyhawkMkIA
   Formation FINGERFOUR
@@ -300,7 +296,6 @@
   NORMFLY 71010.06 13805.65 2500.00 300.00
   NORMFLY 63713.53 17249.75 500.00 300.00
 [g01.02]
-  VirtualAirGroupKey Romania_Fighter_01
   Flight1 11
   Class tobruk:Aircraft.Bf-109F-2
   Formation FINGERFOUR
@@ -331,7 +326,6 @@
   NORMFLY 30849.28 11475.97 2500.00 300.00
   NORMFLY 35115.42 17533.75 500.00 300.00
 [g01.14]
-  VirtualAirGroupKey Finland_Fighter_01
   Flight2 21
   Class Aircraft.G50
   Formation FINGERFOUR
@@ -362,7 +356,6 @@
   NORMFLY 10453.04 41298.64 3000.00 300.00
   NORMFLY 17152.00 50216.35 500.00 300.00
 [g01.21]
-  VirtualAirGroupKey Hungary_Fighter_01
   Flight0 1
   Class Aircraft.Bf-109E-4
   Formation FINGERFOUR
@@ -379,7 +372,6 @@
   NORMFLY 11782.32 56868.78 3000.00 300.00
   NORMFLY 20740.33 62414.26 500.00 300.00
 [g01.34]
-  VirtualAirGroupKey Slovakia_Fighter_01
   Flight2 21
   Class tobruk:Aircraft.Bf-109E-7
   Formation FINGERFOUR
@@ -410,7 +402,6 @@
   NORMFLY 19165.49 10785.75 2500.00 300.00
   NORMFLY 22163.18 15119.38 500.00 300.00
 [g03.04]
-  VirtualAirGroupKey Romania_Bomber_01
   Flight2 21
   Class Aircraft.Ju-87B-2
   Formation VIC3
@@ -441,7 +432,6 @@
   TAKEOFF 15318.03 12813.94 0 0
   NORMFLY 15358.76 16059.16 500 300
 [g03.11]
-  VirtualAirGroupKey Hungary_Bomber_01
   Flight0 1
   Class Aircraft.Ju-87B-2
   Formation VIC3
@@ -464,7 +454,6 @@
   NORMFLY 41289.26 68369.96 2500.00 300.00
   NORMFLY 17471.70 63454.09 500.00 300.00
 [g02.02]
-  VirtualAirGroupKey Finland_Bomber_01
   Flight1 11
   Class tobruk:Aircraft.Ju-88A-5
   Formation VIC3
@@ -523,7 +512,6 @@
   NORMFLY 10881.22 34726.66 2500.00 300.00
   NORMFLY 16555.71 42022.70 500.00 300.00
 [g04.01]
-  VirtualAirGroupKey Bulgaria_Fighter_01
   Flight0  1
   Class Aircraft.Bf-109E-4
   Formation FINGERFOUR
@@ -537,7 +525,6 @@
   TAKEOFF 39912.60 20149.07 0 0
   NORMFLY 41644.96 19009.75 500.00 300.00
 [g04.11]
-  VirtualAirGroupKey 15_Staffel_JG52
   Flight0  1
   Class Aircraft.Bf-109E-4
   Formation FINGERFOUR
@@ -550,9 +537,6 @@
 [g04.11_Way]
   TAKEOFF 28572.00 55403.44 0 0
   NORMFLY 30242.76 56839.97 500.00 300.00
-[Aircraft]
-  RandomRed Aircraft.HurricaneMkI_dH5-20 Aircraft.SpitfireMkIa tobruk:Aircraft.SpitfireMkVa tobruk:Aircraft.TomahawkMkII tobruk:Aircraft.MartletMkIII Aircraft.BlenheimMkIV tobruk:Aircraft.BeaufighterMkIC tobruk:Aircraft.WellingtonMkIc_Late
-  RandomBlue Aircraft.Bf-109E-3 Aircraft.Bf-109E-4 Aircraft.Bf-110C-4 tobruk:Aircraft.Bf-109F-1 tobruk:Aircraft.Macchi-C202-SeriesIII Aircraft.Ju-87B-2 tobruk:Aircraft.Ju-88A-5 tobruk:Aircraft.He-111H-6
 [CustomChiefs]
 [Chiefs]
   0_Chief Ship.tobruk:Type_VIIC_SS de /sleep 0/skill 1/slowfire 1

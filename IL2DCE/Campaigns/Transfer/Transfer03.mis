@@ -1,0 +1,82 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8000 8000 352000 302000 2000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 2
+  ThermalActivity 2
+  player LONDON.000
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1000.00
+  GustPower 1
+  GustAngle 44
+[splines]
+[AirGroups]
+  LONDON.01
+  g01.01
+[LONDON.01]
+  Flight0  1
+  Class Aircraft.SpitfireMkIa_100oct
+  Formation VIC3
+  CallSign 6
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 56
+[LONDON.01_Way]
+  TAKEOFF 234494.33 232420.22 0 0
+  NORMFLY 237575.20 233528.72 500.00 129.100
+  NORMFLY 240532.35 233243.80 500.00 129.100
+  NORMFLY 240666.44 230282.71 500.00 129.100
+  NORMFLY 238028.34 227666.08 500.00 129.100
+  NORMFLY 231097.93 227362.49 500.00 129.100
+  NORMFLY 230649.11 230614.21 500.00 129.100
+  NORMFLY 231782.11 233438.90 500.00 129.100
+  LANDING 235437.60 232653.42 500.00 129.100
+[g01.01]
+  Flight0  1
+  Class Aircraft.Bf-109E-4
+  Formation LINEABREAST
+  CallSign 1
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[g01.01_Way]
+  TAKEOFF 271947.20 204731.58 0 0
+  NORMFLY 271844.49 207460.73 500.00 153.70
+  NORMFLY 273589.23 209118.82 500.00 153.70
+  NORMFLY 277436.77 208211.92 500.00 153.70
+  NORMFLY 278103.46 204109.66 500.00 153.70
+  NORMFLY 276322.40 201477.40 500.00 153.70
+  NORMFLY 272856.32 201373.20 500.00 153.70
+  NORMFLY 271750.08 202990.25 500.00 153.70
+  LANDING 271944.90 205556.44 500.00 153.70
+[CustomChiefs]
+[Stationary]
+  Static0 ShipUnit.Tanker_Medium2 de 308374.25 248160.56 0.00 /sleep 0/skill 2/slowfire 1
+  Static1 ShipUnit.Tanker_Medium2 de 243689.22 186555.56 0.00 /sleep 0/skill 2/slowfire 1
+  Static2 ShipUnit.Tanker_Medium2 de 176914.55 122850.98 0.00 /sleep 0/skill 2/slowfire 1
+  Static3 ShipUnit.Tanker_Medium1 gb 163290.97 152784.45 0.00 /sleep 0/skill 2/slowfire 1
+  Static4 ShipUnit.Tanker_Medium1 gb 227187.44 204400.53 0.00 /sleep 0/skill 2/slowfire 1
+  Static5 ShipUnit.Tanker_Medium1 gb 280346.56 267855.53 0.00 /sleep 0/skill 2/slowfire 1
+[Buildings]
+[BuildingsLinks]
+[FrontMarker]
+  FrontMarker0 126322.71 138413.07 1
+  FrontMarker1 199567.26 173940.06 1
+  FrontMarker2 260434.99 227480.47 1
+  FrontMarker3 307684.35 300133.58 1
+  FrontMarker4 317400.94 296042.89 2
+  FrontMarker5 266603.90 221313.65 2
+  FrontMarker6 213428.12 160032.81 2
+  FrontMarker7 126322.71 132795.60 2

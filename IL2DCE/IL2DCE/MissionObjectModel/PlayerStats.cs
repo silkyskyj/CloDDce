@@ -423,7 +423,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 AiAircraft aiAircraft = actor as AiAircraft;
                 Debug.WriteLine("  AiAircraft: {0}={1}", aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
-                if (armyActor != Army)
+                if (armyActor == MissionObjectModel.Army.Enemy(Army))
                 {
                     AddKillsCount(killsAircraft, aiAircraft.InternalTypeName());
                 }
@@ -436,7 +436,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 AiGroundActor aiGroundActor = actor as AiGroundActor;
                 Debug.WriteLine("  AiGroundActor: {0}={1}", aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
-                if (armyActor != Army)
+                if (armyActor == MissionObjectModel.Army.Enemy(Army))
                 {
                     AddKillsCount(killsGroundUnit, aiGroundActor.InternalTypeName());
                 }
@@ -449,7 +449,7 @@ namespace IL2DCE.MissionObjectModel
 
         private void AddKillsCount(int armyActor, int actorType, string typeName)
         {
-            if (armyActor != Army)
+            if (armyActor == MissionObjectModel.Army.Enemy(Army))
             {   // Enemy kill
                 if (actorType == 0)
                 {

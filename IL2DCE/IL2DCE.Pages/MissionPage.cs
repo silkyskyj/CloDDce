@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,15 +37,27 @@ namespace IL2DCE.Pages
 
         #region Constant
 
-        public const string DlgFileNameMission = "Mission File";
-        public const string DlgFileNameMissionFilter = "Mission File(.mis)|*.mis";
+        public const string MsgMission = "Mission";
+        public const string MsgCampaign = "Campaign";
+        public const string DlgFileNameMissionFileFilter = "Mission File(.mis)|*.mis";
+        public const string DlgFileNameMissionFolderFilter = "Mission Folder|.";
+        public const string DlgFileNameCampaignFileFilter = "Campaign Setting|Campaign.ini";
+        public const string DlgFileNameCampaignFolderFilter = "Campaign Folder|.";
 
         public const string MissionDefaultFormat = "Mission Default: {0}";
+        public const string MissionDefaultDateFormat = "Mission Default: {0:M/d/yyyy} - {1:M/d/yyyy}";
+        public const string MapFormat = "Map: {0}";
 
         #endregion
 
         class ImportMissionInfo
         {
+            public bool IsCampaign
+            {
+                get;
+                set;
+            }
+
             public IEnumerable<string> FilePaths
             {
                 get;
@@ -79,7 +90,7 @@ namespace IL2DCE.Pages
         }
         private IGame _game;
 
-        protected virtual CampaignInfo SelectedCampaign
+        protected virtual string SelectedCampaignMission
         {
             get
             {
@@ -125,41 +136,20 @@ namespace IL2DCE.Pages
             {
                 Config config = Game.Core.Config;
                 ProgressWindowModel model = new ProgressWindowModel();
-                model.Context = new ImportMissionInfo() { FilePaths = new string[0], SorceFolderFileName = config.SorceFolderFileName, SorceFolderFolderName = config.SorceFolderFolderName };
-                ImportMissionProgressWindow(model);
-            }
-        }
-
-        protected void ImportMissionFolder(object sender, RoutedEventArgs e)
-        {
-            const string title = "Select Missoion Folder";
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = title;
-            dlg.InitialDirectory = Game.gameInterface.ToFileSystemPath(Config.UserMissionsDefaultFolder);
-            dlg.FileName = title;
-            dlg.CheckFileExists = false;
-            dlg.DefaultExt = ".";
-            dlg.Filter = "Folder|.";
-            bool? result = dlg.ShowDialog();
-            if (result != null && result.Value)
-            {
-                if (IsConfirmImportMission())
-                {
-                    string path = Path.GetDirectoryName(dlg.FileName);
-                    ProgressWindowModel model = new ProgressWindowModel();
-                    model.Context = new ImportMissionInfo() { FilePaths = new string[0], SorceFolderFileName = new string[0], SorceFolderFolderName = new string[] { path } };
-                    ImportMissionProgressWindow(model);
-                }
+                model.Context = new ImportMissionInfo() { IsCampaign = false, FilePaths = new string[0], SorceFolderFileName = config.SorceFolderFileName, SorceFolderFolderName = config.SorceFolderFolderName };
+                ImportMissionProgressWindow(model, false);
             }
         }
 
         protected void ImportMissionFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Select Missoion File";
             dlg.InitialDirectory = Game.gameInterface.ToFileSystemPath(Config.UserFolder);
-            // dlg.FileName = "*.mis";
+            dlg.FileName = "*.mis";
+            dlg.CheckFileExists = true;
             dlg.DefaultExt = Config.MissionFileExt;
-            dlg.Filter = DlgFileNameMissionFilter;
+            dlg.Filter = DlgFileNameMissionFileFilter;
             bool? result = dlg.ShowDialog();
             if (result != null && result.Value)
             {
@@ -167,8 +157,74 @@ namespace IL2DCE.Pages
                 {
                     string path = dlg.FileName;
                     ProgressWindowModel model = new ProgressWindowModel();
-                    model.Context = new ImportMissionInfo() { FilePaths = new string[] { path }, SorceFolderFileName = new string[0], SorceFolderFolderName = new string[0] };
-                    ImportMissionProgressWindow(model);
+                    model.Context = new ImportMissionInfo() { IsCampaign = false, FilePaths = new string[] { path }, SorceFolderFileName = new string[0], SorceFolderFolderName = new string[0] };
+                    ImportMissionProgressWindow(model, false);
+                }
+            }
+        }
+
+        protected void ImportMissionFolder(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Select Missoion Folder";
+            dlg.InitialDirectory = Game.gameInterface.ToFileSystemPath(Config.UserMissionsDefaultFolder);
+            dlg.FileName = dlg.Title;
+            dlg.CheckFileExists = false;
+            dlg.DefaultExt = ".";
+            dlg.Filter = DlgFileNameMissionFolderFilter;
+            bool? result = dlg.ShowDialog();
+            if (result != null && result.Value)
+            {
+                if (IsConfirmImportMission())
+                {
+                    string path = Path.GetDirectoryName(dlg.FileName);
+                    ProgressWindowModel model = new ProgressWindowModel();
+                    model.Context = new ImportMissionInfo() { IsCampaign = false, FilePaths = new string[0], SorceFolderFileName = new string[0], SorceFolderFolderName = new string[] { path } };
+                    ImportMissionProgressWindow(model, false);
+                }
+            }
+        }
+
+        protected void ImportCampaignFile(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Select Campaign File";
+            dlg.InitialDirectory = Game.gameInterface.ToFileSystemPath(string.Format(Config.MissionFolderFormatCampaign, "bob"));
+            dlg.FileName = MissionFileConverter.DefaultCampaignFileSearchPettern;
+            dlg.CheckFileExists = true;
+            dlg.DefaultExt = Config.IniFileExt;
+            dlg.Filter = DlgFileNameCampaignFileFilter;
+            bool? result = dlg.ShowDialog();
+            if (result != null && result.Value)
+            {
+                if (IsConfirmImportMission())
+                {
+                    string path = dlg.FileName;
+                    ProgressWindowModel model = new ProgressWindowModel();
+                    model.Context = new ImportMissionInfo() { IsCampaign = true, FilePaths = new string[] { path }, SorceFolderFileName = new string[0], SorceFolderFolderName = new string[0] };
+                    ImportMissionProgressWindow(model, true);
+                }
+            }
+        }
+
+        protected void ImportCampaignFolder(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Select Campaign Folder";
+            dlg.InitialDirectory = Game.gameInterface.ToFileSystemPath(string.Format(Config.MissionFolderFormatCampaign, "bob"));
+            dlg.FileName = dlg.Title;
+            dlg.CheckFileExists = false;
+            dlg.DefaultExt = ".";
+            dlg.Filter = DlgFileNameCampaignFolderFilter;
+            bool? result = dlg.ShowDialog();
+            if (result != null && result.Value)
+            {
+                if (IsConfirmImportMission())
+                {
+                    string path = Path.GetDirectoryName(dlg.FileName);
+                    ProgressWindowModel model = new ProgressWindowModel();
+                    model.Context = new ImportMissionInfo() { IsCampaign = true, FilePaths = new string[0], SorceFolderFileName = new string[0], SorceFolderFolderName = new string[] { path } };
+                    ImportMissionProgressWindow(model, true);
                 }
             }
         }
@@ -183,10 +239,10 @@ namespace IL2DCE.Pages
                 MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
         }
 
-        protected virtual void ImportMissionProgressWindow(ProgressWindowModel model)
+        protected virtual void ImportMissionProgressWindow(ProgressWindowModel model, bool isCampaign)
         {
             ProgressWindow window = new ProgressWindow(model, BackgrowndWorkerEventHandler);
-            window.Title = "Mission file Conversion and Import in progress ... [IL2DCE]";
+            window.Title = string.Format("{0} file Conversion and Import in progress ... [IL2DCE]", isCampaign ? MsgCampaign : MsgMission);
             bool? result = window.ShowDialog();
 
             object[] results = model.Result as object[];
@@ -195,7 +251,7 @@ namespace IL2DCE.Pages
             int complated = (int)results[1];
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("{0} to Import Missions", window.IsCanceled ? "Canceled" : "Completed");
+            sb.AppendFormat("{0} to Import {1}s", window.IsCanceled ? "Canceled" : "Completed", isCampaign ? MsgCampaign : MsgMission);
             sb.AppendLine();
             sb.AppendLine();
             sb.AppendFormat("Total files: {0}", (int)results[0]);
@@ -230,7 +286,7 @@ namespace IL2DCE.Pages
             DoWorkEventArgs args = e.Args;
             ProgressWindowModel model = args.Argument as ProgressWindowModel;
 
-            MissionFileConverter converter = new MissionFileConverter(Game.gameInterface);
+            MissionFileConverter converter = new MissionFileConverter(Game.gameInterface, null, null, worker);
             ImportMissionInfo importMissionInfo = model.Context as ImportMissionInfo;
 
 #if DEBUG && false
@@ -244,11 +300,13 @@ namespace IL2DCE.Pages
             int error = 0;
             try
             {
+                bool IsCampaign = importMissionInfo.IsCampaign;
                 IEnumerable<string> filePaths = importMissionInfo.FilePaths.Distinct().OrderBy(x => x);
-                IEnumerable<string> filesFileType = converter.GetFiles(importMissionInfo.SorceFolderFileName).Distinct().OrderBy(x => x);
-                IEnumerable<string> filesFolderType = converter.GetFiles(importMissionInfo.SorceFolderFolderName).Distinct().OrderBy(x => x);
+                IEnumerable<string> filesFileType = converter.GetFiles(importMissionInfo.SorceFolderFileName, IsCampaign ? MissionFileConverter.DefaultCampaignFileSearchPettern : MissionFileConverter.DefaultMissionFileSearchPettern).Distinct().OrderBy(x => x);
+                IEnumerable<string> filesFolderType = converter.GetFiles(importMissionInfo.SorceFolderFolderName, IsCampaign ? MissionFileConverter.DefaultCampaignFileSearchPettern : MissionFileConverter.DefaultMissionFileSearchPettern).Distinct().OrderBy(x => x);
                 filesFileType = filesFileType.Concat(filePaths);
-                files = filesFileType.Count() + filesFolderType.Count();
+                files = IsCampaign ? filesFileType.Select(x => converter.CountCampaignMissionFiles(x)).Sum() + filesFolderType.Select(x => converter.CountCampaignMissionFiles(x)).Sum() : 
+                                        filesFileType.Count() + filesFolderType.Count();
 
                 logFileSystemPath = Game.gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.ConvertLogFileName));
                 FileUtil.BackupFiles(logFileSystemPath, 5, false);
@@ -260,38 +318,34 @@ namespace IL2DCE.Pages
                     {
                         bool result;
                         string name;
-                        worker.ReportProgress(-1, string.Format(CultureInfo.InvariantCulture, "{0}|{1}", 0, files));
+                        worker.ReportProgress(-1, string.Format(Config.NumberFormat, "{0}|{1}", 0, files));
                         foreach (var item in filesFileType)
                         {
-                            worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
                             if (worker.CancellationPending)
                             {
                                 args.Cancel = true;
                                 break;
                             }
                             name = Path.GetFileNameWithoutExtension(item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).LastOrDefault());
-                            converter.ErrorMsg.Clear();
-                            error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
-                            WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
-                            count++;
+                            converter.ErrorWarnMsg.Clear();
+                            error += (result = IsCampaign ? converter.ConvertCampaign(item, string.Empty, destFolder): converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
+                            WriteConvertLog(writer, result, name, item, converter.ErrorWarnMsg, IsCampaign);
                         }
                         foreach (var item in filesFolderType)
                         {
-                            worker.ReportProgress(count, string.Join("\n", converter.SplitTargetSystemPathInfo(item)));
                             if (worker.CancellationPending)
                             {
                                 args.Cancel = true;
                                 break;
                             }
+                            converter.ErrorWarnMsg.Clear();
                             string[] str = item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
                             if (str.Length >= 2)
                             {
                                 name = string.Format("{0}_{1}", str[str.Length - 2], Path.GetFileNameWithoutExtension(str[str.Length - 1]));
-                                converter.ErrorMsg.Clear();
-                                error += (result = converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
-                                WriteConvertLog(writer, result, name, item, converter.ErrorMsg);
+                                error += (result = IsCampaign ? converter.ConvertCampaign(item, string.Empty, destFolder) : converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
+                                WriteConvertLog(writer, result, name, item, converter.ErrorWarnMsg, IsCampaign);
                             }
-                            count++;
                         }
                     }
                 }
@@ -303,17 +357,38 @@ namespace IL2DCE.Pages
                 MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Stop);
             }
 
-            model.Result = new object[] { files, converter.CovertedMission.Count, error, logFileSystemPath, };
+            model.Result = new object[] { files, converter.CovertedMissionCount, error, logFileSystemPath, };
         }
 
-        private void WriteConvertLog(StreamWriter writer, bool result, string name, string path, List<string> errorMsg)
+        private void WriteConvertLog(StreamWriter writer, bool result, string name, string path, IEnumerable<string> errorMsgs, bool isCampaign)
         {
-            // Result,Name(ID),FilePath,Error
-            char[] del = new char[] { '\n' };
+            // Result,Name(ID),FilePath,Error&Warn
             const string ResultsSuccess = "Success";
             const string ResultsFail = "Fail";
-            string error = string.Join("|", errorMsg.Select(x => x.Replace("\"", "\"\"").TrimEnd(del)));
-            writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", result ? ResultsSuccess : ResultsFail, name, path, error);
+            const string ResultsWarn = "Warning";
+            if (isCampaign)
+            {
+                bool isErrors = errorMsgs.Any(x => x.Split(MissionFileConverter.SplitChars, StringSplitOptions.RemoveEmptyEntries).Length > 2);
+                writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", result ? isErrors ? ResultsWarn : ResultsSuccess : ResultsFail, name, path, errorMsgs.Count().ToString(Config.NumberFormat));
+                foreach (var item in errorMsgs)
+                {
+                    string[] strs = item.Split(MissionFileConverter.SplitChars, StringSplitOptions.RemoveEmptyEntries);
+                    if (strs.Length >= 2)
+                    {
+                        string errorMsg = string.Join("|", strs.Take(strs.Length - 1).Skip(1).Select(x => x.Replace("\"", "\"\"")));
+                        writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", strs.Length == 2 ? ResultsSuccess : string.Compare(strs.Last(), "0") == 0 ? ResultsWarn : ResultsFail, strs.First(), string.Empty, errorMsg);
+                    }
+                    else
+                    {
+                        writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", ResultsFail, string.Empty, string.Empty, item.Replace("\"", "\"\"").TrimEnd(MissionFileConverter.SplitChars));
+                    }
+                }
+            }
+            else
+            {
+                string errorMsg = string.Join("|", errorMsgs.Select(x => string.Join("|", x.Split(MissionFileConverter.SplitChars, StringSplitOptions.RemoveEmptyEntries).Select(y => y.Replace("\"", "\"\"").TrimEnd(MissionFileConverter.SplitChars)))));
+                writer.WriteLine("\"{0}\",\"{1}\",\"{2}\",\"{3}\"", result ? errorMsg.Any() ? ResultsWarn : ResultsSuccess : ResultsFail, name, path, errorMsg);
+            }
         }
 
         #endregion
@@ -333,8 +408,8 @@ namespace IL2DCE.Pages
 
         protected virtual void MissionLoad(object sender, RoutedEventArgs e)
         {
-            CampaignInfo campaignInfo = SelectedCampaign;
-            if (campaignInfo != null)
+            string missionFile = SelectedCampaignMission;
+            if (!string.IsNullOrEmpty(missionFile))
             {
                 GameIterface gameIterface = Game.gameInterface;
                 if (gameIterface.BattleIsRun())
@@ -344,7 +419,7 @@ namespace IL2DCE.Pages
                 try
                 {
                     gameIterface.AppPartsLoad(gameIterface.AppParts().Where(x => !gameIterface.AppPartIsLoaded(x)).ToList());
-                    gameIterface.MissionLoad(campaignInfo.InitialMissionTemplateFiles.First());
+                    gameIterface.MissionLoad(missionFile);
                     missionLoaded = true;
                     UpdateAirGroupContent();
                     gameIterface.BattleStart();
@@ -352,7 +427,8 @@ namespace IL2DCE.Pages
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message);
+                    string message = string.Format("{0} - {1} {2} {3}", "MissionPage.MissionLoad", ex.Message, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : string.Empty);
+                    Core.WriteLog(message);
                 }
             }
         }

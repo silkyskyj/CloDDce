@@ -45,8 +45,10 @@ namespace IL2DCE
         public const string KeyTime = "time";
         public const string KeyAirGroup = "airGroup";
         public const string KeyAirGroupDislplay = "AirGroupDisplay";
+        public const string KeyCampaignMode = "CampaignMode";
         public const string KeyMissionFile = "missionFile";
         public const string KeyId = "id";
+        public const string KeyMissionIndex = "MissionIndex";
         public const string KeyFlyingTime = "FlyingTime";
         public const string KeySorties = "Sorties";
         public const string KeyTakeoffs = "Takeoffs";
@@ -152,18 +154,16 @@ namespace IL2DCE
             }
         }
 
-        public IEnumerable<string> CampaignMissionFiles
+        public ECampaignMode CampaignMode
         {
-            get
-            {
-                return CampaignInfo != null ? CampaignInfo.InitialMissionTemplateFiles : null;
-            }
+            get;
+            set;
         }
 
         public DateTime? Date
         {
             get;
-            private set;
+            set;
         }
 
         public string MissionFileName
@@ -172,13 +172,17 @@ namespace IL2DCE
             set;
         }
 
-        //public string MissionTemplateFileName
-        //{
-        //    get
-        //    {
-        //        return MissionFileName.Replace(Config.MissionFileExt, "_Template.mis");
-        //    }
-        //}
+        public int MissionIndex
+        {
+            get;
+            set;
+        }
+
+        public string MissionTemplateFileName
+        {
+            get;
+            set;
+        }
 
         public string AirGroup
         {
@@ -210,7 +214,7 @@ namespace IL2DCE
         {
             get
             {
-                return CampaignInfo != null ? CampaignInfo.AirGroupInfos: null;
+                return CampaignInfo != null ? CampaignInfo.AirGroupInfos : null;
             }
         }
 
@@ -418,6 +422,18 @@ namespace IL2DCE
             set;
         }
 
+        public double RandomTimeBegin
+        {
+            get;
+            set;
+        }
+
+        public double RandomTimeEnd
+        {
+            get;
+            set;
+        }
+
         #region Stats
 
         public long FlyingTime
@@ -614,18 +630,27 @@ namespace IL2DCE
             }
         }
 
+        public DateTime UpdateDateTime
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         #region Constructor
 
         public Career(string pilotName, int armyIndex, int airForceIndex, int rankIndex)
         {
+            UpdateDateTime = DateTime.MaxValue;
+
             PilotName = pilotName;
             ArmyIndex = armyIndex;
             AirForceIndex = airForceIndex;
             RankIndex = rankIndex;
             Experience = 0;
 
+            CampaignMode = ECampaignMode.Default;
             CampaignInfo = null;
             Date = null;
             AirGroup = null;
@@ -677,6 +702,9 @@ namespace IL2DCE
             StrictMode = false;
             Status = 0;
 
+            RandomTimeBegin = MissionTime.Begin;
+            RandomTimeEnd = MissionTime.End;
+
             #region Quick Mission Info 
 
             InitQuickMssionInfo();
@@ -684,9 +712,11 @@ namespace IL2DCE
             #endregion
         }
 
-        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile, Config config, string separator = Config.CommaStr)
+        public Career(string pilotName, IList<CampaignInfo> campaignInfos, ISectionFile careerFile, Config config, DateTime lastWriteTime, string separator = Config.CommaStr)
         {
             PilotName = pilotName;
+
+            UpdateDateTime = lastWriteTime;
 
             #region Quick Mission Info 
 
@@ -719,13 +749,16 @@ namespace IL2DCE
 
             #region Campaign
 
+            int mode = careerFile.get(SectionCampaign, KeyCampaignMode, 0);
+            CampaignMode = (Enum.IsDefined(typeof(ECampaignMode), mode)) ? (ECampaignMode)mode : ECampaignMode.Default;
             string id = careerFile.get(SectionCampaign, KeyId);
             CampaignInfo = campaignInfos.Where(x => string.Compare(x.Id, id, true) == 0).FirstOrDefault();
+            MissionFileName = careerFile.get(SectionCampaign, KeyMissionFile);
+            MissionIndex = careerFile.get(SectionCampaign, KeyMissionIndex, 0);
             Time = careerFile.get(SectionCampaign, KeyTime, 0);
             Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
             AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
             AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
-            MissionFileName = careerFile.get(SectionCampaign, KeyMissionFile);
             Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
             Spawn = careerFile.get(SectionCampaign, KeySpawnParked, false) ? (int)ESpawn.Parked : (int)ESpawn.Default;
 
@@ -775,6 +808,12 @@ namespace IL2DCE
             StrictMode = careerFile.get(SectionCampaign, KeyStrictMode, false);
             Status = careerFile.get(SectionCampaign, KeyStatus, 0);
 
+            float fValue;
+            val = careerFile.get(SectionCampaign, Config.KeyRandomTimeBegin, string.Empty);
+            RandomTimeBegin = float.TryParse(val, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeBegin;
+            val = careerFile.get(SectionCampaign, Config.KeyRandomTimeEnd, string.Empty);
+            RandomTimeEnd = float.TryParse(val, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeEnd;
+
             #endregion
 
             #region Stat
@@ -795,7 +834,7 @@ namespace IL2DCE
             {
                 Kills = careerFile.get(SectionStat, KeyKills, 0f);
             }
-            VersionConverter.OptimizePlayerStatTota(this);
+            VersionConverter.OptimizePlayerStatTotal(this);
 
             string key;
             string value;
@@ -808,7 +847,6 @@ namespace IL2DCE
             {
                 careerFile.get(SectionKillsResult, i, out key, out value);
                 if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
-                // if (DateTime.TryParse(key, out dt))
                 {
                     value = VersionConverter.ReplaceKillsHistory(value);
                     if (KillsHistory.ContainsKey(dt.Date))
@@ -829,7 +867,6 @@ namespace IL2DCE
             {
                 careerFile.get(SectionKillsGroundResult, i, out key, out value);
                 if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
-                // if (DateTime.TryParse(key, out dt))
                 {
                     if (KillsGroundHistory.ContainsKey(dt.Date))
                     {
@@ -902,7 +939,7 @@ namespace IL2DCE
                 PilotName);
         }
 
-        public void WriteTo(ISectionFile careerFile, int historyMax)
+        public void WriteTo(ISectionFile careerFile, int historyMax, DateTime? lastWriteTime = null)
         {
             careerFile.add(SectionMain, KeyVersion, VersionConverter.GetCurrentVersion().ToString());
             careerFile.add(SectionMain, KeyArmyIndex, ArmyIndex.ToString(Config.NumberFormat));
@@ -911,13 +948,14 @@ namespace IL2DCE
             careerFile.add(SectionMain, KeyExperience, Experience.ToString(Config.NumberFormat));
 
             #region Campaign
-
+            careerFile.add(SectionCampaign, KeyCampaignMode, ((int)CampaignMode).ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyId, CampaignInfo.Id);
+            careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
+            careerFile.add(SectionCampaign, KeyMissionIndex, MissionIndex.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyDate, Date.Value.Year.ToString(Config.NumberFormat) + "-" + Date.Value.Month.ToString(Config.NumberFormat) + "-" + Date.Value.Day.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyTime, ((int)Time).ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAirGroup, AirGroup);
             careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay ?? string.Empty);
-            careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
-            careerFile.add(SectionCampaign, KeyId, CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyAircraft, Aircraft);
             careerFile.add(SectionCampaign, KeySpawnParked, Spawn == (int)ESpawn.Parked ? "1" : "0");
             careerFile.add(SectionCampaign, KeyAdditionalAirOperations, AdditionalAirOperations.ToString(Config.NumberFormat));
@@ -953,6 +991,8 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
             careerFile.add(SectionCampaign, KeyStrictMode, StrictMode ? "1" : "0");
+            careerFile.add(SectionCampaign, Config.KeyRandomTimeBegin, RandomTimeBegin.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, Config.KeyRandomTimeEnd, RandomTimeEnd.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyStatus, Status.ToString(Config.NumberFormat));
 
             #endregion
@@ -990,6 +1030,11 @@ namespace IL2DCE
             }
 
             #endregion
+
+            if (lastWriteTime != null && lastWriteTime.HasValue)
+            {
+                UpdateDateTime = lastWriteTime.Value;
+            }
         }
 
         public void ReadResult(ISectionFile careerFile, string separator = Config.CommaStr)
@@ -1001,7 +1046,7 @@ namespace IL2DCE
             Bails = careerFile.get(SectionStat, KeyBails, 0);
             Deaths = careerFile.get(SectionStat, KeyDeaths, 0);
             Kills = careerFile.get(SectionStat, KeyKills, 0f);
-            VersionConverter.OptimizePlayerStatTota(this);
+            VersionConverter.OptimizePlayerStatTotal(this);
 
             string key;
             string value;
@@ -1014,7 +1059,6 @@ namespace IL2DCE
             {
                 careerFile.get(SectionKillsResult, i, out key, out value);
                 if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
-                // if (DateTime.TryParse(key, out dt))
                 {
                     if (KillsHistory.ContainsKey(dt.Date))
                     {
@@ -1034,7 +1078,6 @@ namespace IL2DCE
             {
                 careerFile.get(SectionKillsGroundResult, i, out key, out value);
                 if (DateTime.TryParseExact(key, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt))
-                // if (DateTime.TryParse(key, out dt))
                 {
                     if (KillsGroundHistory.ContainsKey(dt.Date))
                     {
@@ -1073,6 +1116,13 @@ namespace IL2DCE
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString(Date.Value.Hour != 0 ? "M/d/yyyy h tt" : "M/d/yyyy", DateTimeFormatInfo.InvariantInfo));
             sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Mode", CampaignMode.ToDescription());
+            sb.AppendLine();
+            if (CampaignInfo != null/* && IsProgressEnableMission()*/)
+            {
+                sb.AppendFormat(PlayerCurrentStatusFormat, "Mission", GetMissionTemplateFileSummary());
+                sb.AppendLine();
+            }
             sb.AppendFormat(PlayerCurrentStatusFormat, "Army", ((EArmy)ArmyIndex).ToString());
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "AirForce", ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription() : ((EAirForceBlue)AirForceIndex).ToDescription());
@@ -1098,6 +1148,28 @@ namespace IL2DCE
             //}
 
             return sb.ToString();
+        }
+
+        private string GetMissionTemplateFileSummary()
+        {
+#if true
+            const string random = "Randomly determined.";
+            switch (CampaignMode)
+            {
+                case ECampaignMode.Progress:
+                case ECampaignMode.Progress2Repeat:
+                    return FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null));
+                case ECampaignMode.Random:
+                    return random;
+                case ECampaignMode.Progress2Random:
+                    return MissionIndex < CampaignInfo.InitialMissionTemplateFileCount ? FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null)): random;
+                case ECampaignMode.Default:
+                default:
+                    return CampaignInfo.InitialMissionTemplateFile;
+            }
+#else
+            return MissionTemplateFileName;
+#endif
         }
 
         public string ToStringTotalResult()
@@ -1131,7 +1203,7 @@ namespace IL2DCE
         {
             if (config != null && random != null)
             {
-                Time = random.Next(config.RandomTimeBegin, config.RandomTimeEnd + 1);
+                Time = random.Next((int)(RandomTimeBegin * 100), (int)(RandomTimeEnd * 100) + 1) / 100;
                 Date = CampaignInfo.StartDate.AddHours(Time);
             }
             else if (config != null)
@@ -1148,7 +1220,7 @@ namespace IL2DCE
         {
             if (Date.Value.Hour == 0)
             {
-                Date = Date.Value.AddHours(config.RandomTimeEnd);
+                Date = Date.Value.AddHours(RandomTimeEnd);
             }
             DateTime dt;
             switch (CampaignProgress)
@@ -1180,13 +1252,13 @@ namespace IL2DCE
             {
                 CampaignInfo.EndDate = dt.Date;
             }
-            if (dt.Hour < config.RandomTimeBegin)
+            if (dt.Hour < RandomTimeBegin)
             {
-                dt = dt.AddHours(config.RandomTimeBegin - dt.Hour);
+                dt = dt.AddHours(RandomTimeBegin - dt.Hour);
             }
-            else if (dt.Hour > config.RandomTimeEnd)
+            else if (dt.Hour > RandomTimeEnd)
             {
-                dt = dt.AddHours(dt.Date < CampaignInfo.EndDate ? config.RandomTimeBegin + 24 - dt.Hour : config.RandomTimeEnd - dt.Hour);
+                dt = dt.AddHours(dt.Date < CampaignInfo.EndDate ? RandomTimeBegin + 24 - dt.Hour : RandomTimeEnd - dt.Hour);
             }
             Date = dt;
             Time = dt.Hour;
@@ -1217,5 +1289,63 @@ namespace IL2DCE
 
             return PlayerAirGroupSkill;
         }
+
+        #region ProgressMode
+
+        public void InitializeProgressMission()
+        {
+            MissionIndex = -1;
+        }
+
+        public string MissionTemplateFile(IRandom random)
+        {
+            CampaignInfo campaignInfo = CampaignInfo;
+            MissionTemplateFileName = campaignInfo != null ? campaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, random): string.Empty;
+            return MissionTemplateFileName;
+        }
+
+        public bool IsProgressEnableMission()
+        {
+            CampaignInfo campaignInfo = CampaignInfo;
+            if (campaignInfo != null)
+            {
+                return CampaignMode == ECampaignMode.Progress ? MissionIndex < campaignInfo.InitialMissionTemplateFileCount: true;
+            }
+            return false;
+        }
+
+        public bool IsProgressNextMission()
+        {
+            CampaignInfo campaignInfo = CampaignInfo;
+            if (campaignInfo != null)
+            {
+                return CampaignMode == ECampaignMode.Progress ? (MissionIndex + 1) < campaignInfo.InitialMissionTemplateFileCount : true;
+            }
+            return false;
+        }
+
+        public string ProgressNextMission(IRandom random)
+        {
+            if (IsProgressNextMission())
+            {
+                MissionIndex++;
+                return MissionTemplateFile(random);
+            }
+            return string.Empty;
+        }
+
+        public void ProgressEndMission()
+        {
+            CampaignInfo campaignInfo = CampaignInfo;
+            if (campaignInfo != null)
+            {
+                if (CampaignMode == ECampaignMode.Progress)
+                {
+                    MissionIndex = campaignInfo.InitialMissionTemplateFileCount;
+                }
+            }
+        }
+
+        #endregion
     }
 }

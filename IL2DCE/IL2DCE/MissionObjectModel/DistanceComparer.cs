@@ -22,34 +22,34 @@ namespace IL2DCE.MissionObjectModel
 {
     public class DistanceComparer : IComparer<AirGroup>, IComparer<GroundGroup>, IComparer<Stationary>, IComparer<AiAirport>
     {
-        Point3d _position3d;
-        Point2d _position2d;
+        private Point3d position3d;
+        private Point2d position2d;
 
         public DistanceComparer(Point3d position)
         {
-            _position3d = position;
-            _position2d = new Point2d(position.x, position.y);
+            position3d = position;
+            position2d = new Point2d(position.x, position.y);
         }
 
         public DistanceComparer(Point2d position)
         {
-            _position3d = new Point3d(position.x, position.y, 0.0);
-            _position2d = position;
+            position3d = new Point3d(position.x, position.y, 0.0);
+            position2d = position;
         }
 
         public int Compare(AirGroup x, AirGroup y)
         {
-            return x.Position.distance(ref _position3d).CompareTo(y.Position.distance(ref _position3d));
+            return x.Position.distance(ref position3d).CompareTo(y.Position.distance(ref position3d));
         }
 
         public int Compare(GroundGroup x, GroundGroup y)
         {
-            return x.Position.distance(ref _position2d).CompareTo(y.Position.distance(ref _position2d));
+            return x.Position.distance(ref position2d).CompareTo(y.Position.distance(ref position2d));
         }
 
         public int Compare(Stationary x, Stationary y)
         {
-            return x.Position.distance(ref _position2d).CompareTo(y.Position.distance(ref _position2d));
+            return x.Position.distance(ref position2d).CompareTo(y.Position.distance(ref position2d));
         }
 
         //public int Compare(KeyValuePair<int, Point3d> x, KeyValuePair<int, Point3d> y)
@@ -59,7 +59,7 @@ namespace IL2DCE.MissionObjectModel
 
         public int Compare(AiAirport x, AiAirport y)
         {
-            return x.Pos().distance(ref _position3d).CompareTo(y.Pos().distance(ref _position3d));
+            return x.Pos().distance(ref position3d).CompareTo(y.Pos().distance(ref position3d));
         }
     }
 }

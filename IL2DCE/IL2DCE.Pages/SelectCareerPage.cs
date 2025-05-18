@@ -21,7 +21,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using IL2DCE.MissionObjectModel;
+using maddox.game.page;
+using maddox.game;
 using maddox.game.play;
+using IL2DCE.Generator;
 
 namespace IL2DCE
 {
@@ -77,7 +80,7 @@ namespace IL2DCE
                 DateAscending,
 
                 [Description("Date Desc")]
-                Dateescending,
+                DateDescending,
 
                 [Description("Rank Asc")]
                 RankAscending,
@@ -90,6 +93,12 @@ namespace IL2DCE
 
                 [Description("Experience Desc")]
                 ExperienceDescending,
+
+                [Description("UpdateDateTime Asc")]
+                UpdateDateTimeAscending,
+
+                [Description("UpdateDateTime Desc")]
+                UpdateDateTimeDescending,
 
                 Count,
             }
@@ -105,6 +114,8 @@ namespace IL2DCE
                     "Date",
                     "RankIndex",
                     "Experience",
+                    "UpdateDateTime",
+                    "",
                 };
 
             #endregion
@@ -298,7 +309,7 @@ namespace IL2DCE
                     career.BattleType = EBattleType.Campaign;
                     career.PlayerAirGroup = airGroup;
                     career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
-                    career.Aircraft = career.CampaignInfo.GetAircraftInfo(SelecedtAirGroup.Class).DisplayName;
+                    career.Aircraft = AircraftInfo.CreateDisplayName(SelecedtAirGroup.Class);
                     career.UpdatePlayerAirGroupSkill();
                     Game.Core.CurrentCareer = career;
                     Game.Core.InitCampaign();
@@ -574,7 +585,7 @@ namespace IL2DCE
                         });
                 }
 
-                comboBox.Text = ECareerSort.DisplayAscending.ToDescription();
+                comboBox.Text = ECareerSort.UpdateDateTimeDescending.ToDescription();
             }
 
             private void UpdateCareerListSort()
@@ -616,8 +627,7 @@ namespace IL2DCE
             {
                 if (career != null && career.CampaignInfo != null)
                 {
-                    // MissionFile missionFile = new MissionFile(Game, career.CampaignInfo.InitialMissionTemplateFiles, career.CampaignInfo.AirGroupInfos);
-                    MissionFile missionFile = new MissionFile(Game, new string[] { career.MissionFileName }, career.CampaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+                    MissionFile missionFile = new MissionFile(Game.gpLoadSectionFile(career.MissionFileName), career.CampaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
                     SelecedtAirGroup = missionFile.AirGroups.Where(x => x.ArmyIndex == career.ArmyIndex && string.Compare(x.ToString(), career.AirGroup) == 0).FirstOrDefault();
                 }
                 else
@@ -631,7 +641,7 @@ namespace IL2DCE
             private void UpdateButtonStatus()
             {
                 Career career = SelectedCareer;
-                FrameworkElement.Continue.IsEnabled = career != null && career.CampaignInfo != null && career.Date <= career.CampaignInfo.EndDate && 
+                FrameworkElement.Continue.IsEnabled = career != null && career.CampaignInfo != null && career.Date <= career.CampaignInfo.EndDate && career.IsProgressEnableMission() &&
                                                     ((career.StrictMode && career.Status == (int)EPlayerStatus.Alive) || !career.StrictMode) && SelecedtAirGroup != null;
                 FrameworkElement.Delete.IsEnabled = career != null;
             }

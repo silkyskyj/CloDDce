@@ -35,6 +35,7 @@ namespace IL2DCE
         public static readonly char[] SplitSpace = new char[] { ' ' };
         public static readonly char[] SplitComma = new char[] { ',' };
         public static readonly char[] SplitOr = new char[] { '|' };
+        public static readonly char[] SplitDQ = new char[] { '"' };
 
         public const string AppName = "IL2DCE";
         public const string HomeFolder = "$home/";
@@ -53,6 +54,7 @@ namespace IL2DCE
         public const string AirGroupInfoFileName = "AirGroupInfo.ini";
         public const string CareerInfoFileName = "Career.ini";
         public const string StatsInfoFileName = "Stats.ini";
+        public const string CampaignFileName = "Campaign.ini";
         public const string MissionScriptFileName = "MissionSingle.cs";
         public const string UserMissionFolder = "$user/mission/IL2DCE";
         public const string UserMissionsFolder = "$user/missions/IL2DCE";
@@ -96,6 +98,8 @@ namespace IL2DCE
         public const string SectionStationaryAeroanchored = "Stationary.Aeroanchored";
         public const string SectionStationaryAirfield = "Stationary.Airfield";
         public const string SectionStationaryUnknown = "Stationary.Unknown";
+        public const string SectionBattles = "Battles";
+
 
         public const string KeySourceFolderFileName = "SourceFolderFileName";
         public const string KeySourceFolderFolderName = "SourceFolderFolderName";
@@ -113,6 +117,7 @@ namespace IL2DCE
         public const string KeyRandomTimeEnd = "RandomTimeEnd";
         public const string KeyGroupDisableRate = "GroupDisableRate";
         public const string KeyReinForceDay = "ReinForceDay";
+        public const string KeyGroupNotAliveToDestroy = "GroupNotAliveToDestroy";
 
         public const string DynamicSpawnFileName = "DynamicSpawn";
 
@@ -161,98 +166,98 @@ namespace IL2DCE
         {
             get
             {
-                return _campaignsFolder;
+                return campaignsFolder;
             }
         }
-        private string _campaignsFolder;
+        private string campaignsFolder;
 
         public int AdditionalAirOperations
         {
             get
             {
-                return _additionalAirOperations;
+                return additionalAirOperations;
             }
         }
-        private int _additionalAirOperations = DefaultAdditionalAirOperations;
+        private int additionalAirOperations = DefaultAdditionalAirOperations;
 
         public int AdditionalGroundOperations
         {
             get
             {
-                return _additionalGroundOperations;
+                return additionalGroundOperations;
             }
         }
-        private int _additionalGroundOperations = DefaultAdditionalGroundOperations;
+        private int additionalGroundOperations = DefaultAdditionalGroundOperations;
 
         public double FlightSize
         {
             get
             {
-                return _flightSize;
+                return flightSize;
             }
         }
-        private double _flightSize = 1.0;
+        private double flightSize = 1.0;
 
         public double FlightCount
         {
             get
             {
-                return _flightCount;
+                return flightCount;
             }
         }
-        private double _flightCount = 1.0;
+        private double flightCount = 1.0;
 
         public bool SpawnParked
         {
             get
             {
-                return _spawnParked;
+                return spawnParked;
             }
             set
             {
-                _spawnParked = value;
+                spawnParked = value;
             }
         }
-        public static bool _spawnParked = false;
+        public static bool spawnParked = false;
 
         public int Debug
         {
             get
             {
-                return _debug;
+                return debug;
             }
             set
             {
-                _debug = value;
+                debug = value;
             }
         }
-        private int _debug = 0;
+        private int debug = 0;
 
         public int StatType
         {
             get
             {
-                return _statType;
+                return statType;
             }
             set
             {
-                _statType = value;
+                statType = value;
             }
         }
-        private int _statType = 0;
+        private int statType = 0;
 
         public double StatKillsOver
         {
             get
             {
-                return _statKillsOver;
+                return statKillsOver;
             }
             set
             {
-                _statKillsOver = value;
+                statKillsOver = value;
             }
         }
-        private double _statKillsOver = 0.5;
+        private double statKillsOver = 0.5;
 
         public string[] SorceFolderFileName
         {
@@ -594,7 +599,12 @@ namespace IL2DCE
             private set;
         }
 
-        // public static CultureInfo Culture = new CultureInfo("en-US", true);
+        public bool GroupNotAliveToDestroy
+        {
+            get;
+            private set;
+        }
+
         public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
         public static DateTimeFormatInfo DateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
         
@@ -618,11 +628,11 @@ namespace IL2DCE
             string value;
             if (confFile.exist(SectionMain, "campaignsFolder"))
             {
-                _campaignsFolder = confFile.get(SectionMain, "campaignsFolder");
+                campaignsFolder = confFile.get(SectionMain, "campaignsFolder");
             }
             else
             {
-                _campaignsFolder = CampaignsFolderDefault;
+                campaignsFolder = CampaignsFolderDefault;
             }
 
             SpawnParked = false;
@@ -642,43 +652,43 @@ namespace IL2DCE
             if (confFile.exist(SectionCore, "additionalAirOperations"))
             {
                 value = confFile.get(SectionCore, "additionalAirOperations");
-                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _additionalAirOperations);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out additionalAirOperations);
             }
 
             if (confFile.exist(SectionCore, "additionalGroundOperations"))
             {
                 value = confFile.get(SectionCore, "additionalGroundOperations");
-                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _additionalGroundOperations);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out additionalGroundOperations);
             }
 
             if (confFile.exist(SectionCore, "flightSize"))
             {
                 value = confFile.get(SectionCore, "flightSize");
-                double.TryParse(value, NumberStyles.Float, NumberFormat, out _flightSize);
+                double.TryParse(value, NumberStyles.Float, NumberFormat, out flightSize);
             }
 
             if (confFile.exist(SectionCore, "flightCount"))
             {
                 value = confFile.get(SectionCore, "flightCount");
-                double.TryParse(value, NumberStyles.Float, NumberFormat, out _flightCount);
+                double.TryParse(value, NumberStyles.Float, NumberFormat, out flightCount);
             }
 
             if (confFile.exist(SectionCore, "debug"))
             {
                 value = confFile.get(SectionCore, "debug");
-                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _debug);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out debug);
             }
 
             if (confFile.exist(SectionCore, "statType"))
             {
                 value = confFile.get(SectionCore, "statType");
-                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _statType);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out statType);
             }
 
             if (confFile.exist(SectionCore, "statKillsOver"))
             {
                 value = confFile.get(SectionCore, "statKillsOver");
-                double.TryParse(value, NumberStyles.Float, NumberFormat, out _statKillsOver);
+                double.TryParse(value, NumberStyles.Float, NumberFormat, out statKillsOver);
             }
 
             ProcessInterval = confFile.get(SectionCore, KeyProcessInterval, DefaultProcessInterval);
@@ -688,7 +698,7 @@ namespace IL2DCE
             if (confFile.exist(SectionCore, "statType"))
             {
                 value = confFile.get(SectionCore, "statType");
-                int.TryParse(value, NumberStyles.Integer, NumberFormat, out _statType);
+                int.TryParse(value, NumberStyles.Integer, NumberFormat, out statType);
             }
 
             if (confFile.exist(SectionMissionFileConverter, KeySourceFolderFileName))
@@ -790,7 +800,11 @@ namespace IL2DCE
             float fValue;
             GroupDisableRate = float.TryParse(value, NumberStyles.Float, NumberFormat, out fValue) ? fValue : GroupDisableRateDefault;
             ReinForceDay = confFile.get(SectionCore, KeyReinForceDay, ReinForceDayDefault);
+
+            GroupNotAliveToDestroy = confFile.get(SectionCore, KeyGroupNotAliveToDestroy, 0) == 1;
         }
+
+        #region Random Unit
 
         private void ReadRandomUnitInfo(ISectionFile confFile)
         {
@@ -1196,5 +1210,7 @@ namespace IL2DCE
                 StationaryUnknownRandomBlue = new string[0];
             }
         }
+
+        #endregion
     }
 }

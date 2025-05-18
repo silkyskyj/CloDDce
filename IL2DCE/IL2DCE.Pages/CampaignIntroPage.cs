@@ -22,6 +22,7 @@ using System.Windows.Media.Imaging;
 using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
+using maddox.game;
 using maddox.game.play;
 
 namespace IL2DCE
@@ -67,7 +68,9 @@ namespace IL2DCE
                 Career career = Game.Core.CurrentCareer;
                 CampaignInfo campaignInfo = career.CampaignInfo;
 
-                MissionFile campaignTemplate = new MissionFile(Game, campaignInfo.InitialMissionTemplateFiles, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
+                string missionTemplateFileName = campaignInfo.InitialMissionTemplateFile;
+                ISectionFile missionTemplateSectionFile = Game.gpLoadSectionFile(missionTemplateFileName);
+                MissionFile campaignTemplate = new MissionFile(missionTemplateSectionFile, campaignInfo.AirGroupInfos, MissionFile.LoadLevel.AirGroup);
 
                 ComboBox comboBoxAirGroup = FrameworkElement.comboBoxSelectAirGroup;
                 comboBoxAirGroup.Items.Clear();
@@ -182,8 +185,7 @@ namespace IL2DCE
                 career.AirGroup = airGroup.ToString();
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 CampaignInfo campaignInfo = career.CampaignInfo;
-                AircraftInfo aircraftInfo = career.CampaignInfo.GetAircraftInfo(airGroup.Class);
-                career.Aircraft = aircraftInfo.DisplayName;
+                career.Aircraft = AircraftInfo.CreateDisplayName(airGroup.Class);
                 campaignInfo.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
                 campaignInfo.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
 

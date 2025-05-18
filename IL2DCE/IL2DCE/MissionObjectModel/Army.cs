@@ -63,5 +63,26 @@ namespace IL2DCE.MissionObjectModel
                 return ECountry.nn;
             }
         }
+
+        public static int Enemy(int army)
+        {
+            return (int)Enemy((EArmy)army);
+        }
+
+        public static EArmy Enemy(EArmy army)
+        {
+            if (army == EArmy.Red)
+            {
+                return EArmy.Blue;
+            }
+            else if (army == EArmy.Blue)
+            {
+                return EArmy.Red;
+            }
+            else
+            {
+                return EArmy.None;
+            }
+        }
     }
 }

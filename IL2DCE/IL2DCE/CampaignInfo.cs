@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using IL2DCE.Generator;
@@ -30,6 +31,27 @@ namespace IL2DCE
         InProgress,
         DateEnd,
         Dead,
+        ProgressEnd,
+        Count,
+    };
+
+    public enum ECampaignMode
+    {
+        [Description("Default")]
+        Default,
+
+        [Description("Progress")]
+        Progress,
+
+        [Description("Random")]
+        Random,
+
+        [Description("Progress → Random")]
+        Progress2Random,
+
+        [Description("Progress → Repeat")]
+        Progress2Repeat,
+
         Count,
     };
 
@@ -38,18 +60,22 @@ namespace IL2DCE
     /// </summary>
     public class CampaignInfo
     {
-
         #region Definition
 
         public const string SectionMain = "Main";
+        public const string SectionMapPeriod = "Map.Period";
         public const string KeyName = "name";
+        public const string KeyCampaignMode = "CampaignMode";
         public const string KeyInitialTemplate = "initialTemplate";
         public const string KeyScriptFile = "scriptFile";
         public const string KeyStartDate = "startDate";
         public const string KeyEndDate = "endDate";
         public const string KeyDynamicFrontMarker = "DynamicFrontMarker";
         public const string FormatDate = "yyyy-MM-dd";
-        
+
+        public static readonly DateTime DefaultStartDate = new DateTime(1940, 07, 10);
+        public static readonly DateTime DefaultEndDate = new DateTime(1940, 08, 11);
+
         /// <summary>
         /// Max Campaign Period
         /// </summary>
@@ -66,10 +92,10 @@ namespace IL2DCE
         {
             get
             {
-                return _id;
+                return id;
             }
         }
-        string _id;
+        string id;
 
         /// <summary>
         /// The name of the campaign.
@@ -83,17 +109,27 @@ namespace IL2DCE
         }
         string name;
 
-        /// <summary>
-        /// The list of initial mission template files that contain the starting location of air and ground groups.
-        /// </summary>
-        public List<string> InitialMissionTemplateFiles
+        public ECampaignMode CampaignMode
+        {
+            get;
+            private set;
+        }
+
+        public string InitialMissionTemplateFile
         {
             get
             {
-                return _initialMissionTemplateFiles;
+                return initialMissionTemplateFiles.FirstOrDefault();
             }
         }
-        private List<string> _initialMissionTemplateFiles = new List<string>();
+
+        public int InitialMissionTemplateFileCount
+        {
+            get
+            {
+                return initialMissionTemplateFiles.Count;
+            }
+        }
 
         /// <summary>
         /// The name of the script file that will be used in the generated missions.
@@ -102,10 +138,10 @@ namespace IL2DCE
         {
             get
             {
-                return _scriptFileName;
+                return scriptFileName;
             }
         }
-        private string _scriptFileName;
+        private string scriptFileName;
 
         /// <summary>
         /// The start date of the campaign.
@@ -114,14 +150,14 @@ namespace IL2DCE
         {
             get
             {
-                return _startDate;
+                return startDate;
             }
             set
             {
-                _startDate = value;
+                startDate = value;
             }
         }
-        private DateTime _startDate;
+        private DateTime startDate;
 
         /// <summary>
         /// The end date of the campaign.
@@ -130,19 +166,22 @@ namespace IL2DCE
         {
             get
             {
-                return _endDate;
+                return endDate;
             }
             set
             {
-                _endDate = value;
+                endDate = value;
             }
         }
-        private DateTime _endDate;
+        private DateTime endDate;
 
-        /// <summary>
-        /// The end date of the campaign.
-        /// </summary>
         public bool DynamicFrontMarker
+        {
+            get;
+            private set;
+        }
+
+        public Dictionary<int, string> MapPeriods
         {
             get;
             private set;
@@ -152,10 +191,10 @@ namespace IL2DCE
         {
             get
             {
-                return _localAirGroupInfos;
+                return localAirGroupInfos;
             }
         }
-        private AirGroupInfos _localAirGroupInfos;
+        private AirGroupInfos localAirGroupInfos;
 
         #region Random Unit
 
@@ -407,8 +446,13 @@ namespace IL2DCE
             set;
         }
 
-        private ISectionFile _globalAircraftInfoFile;
-        private ISectionFile _localAircraftInfoFile;
+        /// <summary>
+        /// The list of initial mission template files that contain the starting location of air and ground groups.
+        /// </summary>
+        private List<string> initialMissionTemplateFiles = new List<string>();
+
+        private ISectionFile globalAircraftInfoFile;
+        private ISectionFile localAircraftInfoFile;
 
         #endregion
 
@@ -422,14 +466,24 @@ namespace IL2DCE
         /// <param name="scriptFileName"></param>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
-        public CampaignInfo(string name, string[] initialMissionTemplateFiles, string scriptFileName, DateTime startDate, DateTime endDate)
+        /// <param name="mapPeriods"></param>
+        public CampaignInfo(string name, ECampaignMode campaignMode, IEnumerable<string> initialMissionTemplateFiles, string scriptFileName, DateTime? startDate = null, DateTime? endDate = null, IEnumerable<KeyValuePair<int, string>> mapPeriods = null)
         {
             this.name = name;
-            _id = name;
-            _initialMissionTemplateFiles = initialMissionTemplateFiles.ToList();
-            _scriptFileName = scriptFileName;
-            _startDate = startDate;
-            _endDate = endDate;
+            id = name;
+            CampaignMode = campaignMode;
+            this.initialMissionTemplateFiles = initialMissionTemplateFiles.ToList();
+            this.scriptFileName = scriptFileName;
+            this.startDate = startDate != null && startDate.HasValue ? startDate.Value : DefaultStartDate;
+            this.endDate = endDate != null && endDate.HasValue ? endDate.Value : DefaultEndDate;
+            MapPeriods = new Dictionary<int, string>();
+            if (mapPeriods != null)
+            {
+                foreach (var item in mapPeriods)
+                {
+                    MapPeriods.Add(item.Key, item.Value);
+                }
+            }
             DynamicFrontMarker = false;
         }
 
@@ -444,10 +498,10 @@ namespace IL2DCE
         /// <param name="localAirGroupInfos">If available the local aigroup info file, otherwise the global aigroup info file is used.</param>
         public CampaignInfo(string id, string campaignFolderPath, ISectionFile campaignFile, ISectionFile globalAircraftInfoFile, ISectionFile localAircraftInfoFile = null, AirGroupInfos localAirGroupInfos = null)
         {
-            _id = id;
-            _globalAircraftInfoFile = globalAircraftInfoFile;
-            _localAircraftInfoFile = localAircraftInfoFile;
-            _localAirGroupInfos = localAirGroupInfos;
+            this.id = id;
+            this.globalAircraftInfoFile = globalAircraftInfoFile;
+            this.localAircraftInfoFile = localAircraftInfoFile;
+            this.localAirGroupInfos = localAirGroupInfos;
 
             if (campaignFile.exist(SectionMain, KeyName))
             {
@@ -458,23 +512,26 @@ namespace IL2DCE
                 InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyName);
             }
 
+            int val = campaignFile.get(SectionMain, KeyCampaignMode, 0);
+            CampaignMode = (Enum.IsDefined(typeof(ECampaignMode), val)) ? (ECampaignMode)val : ECampaignMode.Default;
+
             if (campaignFile.exist(SectionMain, KeyInitialTemplate))
             {
-                var initialTemplates = campaignFile.get(SectionMain, KeyInitialTemplate).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var initialTemplates = campaignFile.get(SectionMain, KeyInitialTemplate).Split(Config.SplitComma, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string initialTemplate in initialTemplates)
                 {
-                    InitialMissionTemplateFiles.Add(campaignFolderPath + initialTemplate.Trim());
+                    initialMissionTemplateFiles.Add(string.Format("{0}{1}", campaignFolderPath, initialTemplate.Trim()));
                 }
             }
-            if (InitialMissionTemplateFiles.Count < 1)
+            if (initialMissionTemplateFiles.Count < 1)
             {
                 InvalidInifileFormatException(campaignFolderPath, SectionMain, KeyInitialTemplate);
             }
 
             if (campaignFile.exist(SectionMain, KeyScriptFile))
             {
-                _scriptFileName = campaignFile.get(SectionMain, KeyScriptFile);
+                scriptFileName = campaignFile.get(SectionMain, KeyScriptFile);
             }
             else
             {
@@ -484,7 +541,7 @@ namespace IL2DCE
             if (campaignFile.exist(SectionMain, KeyStartDate))
             {
                 string startDateString = campaignFile.get(SectionMain, KeyStartDate);
-                _startDate = DateTime.Parse(startDateString);
+                startDate = DateTime.Parse(startDateString);
             }
             else
             {
@@ -494,7 +551,7 @@ namespace IL2DCE
             if (campaignFile.exist(SectionMain, KeyEndDate))
             {
                 string endDateString = campaignFile.get(SectionMain, KeyEndDate);
-                _endDate = DateTime.Parse(endDateString);
+                endDate = DateTime.Parse(endDateString);
             }
             else
             {
@@ -503,10 +560,39 @@ namespace IL2DCE
 
             DynamicFrontMarker = campaignFile.get(SectionMain, KeyDynamicFrontMarker, false);
 
+            IEnumerable<string> mapLists = Map.DefaultList();
+            MapPeriods = new Dictionary<int, string>();
+            string key;
+            string value;
+            int lines = campaignFile.lines(SectionMapPeriod);
+            for (int i = 0; i < lines; i++)
+            {
+                campaignFile.get(SectionMapPeriod, i, out key, out value);
+                int n;
+                if (int.TryParse(key, out n) && !string.IsNullOrWhiteSpace(value))
+                {
+                    value = value.Trim();
+                    if (mapLists.Contains(value))
+                    {
+                        n = Math.Max(0, n);
+                        if (MapPeriods.ContainsKey(n))
+                        {
+                            MapPeriods[n] = value;
+                        }
+                        else
+                        {
+                            MapPeriods.Add(n, value);
+                        }
+                    }
+                }
+            }
+
             ReadRandomUnitInfo(campaignFile);
         }
 
         #endregion
+
+        #region Random Unit
 
         private void ReadRandomUnitInfo(ISectionFile confFile)
         {
@@ -913,10 +999,139 @@ namespace IL2DCE
             }
         }
 
-        public static void InvalidInifileFormatException(string folder, string section, string key)
+        #endregion
+
+        #region ProgressMap
+
+        public string ProgressMapName(DateTime dt)
         {
-            throw new FormatException(string.Format("Invalid Campaign File Format [Folder:{0}, Section:{1}, Key:{2}]", folder, section, key));
+            // 1940/08/15 (03, 15, 25) -> 1940/08/03, 1940/08/15, 1940/08/25 -> 1940/08/15 
+            // 1940/08/15 (03, 25) -> 1940/08/03, 1940/08/25 -> 1940/08/03
+            // 1940/08/15 (20, 25) -> 1940/08/20, 1940/08/25 -> (null) xx-> 1940/08/25
+            // 1940/08/15 (20, 0825) -> 1940/08/20, 1940/08/25 -> (null) xx-> 1939/08/25
+            if (MapPeriods != null && MapPeriods.Any())
+            {
+                var mapLists = MapPeriods.Select(x => new KeyValuePair<DateTime, string>(Parse(dt, x.Key), x.Value)).OrderByDescending(x => x.Key);
+                foreach (var item in mapLists)
+                {
+                    if (item.Key <= dt)
+                    {
+                        return item.Value;
+                    }
+                }
+            }
+            return string.Empty;
         }
+
+        private DateTime Parse(DateTime dtBase, int dateValue)
+        {
+            // 1940/08/15, 03 -> 1940/08/03
+            // 1940/08/15, 15 -> 1940/08/15
+            // 1940/08/15, 25 -> 1940/07/25
+            // 1940/08/15, 0525 -> 1940/05/25
+            // 1940/08/15, 0825 -> 1939/08/25
+            // 1940/08/15, 1210 -> 1939/12/10
+            // 1941/01/01, 1210
+
+            int year;
+            int month;
+            int day;
+            
+            if (dateValue > 9999)
+            {
+                year = Math.Max(Math.Min(dateValue / 10000, DateTime.MaxValue.Year), DateTime.MinValue.Year);
+            }
+            else
+            {
+                year = dtBase.Year;
+            }
+            
+            if (dateValue > 99)
+            {
+                month = Math.Max(Math.Min((dateValue % 10000) / 100, 12), 1);
+            }
+            else
+            {
+                month = dtBase.Month;
+            }
+
+            if (dateValue > 0)
+            {
+                day = Math.Max(Math.Min(dateValue % 100, DateTime.DaysInMonth(year, month)), 1);
+            }
+            else
+            {
+                day = dtBase.Day;
+            }
+
+            DateTime dt = new DateTime(year, month, day);
+            if (dt > dtBase && dt > DateTime.MinValue)
+            {
+                if (dateValue <= 0)
+                {
+                    dt = dt.AddDays(-1);
+                }
+                else if (dateValue <= 99)
+                {
+                    dt = dt.AddMonths(-1);
+                }
+                else if (dateValue <= 9999)
+                {
+                    dt = dt.AddYears(-1);
+                }
+            }
+            return dt;
+        }
+
+        #endregion
+
+        #region MissionTemplateFile
+
+        public string MissionTemplateFile(ECampaignMode mode, int index, IRandom random)
+        {
+            if (mode == ECampaignMode.Progress)
+            {
+                return MissionTemplateFile(index);
+            }
+            else if (mode == ECampaignMode.Random)
+            {
+                return GetRandomMissionTemplateFile(random);
+            }
+            else if (mode == ECampaignMode.Progress2Random)
+            {
+                string result = MissionTemplateFile(index);
+                if (string.IsNullOrEmpty(result))
+                {
+                    result = GetRandomMissionTemplateFile(random);
+                }
+                return result;
+            }
+            else if (mode == ECampaignMode.Progress2Repeat)
+            {
+                return MissionTemplateFile(index % initialMissionTemplateFiles.Count);
+            }
+            return initialMissionTemplateFiles.FirstOrDefault();
+        }
+
+        private string MissionTemplateFile(int index)
+        {
+            if (index >= 0 && index < initialMissionTemplateFiles.Count)
+            {
+                return initialMissionTemplateFiles[index];
+            }
+            return string.Empty;
+        }
+
+        private string GetRandomMissionTemplateFile(IRandom random)
+        {
+            if (random == null)
+            {
+                random = Random.Default;
+            }
+            return initialMissionTemplateFiles[random.Next(initialMissionTemplateFiles.Count)];
+        }
+
+        #endregion
 
         /// <summary>
         /// The textual representation of a CampaignInfo object.
@@ -924,7 +1139,7 @@ namespace IL2DCE
         /// <returns>The name of the campaign.</returns>
         public override string ToString()
         {
-            return _id;
+            return id;
         }
 
         public string ToSummaryString()
@@ -932,35 +1147,46 @@ namespace IL2DCE
             return string.Format(DateTimeFormatInfo.InvariantInfo, "Name: {0}\nStartDate: {1,-12:d}\n  EndDate: {2,-12:d}\n", Name, StartDate, EndDate);
         }
 
-         /// <summary>
+        public void Write(ISectionFile file, string separator = Config.CommaStr)
+        {
+            SilkySkyCloDFile.Write(file, SectionMain, KeyName, name, true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyCampaignMode, ((int)CampaignMode).ToString(Config.NumberFormat), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(Config.CommaStr, initialMissionTemplateFiles), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName, true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyDynamicFrontMarker, DynamicFrontMarker ? "1": "0", true);
+            foreach (var item in MapPeriods)
+            {
+                string format = string.Format("D{0}", item.Key > 10000 ? 6: item.Key > 100 ? 4: 2);       
+                SilkySkyCloDFile.Write(file, SectionMapPeriod, (item.Key % 1000000).ToString(format, Config.NumberFormat), item.Value, true);
+            }
+        }
+
+        private void InvalidInifileFormatException(string folder, string section, string key)
+        {
+            throw new FormatException(string.Format("Invalid Campaign File Format [Folder:{0}, Section:{1}, Key:{2}]", folder, section, key));
+        }
+
+        /// <summary>
         /// Gets the aircraft info for the given aicraft name. 
         /// </summary>
         /// <param name="aircraft">The name of the aircraft.</param>
         /// <returns>If available it returns the definition of the local aircraft info file, otherwise the definiton of the global aircraft info is returned.</returns>
         public AircraftInfo GetAircraftInfo(string aircraft)
         {
-            if (_localAircraftInfoFile != null && _localAircraftInfoFile.exist(SectionMain, aircraft))
+            if (localAircraftInfoFile != null && localAircraftInfoFile.exist(SectionMain, aircraft))
             {
-                return new AircraftInfo(_localAircraftInfoFile, aircraft);
+                return new AircraftInfo(localAircraftInfoFile, aircraft);
             }
-            else if (_globalAircraftInfoFile.exist(SectionMain, aircraft))
+            else if (globalAircraftInfoFile.exist(SectionMain, aircraft))
             {
-                return new AircraftInfo(_globalAircraftInfoFile, aircraft);
+                return new AircraftInfo(globalAircraftInfoFile, aircraft);
             }
             else
             {
                 throw new ArgumentException(string.Format("no aircraft[{0}] info in the file[{1}]", aircraft, "Aircraftinfo.ini"));
             }
-        }
-
-        public void Write(ISectionFile file, string separator = Config.CommaStr)
-        {
-            SilkySkyCloDFile.Write(file, SectionMain, KeyName, name, true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyInitialTemplate, string.Join(separator, InitialMissionTemplateFiles), true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName, true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyDynamicFrontMarker, DynamicFrontMarker ? "1": "0", true);
         }
     }
 }

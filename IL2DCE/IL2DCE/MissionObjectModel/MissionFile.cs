@@ -47,6 +47,7 @@ namespace IL2DCE.MissionObjectModel
         public const string SectionAction = "Action";
         public const string SectionAirdromes = "Airdromes";
         public const string SectionWay = "Way";
+        public const string SectionNpc = "NPC";
         public const string KeyMap = "MAP";
         public const string KeyBattleArea = "BattleArea";
         public const string KeyRunways = "Runways";
@@ -246,17 +247,6 @@ namespace IL2DCE.MissionObjectModel
 #endregion
 
         private AirGroupInfos airGroupInfos;
-
-        public MissionFile(IGamePlay game, IEnumerable<string> fileNames, AirGroupInfos airGroupInfos = null, LoadLevel loadLevel = LoadLevel.All )
-        {
-            this.airGroupInfos = airGroupInfos;
-
-            init();
-            foreach (string fileName in fileNames)
-            {
-                load(game.gpLoadSectionFile(fileName), loadLevel);
-            }
-        }
 
         public MissionFile(ISectionFile file, AirGroupInfos airGroupInfos = null, LoadLevel loadLevel = LoadLevel.All)
         {

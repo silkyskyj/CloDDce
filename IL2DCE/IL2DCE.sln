@@ -82,6 +82,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Steppe.Tobruk", "Steppe.Tob
 		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transfer", "Transfer", "{77DF0E55-8035-4C74-BFC9-C2DC13736CE6}"
+	ProjectSection(SolutionItems) = preProject
+		Campaigns\Transfer\AircraftInfo.ini = Campaigns\Transfer\AircraftInfo.ini
+		Campaigns\Transfer\AirGroupInfo.ini = Campaigns\Transfer\AirGroupInfo.ini
+		Campaigns\Transfer\CampaignInfo.ini = Campaigns\Transfer\CampaignInfo.ini
+		Campaigns\Transfer\MissionSingle.cs = Campaigns\Transfer\MissionSingle.cs
+		Campaigns\Transfer\Transfer01.mis = Campaigns\Transfer\Transfer01.mis
+		Campaigns\Transfer\Transfer02.mis = Campaigns\Transfer\Transfer02.mis
+		Campaigns\Transfer\Transfer03.mis = Campaigns\Transfer\Transfer03.mis
+		Campaigns\Transfer\Transfer04.mis = Campaigns\Transfer\Transfer04.mis
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -118,6 +130,7 @@ Global
 		{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{AE78E049-6049-43C3-A593-36D58E50EE47} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{F004BA31-3ED5-4669-90DE-CCBF5A31A90A} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
+		{77DF0E55-8035-4C74-BFC9-C2DC13736CE6} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60E924F7-66B7-4DA3-884D-0E0FA7339A19}

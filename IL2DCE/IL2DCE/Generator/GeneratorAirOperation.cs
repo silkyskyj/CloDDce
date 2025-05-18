@@ -898,7 +898,7 @@ namespace IL2DCE.Generator
         {
             bool result = false;
             IEnumerable<AirGroup> airGroupList = EnableMissionMultiAssign ? AllAirGroups : AvailableAirGroups;
-            var enemyAirGroups = airGroupList.Where(x => x.ArmyIndex != airGroup.ArmyIndex).ToArray();
+            var enemyAirGroups = airGroupList.Where(x => x.ArmyIndex == Army.Enemy(airGroup.ArmyIndex)).ToArray();
             AirGroup huntingAirGroup = null;
             foreach (var item in enemyAirGroups)
             {
@@ -1039,7 +1039,7 @@ namespace IL2DCE.Generator
             IEnumerable<AirGroup> airGroupList = EnableMissionMultiAssign ? AllAirGroups : AvailableAirGroups;
             foreach (AirGroup airGroup in airGroupList)
             {
-                if (airGroup.ArmyIndex != opposingArmyIndex)
+                if (airGroup.ArmyIndex == Army.Enemy(opposingArmyIndex))
                 {
                     IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
                     foreach (EMissionType missionType in missionTypes)
@@ -1060,7 +1060,7 @@ namespace IL2DCE.Generator
             IEnumerable<AirGroup> airGroupList = EnableMissionMultiAssign ? AllAirGroups : AvailableAirGroups;
             foreach (AirGroup airGroup in airGroupList)
             {
-                if (airGroup.ArmyIndex != opposingArmyIndex)
+                if (airGroup.ArmyIndex == Army.Enemy(opposingArmyIndex))
                 {
                     IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
                     foreach (EMissionType missionType in missionTypes)
@@ -1189,7 +1189,7 @@ namespace IL2DCE.Generator
             IEnumerable<AirGroup> airGroupList = EnableMissionMultiAssign ? AllAirGroups : AvailableAirGroups;
             foreach (AirGroup airGroup in airGroupList)
             {
-                if (airGroup.ArmyIndex != opposingArmyIndex)
+                if (airGroup.ArmyIndex == Army.Enemy(opposingArmyIndex))
                 {
                     IEnumerable<EMissionType> missionTypes = CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes;
                     foreach (EMissionType missionType in missionTypes)
@@ -1331,7 +1331,7 @@ namespace IL2DCE.Generator
         //    List<AirGroup> airGroups = new List<AirGroup>();
         //    foreach (AirGroup airGroup in AvailableAirGroups)
         //    {
-        //        if (airGroup.ArmyIndex != interceptedAirUnit.ArmyIndex)
+        //        if (airGroup.ArmyIndex == Army.Enemy(interceptedAirUnit.ArmyIndex))
         //        {
         //            if (CampaignInfo.GetAircraftInfo(airGroup.Class).MissionTypes.Contains(EMissionType.INTERCEPT))
         //            {
@@ -1467,7 +1467,7 @@ namespace IL2DCE.Generator
             }
             else if (missionType == EMissionType.HUNTING)
             {
-                return EnableMissionMultiAssign ? AllAirGroups.Any(x => x.ArmyIndex != airGroup.ArmyIndex) : AvailableAirGroups.Any(x => x.ArmyIndex != airGroup.ArmyIndex);
+                return EnableMissionMultiAssign ? AllAirGroups.Any(x => x.ArmyIndex == Army.Enemy(airGroup.ArmyIndex)) : AvailableAirGroups.Any(x => x.ArmyIndex == Army.Enemy(airGroup.ArmyIndex));
             }
             else if (missionType == EMissionType.TRANSFER)
             {
@@ -1777,7 +1777,7 @@ namespace IL2DCE.Generator
                 {
                     point.x = Random.Next((int)range.x1, (int)range.x2 + 1);
                     point.y = Random.Next((int)range.y1, (int)range.y2 + 1);
-                } while (GamePlay.gpFrontArmy(point.x, point.y) != airGroup.ArmyIndex && reTry++ < MaxRetrySpawnRandomChange);
+                } while (GamePlay.gpFrontArmy(point.x, point.y) == Army.Enemy(airGroup.ArmyIndex) && reTry++ < MaxRetrySpawnRandomChange);
                 airGroup.UpdateStartPoint(ref point);
                 Debug.Write(string.Format(" => AirStart Pos Changed={0}", airGroup.Position.ToString()));
             }
@@ -1970,7 +1970,7 @@ namespace IL2DCE.Generator
                                 item.DisplayDetailName, item.MissionType, way.X, way.Y, way.Z, way.V, item.Airstart, item.SetOnParked, item.SpawnFromScript, item.Spawn.Time.Value);
                 }
             }
-            foreach (var item in AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex != AirGroupPlayer.ArmyIndex).OrderBy(x => x.Position.x))
+            foreach (var item in AssignedAirGroups/*missionTemplateFile.AirGroups*/.Where(x => x.ArmyIndex == Army.Enemy(AirGroupPlayer.ArmyIndex)).OrderBy(x => x.Position.x))
             {
                 AirGroupWaypoint way = item.Waypoints.FirstOrDefault();
                 if (way != null)

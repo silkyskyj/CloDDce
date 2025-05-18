@@ -752,7 +752,7 @@ namespace IL2DCE.Generator
 
         public IEnumerable<GroundGroup> getAvailableEnemyGroundGroups(int armyIndex)
         {
-            return EnableMissionMultiAssign ? AllGroundGroups.Where(x => x.Army != armyIndex): AvailableGroundGroups.Where(x => x.Army != armyIndex);
+            return EnableMissionMultiAssign ? AllGroundGroups.Where(x => x.Army == Army.Enemy(armyIndex)): AvailableGroundGroups.Where(x => x.Army == Army.Enemy(armyIndex));
         }
 
         //public IEnumerable<GroundGroup> getAvailableFriendlyGroundGroups(int armyIndex)
@@ -870,7 +870,7 @@ namespace IL2DCE.Generator
             int army = GamePlay.gpFrontArmy(point.x, point.y);
             if (army == (int)EArmy.Red || army == (int)EArmy.Blue)
             {
-                if (groundGroup.Army != army)
+                if (groundGroup.Army == Army.Enemy(army))
                 {
                     groundGroup.UpdateArmy(army);
                 }
@@ -1222,7 +1222,7 @@ namespace IL2DCE.Generator
 
         public IEnumerable<Stationary> getAvailableEnemyStationaries(int armyIndex)
         {
-            return EnableMissionMultiAssign ? AllStationaries.Where(x => x.Army != armyIndex): AvailableStationaries.Where(x => x.Army != armyIndex);
+            return EnableMissionMultiAssign ? AllStationaries.Where(x => x.Army == Army.Enemy(armyIndex)): AvailableStationaries.Where(x => x.Army == Army.Enemy(armyIndex));
         }
 
         //public IEnumerable<Stationary> getAvailableFriendlyStationaries(int armyIndex)

@@ -1,0 +1,76 @@
+﻿[PARTS]
+  core.100
+  bob.100
+[MAIN]
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 8000 8000 352000 302000 2000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 2
+  ThermalActivity 2
+  player LONDON.000
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1000.00
+  GustPower 1
+  GustAngle 44
+[splines]
+[AirGroups]
+  LONDON.01
+  g01.01
+[LONDON.01]
+  Flight0  1
+  Class Aircraft.DH82A
+  Formation VIC3
+  CallSign 6
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 56
+[LONDON.01_Way]
+  TAKEOFF 29108.01 247656.75 0 0
+  NORMFLY 24187.84 246980.51 500.00 175.42
+  NORMFLY 35847.70 183229.22 500.00 175.42
+  NORMFLY 32001.79 245035.63 500.00 175.42
+  NORMFLY 36436.45 250385.44 500.00 175.42
+  LANDING 28398.39 246942.30 0.00 0.00
+[g01.01]
+  Flight0  1
+  Class Aircraft.Bf-109E-1
+  Formation LINEABREAST
+  CallSign 1
+  Fuel 100
+  Weapons 1
+  SetOnPark 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[g01.01_Way]
+  TAKEOFF 353186.66 69464.19 0 0
+  NORMFLY 347316.24 75210.55 500.00 172.00
+  NORMFLY 351016.75 79104.69 500.00 172.00
+  NORMFLY 358210.69 76858.96 500.00 172.00
+  NORMFLY 357639.74 62413.99 500.00 172.00
+  LANDING 352863.82 70622.75 500.00 172.00
+[CustomChiefs]
+[Stationary]
+  Static0 ShipUnit.Tanker_Medium2 de 308374.25 248160.56 0.00 /sleep 0/skill 2/slowfire 1
+  Static1 ShipUnit.Tanker_Medium2 de 243689.22 186555.56 0.00 /sleep 0/skill 2/slowfire 1
+  Static2 ShipUnit.Tanker_Medium2 de 176914.55 122850.98 0.00 /sleep 0/skill 2/slowfire 1
+  Static3 ShipUnit.Tanker_Medium1 gb 163290.97 152784.45 0.00 /sleep 0/skill 2/slowfire 1
+  Static4 ShipUnit.Tanker_Medium1 gb 227187.44 204400.53 0.00 /sleep 0/skill 2/slowfire 1
+  Static5 ShipUnit.Tanker_Medium1 gb 280346.56 267855.53 0.00 /sleep 0/skill 2/slowfire 1
+[Buildings]
+[BuildingsLinks]
+[FrontMarker]
+  FrontMarker0 126322.71 138413.07 1
+  FrontMarker1 199567.26 173940.06 1
+  FrontMarker2 260434.99 227480.47 1
+  FrontMarker3 307684.35 300133.58 1
+  FrontMarker4 317400.94 296042.89 2
+  FrontMarker5 266603.90 221313.65 2
+  FrontMarker6 213428.12 160032.81 2
+  FrontMarker7 126322.71 132795.60 2
