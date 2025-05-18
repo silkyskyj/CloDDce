@@ -65,7 +65,7 @@ Main functions
      *Mission files and configuration files must be compatible with your own extensions. Please refer to the included sample missions.
 
 Items that can be selected and set commonly in 1. 2.
- - Ability to convert and import existing mission files
+ - Ability to convert and import existing mission files & campaign
  - Max Additional Air Operations [1-12]
  - Max Additional Ground Operations [10-300]
  - Automatically add Air Groups (this adds to Random if there are few AirGroups)
