@@ -36,12 +36,7 @@ namespace IL2DCE
 
             #region Definition 
 
-            private const string MsgProcFormat = "{0}{1} {2}";
             private const int ProcBeginSec = 150;
-            private const string MsgProcSecFormat = "{0}{1}ing now [{2}sec]";
-            private const string MsgBulletsReArm = "Bullets re-Arm";
-            private const string MsgReFuel = "re-Fuel";
-            private const string MsgProcCompletedFormat = "Completed!";
 
             #endregion
 
@@ -104,7 +99,6 @@ namespace IL2DCE
             {
                 Debug.WriteLine("Mission.Mission()");
                 ActorDead = new Dictionary<string, List<DamagerScore>>();
-                AircraftLanded = new List<AircraftState>();
             }
 
             #region AMission Override
@@ -132,12 +126,11 @@ namespace IL2DCE
 #endif
                     if (MissionStatus != null)
                     {
-                        MissionStatus.Update(Game, PlayerActorName, Core.CurrentCareer.Date.Value);
+                        MissionStatus.Update(Game, GameEventId.Trigger, PlayerActorName, Core.CurrentCareer.Date.Value);
                     }
 
                     if (time.current() > ProcBeginSec)
                     {
-                        ProcLandedAircrafts();
                         ProcSpawnDynamic();
                         ProcUpdateTasks();
                     }
@@ -191,7 +184,15 @@ namespace IL2DCE
             public override void Init(ABattle battle, int missionNumber)
             {
                 Debug.WriteLine("Mission.Init({0}, {1})", battle.ToString(), missionNumber);
+
+                if (((IGame)battle.GamePlay).Core.Config.NoCheckBattleGoal)
+                {
+                    IGamePlay gamePlay = battle.GamePlay;
+                    battle = new MissionObjectModel.Battle();
+                    battle.Init(gamePlay);
+                }
                 base.Init(battle, missionNumber);
+
                 if (Core != null)
                 {
                     Core.Mission = this;
@@ -217,14 +218,14 @@ namespace IL2DCE
                 // MissionDebug.Trace(Game, DataDictionary);
                 Core.SaveCurrentStatus(Config.MissionStatusStartFileName, PlayerActorName, career.Date.Value, true);
 
-                MissionDebug.TraceAiAirports(Game);
 #if false
+                MissionDebug.TraceAiAirports(Game);
                 MissionDebug.TraceGameInfo(Game);
 #endif
 #endif
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(Game, PlayerActorName, career.Date.Value);
+                    MissionStatus.Update(Game, GameEventId.BattleStarted, PlayerActorName, career.Date.Value);
                 }
 
                 // UpdateTasks();
@@ -249,7 +250,7 @@ namespace IL2DCE
                 if (MissionStatus != null)
                 {
                     Career career = Core.CurrentCareer;
-                    MissionStatus.Update(Game, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()));
+                    MissionStatus.Update(Game, GameEventId.BattleStoped, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()));
 #if DEBUG
                     // Trace(DataDictionary);
                     Core.SaveCurrentStatus(Config.MissionStatusEndFileName, PlayerActorName, career.Date.Value.AddSeconds(Game.gpTime().current()), true);
@@ -352,7 +353,7 @@ namespace IL2DCE
 #endif
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor, false);
+                    MissionStatus.Update(actor, GameEventId.ActorCreated, false);
                 }
             }
 
@@ -366,7 +367,7 @@ namespace IL2DCE
 #endif
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor, false);
+                    MissionStatus.Update(actor, GameEventId.ActorDestroyed);
                 }
             }
 
@@ -379,8 +380,8 @@ namespace IL2DCE
 
             public override void OnActorDead(int missionNumber, string shortName, AiActor actor, List<DamagerScore> damages)
             {
-                Debug.WriteLine("Mission.OnActorDead({0}, {1}, {2}, {3}, Valid={4}, Alive={5}, Task={6}, Army={7}))",
-                    missionNumber, shortName, CloDAPIUtil.ActorInfo(actor), string.Join("|", damages.Where(x => x.initiator != null).Select(x => CloDAPIUtil.GetName(x.initiator))),
+                Debug.WriteLine("Mission.OnActorDead({0}, {1}, Actor={2}, Damege:{3}, Valid={4}, Alive={5}, Task={6}, Army={7}))",
+                    missionNumber, shortName, CloDAPIUtil.ActorInfo(actor), string.Join("|", damages.Where(x => x.initiator != null).Select(x => string.Format("{0}={1}", CloDAPIUtil.GetName(x.initiator), x.score))),
                         actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete(), actor.Army());
                 base.OnActorDead(missionNumber, shortName, actor, damages);
 
@@ -403,7 +404,7 @@ namespace IL2DCE
 
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor);
+                    MissionStatus.Update(actor, GameEventId.ActorDead);
                 }
             }
 
@@ -413,20 +414,10 @@ namespace IL2DCE
                 base.OnActorTaskCompleted(missionNumber, shortName, actor);
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(actor, false);
+                    MissionStatus.Update(actor, GameEventId.ActorTaskCompleted, false);
                 }
 
                 // UpdateTask(actor);
-            }
-
-            private AiAirGroup PalyerAirGroup()
-            {
-                Player player = Game.gpPlayer();
-                AiPerson person = player.PersonPrimary();
-                AiActor actor = player.Place();
-                AiAircraft aircraft = actor != null ? actor as AiAircraft : null;
-                AiAirGroup airGroup = aircraft != null ? aircraft.Group() as AiAirGroup : null;
-                return airGroup;
             }
 
             #endregion
@@ -455,76 +446,20 @@ namespace IL2DCE
                 Debug.WriteLine("Mission.OnAircraftTookOff({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
                 base.OnAircraftTookOff(missionNumber, shortName, aircraft);
 
-                Career career = Core.CurrentCareer;
-                if (career.ReArmTime >= 0 || career.ReFuelTime >= 0)
-                {
-                    var result = AircraftLanded.Where(x => string.Compare(aircraft.Name(), x.Aircraft.Name(), true) == 0);
-                    if (result.Count() == 1)
-                    {
-                        result.First().IsLanded = false;
-                    }
-                }
-
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(aircraft, false);
+                    MissionStatus.Update(aircraft, GameEventId.AircraftTookOff, false);
                 }
             }
-
-#if false
-            /// <summary>
-            /// React on the AircraftTookOff event.
-            /// </summary>
-            /// <param name="missionNumber"></param>
-            /// <param name="shortName"></param>
-            /// <param name="aircraft"></param>
-            /// <remarks>
-            /// Remove the player from the aircraft for a few ms. This is a workaround needed so that AI aicraft do not stay on the ground after the human player took off.
-            /// </remarks>
-            public override void OnAircraftTookOff(int missionNumber, string shortName, AiAircraft aircraft)
-            {
-                base.OnAircraftTookOff(missionNumber, shortName, aircraft);
-
-                if (aircraft.Player(0) != null)
-                {
-                    Player player = aircraft.Player(0);
-
-                    player.PlaceLeave(0);
-
-                    Timeout(0.1, () =>
-                    {
-                        player.PlaceEnter(aircraft, 0);
-                    });
-                }
-            }
-#endif
 
             public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
             {
                 Debug.WriteLine("Mission.OnAircraftLanded({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
                 base.OnAircraftLanded(missionNumber, shortName, aircraft);
 
-                Career career = Core.CurrentCareer;
-                if (career.ReArmTime >= 0 || career.ReFuelTime >= 0)
-                {
-                    var result = AircraftLanded.Where(x => string.Compare(aircraft.Name(), x.Aircraft.Name(), true) == 0);
-                    if (result.Any())
-                    {
-                        // result.Select(x => x.IsLanded = true);
-                        foreach (var item in result)
-                        {
-                            item.IsLanded = true;
-                        }
-                    }
-                    else
-                    {
-                        AircraftLanded.Add(new AircraftState(aircraft) { IsLanded = true });
-                    }
-                }
-
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(aircraft);
+                    MissionStatus.Update(aircraft, GameEventId.AircraftLanded);
                 }
             }
 
@@ -535,7 +470,7 @@ namespace IL2DCE
 
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(aircraft);
+                    MissionStatus.Update(aircraft, GameEventId.AircraftCrashLanded);
                 }
             }
 
@@ -546,7 +481,7 @@ namespace IL2DCE
 
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(aircraft);
+                    MissionStatus.Update(aircraft, GameEventId.AircraftKilled);
                 }
             }
 
@@ -576,7 +511,7 @@ namespace IL2DCE
 
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(person);
+                    MissionStatus.Update(person, GameEventId.PersonParachuteLanded);
                 }
             }
 
@@ -590,7 +525,7 @@ namespace IL2DCE
 
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(person);
+                    MissionStatus.Update(person, GameEventId.PersonParachuteFailed);
                 }
             }
 
@@ -649,7 +584,7 @@ namespace IL2DCE
                 base.OnStationaryKilled(missionNumber, _stationary, initiator, eventArgInt);
                 if (MissionStatus != null)
                 {
-                    MissionStatus.Update(_stationary);
+                    MissionStatus.Update(_stationary, GameEventId.StationaryKilled);
                 }
             }
 
@@ -668,89 +603,6 @@ namespace IL2DCE
             #endregion
 
             #region Private Implementation
-
-            private void ProcLandedAircrafts()
-            {
-                Config config = Core.Config;
-                Career career = Core.CurrentCareer;
-                ProcLandedAircrafts(config.ProcessInterval, career.ReArmTime, career.ReFuelTime);
-            }
-
-            private void ProcLandedAircrafts(int procInterval, int reArmTime, int reFuelTime)
-            {
-                ITime time = Game.gpTime();
-                Debug.WriteLine("CheckLandedAircraft() Time={0}[{1}]", time.current(), time.currentReal());
-                for (int i = AircraftLanded.Count - 1; i >= 0; i--)
-                {
-                    AircraftState aircraftState = AircraftLanded[i];
-                    if (aircraftState.IsLanded)
-                    {
-                        AiAircraft aircraft = aircraftState.Aircraft;
-                        if (!aircraft.IsKilled() && aircraft.IsAlive() && aircraft.IsValid())
-                        {
-                            Point3d pos = aircraft.Pos();
-                            int army = aircraft.Army();
-#if DEBUG
-                            MissionDebug.TraceLandedPosNearAirport(Game, pos, army);
-#endif
-                            Point3d posAirport;
-                            if (army == Game.gpFrontArmy(pos.x, pos.y) && Game.gpAirports().Where(
-                                            x => (posAirport = x.Pos()).distance(ref pos) <= x.FieldR() && Game.gpFrontArmy(posAirport.x, posAirport.y) == army).Any())
-                            {
-                                if (aircraft.getParameter(ParameterTypes.C_Magneto, 0) == 0 && aircraft.getParameter(ParameterTypes.C_Throttle, 0) <= 0/* && aircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= 0*/)
-                                {
-                                    if (aircraftState.IsStoped)
-                                    {
-                                        StringBuilder msg = new StringBuilder();
-                                        int waitSec = (int)((Math.Max(aircraftState.StopedTime, aircraftState.ReArmedTime) + reArmTime) - time.current());
-                                        if (waitSec < 0)
-                                        {
-                                            aircraft.RearmPlane(true);
-                                            aircraftState.ReArmedTime = time.current();
-                                            msg.AppendFormat(MsgProcFormat, string.Empty, MsgBulletsReArm, MsgProcCompletedFormat);
-                                        }
-                                        else
-                                        {
-                                            msg.AppendFormat(Config.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgBulletsReArm, waitSec);
-                                        }
-
-                                        int minFuelPer = aircraft.GetMinimumFuelInPercent();
-                                        if (aircraft.GetCurrentFuelQuantityInPercent() < minFuelPer)
-                                        {
-                                            if ((Math.Max(aircraftState.StopedTime, aircraftState.ReFueledTime) + reFuelTime) < time.current())
-                                            {
-                                                aircraft.RefuelPlane((minFuelPer + 100) / 2);
-                                                aircraftState.ReFueledTime = time.current();
-                                                msg.AppendFormat(MsgProcFormat, msg.Length > 0 ? " " : string.Empty, MsgBulletsReArm, MsgProcCompletedFormat);
-                                            }
-                                            else
-                                            {
-                                                msg.AppendFormat(Config.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgReFuel, waitSec);
-                                            }
-                                        }
-
-                                        if (msg.Length > 0)
-                                        {
-                                            Game.gpHUDLogCenter(msg.ToString());
-                                        }
-                                    }
-                                    else
-                                    {
-                                        aircraftState.IsStoped = true;
-                                        aircraftState.StopedTime = time.current();
-                                    }
-                                }
-                                else
-                                {
-                                    aircraftState.StopedTime += procInterval;
-                                }
-                                continue;
-                            }
-                        }
-                    }
-                    AircraftLanded.RemoveAt(i);
-                }
-            }
 
             private void ProcSpawnDynamic()
             {

@@ -34,7 +34,7 @@ namespace IL2DCE.Util
         public const string DefaultMissionFileSearchPettern = "*.mis";
         public const string DefaultCampaignFileSearchPettern = Config.CampaignFileName;
         public const string ErrorFormatSectionOrKey = "Error:No available Section or Key[{0}]";
-        public const string ErrorFormatNotNnough = "Error:Not enough info[{0}]";
+        public const string ErrorFormatNotEnough = "Error:Not enough info[{0}]";
         public const string WarnFormatDuplicateSquadron = "Warn:Duplicate squadron[{0}]";
         public const string WarnNoAviableAddedGenericOne = "Warn:No avialable[{0}] Converter added generic one";
 
@@ -148,7 +148,7 @@ namespace IL2DCE.Util
                     ISectionFile fileCampaign = gameInterface.SectionFileCreate();
                     string filePathCampaign = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.CampaignInfoFileName);
                     IEnumerable<KeyValuePair<int, string>> mapPeriods = Map.GetDefaultMapPeriod(missionFile.Map);
-                    CampaignInfo campaignInfo = new CampaignInfo(name, ECampaignMode.Default, new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, null, null, mapPeriods);
+                    CampaignInfo campaignInfo = new CampaignInfo(name, ECampaignMode.Default, new string[] { fileNameMissionInitial }, Config.MissionScriptFileName, null, null, mapPeriods, false);
                     campaignInfo.Write(fileCampaign);
 
                     // 8. Create Mission Folder (Mission Filename without Extension)
@@ -340,7 +340,7 @@ namespace IL2DCE.Util
                 // 7. Create CampaignInfo.ini 
                 ISectionFile fileCampaign = gameInterface.SectionFileCreate();
                 string filePathCampaign = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.CampaignInfoFileName);
-                CampaignInfo campaignInfo = new CampaignInfo(name, ECampaignMode.Progress, missionPaths.Select(x => Path.GetFileName(x.Key)), Config.MissionScriptFileName, null, null, mapPeriods);
+                CampaignInfo campaignInfo = new CampaignInfo(name, ECampaignMode.Progress, missionPaths.Select(x => Path.GetFileName(x.Key)), Config.MissionScriptFileName, null, null, mapPeriods, false);
                 campaignInfo.Write(fileCampaign);
 
                 // 8. Create Mission Folder (Mission Filename without Extension)
@@ -380,7 +380,7 @@ namespace IL2DCE.Util
             if (armys.Count() < 1)
             {
                 error++;
-                sb.AppendLine(string.Format(ErrorFormatNotNnough, "Army"));
+                sb.AppendLine(string.Format(ErrorFormatNotEnough, "Army"));
             }
 
             foreach (var army in armys)

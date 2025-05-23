@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using maddox.game.world;
-using System.Diagnostics;
 using System;
+using System.Diagnostics;
 using System.Text;
+using IL2DCE.MissionObjectModel;
+using maddox.game;
+using maddox.game.world;
 
 namespace IL2DCE.Util
 {
@@ -153,6 +155,43 @@ namespace IL2DCE.Util
             return -1;
         }
 
+        public static bool IsLastWaypoint(AiGroup group)
+        {
+            try
+            {
+                if (group != null)
+                {
+                    AiWayPoint[] ways = group.GetWay();
+                    if (ways != null && ways.Length > 0)
+                    {
+                        int way = group.GetCurrentWayPoint();
+                        return way == ways.Length - 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return false;
+        }
+
+        public static AiAirGroupTask? GetTask(AiAirGroup group)
+        {
+            try
+            {
+                if (group != null)
+                {
+                    return group.getTask();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
         public static string ActorInfo(AiActor actor)
         {
             try
@@ -179,6 +218,32 @@ namespace IL2DCE.Util
                 Debug.WriteLine(ex.Message);
             }
             return string.Empty;
+        }
+
+        public static AiAirGroup PlayerAirGroup(IGame game)
+        {
+            try
+            {
+                Player player = game.gpPlayer();
+                if (player != null)
+                {
+                    AiActor aiActor = player.Place();
+                    if (aiActor != null)
+                    {
+                        AiGroup aiGroup = aiActor.Group();
+                        if (aiGroup != null)
+                        {
+                            return aiGroup as AiAirGroup;
+                        }
+                    }
+                    }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return null;
         }
     }
 }

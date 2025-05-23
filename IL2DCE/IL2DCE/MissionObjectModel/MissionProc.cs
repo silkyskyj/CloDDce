@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
@@ -62,6 +63,12 @@ namespace IL2DCE.MissionObjectModel
 
         private const int TimeAfterTaskComplate = 120;
         private const int LandedIASMax = 50;
+
+        private const string MsgProcFormat = "{0}{1} {2}";
+        private const string MsgProcSecFormat = "{0}{1}ing now [{2}sec]";
+        private const string MsgBulletsReArm = "Bullets re-Arm";
+        private const string MsgReFuel = "re-Fuel";
+        private const string MsgProcCompletedFormat = "Completed!";
 
         #endregion
 
@@ -308,8 +315,8 @@ namespace IL2DCE.MissionObjectModel
         {
             if (aiAirGroup.IsValid() && aiAirGroup.NOfAirc > 0)
             {
-                AiActor[] actors;
-                if (aiAirGroup.IsAlive() || (actors = CloDAPIUtil.GetItems(aiAirGroup)) != null && actors.Any(x => x.IsAlive()))
+                AiActor[] actors = CloDAPIUtil.GetItems(aiAirGroup);
+                if (aiAirGroup.IsAlive() || (actors != null && actors.Any(x => x.IsAlive())))
                 {
                     int army = aiAirGroup.Army();
                     AiAirGroupTask task = aiAirGroup.getTask();
@@ -330,29 +337,34 @@ namespace IL2DCE.MissionObjectModel
                             AirGroupObj airGroupObj = MissionStatus.AirGroups.Where(x => x.Id == aiAirGroup.ID()).FirstOrDefault();
                             if (airGroupObj != null)
                             {
-                                if (airGroupObj.TaskComplateTime == 0 && airGroupObj.RequestTask == AiAirGroupTask.UNKNOWN)
+                                if (!airGroupObj.IsMissionCompleted)
                                 {
-                                    airGroupObj.TaskComplateTime = (int)Game.gpTime().current();
-                                    airGroupObj.RequestTask = AiAirGroupTask.LANDING;
-                                }
-                                else if ((int)Game.gpTime().current() - airGroupObj.TaskComplateTime >= TimeAfterTaskComplate)
-                                {
-                                    if (airGroupObj.RequestTask == AiAirGroupTask.LANDING)
+                                    if (airGroupObj.TaskComplateTime == 0 && airGroupObj.RequestTask == AiAirGroupTask.UNKNOWN)
                                     {
-                                        UpdateTaskLanging(aiAirGroup, airGroupObj);
+                                        airGroupObj.TaskComplateTime = (int)Game.gpTime().current();
+                                        airGroupObj.RequestTask = AiAirGroupTask.LANDING;
+                                    }
+                                    else if ((int)Game.gpTime().current() - airGroupObj.TaskComplateTime >= TimeAfterTaskComplate)
+                                    {
+                                        if (airGroupObj.RequestTask == AiAirGroupTask.LANDING)
+                                        {
+                                            UpdateTaskLanging(aiAirGroup, airGroupObj);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+                    UpdateTask(actors.Select(x => x as AiAircraft));
                 }
                 else
                 {
-                    AiAirGroup playerGroup = Game.gpPlayer() != null && Game.gpPlayer().Place() != null && Game.gpPlayer().Place().Group() != null ? Game.gpPlayer().Place().Group() as AiAirGroup : null;
+                    AiAirGroup playerGroup = CloDAPIUtil.PlayerAirGroup(Game);
                     Debug.Assert(playerGroup != null);
                     if (Config.GroupNotAliveToDestroy && string.Compare(aiAirGroup.Name(), ValueNoName, true) == 0 && playerGroup != aiAirGroup)
                     {
-                        UpdateTaskDestroy(aiAirGroup);
+                        Destroy(aiAirGroup);
                     }
                 }
             }
@@ -366,8 +378,9 @@ namespace IL2DCE.MissionObjectModel
             AiActor actorTarget = ways != null ? (ways[aiAirGroup.GetCurrentWayPoint()] as AiAirWayPoint).Target : null;
             if (IsLanded(aiAirGroup))
             {
+                airGroupObj.IsMissionCompleted = true;
                 airGroupObj.TaskComplateTime = 0;
-                Debug.WriteLine(string.Format("AirGroup Landed({0})={1}", CloDAPIUtil.ActorInfo(aiAirGroup), task.ToString()));
+                Debug.WriteLine(string.Format("AirGroup.IsMissionCompleted = true, Landed({0})={1}", CloDAPIUtil.ActorInfo(aiAirGroup), task.ToString()));
             }
             else if (task != AiAirGroupTask.LANDING && task != AiAirGroupTask.UNKNOWN && !(actorTarget is AiAirport))
             {
@@ -387,7 +400,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private void UpdateTaskDestroy(AiAirGroup aiAirGroup)
+        private void Destroy(AiAirGroup aiAirGroup)
         {
             AiActor[] aiActors = CloDAPIUtil.GetItems(aiAirGroup);
             if (aiActors != null)
@@ -403,14 +416,139 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+        private void UpdateTask(IEnumerable<AiAircraft> aiAircrafts)
+        {
+            int reArmTime = Career.ReArmTime;
+            int reFuelTime = Career.ReFuelTime;
+            foreach (var item in aiAircrafts)
+            {
+                AiAircraft aiAircraft = item as AiAircraft;
+                if (aiAircraft != null)
+                {
+                    string name = MissionObjBase.CreateShortName(aiAircraft.Name());
+                    AircraftObj aircraft = MissionStatus.Aircrafts.Where(x => string.Compare(x.Name, name) == 0).FirstOrDefault();
+                    if (aircraft != null)
+                    {
+                        if (aircraft.IsLanded)
+                        {
+                            if (aircraft.IsValid && aircraft.IsAlive)
+                            {
+                                if (reArmTime >= 0 || reFuelTime >= 0)
+                                {
+                                    UpdateReArmReFuel(aiAircraft, aircraft);
+                                }
+                                else
+                                {
+                                    if (AircraftObj.IsStop(aiAircraft))
+                                    {
+                                        ITime time = Game.gpTime();
+                                        if (aircraft.IsStoped && aircraft.StopedTime > 0)
+                                        {
+                                            AiAirGroupTask? task = AircraftObj.GetCurrentTask(aiAircraft);
+                                            if (AircraftObj.IsLastWaypoint(aiAircraft) && task != null && task.HasValue && task.Value == AiAirGroupTask.UNKNOWN)
+                                            {
+                                                if (time.current() - aircraft.StopedTime > Config.MissionCompletedTime)
+                                                {
+                                                    aircraft.IsMissionCompleted = true; // -> Safe Destroyed
+                                                    Debug.WriteLine("aircraft.IsMissionCompleted = true({0})", aircraft.Name);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            aircraft.IsStoped = true;
+                                            aircraft.StopedTime = time.current();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpdateReArmReFuel(AiAircraft aiAircraft, AircraftObj aircraft)
+        {
+            Point3d pos = aircraft.Point;
+            Point3d posAirport;
+            int army = aiAircraft.Army();
+            if (army == Game.gpFrontArmy(pos.x, pos.y) && Game.gpAirports().Where(
+                            x => (posAirport = x.Pos()).distance(ref pos) <= x.FieldR() && Game.gpFrontArmy(posAirport.x, posAirport.y) == army).Any())
+            {
+                if (AircraftObj.IsStop(aiAircraft))
+                {
+                    ITime time = Game.gpTime();
+                    if (aircraft.IsStoped)
+                    {
+                        StringBuilder msg = new StringBuilder();
+                        int reArmTime = Career.ReArmTime;
+                        if (reArmTime >= 0 && !aircraft.IsReArmed)
+                        {
+                            int waitSec = (int)((aircraft.StopedTime + reArmTime) - time.current());
+                            if (waitSec < 0)
+                            {
+                                aiAircraft.RearmPlane(true);
+                                aircraft.IsReArmed = true;
+                                msg.AppendFormat(MsgProcFormat, string.Empty, MsgBulletsReArm, MsgProcCompletedFormat);
+                            }
+                            else
+                            {
+                                msg.AppendFormat(Config.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgBulletsReArm, waitSec);
+                            }
+                        }
+
+                        int reFuelTime = Career.ReFuelTime;
+                        if (reFuelTime >= 0 && !aircraft.IsReFueled)
+                        {
+                            int minFuelPer = aiAircraft.GetMinimumFuelInPercent();
+                            if (aiAircraft.GetCurrentFuelQuantityInPercent() < minFuelPer)
+                            {
+                                int waitSec = (int)((aircraft.StopedTime + reFuelTime) - time.current());
+                                if (waitSec < 0)
+                                {
+                                    aiAircraft.RefuelPlane((minFuelPer + 100) / 2);
+                                    aircraft.IsReFueled = true;
+                                    msg.AppendFormat(MsgProcFormat, msg.Length > 0 ? " " : string.Empty, MsgBulletsReArm, MsgProcCompletedFormat);
+                                }
+                                else
+                                {
+                                    msg.AppendFormat(Config.NumberFormat, MsgProcSecFormat, msg.Length > 0 ? " " : string.Empty, MsgReFuel, waitSec);
+                                }
+                            }
+                        }
+
+                        if (string.Compare(aircraft.Name, MissionStatus.PlayerInfo.Type, true) == 0 && msg.Length > 0)
+                        {
+                            Game.gpHUDLogCenter(msg.ToString());
+                        }
+                    }
+                    else
+                    {
+                        aircraft.IsStoped = true;
+                        aircraft.StopedTime = time.current();
+                    }
+                }
+                else
+                {
+                    aircraft.StopedTime += Config.ProcessInterval;
+                }
+            }
+        }
+
         private bool IsLanded(AiAirGroup aiAirGroup)
         {
             AiActor [] actors = CloDAPIUtil.GetItems(aiAirGroup);
             if (actors != null)
             {
-                return actors.Where(x => (x as AiAircraft).getParameter(ParameterTypes.Z_VelocityIAS, 0) <= LandedIASMax).Count() == actors.Length;
+                return actors.Where(x => IsLanded(x as AiAircraft)).Count() == actors.Length;
             }
             return false;
+        }
+
+        private bool IsLanded(AiAircraft aiAircraft)
+        {
+            return aiAircraft != null && aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= LandedIASMax;
         }
 
         private AiAirGroupTask ConvertWayActionToTask(AiAirWayPointType type)
@@ -513,8 +651,10 @@ namespace IL2DCE.MissionObjectModel
             if (aiAircraft.IsValid() && aiAircraft.IsAlive())
             {
                 int army = aiAircraft.Army();
+                if (IsLanded(aiAircraft))
+                {
 
-                ;
+                }
             }
         }
 

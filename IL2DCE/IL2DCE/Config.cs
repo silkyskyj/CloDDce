@@ -118,6 +118,8 @@ namespace IL2DCE
         public const string KeyGroupDisableRate = "GroupDisableRate";
         public const string KeyReinForceDay = "ReinForceDay";
         public const string KeyGroupNotAliveToDestroy = "GroupNotAliveToDestroy";
+        public const string KeyNoCheckBattleGoal = "NoCheckBattleGoal";
+        public const string KeyMissionCompletedTime = "MissionCompletedTime";
 
         public const string DynamicSpawnFileName = "DynamicSpawn";
 
@@ -145,7 +147,7 @@ namespace IL2DCE
         public const int DefaultProcessInterval = 30;
         public const int DefaultProcessTimeReArm = 300;
         public const int DefaultProcessTimeReFuel = 300;
-        public const int KillsHistoryMaxDefault = 1000;
+        public const int DefaultKillsHistoryMax = 1000;
 
         public const int GroundGroupFormationCountDefault = 3;
 
@@ -157,8 +159,10 @@ namespace IL2DCE
         public const int ExpSuccess = 200;
         public const int ExpFail = 0;
         public const int ExpDraw = 100;
-        public const float GroupDisableRateDefault = 0.25f;
-        public const int ReinForceDayDefault = 3;
+        public const float DefaultGroupDisableRate = 0.25f;
+        public const int DefaultReinForceDay = 3;
+
+        public const int DefaultMissionCompletedTime = 300;
 
         #endregion
 
@@ -605,6 +609,18 @@ namespace IL2DCE
             private set;
         }
 
+        public bool NoCheckBattleGoal
+        {
+            get;
+            private set;
+        }
+
+        public int MissionCompletedTime
+        {
+            get;
+            private set;
+        }
+
         public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
         public static DateTimeFormatInfo DateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
         
@@ -792,16 +808,20 @@ namespace IL2DCE
 
             EnableMissionMultiAssign = confFile.get(SectionCore, KeyEnableMissionMultiAssign, 0) == 1;
 
-            KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, KillsHistoryMaxDefault);
+            KillsHistoryMax = confFile.get(SectionCore, KeyKillsHistoryMax, DefaultKillsHistoryMax);
             RandomTimeBegin = confFile.get(SectionCore, KeyRandomTimeBegin, (int)MissionTime.Begin);
             RandomTimeEnd = confFile.get(SectionCore, KeyRandomTimeEnd, (int)MissionTime.End);
 
             value = confFile.get(SectionCore, KeyGroupDisableRate, string.Empty);
             float fValue;
-            GroupDisableRate = float.TryParse(value, NumberStyles.Float, NumberFormat, out fValue) ? fValue : GroupDisableRateDefault;
-            ReinForceDay = confFile.get(SectionCore, KeyReinForceDay, ReinForceDayDefault);
+            GroupDisableRate = float.TryParse(value, NumberStyles.Float, NumberFormat, out fValue) ? fValue : DefaultGroupDisableRate;
+            ReinForceDay = confFile.get(SectionCore, KeyReinForceDay, DefaultReinForceDay);
 
             GroupNotAliveToDestroy = confFile.get(SectionCore, KeyGroupNotAliveToDestroy, 0) == 1;
+
+            NoCheckBattleGoal = confFile.get(SectionCore, KeyNoCheckBattleGoal, 0) == 1;
+
+            MissionCompletedTime = confFile.get(SectionCore, KeyMissionCompletedTime, DefaultMissionCompletedTime);
         }
 
         #region Random Unit

@@ -229,7 +229,7 @@ namespace IL2DCE.MissionObjectModel
             return string.Empty;
         }
 
-        public static string ToIncrementDetailString(float [] skills, float [] newSkills, char splitCharLabelValue = ' ', int spaceBegin = 0)
+        public static string ToIncrementDetailString(float[] skills, float[] newSkills, char splitCharLabelValue = ' ', int spaceBegin = 0)
         {
             if (skills != null && skills.Length >= (int)ESkilType.Count && newSkills != null && newSkills.Length >= (int)ESkilType.Count)
             {
@@ -250,7 +250,7 @@ namespace IL2DCE.MissionObjectModel
         {
             if (skills != null && skills.Any())
             {
-                IEnumerable<string []> skillsArray = skills.Select(x => x.Split(SplitChar));
+                IEnumerable<string[]> skillsArray = skills.Select(x => x.Split(SplitChar));
                 StringBuilder sb = new StringBuilder();
                 // var types = Enum.GetNames(typeof(ESkilType));
                 string spaceBegins = new string(' ', spaceBegin);
@@ -926,7 +926,7 @@ namespace IL2DCE.MissionObjectModel
         }
     }
 
-        public enum ESkillSet
+    public enum ESkillSet
     {
         [Description(SkillNameRandom)]
         Random = -2,

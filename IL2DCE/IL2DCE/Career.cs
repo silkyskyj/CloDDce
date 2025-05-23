@@ -41,6 +41,8 @@ namespace IL2DCE
         public const string KeyAirForceIndex = "airForceIndex";
         public const string KeyRankIndex = "rankIndex";
         public const string KeyExperience = "experience";
+        public const string KeyStartDate = "startDate";
+        public const string KeyEndDate = "endDate";
         public const string KeyDate = "date";
         public const string KeyTime = "time";
         public const string KeyAirGroup = "airGroup";
@@ -49,6 +51,7 @@ namespace IL2DCE
         public const string KeyMissionFile = "missionFile";
         public const string KeyId = "id";
         public const string KeyMissionIndex = "MissionIndex";
+        public const string KeyMissionTemplateFileName = "MissionTemplateFileName";
         public const string KeyFlyingTime = "FlyingTime";
         public const string KeySorties = "Sorties";
         public const string KeyTakeoffs = "Takeoffs";
@@ -97,6 +100,7 @@ namespace IL2DCE
         // public const string KillsFormat = "F0";
         public const string DateFormat = "yyyy/M/d";
         public const string PlayerCurrentStatusFormat = "{0,10}: {1}";
+        public const string PlayerCurrentStatusFormatPeriod = "{0,10}: {1} - {2}";
 
         #endregion
 
@@ -159,6 +163,38 @@ namespace IL2DCE
             get;
             set;
         }
+
+        /// <summary>
+        /// The start date of the campaign.
+        /// </summary>
+        public DateTime StartDate
+        {
+            get
+            {
+                return startDate;
+            }
+            set
+            {
+                startDate = value;
+            }
+        }
+        private DateTime startDate;
+
+        /// <summary>
+        /// The end date of the campaign.
+        /// </summary>
+        public DateTime EndDate
+        {
+            get
+            {
+                return endDate;
+            }
+            set
+            {
+                endDate = value;
+            }
+        }
+        private DateTime endDate;
 
         public DateTime? Date
         {
@@ -429,6 +465,12 @@ namespace IL2DCE
         }
 
         public double RandomTimeEnd
+        {
+            get;
+            set;
+        }
+
+        public bool DynamicFrontMarker
         {
             get;
             set;
@@ -705,6 +747,8 @@ namespace IL2DCE
             RandomTimeBegin = MissionTime.Begin;
             RandomTimeEnd = MissionTime.End;
 
+            DynamicFrontMarker = false;
+
             #region Quick Mission Info 
 
             InitQuickMssionInfo();
@@ -747,16 +791,23 @@ namespace IL2DCE
                 throw new FormatException(string.Format("Career File Format Error[{0}]", "date/id/airGroup/missionFile"));
             }
 
-            #region Campaign
+            string value;
+            DateTime dt;
 
+            #region Campaign
             int mode = careerFile.get(SectionCampaign, KeyCampaignMode, 0);
             CampaignMode = (Enum.IsDefined(typeof(ECampaignMode), mode)) ? (ECampaignMode)mode : ECampaignMode.Default;
-            string id = careerFile.get(SectionCampaign, KeyId);
-            CampaignInfo = campaignInfos.Where(x => string.Compare(x.Id, id, true) == 0).FirstOrDefault();
+            value = careerFile.get(SectionCampaign, KeyId);
+            CampaignInfo = campaignInfos.Where(x => string.Compare(x.Id, value, true) == 0).FirstOrDefault();
             MissionFileName = careerFile.get(SectionCampaign, KeyMissionFile);
             MissionIndex = careerFile.get(SectionCampaign, KeyMissionIndex, 0);
-            Time = careerFile.get(SectionCampaign, KeyTime, 0);
+            MissionTemplateFileName = careerFile.get(SectionCampaign, KeyMissionTemplateFileName, string.Empty);
+            value = careerFile.get(SectionCampaign, KeyStartDate, string.Empty);
+            StartDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.StartDate: CampaignInfo.DefaultStartDate;
+            value = careerFile.get(SectionCampaign, KeyEndDate, string.Empty);
+            EndDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.EndDate: CampaignInfo.DefaultEndDate;
             Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
+            Time = careerFile.get(SectionCampaign, KeyTime, 0);
             AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
             AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
             Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
@@ -771,14 +822,14 @@ namespace IL2DCE
             SpawnDynamicGroundGroups = careerFile.get(SectionCampaign, KeySpawnDynamicGroundGroups, false);
             SpawnDynamicStationaries = careerFile.get(SectionCampaign, KeySpawnDynamicStationaries, false);
 
-            string val = careerFile.get(SectionCampaign, KeyGroundGroupGenerateType, string.Empty);
-            GroundGroupGenerateType = (Enum.IsDefined(typeof(EGroundGroupGenerateType), val)) ? (EGroundGroupGenerateType)Enum.Parse(typeof(EGroundGroupGenerateType), val) : EGroundGroupGenerateType.Default;
-            val = careerFile.get(SectionCampaign, KeyStationaryGenerateType, string.Empty);
-            StationaryGenerateType = (Enum.IsDefined(typeof(EStationaryGenerateType), val)) ? (EStationaryGenerateType)Enum.Parse(typeof(EStationaryGenerateType), val) : EStationaryGenerateType.Default;
-            val = careerFile.get(SectionCampaign, KeyArmorUnitNumsSet, string.Empty);
-            ArmorUnitNumsSet = (Enum.IsDefined(typeof(EArmorUnitNumsSet), val)) ? (EArmorUnitNumsSet)Enum.Parse(typeof(EArmorUnitNumsSet), val) : EArmorUnitNumsSet.Default;
-            val = careerFile.get(SectionCampaign, KeyShipUnitNumsSet, string.Empty);
-            ShipUnitNumsSet = (Enum.IsDefined(typeof(EShipUnitNumsSet), val)) ? (EShipUnitNumsSet)Enum.Parse(typeof(EShipUnitNumsSet), val) : EShipUnitNumsSet.Random;
+            value = careerFile.get(SectionCampaign, KeyGroundGroupGenerateType, string.Empty);
+            GroundGroupGenerateType = (Enum.IsDefined(typeof(EGroundGroupGenerateType), value)) ? (EGroundGroupGenerateType)Enum.Parse(typeof(EGroundGroupGenerateType), value) : EGroundGroupGenerateType.Default;
+            value = careerFile.get(SectionCampaign, KeyStationaryGenerateType, string.Empty);
+            StationaryGenerateType = (Enum.IsDefined(typeof(EStationaryGenerateType), value)) ? (EStationaryGenerateType)Enum.Parse(typeof(EStationaryGenerateType), value) : EStationaryGenerateType.Default;
+            value = careerFile.get(SectionCampaign, KeyArmorUnitNumsSet, string.Empty);
+            ArmorUnitNumsSet = (Enum.IsDefined(typeof(EArmorUnitNumsSet), value)) ? (EArmorUnitNumsSet)Enum.Parse(typeof(EArmorUnitNumsSet), value) : EArmorUnitNumsSet.Default;
+            value = careerFile.get(SectionCampaign, KeyShipUnitNumsSet, string.Empty);
+            ShipUnitNumsSet = (Enum.IsDefined(typeof(EShipUnitNumsSet), value)) ? (EShipUnitNumsSet)Enum.Parse(typeof(EShipUnitNumsSet), value) : EShipUnitNumsSet.Random;
 
             SpawnRandomLocationPlayer = careerFile.get(SectionCampaign, KeySpawnRandomLocationPlayer, false);
             SpawnRandomLocationFriendly = careerFile.get(SectionCampaign, KeySpawnRandomLocationFriendly, false);
@@ -790,16 +841,16 @@ namespace IL2DCE
             SpawnRandomTimeBeginSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeBeginSec, MissionObjectModel.Spawn.SpawnTime.DefaultBeginSec);
             SpawnRandomTimeEndSec = careerFile.get(SectionCampaign, KeySpawnRandomTimeEndSec, MissionObjectModel.Spawn.SpawnTime.DefaultEndSec);
 
-            val = careerFile.get(SectionCampaign, KeyAISkill, string.Empty);
-            AISkill = (Enum.IsDefined(typeof(ESkillSet), val)) ? (ESkillSet)Enum.Parse(typeof(ESkillSet), val) : ESkillSet.Random;
-            val = careerFile.get(SectionCampaign, KeyCampaignProgress, string.Empty);
-            CampaignProgress = (Enum.IsDefined(typeof(ECampaignProgress), val)) ? (ECampaignProgress)Enum.Parse(typeof(ECampaignProgress), val) : ECampaignProgress.Daily;
+            value = careerFile.get(SectionCampaign, KeyAISkill, string.Empty);
+            AISkill = (Enum.IsDefined(typeof(ESkillSet), value)) ? (ESkillSet)Enum.Parse(typeof(ESkillSet), value) : ESkillSet.Random;
+            value = careerFile.get(SectionCampaign, KeyCampaignProgress, string.Empty);
+            CampaignProgress = (Enum.IsDefined(typeof(ECampaignProgress), value)) ? (ECampaignProgress)Enum.Parse(typeof(ECampaignProgress), value) : ECampaignProgress.Daily;
             ArtilleryTimeout = careerFile.get(SectionCampaign, KeyArtilleryTimeout, ArtilleryOption.TimeoutMissionDefault);
             ArtilleryRHide = careerFile.get(SectionCampaign, KeyArtilleryRHide, ArtilleryOption.RHideMissionDefault);
             ArtilleryZOffset = careerFile.get(SectionCampaign, KeyArtilleryZOffset, ArtilleryOption.ZOffsetMissionDefault);
             ShipSleep = careerFile.get(SectionCampaign, KeyShipSleep, ShipOption.SleepMissionDefault);
-            val = careerFile.get(SectionCampaign, KeyShipSkills, string.Empty);
-            ShipSkill = (Enum.IsDefined(typeof(ESkillSetShip), val)) ? (ESkillSetShip)Enum.Parse(typeof(ESkillSetShip), val) : ESkillSetShip.Random;
+            value = careerFile.get(SectionCampaign, KeyShipSkills, string.Empty);
+            ShipSkill = (Enum.IsDefined(typeof(ESkillSetShip), value)) ? (ESkillSetShip)Enum.Parse(typeof(ESkillSetShip), value) : ESkillSetShip.Random;
             ShipSlowfire = careerFile.get(SectionCampaign, KeyShipSlowfires, ShipOption.SlowFireMissionDefault);
 
             ReArmTime = careerFile.get(SectionCampaign, KeyReArm, false) ? Config.DefaultProcessTimeReArm : -1;
@@ -809,10 +860,12 @@ namespace IL2DCE
             Status = careerFile.get(SectionCampaign, KeyStatus, 0);
 
             float fValue;
-            val = careerFile.get(SectionCampaign, Config.KeyRandomTimeBegin, string.Empty);
-            RandomTimeBegin = float.TryParse(val, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeBegin;
-            val = careerFile.get(SectionCampaign, Config.KeyRandomTimeEnd, string.Empty);
-            RandomTimeEnd = float.TryParse(val, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeEnd;
+            value = careerFile.get(SectionCampaign, Config.KeyRandomTimeBegin, string.Empty);
+            RandomTimeBegin = float.TryParse(value, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeBegin;
+            value = careerFile.get(SectionCampaign, Config.KeyRandomTimeEnd, string.Empty);
+            RandomTimeEnd = float.TryParse(value, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeEnd;
+
+            DynamicFrontMarker = careerFile.get(SectionCampaign, CampaignInfo.KeyDynamicFrontMarker, CampaignInfo != null ? CampaignInfo.DynamicFrontMarker: false);
 
             #endregion
 
@@ -837,8 +890,6 @@ namespace IL2DCE
             VersionConverter.OptimizePlayerStatTotal(this);
 
             string key;
-            string value;
-            DateTime dt;
             int lines;
 
             KillsHistory = new Dictionary<DateTime, string>();
@@ -952,7 +1003,10 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyId, CampaignInfo.Id);
             careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
             careerFile.add(SectionCampaign, KeyMissionIndex, MissionIndex.ToString(Config.NumberFormat));
-            careerFile.add(SectionCampaign, KeyDate, Date.Value.Year.ToString(Config.NumberFormat) + "-" + Date.Value.Month.ToString(Config.NumberFormat) + "-" + Date.Value.Day.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, KeyMissionTemplateFileName, MissionTemplateFileName);
+            careerFile.add(SectionCampaign, KeyStartDate,StartDate.ToString(DateFormat, Config.DateTimeFormat));
+            careerFile.add(SectionCampaign, KeyEndDate, EndDate.ToString(DateFormat, Config.DateTimeFormat));
+            careerFile.add(SectionCampaign, KeyDate, Date.Value.Year.ToString(Config.NumberFormat) + "-" + StartDate.Month.ToString(Config.NumberFormat) + "-" + Date.Value.Day.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyTime, ((int)Time).ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyAirGroup, AirGroup);
             careerFile.add(SectionCampaign, KeyAirGroupDislplay, AirGroupDisplay ?? string.Empty);
@@ -991,9 +1045,10 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyReFuel, ReFuelTime >= 0 ? "1" : "0");
             careerFile.add(SectionCampaign, KeyTrackRecording, TrackRecording ? "1" : "0");
             careerFile.add(SectionCampaign, KeyStrictMode, StrictMode ? "1" : "0");
+            careerFile.add(SectionCampaign, KeyStatus, Status.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, Config.KeyRandomTimeBegin, RandomTimeBegin.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, Config.KeyRandomTimeEnd, RandomTimeEnd.ToString(Config.NumberFormat));
-            careerFile.add(SectionCampaign, KeyStatus, Status.ToString(Config.NumberFormat));
+            careerFile.add(SectionCampaign, CampaignInfo.KeyDynamicFrontMarker, DynamicFrontMarker ? "1" : "0");
 
             #endregion
 
@@ -1116,13 +1171,15 @@ namespace IL2DCE
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Date", Date.Value.ToString(Date.Value.Hour != 0 ? "M/d/yyyy h tt" : "M/d/yyyy", DateTimeFormatInfo.InvariantInfo));
             sb.AppendLine();
-            sb.AppendFormat(PlayerCurrentStatusFormat, "Mode", CampaignMode.ToDescription());
-            sb.AppendLine();
             if (CampaignInfo != null/* && IsProgressEnableMission()*/)
             {
                 sb.AppendFormat(PlayerCurrentStatusFormat, "Mission", GetMissionTemplateFileSummary());
                 sb.AppendLine();
             }
+            sb.AppendFormat(PlayerCurrentStatusFormat, "Mode", CampaignMode.ToDescription());
+            sb.AppendLine();
+            sb.AppendFormat(PlayerCurrentStatusFormatPeriod, "Period", StartDate.ToString("M/d/yyyy", DateTimeFormatInfo.InvariantInfo), EndDate.ToString("M/d/yyyy", DateTimeFormatInfo.InvariantInfo));
+            sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "Army", ((EArmy)ArmyIndex).ToString());
             sb.AppendLine();
             sb.AppendFormat(PlayerCurrentStatusFormat, "AirForce", ((EArmy)ArmyIndex) == EArmy.Red ? ((EAirForceRed)AirForceIndex).ToDescription() : ((EAirForceBlue)AirForceIndex).ToDescription());
@@ -1153,10 +1210,19 @@ namespace IL2DCE
         private string GetMissionTemplateFileSummary()
         {
 #if true
-            const string random = "Randomly determined.";
+            const string random = "< Randomly determined >";
+            const string completed = "< Completed >";
             switch (CampaignMode)
             {
                 case ECampaignMode.Progress:
+                    {
+                        string summary = FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null));
+                        if (string.IsNullOrEmpty(summary))
+                        {
+                            summary = completed;
+                        }
+                        return summary;
+                    }
                 case ECampaignMode.Progress2Repeat:
                     return FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null));
                 case ECampaignMode.Random:
@@ -1165,7 +1231,7 @@ namespace IL2DCE
                     return MissionIndex < CampaignInfo.InitialMissionTemplateFileCount ? FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null)): random;
                 case ECampaignMode.Default:
                 default:
-                    return CampaignInfo.InitialMissionTemplateFile;
+                    return FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.InitialMissionTemplateFile);
             }
 #else
             return MissionTemplateFileName;
@@ -1204,11 +1270,11 @@ namespace IL2DCE
             if (config != null && random != null)
             {
                 Time = random.Next((int)(RandomTimeBegin * 100), (int)(RandomTimeEnd * 100) + 1) / 100;
-                Date = CampaignInfo.StartDate.AddHours(Time);
+                Date = StartDate.AddHours(Time);
             }
             else if (config != null)
             {
-                Date = CampaignInfo.StartDate;
+                Date = StartDate;
             }
             else
             {
@@ -1248,9 +1314,9 @@ namespace IL2DCE
                                                     0, 0));
                     break;
             }
-            if (dt.Date > CampaignInfo.EndDate)
+            if (dt.Date > EndDate)
             {
-                CampaignInfo.EndDate = dt.Date;
+                EndDate = dt.Date;
             }
             if (dt.Hour < RandomTimeBegin)
             {
@@ -1258,7 +1324,7 @@ namespace IL2DCE
             }
             else if (dt.Hour > RandomTimeEnd)
             {
-                dt = dt.AddHours(dt.Date < CampaignInfo.EndDate ? RandomTimeBegin + 24 - dt.Hour : RandomTimeEnd - dt.Hour);
+                dt = dt.AddHours(dt.Date < EndDate ? RandomTimeBegin + 24 - dt.Hour : RandomTimeEnd - dt.Hour);
             }
             Date = dt;
             Time = dt.Hour;

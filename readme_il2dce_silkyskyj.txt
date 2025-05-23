@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.2)
+A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings Release (Version 0.7.3)
 =============================================================================================================================
-                                                                                                                   05/18/2025
+                                                                                                                   05/24/2025
 This is the silkyskyj version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -35,7 +35,7 @@ Main functions
  - Air Group
  - Campaign Period
  - Filter display function for existing career list (Filter Army/Air Force/Campaign/StrictMode/Playabe/Aircraft & Sort Logic) 
- - Strict Mode
+ - Strict Mode & Dynamic Frontmarker
  - Spawn Parked
  - Initial AirGroup Skill (system default or custom skills) 19 in total + user-defined (can be set in il2dce's conf.ini file)
  - Progress (AnyTime/Daily/AnyDay/AnyDayAnyTime)
@@ -118,6 +118,9 @@ History
 
   Ver      Date       Comment
 
+  0.7.3    05/24/2025 Added: Ability to continue campaigns even if the player's AirGroup is not present in the ongoing mission file of the campaign.
+                      Changed: Save and load the period set when creating a new campaign to a carrier file.
+                      Fixed: "Collection has been modified; enumeration operation may not execute" error when generating a mission. Other minor bug fixes.
   0.7.2    05/18/2025 Added: Campaign Progress Mode(and Random/Repeat). Convert & Improt CloD default type Campaign. Maps change depending on the battle date (the English_Channel_1940/Autumn/Winter map sean changes in the attached sample and convert/import mission). select battle start time range in Dynamic campaign page. select date in Dynamic Quick Mission page. 
                       Changed: Mission Import & Conversion Logic(Weapons info is null case/Duplicate Squadron)
                       Fixed: Some minor issues.

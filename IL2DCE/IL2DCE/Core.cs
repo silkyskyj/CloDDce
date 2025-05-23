@@ -281,7 +281,7 @@ namespace IL2DCE
                     career.ProgressEndMission();
                     result = ECampaignStatus.ProgressEnd;
                 }
-                else if (career.Date >= campaignInfo.EndDate)
+                else if (career.Date >= career.EndDate)
                 {
                     result = ECampaignStatus.DateEnd;
                 }
@@ -313,7 +313,6 @@ namespace IL2DCE
                 string missionId = string.Format(Config.NumberFormat,
                                             "{0}_{1:d4}-{2:d2}-{3:d2}_{4:d2}", campaignInfo.Id, dt.Year, dt.Month, dt.Day, dt.Hour);
                 string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
-                career.MissionFileName = missionFileName;
 
                 // Load MissionStatus
                 MissionStatus missionStatus = null;
@@ -351,15 +350,16 @@ namespace IL2DCE
 
                 // Save mission file
                 missionFile.save(missionFileName);
+                career.MissionFileName = missionFileName;
+
+                // Save briefing file
+                string briefingFileSystemPath = string.Format(careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
+                briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
                 // Copy mission script file
                 string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
                 string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
                 File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
-
-                // Save briefing file
-                string briefingFileSystemPath = string.Format(careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
-                briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
 #if DEBUG
                 Config.Debug = 1;
@@ -409,7 +409,6 @@ namespace IL2DCE
 
             string missionId = campaignInfo.Id;
             string missionFileName = string.Format("{0}/{1}/{2}{3}", Config.UserMissionFolder, career.PilotName, missionId, Config.MissionFileExt);
-            career.MissionFileName = missionFileName;
 
             // string missionTemplateFileName = campaignInfo.InitialMissionTemplateFile;
             string missionTemplateFileName = career.MissionTemplateFile(null);
@@ -431,15 +430,16 @@ namespace IL2DCE
 
             // Save mission file
             missionFile.save(missionFileName);
+            career.MissionFileName = missionFileName;
+
+            // Save briefing file
+            string briefingFileSystemPath = string.Format(careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
+            briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
             // Copy mission script file
             string scriptSourceFileSystemPath = string.Format("{0}\\{1}\\{2}", campaignsFolderSystemPath, campaignInfo.Id, campaignInfo.ScriptFileName);
             string scriptDestinationFileSystemPath = string.Format("{0}\\{1}\\{2}{3}", careersFolderSystemPath, career.PilotName, missionId, Config.ScriptFileExt);
             File.Copy(scriptSourceFileSystemPath, scriptDestinationFileSystemPath, true);
-
-            // Save briefing file
-            string briefingFileSystemPath = string.Format(careersFolderSystemPath + "\\" + career.PilotName + "\\{0}{1}", missionId, Config.BriefingFileExt);
-            briefingFile.SaveTo(briefingFileSystemPath, missionId);
 
 #if DEBUG
             Config.Debug = 1;
@@ -561,7 +561,7 @@ namespace IL2DCE
             ISectionFile missionStatusFile = forceCreate ? gameInterface.SectionFileCreate() : gameInterface.SectionFileLoad(missionStatusFileName);
             // MissionStatus.Update(missionStatusFile, GamePlay as IGame, playerActorName);
             MissionStatus missionStatus = new MissionStatus(Random, career.Date.Value);
-            missionStatus.Update(GamePlay as IGame, playerActorName, dateTime, false);
+            missionStatus.Update(GamePlay as IGame, GameEventId.Trigger, playerActorName, dateTime, false);
             missionStatus.WriteTo(missionStatusFile, true);
             missionStatusFile.save(missionStatusFileName);
 

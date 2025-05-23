@@ -23,6 +23,7 @@ using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
 using maddox.GP;
+using part;
 using static IL2DCE.MissionObjectModel.MissionStatus;
 
 namespace IL2DCE.MissionObjectModel
@@ -55,12 +56,10 @@ namespace IL2DCE.MissionObjectModel
             get;
         }
 
-#if false
         List<AircraftObj> Aircrafts
         {
             get;
         }
-#endif
 
         List<GroundObj> GroundActors
         {
@@ -121,7 +120,7 @@ namespace IL2DCE.MissionObjectModel
                 get;
                 set;
             }
-                
+
             double Z
             {
                 get;
@@ -188,6 +187,14 @@ namespace IL2DCE.MissionObjectModel
                 get
                 {
                     return new Point3d(X, Y, Z);
+                }
+            }
+
+            public string PointString
+            {
+                get 
+                {
+                    return string.Format(Config.NumberFormat, "({0:F2},{1:F2},{2:F2})", X, Y, Z);
                 }
             }
 
@@ -325,9 +332,16 @@ namespace IL2DCE.MissionObjectModel
 
             public void CopyPoint(MissionObjBase src)
             {
-                X = src.X; 
-                Y = src.Y; 
+                X = src.X;
+                Y = src.Y;
                 Z = src.Z;
+            }
+
+            public static string ToString(Point3d point)
+            {
+
+                return string.Format(Config.NumberFormat, "({0:F2},{1:F2},{2:F2})", point.x, point.y, point.z);
+
             }
         }
 
@@ -343,6 +357,14 @@ namespace IL2DCE.MissionObjectModel
             {
                 get;
                 set;
+            }
+
+            public string ClassShortName
+            {
+                get
+                {
+                    return CreateClassShortShortName(Class);
+                }
             }
 
             protected void UpdateClass(MissionObjEx src)
@@ -383,6 +405,12 @@ namespace IL2DCE.MissionObjectModel
                 get;
                 set;
             }
+
+            public bool IsMissionCompleted
+            {
+                get;
+                set;
+            }
         }
 
         public class MissionGroupObj : MissionActorObj
@@ -411,6 +439,10 @@ namespace IL2DCE.MissionObjectModel
                 set;
             }
 
+            public MissionGroupObj()
+            {
+                RequestTask = AiAirGroupTask.UNKNOWN;
+            }
         }
 
         public class PlayerObj : MissionActorObj
@@ -557,7 +589,7 @@ namespace IL2DCE.MissionObjectModel
                         {
                             Army.ToString(Config.NumberFormat),                             // Amry
                             AirGroup ?? string.Empty,                                       // AirGroup Name
-                            Type ?? string.Empty,                                      // ActorName
+                            Type ?? string.Empty,                                           // ActorName
                             Class ?? string.Empty,                                          // Class
                             IsValid ? "1" : "0",                                            // Valid
                             IsAlive ? "1" : "0",                                            // Alive 
@@ -638,7 +670,7 @@ namespace IL2DCE.MissionObjectModel
                     double z;
                     DateTime reinForceDate;
                     System.DateTime.TryParseExact(values[12], Config.DateTimeDefaultLongFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out reinForceDate);
-                    if (Enum.TryParse(values[0], true, out army)/* && !string.IsNullOrEmpty(values[1]) && !string.IsNullOrEmpty(values[2])*/ && int.TryParse(values[3], out nums) && 
+                    if (Enum.TryParse(values[0], true, out army)/* && !string.IsNullOrEmpty(values[1]) && !string.IsNullOrEmpty(values[2])*/ && int.TryParse(values[3], out nums) &&
                         int.TryParse(values[4], out initNums) && int.TryParse(values[5], out diedNums) && Variable.TryParse(values[6], out isValid) && Variable.TryParse(values[7], out isAlive) &&
                         Variable.TryParse(values[8], out isTaskComplete) && double.TryParse(values[9], NumberStyles.Float, Config.NumberFormat, out x) &&
                         double.TryParse(values[10], NumberStyles.Float, Config.NumberFormat, out y) && double.TryParse(values[11], NumberStyles.Float, Config.NumberFormat, out z))
@@ -679,7 +711,7 @@ namespace IL2DCE.MissionObjectModel
                         string name = CreateShortName(airGroup.Name());
                         AiActor[] actors = CloDAPIUtil.GetItems(airGroup);
                         AiAircraft aircraft = actors != null ? actors.FirstOrDefault() as AiAircraft : null;
-                        string nameItem = aircraft != null ? CreateShortName(aircraft.Name()): string.Empty;
+                        string nameItem = aircraft != null ? CreateShortName(aircraft.Name()) : string.Empty;
                         Point3d pos = airGroup.Pos();
                         return new AirGroupObj()
                         {
@@ -716,8 +748,8 @@ namespace IL2DCE.MissionObjectModel
 
             public bool Update(AirGroupObj airGroupObject)
             {
-                Debug.WriteLine("  AirGroupObject.Update[Id={0,2}] Name={1,-35}[{2,-30}] Class={3,-30} Nums={4,2}->{5,2} InitNums={6,2}->{7,2} DiedNums={8,2}->{9,2}, IsValid={10,-5}->{11,-5}, IsAlive={12,-5}->{13,-5}, IsTask={14,-5}->{15,-5}",
-                    airGroupObject.Id, airGroupObject.Name, airGroupObject.NameItem, airGroupObject.Class, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
+                Debug.WriteLine("  AirGroupObject.Update[Id={0,3}] Name={1,-45}[{2,-40}] Class={3,-35} Nums={4,2}->{5,2} InitNums={6,2}->{7,2} DiedNums={8,2}->{9,2}, IsValid={10,-5}->{11,-5}, IsAlive={12,-5}->{13,-5}, IsTask={14,-5}->{15,-5}",
+                    airGroupObject.Id, airGroupObject.Name, airGroupObject.NameItem, airGroupObject.ClassShortName, Nums, airGroupObject.Nums, InitNums, airGroupObject.InitNums, DiedNums, airGroupObject.DiedNums, IsValid, airGroupObject.IsValid, IsAlive, airGroupObject.IsAlive, IsTaskComplete, airGroupObject.IsTaskComplete);
                 bool updated = false;
 
                 try
@@ -1145,6 +1177,36 @@ namespace IL2DCE.MissionObjectModel
 
         public class AircraftObj : MissionActorObj
         {
+            public bool IsLanded
+            {
+                get;
+                set;
+            }
+
+            public bool IsStoped
+            {
+                get;
+                set;
+            }
+
+            public bool IsReArmed
+            {
+                get;
+                set;
+            }
+
+            public bool IsReFueled
+            {
+                get;
+                set;
+            }
+
+            public double StopedTime
+            {
+                get;
+                set;
+            }
+
             public override double ReinForceRate()
             {
                 AircraftType type;
@@ -1294,6 +1356,47 @@ namespace IL2DCE.MissionObjectModel
                     Debug.WriteLine(string.Format("AircraftObject.Create {0} {1}", ex.Message, ex.StackTrace));
                 }
                 return null;
+            }
+
+            public static AiAirGroupTask? GetCurrentTask(AiAircraft aiAircraft)
+            {
+                if (aiAircraft != null)
+                {
+                    AiAirGroup group = aiAircraft.Group() as AiAirGroup;
+                    if (group != null)
+                    {
+                        return CloDAPIUtil.GetTask(group);
+                    }
+                }
+                return null;
+            }
+
+            public static bool IsLastWaypoint(AiAircraft aiAircraft)
+            {
+                if (aiAircraft != null)
+                {
+                    AiAirGroup group = aiAircraft.Group() as AiAirGroup;
+                    if (group != null)
+                    {
+                        return CloDAPIUtil.IsLastWaypoint(group);
+                    }
+                }
+                return false;
+            }
+
+            public static bool IsStop(AiAircraft aiAircraft)
+            {
+                if (aiAircraft != null)
+                {
+                    Debug.WriteLine("Aircraft.IsStop Name={0}={1},{2},{3},{4},{5},{6},{7},{8}", aiAircraft.Name(),
+                        aiAircraft.getParameter(ParameterTypes.C_Magneto, 0), aiAircraft.getParameter(ParameterTypes.C_Magneto, -1), aiAircraft.getParameter(ParameterTypes.C_Throttle, 0), aiAircraft.getParameter(ParameterTypes.C_Throttle, -1),
+                        aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0), aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, -1), aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, 0), aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, -1));
+                    //return aiAircraft.getParameter(ParameterTypes.C_Magneto, 0) == 0 && aiAircraft.getParameter(ParameterTypes.C_Throttle, 0) <= 0
+                    //     /* && aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= 0*/;
+                    return aiAircraft.getParameter(ParameterTypes.C_Magneto, 0) <= 0 || aiAircraft.getParameter(ParameterTypes.C_Throttle, 0) <= 0
+                        || aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= 0 || aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, 0) <= 0;
+                }
+                return false;
             }
 
             public bool Update(AircraftObj aircraftObject)
@@ -1611,7 +1714,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#endregion
+        #endregion
 
         #region Property
 
@@ -1645,13 +1748,11 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-#if false
         public List<AircraftObj> Aircrafts
         {
             get;
             private set;
         }
-#endif
 
         public List<GroundObj> GroundActors
         {
@@ -1665,7 +1766,7 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
-#endregion
+        #endregion
 
         #region Constructor
 
@@ -1677,9 +1778,7 @@ namespace IL2DCE.MissionObjectModel
             AirGroups = new List<AirGroupObj>();
             GroundGroups = new List<GroundGroupObj>();
             Stationaries = new List<StationaryObj>();
-#if false
             Aircrafts = new List<AircraftObj>();
-#endif
             GroundActors = new List<GroundObj>();
         }
 
@@ -1691,13 +1790,11 @@ namespace IL2DCE.MissionObjectModel
             AirGroups = new List<AirGroupObj>(airGroups);
             GroundGroups = new List<GroundGroupObj>(groundGroups);
             Stationaries = new List<StationaryObj>(stationaries);
-#if false
             Aircrafts = new List<AircraftObj>(aircrafts);
-#endif
             GroundActors = new List<GroundObj>(groundActors);
         }
 
-#endregion
+        #endregion
 
         #region Create
 
@@ -1752,7 +1849,6 @@ namespace IL2DCE.MissionObjectModel
                         }
                     }
 
-#if false
                     List<AircraftObj> aircrafts = new List<AircraftObj>();
                     lines = file.lines(SectionAircraft);
                     for (i = 0; i < lines; i++)
@@ -1764,7 +1860,6 @@ namespace IL2DCE.MissionObjectModel
                             aircrafts.Add(aircraft);
                         }
                     }
-#endif
 
                     List<GroundObj> groundActors = new List<GroundObj>();
                     lines = file.lines(SectionGroundActor);
@@ -1780,7 +1875,7 @@ namespace IL2DCE.MissionObjectModel
 
                     if (player != null)
                     {
-                        return new MissionStatus(random, dt, player, airGroups, groundGroups, stationaries, /*aircrafts*/null, groundActors);
+                        return new MissionStatus(random, dt, player, airGroups, groundGroups, stationaries, aircrafts, groundActors);
                     }
                 }
             }
@@ -1792,25 +1887,23 @@ namespace IL2DCE.MissionObjectModel
 
         #region Update
 
-        public void Update(AiActor aiActor, bool group = true, bool items = false)
+        public void Update(AiActor aiActor, GameEventId eventId, bool group = true, bool items = false)
         {
             if (aiActor is AiAircraft)
             {
-#if false
-                Update(aiActor as AiAircraft, group);
-#endif
+                Update(aiActor as AiAircraft, eventId, group);
             }
             else if (aiActor is AiGroundActor)
             {
-                Update(aiActor as AiGroundActor, group);
+                Update(aiActor as AiGroundActor, eventId, group);
             }
             else if (aiActor is AiAirGroup)
             {
-                Update(aiActor as AiAirGroup, items);
+                Update(aiActor as AiAirGroup, eventId, items);
             }
             else if (aiActor is AiGroundGroup)
             {
-                Update(aiActor as AiGroundGroup, items);
+                Update(aiActor as AiGroundGroup, eventId, items);
             }
             //else if (aiActor is GroundStationary)
             //{
@@ -1818,11 +1911,11 @@ namespace IL2DCE.MissionObjectModel
             //}
             else if (aiActor is AiPerson)
             {
-                Update(aiActor as AiPerson, group, true);
+                Update(aiActor as AiPerson, eventId, group/*, true*/);
             }
         }
 
-        public void Update(IGame game, string playerActoName, DateTime dateTime, bool items = false)
+        public void Update(IGame game, GameEventId eventId, string playerActoName, DateTime dateTime, bool items = false)
         {
             DateTime = dateTime;
 
@@ -1835,7 +1928,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiAirGroupRed)
                 {
-                    Update(item, items);
+                    Update(item, eventId, items);
                 }
             }
 
@@ -1844,7 +1937,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiAirGroupBlue)
                 {
-                    Update(item, items);
+                    Update(item, eventId, items);
                 }
             }
 
@@ -1854,7 +1947,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiGroundGroupRed)
                 {
-                    Update(item, items);
+                    Update(item, eventId, items);
                 }
             }
             AiGroundGroup[] aiGroundGroupBlue = game.gpGroundGroups((int)EArmy.Blue);
@@ -1862,7 +1955,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in aiGroundGroupBlue)
                 {
-                    Update(item, items);
+                    Update(item, eventId, items);
                 }
             }
 
@@ -1872,7 +1965,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 foreach (var item in groundStationary)
                 {
-                    Update(item);
+                    Update(item, eventId);
                 }
             }
         }
@@ -1893,7 +1986,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        private void Update(AiAirGroup aiAirGroup, bool items = false)
+        private void Update(AiAirGroup aiAirGroup, GameEventId eventId, bool items = false)
         {
             AirGroupObj airGroupNew = AirGroupObj.Create(aiAirGroup);
             if (airGroupNew != null)
@@ -1902,7 +1995,7 @@ namespace IL2DCE.MissionObjectModel
                     !string.IsNullOrEmpty(airGroupNew.Name) ? AirGroups.Where(x => string.Compare(x.SquadronName, airGroupNew.SquadronName, true) == 0).FirstOrDefault() : null;
                 if (airGroup == null)
                 {
-                    Debug.WriteLine("  AiAirGroup.Add(Id={0,2} Name={1,-35}[{2,-30}] Class={3,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.NameItem, airGroupNew.Class);
+                    Debug.WriteLine("  AiAirGroup.Add(Id={0,3} Name={1,-45}[{2,-40}] Class={3,-35})", airGroupNew.Id, airGroupNew.Name, airGroupNew.NameItem, airGroupNew.ClassShortName);
                     AirGroups.Add(airGroupNew);
                 }
                 else
@@ -1918,14 +2011,14 @@ namespace IL2DCE.MissionObjectModel
                     {
                         foreach (var item in actors)
                         {
-                            Update(item, false, false);
+                            Update(item, eventId, false, false);
                         }
                     }
                 }
             }
         }
 
-        private void Update(AiGroundGroup aiGroundGroup, bool items = false)
+        private void Update(AiGroundGroup aiGroundGroup, GameEventId eventId, bool items = false)
         {
             GroundGroupObj groundGroupNew = GroundGroupObj.Create(aiGroundGroup);
             if (groundGroupNew != null)
@@ -1933,7 +2026,7 @@ namespace IL2DCE.MissionObjectModel
                 GroundGroupObj groundGroup = !string.IsNullOrEmpty(groundGroupNew.Name) ? GroundGroups.Where(x => string.Compare(x.Name, groundGroupNew.Name) == 0).FirstOrDefault() : null;
                 if (groundGroup == null)
                 {
-                    Debug.WriteLine("  AiGroundGroup.Add({0,-30} Class={1,-35})", groundGroupNew.Name, groundGroupNew.Class);
+                    Debug.WriteLine("  AiGroundGroup.Add({0,-45} Class={1,-35})", groundGroupNew.Name, groundGroupNew.ClassShortName);
                     GroundGroups.Add(groundGroupNew);
                 }
                 else
@@ -1951,13 +2044,13 @@ namespace IL2DCE.MissionObjectModel
                 {
                     foreach (var item in actors)
                     {
-                        Update(item, false, false);
+                        Update(item, eventId, false, false);
                     }
                 }
             }
         }
 
-        public void Update(GroundStationary groundStationary)
+        public void Update(GroundStationary groundStationary, GameEventId eventId)
         {
             StationaryObj stationaryNew = StationaryObj.Create(groundStationary);
             if (stationaryNew != null)
@@ -1975,10 +2068,10 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#if false
-        private void Update(AiAircraft aiAircraft, bool group = false)
+        private void Update(AiAircraft aiAircraft, GameEventId eventId, bool group = false)
         {
-            Debug.WriteLine("  AiAircraft.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-35}", aiAircraft.Army(), aiAircraft.Name(), aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiAircraft.Update Army={0,1}, Name={1,-45}, TypeName={2,-30}, Group={3,-45},  IsValid={4,-5}, IsAlive={5,-5}, IsTask={6,-5}", 
+                aiAircraft.Army(), aiAircraft.Name(), MissionObjBase.CreateClassShortShortName(aiAircraft.InternalTypeName()), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty, aiAircraft.IsValid(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
             AircraftObj aircraftNew = AircraftObj.Create(aiAircraft);
             if (aircraftNew != null)
             {
@@ -1989,7 +2082,24 @@ namespace IL2DCE.MissionObjectModel
                 }
                 else
                 {
+                    if (aircraft.IsMissionCompleted && (eventId == GameEventId.AircraftKilled || eventId == GameEventId.ActorDead || eventId == GameEventId.ActorDestroyed))
+                    {
+                        // Safe Destroyed
+                        aircraftNew.IsValid = aircraftNew.IsAlive = aircraftNew.IsTaskComplete = true;
+                    }
                     aircraft.Update(aircraftNew);
+                }
+
+                if (eventId == GameEventId.AircraftLanded)
+                {
+                    aircraft.IsLanded = true;
+                }
+                else if (eventId == GameEventId.AircraftTookOff)
+                {
+                    aircraft.IsLanded = false;
+                    aircraft.IsStoped = false;
+                    aircraft.IsReArmed = false;
+                    aircraft.IsReFueled = false;
                 }
             }
 
@@ -1998,23 +2108,22 @@ namespace IL2DCE.MissionObjectModel
                 AiAirGroup aiAirGroup = aiAircraft.AirGroup();
                 if (aiAirGroup != null/* && string.Compare(aiAirGroup.Name(), ValueNoName, true) != 0*/)
                 {
-                    Update(aiAirGroup, false);
+                    Update(aiAirGroup, eventId, false);
                 }
                 else
                 {
                     aiAirGroup = aiAircraft.Group() as AiAirGroup;
                     if (aiAirGroup != null/* && string.Compare(aiAirGroup.Name(), ValueNoName, true) != 0*/)
                     {
-                        Update(aiAirGroup, false);
+                        Update(aiAirGroup, eventId, false);
                     }
                 }
             }
         }
-#endif
 
-        private void Update(AiGroundActor aiGroundActor, bool group = false)
+        private void Update(AiGroundActor aiGroundActor, GameEventId eventId, bool group = false)
         {
-            Debug.WriteLine("  AiGroundActor.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-35}", aiGroundActor.Army(), aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiGroundActor.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-30}", aiGroundActor.Army(), aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(aiGroundActor.InternalTypeName()), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
             GroundObj groundActorNew = GroundObj.Create(aiGroundActor);
             if (groundActorNew != null)
             {
@@ -2040,12 +2149,12 @@ namespace IL2DCE.MissionObjectModel
                 AiGroundGroup aiGroundGroup = aiGroundActor.Group() as AiGroundGroup;
                 if (aiGroundGroup != null && string.Compare(aiGroundActor.Name(), aiGroundGroup.Name(), true) != 0)
                 {
-                    Update(aiGroundGroup, false);
+                    Update(aiGroundGroup, eventId, false);
                 }
             }
         }
 
-        private void Update(AiPerson aiPerson, bool group = true, bool cart = true)
+        private void Update(AiPerson aiPerson, GameEventId eventId, bool group = true, bool cart = true)
         {
             if (group)
             {
@@ -2054,11 +2163,11 @@ namespace IL2DCE.MissionObjectModel
                 {
                     if (aiGroup is AiAirGroup/* && string.Compare(aiGroup.Name(), ValueNoName, true) != 0*/)
                     {
-                        Update(aiGroup as AiAirGroup, true);
+                        Update(aiGroup as AiAirGroup, eventId, true);
                     }
                     else if (aiGroup is AiGroundGroup/* && string.Compare(aiGroup.Name(), ValueNoName, true) != 0*/)
                     {
-                        Update(aiGroup as AiGroundGroup, true);
+                        Update(aiGroup as AiGroundGroup, eventId, true);
                     }
                 }
             }
@@ -2073,7 +2182,7 @@ namespace IL2DCE.MissionObjectModel
                         AiAircraft aiAircraf = aiCart as AiAircraft;
                         if (aiAircraf != null)
                         {
-                            Update(aiAircraf, group);
+                            Update(aiAircraf, eventId, group);
                         }
                         //AiAirGroup aiAirGroup = aiAircraf.AirGroup();
                         //Debug.WriteLine("    AiAircraft={0}[{1}], AiAirGroup={2}", aiAircraf.Name(), aiAircraf.InternalTypeName(), aiAirGroup != null ? aiAirGroup.Name() : string.Empty);
@@ -2087,7 +2196,7 @@ namespace IL2DCE.MissionObjectModel
                         AiGroundActor aiGroundActor = aiCart as AiGroundActor;
                         if (aiGroundActor != null)
                         {
-                            Update(aiGroundActor, group);
+                            Update(aiGroundActor, eventId, group);
                         }
                         //AiGroundGroup aiGroundGroup = aiGroundActor.Group() as AiGroundGroup;
                         //Debug.WriteLine("    AiGroundActor={0}[{1}], AiGroundGroup={2}", aiGroundActor.Name(), aiGroundActor.InternalTypeName(), aiGroundGroup != null ? aiGroundGroup.Name() : string.Empty);
@@ -2100,7 +2209,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#endregion
+        #endregion
 
         #region WriteTo
 
@@ -2123,12 +2232,11 @@ namespace IL2DCE.MissionObjectModel
             {
                 item.WriteTo(file, overwrite);
             }
-#if false
+
             foreach (var item in Aircrafts.OrderBy(x => x.Name))
             {
                 item.WriteTo(file, overwrite);
             }
-#endif
             foreach (var item in GroundActors.OrderBy(x => x.Name))
             {
                 item.WriteTo(file, overwrite);
@@ -2157,10 +2265,8 @@ namespace IL2DCE.MissionObjectModel
                 // Stationary
                 UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.Stationaries);
 
-#if false
                 // Aircraft
                 UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.Aircrafts);
-#endif
 
                 // GroundActor
                 UpdateWriteTo(file, reinForceDay, overwrite, missionStatusPrevious.GroundActors);
@@ -2176,10 +2282,8 @@ namespace IL2DCE.MissionObjectModel
                 // Stationary
                 UpdateWriteTo(file, reinForceDay, overwrite, new List<StationaryObj>());
 
-#if false
                 // Aircraft
                 UpdateWriteTo(file, reinForceDay, overwrite, new List<AircraftObj>());
-#endif
 
                 // GroundActor
                 UpdateWriteTo(file, reinForceDay, overwrite, new List<GroundObj>());
@@ -2188,7 +2292,7 @@ namespace IL2DCE.MissionObjectModel
 
         private int[] GetRandomReinForceDayHour(int[] reinForceDayHour)
         {
-            return new int[(int)ReinForcePart.Count] 
+            return new int[(int)ReinForcePart.Count]
             {
                 Random.Next((int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Day] * 0.5), (int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Day] * 1.5)),
                 Random.Next((int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Hour] * 0.5), (int)Math.Ceiling(reinForceDayHour[(int)ReinForcePart.Hour] * 1.5)),
@@ -2203,12 +2307,17 @@ namespace IL2DCE.MissionObjectModel
                 IEnumerable<AirGroupObj> targets = AirGroups.Where(x => string.Compare(string.Compare(x.Name, ValueNoName, true) != 0 ? x.SquadronName : x.SquadronNameItem, squadronName, true) == 0);
                 try
                 {
-                    AirGroupObj item = targets.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).FirstOrDefault()?? targets.First();
+                    AirGroupObj item = targets.Where(x => string.Compare(x.Name, ValueNoName, true) != 0).FirstOrDefault() ?? targets.First();
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
                     AirGroupObj previousAirGroup = airGroups.Where(x => string.Compare(x.SquadronName, squadronName, true) == 0).LastOrDefault();
+                    IEnumerable<AircraftObj> aircrafts = Aircrafts.Where(x => string.Compare(AirGroupObj.Name2SquadronName(x.Name), squadronName, true) == 0);
+                    int alives = aircrafts.Sum(x => x.IsAlive ? 1: 0);
                     item.InitNums = targets.Max(x => x.InitNums);
-                    item.Nums = targets.Sum(x => x.Nums);
-                    item.DiedNums = targets.Sum(x => x.DiedNums);
+                    // item.Nums = targets.Sum(x => x.Nums);
+                    // Debug.Assert(item.Nums == alives);
+                    item.Nums = alives;
+                    // item.DiedNums = targets.Sum(x => x.DiedNums);
+                    item.DiedNums = item.InitNums - alives;
                     item.Name = string.Compare(item.Name, ValueNoName, true) != 0 ? item.Name : squadronName + "0";
                     if (item.InitNums > 0/* && nums > 0*/)
                     {
@@ -2413,13 +2522,18 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#if false
         private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<AircraftObj> aircrafts)
         {
             foreach (var item in Aircrafts.OrderBy(x => x.Name))
             {
                 try
                 {
+                    if (item.IsMissionCompleted)
+                    {
+                        // Safe Destroyed
+                        item.IsValid = item.IsAlive = item.IsTaskComplete = true;
+                    }
+
                     AircraftObj previousAircraft = aircrafts.Where(x => x.Army == item.Army && x.Name == item.Name && x.Class == item.Class).FirstOrDefault();
                     if (!item.IsAlive)
                     {
@@ -2473,7 +2587,6 @@ namespace IL2DCE.MissionObjectModel
                 item.WriteTo(file, overwrite);
             }
         }
-#endif
 
         private void UpdateWriteTo(ISectionFile file, int reinForceDay, bool overwrite, List<GroundObj> groundActors)
         {
@@ -2535,7 +2648,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#endregion
+        #endregion
 
         public AirGroupObj GetPlayerAirGroup()
         {

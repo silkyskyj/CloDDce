@@ -40,7 +40,7 @@ namespace IL2DCE.Pages.Controls
         public const string SectionGeneralSettings = "GeneralSettings";
         public const string GeneralSettingsFileFilter = "General Settings File(.ini)|GeneralSettings*.ini";
 
-        public const string MsgErrorFileLocked = "Unable to save configuration file.File is locked.[{0}]";
+        public const string MsgErrorFileLocked = "Unable to save configuration file. File is locked.[{0}]";
         public const string MsgErrorFileNotFound = "Configuration file not found, please save your configuration.[{0}]";
                                                          
         public event SelectionChangedEventHandler ComboBoxSelectionChangedEvent;

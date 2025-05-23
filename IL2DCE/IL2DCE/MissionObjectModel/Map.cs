@@ -85,15 +85,19 @@ namespace IL2DCE.MissionObjectModel
 
         static Map()
         {
-            defaultFrontMarkers = new Dictionary<string, IEnumerable<Point3d>>();
-            defaultFrontMarkers.Add(EMap.English_Channel_1940_Summer.ToDescription(), frontMarkersEC1940);
-            defaultFrontMarkers.Add(EMap.English_Channel_1940_Autumn.ToDescription(), frontMarkersEC1940);
-            defaultFrontMarkers.Add(EMap.English_Channel_1940_Winter.ToDescription(), frontMarkersEC1940);
+            defaultFrontMarkers = new Dictionary<string, IEnumerable<Point3d>>
+            {
+                { EMap.English_Channel_1940_Summer.ToDescription(), frontMarkersEC1940 },
+                { EMap.English_Channel_1940_Autumn.ToDescription(), frontMarkersEC1940 },
+                { EMap.English_Channel_1940_Winter.ToDescription(), frontMarkersEC1940 }
+            };
 
-            defaultMapPeriods = new Dictionary<string, IEnumerable<KeyValuePair<int, string>>>();
-            defaultMapPeriods.Add(EMap.English_Channel_1940_Summer.ToDescription(), defaultMapPeriodEC1940);
-            defaultMapPeriods.Add(EMap.English_Channel_1940_Autumn.ToDescription(), defaultMapPeriodEC1940);
-            defaultMapPeriods.Add(EMap.English_Channel_1940_Winter.ToDescription(), defaultMapPeriodEC1940);
+            defaultMapPeriods = new Dictionary<string, IEnumerable<KeyValuePair<int, string>>>
+            {
+                { EMap.English_Channel_1940_Summer.ToDescription(), defaultMapPeriodEC1940 },
+                { EMap.English_Channel_1940_Autumn.ToDescription(), defaultMapPeriodEC1940 },
+                { EMap.English_Channel_1940_Winter.ToDescription(), defaultMapPeriodEC1940 }
+            };
         }
 
         public static IEnumerable<string> DefaultList()

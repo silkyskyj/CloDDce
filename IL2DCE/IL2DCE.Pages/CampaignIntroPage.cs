@@ -186,8 +186,8 @@ namespace IL2DCE
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 CampaignInfo campaignInfo = career.CampaignInfo;
                 career.Aircraft = AircraftInfo.CreateDisplayName(airGroup.Class);
-                campaignInfo.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
-                campaignInfo.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
+                career.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
+                career.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
 
                 Game.Core.ResetCampaign(Game);
 

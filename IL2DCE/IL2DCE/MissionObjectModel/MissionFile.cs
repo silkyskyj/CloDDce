@@ -178,6 +178,12 @@ namespace IL2DCE.MissionObjectModel
         }
 #endif
 
+        public string Player
+        {
+            get;
+            private set;
+        }
+
         public List<AirGroup> AirGroups
         {
             get;
@@ -322,6 +328,7 @@ namespace IL2DCE.MissionObjectModel
             }
             GlobalWind = globalWindList;
 #endif
+            Player = file.get(MissionFile.SectionMain, MissionFile.KeyPlayer, string.Empty);
 
             // AirGroups
             lines = file.lines(SectionAirGroups);

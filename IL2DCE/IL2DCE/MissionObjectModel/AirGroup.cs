@@ -408,7 +408,6 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
 
-
             // SetOnPark
             SetOnParked = string.Compare(sectionFile.get(id, MissionFile.KeySetOnPark, "0"), "1") == 0;
 

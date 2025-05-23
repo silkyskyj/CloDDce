@@ -80,30 +80,33 @@ namespace IL2DCE.Util
 
         public static string GetGameFileNameWithoutExtension(string pathGame, bool errorLog = false)
         {
-            try
+            if (!string.IsNullOrEmpty(pathGame))
             {
-                int idx = pathGame.LastIndexOf("/");
-                if (idx != -1)
+                try
                 {
-                    pathGame = pathGame.Substring(idx + 1);
+                    int idx = pathGame.LastIndexOf("/");
+                    if (idx != -1)
+                    {
+                        pathGame = pathGame.Substring(idx + 1);
+                    }
+                    idx = pathGame.LastIndexOf(".");
+                    if (idx != -1)
+                    {
+                        pathGame = pathGame.Substring(0, idx);
+                    }
+                    return pathGame;
                 }
-                idx = pathGame.LastIndexOf(".");
-                if (idx != -1)
+                catch (Exception ex)
                 {
-                    pathGame = pathGame.Substring(0, idx);
-                }
-                return pathGame;
-            }
-            catch (Exception ex)
-            {
-                string message = string.Format("FileUtil.DeleteFile[Error={0}][Path={1}]", ex.Message, pathGame);
-                if (errorLog)
-                {
-                    Core.WriteLog(message);
-                }
-                else
-                {
-                    Debug.WriteLine(message);
+                    string message = string.Format("FileUtil.DeleteFile[Error={0}][Path={1}]", ex.Message, pathGame);
+                    if (errorLog)
+                    {
+                        Core.WriteLog(message);
+                    }
+                    else
+                    {
+                        Debug.WriteLine(message);
+                    }
                 }
             }
             return string.Empty;

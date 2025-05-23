@@ -43,19 +43,6 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        //public string MissionName
-        //{
-        //    get
-        //    {
-        //        return _missionName;
-        //    }
-        //    set
-        //    {
-        //        _missionName = value;
-        //    }
-        //}
-        //private string _missionName = "";
-
         public string MissionDescription
         {
             get
@@ -73,10 +60,10 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return _name;
+                return name;
             }
         }
-        private Dictionary<string, string> _name = new Dictionary<string, string>();
+        private Dictionary<string, string> name = new Dictionary<string, string>();
 
         public IDictionary<string, Text> Description
         {

@@ -20,13 +20,11 @@
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="34,640,0,0" x:Name="comboBoxSelectRank" VerticalAlignment="Top" Width="618" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="9" MaxDropDownHeight="480"/>
 
         <Label Content="Select Air Group:" Height="50" HorizontalAlignment="Left" Margin="700,154,0,0" x:Name="labelSelectAirGroup" VerticalAlignment="Top" Width="225" FontSize="28" Foreground="#B2FFFFFF" />
-        <Controls:FilterComboBox Height="50" HorizontalAlignment="Left" Margin="700,212,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="820" FontSize="28" Foreground="#FFA0854A" TabIndex="11" IsEditable="False" Background="#00000000" MaxDropDownHeight="720"/>
+        <Controls:FilterComboBox Height="50" HorizontalAlignment="Left" Margin="700,210,0,0" x:Name="comboBoxSelectAirGroup" VerticalAlignment="Top" Width="820" FontSize="28" Foreground="#FFA0854A" TabIndex="11" IsEditable="False" Background="#00000000" MaxDropDownHeight="720"/>
+        <Label x:Name="labelDefaultSelectAirGroup" Content="Mission Default: BoB_RAF_F_64Sqn_Early.0 (SpitfireMkIa_100oct)" Margin="700,260,0,0" VerticalAlignment="Top" Foreground="#B2FFFFFF" HorizontalAlignment="Left" Width="600"/>
 
         <Label Content="Select Mission Type:" Height="50" HorizontalAlignment="Left" Margin="700,294,0,0" x:Name="labelSelectMissionType" VerticalAlignment="Top" FontSize="28" Foreground="#B2FFFFFF" Width="260" />
         <ComboBox Height="50" HorizontalAlignment="Left" Margin="700,350,0,0" x:Name="comboBoxSelectMissionType" VerticalAlignment="Top" Width="400" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="13" MaxDropDownHeight="640"/>
-
-        <Label Content="Select Target:" Height="52" HorizontalAlignment="Left" Margin="1110,21,0,0" x:Name="labelSelectMissionTarget" VerticalAlignment="Top" Width="199" FontSize="28" Foreground="#B2FFFFFF" />
-        <ComboBox Height="50" HorizontalAlignment="Left" Margin="1110,85,0,0" x:Name="comboBoxSelectTarget" VerticalAlignment="Top" Width="200" FontSize="28" Foreground="#FFA0854A" Background="#00000000" TabIndex="20000" IsTabStop="False"/>
 
         <Label Content="Spawn:" HorizontalAlignment="Left" Margin="700,434,0,0" x:Name="labelSpawn" VerticalAlignment="Top" Width="138" FontSize="28" Foreground="#B2FFFFFF" Height="50" />
         <ComboBox Height="50" Margin="700,490,0,0" x:Name="comboBoxSpawn" VerticalAlignment="Top" FontSize="28" Foreground="#FFA0854A" Background="#00000000" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Width="120" TabIndex="18"/>

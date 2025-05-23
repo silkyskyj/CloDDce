@@ -111,7 +111,12 @@ namespace IL2DCE.Generator
             AirGroup airGroup = missionTemplateFile.AirGroups.Where(x => x.ArmyIndex == Career.ArmyIndex && string.Compare(x.SquadronName, Career.AirGroup, true) == 0).FirstOrDefault();
             if (airGroup == null)
             {
-                throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
+                airGroup = GeneratorAirOperation.CreateAirGroup(GamePlay, Random, campaignInfo, missionTemplateFile.AirGroups, Career.ArmyIndex, Career.AirGroup, Career.Aircraft, Career.Spawn);
+                if (airGroup == null)
+                {
+                    throw new NotImplementedException(string.Format("Invalid ArmyIndex[{0}] and AirGroup[{1}]", Career.ArmyIndex, Career.AirGroup));
+                }
+                missionTemplateFile.AirGroups.Add(airGroup);
             }
             Career.PlayerAirGroup = airGroup;
             Career.Aircraft = AircraftInfo.CreateDisplayName(airGroup.Class);
@@ -263,19 +268,14 @@ namespace IL2DCE.Generator
                 throw new ArgumentException(string.Format("no available Player Mission[{0}] AirGroup[{1}]", campaignInfo.Id, airGroup.DisplayDetailName));
             }
 
-            // Determine the aircraft that is controlled by the player.
+            // Palyer Determine the aircraft that is controlled by the player.
             IEnumerable<string> aircraftOrder = determineAircraftOrder(airGroup);
-
-            string playerAirGroupKey = airGroup.AirGroupKey;
-            int playerSquadronIndex = airGroup.SquadronIndex;
             if (aircraftOrder.Any())
             {
-                string playerPosition = aircraftOrder.Last();
-
                 double factor = aircraftOrder.Count() / 6;
                 int playerPositionIndex = (int)(Math.Floor(Career.RankIndex * factor));
-                playerPosition = aircraftOrder.ElementAt(aircraftOrder.Count() - 1 - playerPositionIndex);
-                string playerInfo = AirGroup.CreateSquadronString(playerAirGroupKey, playerSquadronIndex) + playerPosition;
+                string playerPosition = aircraftOrder.ElementAt(aircraftOrder.Count() - 1 - playerPositionIndex);
+                string playerInfo = AirGroup.CreateSquadronString(airGroup.AirGroupKey, airGroup.SquadronIndex) + playerPosition;
                 SilkySkyCloDFile.Write(missionFile, MissionFile.SectionMain, MissionFile.KeyPlayer, playerInfo, true);
             }
 
@@ -944,8 +944,7 @@ namespace IL2DCE.Generator
                 }
 
                 // FrontMarker
-                CampaignInfo campaignInfo = Career.CampaignInfo;
-                if (campaignInfo.DynamicFrontMarker)
+                if (Career.DynamicFrontMarker)
                 {
                     IEnumerable<Point3d> positionsRed = groundGroups.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)
                                         .Concat(stationaries.Where(x => x.Army == (int)EArmy.Red).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Red));

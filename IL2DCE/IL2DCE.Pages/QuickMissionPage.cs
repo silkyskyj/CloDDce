@@ -24,7 +24,6 @@ using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
 using IL2DCE.Util;
 using maddox.game;
-using maddox.GP;
 using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE
@@ -58,7 +57,7 @@ namespace IL2DCE
                 }
             }
 
-            protected CampaignInfo SelectedCampaign
+            protected override CampaignInfo SelectedCampaign
             {
                 get
                 {
@@ -88,7 +87,7 @@ namespace IL2DCE
                 }
             }
 
-            private int SelectedArmyIndex
+            protected override int SelectedArmyIndex
             {
                 get
                 {
@@ -102,7 +101,7 @@ namespace IL2DCE
                 }
             }
 
-            private int SelectedAirForceIndex
+            protected override int SelectedAirForceIndex
             {
                 get
                 {
@@ -116,7 +115,7 @@ namespace IL2DCE
                 }
             }
 
-            private AirGroup SelectedAirGroup
+            protected override AirGroup SelectedAirGroup
             {
                 get
                 {
@@ -297,8 +296,6 @@ namespace IL2DCE
             public QuickMissionPage()
                 : base("Quick Mission", new QuickMission())
             {
-                FrameworkElement.Start.Click += new System.Windows.RoutedEventHandler(Start_Click);
-                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
                 FrameworkElement.comboBoxSelectCampaign.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaign_SelectionChanged);
                 FrameworkElement.comboBoxSelectCampaignMission.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectCampaignMission_SelectionChanged);
                 FrameworkElement.comboBoxSelectArmy.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
@@ -310,6 +307,7 @@ namespace IL2DCE
                 FrameworkElement.comboBoxSelectTime.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectTime_SelectionChanged);
                 FrameworkElement.comboBoxSpawn.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSpawn_IsEnabledChanged);
                 FrameworkElement.comboBoxSelectCampaign.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectCampaign_IsEnabledChanged);
+                FrameworkElement.comboBoxSelectCampaignMission.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectCampaignMission_IsEnabledChanged);
                 FrameworkElement.comboBoxSelectArmy.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectArmy_IsEnabledChanged);
                 FrameworkElement.comboBoxSelectAirForce.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectAirForce_IsEnabledChanged);
                 FrameworkElement.comboBoxSelectAirGroup.IsEnabledChanged += new DependencyPropertyChangedEventHandler(comboBoxSelectAirGroup_IsEnabledChanged);
@@ -325,6 +323,8 @@ namespace IL2DCE
                 FrameworkElement.checkBoxSelectAirgroupFilter.Checked += new RoutedEventHandler(checkBoxSelectAirgroupFilter_CheckedChange);
                 FrameworkElement.checkBoxSelectAirgroupFilter.Unchecked += new RoutedEventHandler(checkBoxSelectAirgroupFilter_CheckedChange);
 
+                FrameworkElement.Start.Click += new System.Windows.RoutedEventHandler(Start_Click);
+                FrameworkElement.Back.Click += new System.Windows.RoutedEventHandler(Back_Click);
                 FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(ImportMission);
                 FrameworkElement.buttonImportMissionFile.Click += new RoutedEventHandler(ImportMissionFile);
                 FrameworkElement.buttonImportMissionFolder.Click += new RoutedEventHandler(ImportMissionFolder);
@@ -337,8 +337,6 @@ namespace IL2DCE
                 FrameworkElement.buttonUserSave.Click += new RoutedEventHandler(buttonUserSave_Click);
 
                 // FrameworkElement.buttonMissionLoad.Visibility = Visibility.Hidden;
-                FrameworkElement.labelSelectMissionTarget.Visibility = Visibility.Hidden;
-                FrameworkElement.comboBoxSelectTarget.Visibility = Visibility.Hidden;
                 FrameworkElement.checkBoxSelectCampaignFilter.Visibility = Visibility.Hidden;
                 FrameworkElement.checkBoxSelectAirgroupFilter.Visibility = Visibility.Hidden;
             }
@@ -402,6 +400,7 @@ namespace IL2DCE
                     missionLoaded = false;
                     UpdateMapNameInfo();
                     UpdateArmyComboBoxInfo(true);
+                    UpdateSelectDefaultAirGroupLabel();
                     UpdateTimeComboBoxInfo();
                     UpdateWeatherComboBoxInfo();
                     UpdateCloudAltitudeComboBoxInfo();
@@ -461,7 +460,6 @@ namespace IL2DCE
                 if (e.AddedItems.Count > 0 && !hookComboSelectionChanged)
                 {
                     UpdateFlightDefaultLabel();
-                    // UpdateSelectTargetComboBoxInfo();
                     UpdateSpawnComboBoxInfo();
                 }
 
@@ -496,9 +494,18 @@ namespace IL2DCE
             {
                 if (Game != null && !(bool)e.NewValue)
                 {
+                    UpdateCampaignMissonComboBoxInfo();
+                    UpdateSelectDateInfo();
+                }
+            }
+
+            private void comboBoxSelectCampaignMission_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+            {
+                if (Game != null && !(bool)e.NewValue)
+                {
                     UpdateMapNameInfo();
                     UpdateArmyComboBoxInfo(true);
-                    UpdateSelectDateInfo();
+                    UpdateSelectDefaultAirGroupLabel();
                     UpdateTimeComboBoxInfo();
                     UpdateWeatherComboBoxInfo();
                     UpdateCloudAltitudeComboBoxInfo();
@@ -540,7 +547,6 @@ namespace IL2DCE
             {
                 if (Game != null && !(bool)e.NewValue)
                 {
-                    // UpdateSelectTargetComboBoxInfo();
                     UpdateSpawnComboBoxInfo();
                     UpdateFlightDefaultLabel();
                 }
@@ -711,7 +717,7 @@ namespace IL2DCE
 
                     Game.Core.CurrentCareer = career;
 
-                    campaignInfo.EndDate = campaignInfo.StartDate = career.Date.Value;
+                    career.EndDate = career.StartDate = career.Date.Value;
                     Game.Core.CreateQuickMission(Game, career);
 
                     Game.gameInterface.PageChange(new BattleIntroPage(), null);
@@ -880,121 +886,22 @@ namespace IL2DCE
 
             private void UpdateRankComboBoxInfo()
             {
-                ComboBox comboBox = FrameworkElement.comboBoxSelectRank;
-                int selected = comboBox.SelectedIndex;
-                comboBox.Items.Clear();
-
-                int armyIndex = SelectedArmyIndex;
-                int airForceIndex = SelectedAirForceIndex;
-
-                if (armyIndex != -1 && airForceIndex != -1)
-                {
-                    AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == armyIndex && x.AirForceIndex == airForceIndex).FirstOrDefault();
-                    for (int i = 0; i <= Rank.RankMax; i++)
-                    {
-                        comboBox.Items.Add(
-                            new ComboBoxItem()
-                            {
-                                Content = airForce.Ranks[i],
-                                Tag = i,
-                            });
-                    }
-                }
-
-                if (comboBox.Items.Count > 0)
-                {
-                    comboBox.IsEnabled = true;
-                    comboBox.SelectedIndex = selected != -1 ? selected : 0;
-                }
-                else
-                {
-                    comboBox.IsEnabled = false;
-                    comboBox.SelectedIndex = -1;
-                }
+                UpdateRankComboBoxInfo(FrameworkElement.comboBoxSelectRank);
             }
 
             private void UpdateAirGroupComboBoxInfo()
             {
-                ComboBox comboBox = FrameworkElement.comboBoxSelectAirGroup;
-                comboBox.IsEditable = Game.Core.Config.EnableFilterSelectAirGroup;
-                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
-                comboBox.Items.Clear();
-
-                CampaignInfo campaignInfo = SelectedCampaign;
-                if (campaignInfo != null && currentMissionFile != null)
-                {
-                    int armyIndex = SelectedArmyIndex;
-                    int airForceIndex = SelectedAirForceIndex;
-                    if (armyIndex != -1 && airForceIndex != -1)
-                    {
-                        foreach (AirGroup airGroup in currentMissionFile.AirGroups.OrderBy(x => x.Class))
-                        {
-                            AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
-                            AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-                            if (airGroupInfo.ArmyIndex == armyIndex && airGroupInfo.AirForceIndex == airForceIndex && aircraftInfo.IsFlyable)
-                            {
-                                comboBox.Items.Add(new ComboBoxItem() { Tag = airGroup, 
-                                                                        Content = missionLoaded ? CreateAirGroupContent(airGroup, campaignInfo) : CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo) });
-                            }
-                        }
-                    }
-                }
-
-                EnableSelectItem(comboBox, selected, currentMissionFile == null);
+                UpdateAirGroupComboBoxInfo(FrameworkElement.comboBoxSelectAirGroup);
             }
 
             protected override void UpdateAirGroupContent()
             {
-                CampaignInfo campaignInfo = SelectedCampaign;
-                foreach (ComboBoxItem item in FrameworkElement.comboBoxSelectAirGroup.Items)
-                {
-                    AirGroup airGroup = item.Tag as AirGroup;
-                    item.Content = CreateAirGroupContent(airGroup, campaignInfo);
-                }
+                UpdateAirGroupContent(FrameworkElement.comboBoxSelectAirGroup);
             }
 
-            private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo)
+            private void UpdateSelectDefaultAirGroupLabel()
             {
-                string content = string.Empty;
-                AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-                Point3d pos = airGroup.Position;
-                double distance = Game.gpFrontDistance(airGroup.ArmyIndex, pos.x, pos.y);
-                if (distance == 0)
-                {
-                    distance = Game.gpFrontDistance(airGroup.ArmyIndex == (int)EArmy.Red ? (int)EArmy.Blue : (int)EArmy.Red, pos.x, pos.y);
-                }
-                if (airGroup.Airstart)
-                {
-                    content = CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo, distance);
-                }
-                else
-                {
-                    string airportName = string.Empty;
-                    var airports = Game.gpAirports();
-                    var airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR());
-                    if (!airport.Any())
-                    {
-                        airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR() * 1.5);
-                    }
-                    if (airport.Any())
-                    {
-                        airportName = airport.First().Name();
-                    }
-                    content = CreateAirGroupContent(airGroup, campaignInfo, airportName, aircraftInfo, distance);
-                }
-
-                return content;
-            }
-
-            private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, string airportName, AircraftInfo aircraftInfo = null, double distance = -1)
-            {
-                if (aircraftInfo == null)
-                {
-                    aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-                }
-                return string.Format(Config.NumberFormat, "{0} ({1}){2}{3}",
-                        airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]" : string.IsNullOrEmpty(airportName) ? string.Empty: string.Format(" [{0}]", airportName), 
-                        distance >= 0 ? string.Format(Config.NumberFormat, " {0:F2}km", distance / 1000): string.Empty);
+                UpdateSelectDefaultAirGroupLabel(FrameworkElement.labelDefaultSelectAirGroup);
             }
 
             private void UpdateMissionTypeComboBoxInfo()
@@ -1216,28 +1123,7 @@ namespace IL2DCE
 
             private void UpdateSkillComboBoxInfo()
             {
-                ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
-                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
-
-                if (comboBox.Items.Count == 0)
-                {
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Default, Content = Skill.Default.Name });
-                    comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Random, Content = Skill.Random.Name });
-                    Config config = Game.Core.Config;
-                    config.Skills.ForEach(x => comboBox.Items.Add(new ComboBoxItem() { Tag = x, Content = x.Name }));
-                }
-
-                string defaultString = string.Empty;
-                if (SelectedAirGroup != null)
-                {
-                    AirGroup airGroup = SelectedAirGroup;
-                    Skill skill = string.IsNullOrEmpty(airGroup.Skill) ? null : Skill.Parse(airGroup.Skill);
-                    defaultString = string.Format(MissionDefaultFormat, airGroup.Skills != null && airGroup.Skills.Count > 0 ?
-                                    Skill.SkillNameMulti : skill != null ? skill.IsTyped() ? skill.GetTypedName() : Skill.SkillNameCustom : string.Empty);
-                }
-                FrameworkElement.labelDefaultSkill.Content = defaultString;
-
-                EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
+                UpdateSkillComboBoxInfo(FrameworkElement.comboBoxSelectSkill, FrameworkElement.labelDefaultSkill);
             }
 
             private void UpdateTimeComboBoxInfo()
@@ -1319,114 +1205,11 @@ namespace IL2DCE
                 EnableSelectItem(comboBox, selected, currentMissionFile == null);
             }
 
-#if false
-            private void UpdateSelectTargetComboBoxInfo()
-            {
-                ComboBox comboBox = FrameworkElement.comboBoxSelectTarget;
-                string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
-                comboBox.Items.Clear();
-
-                CampaignInfo campaignInfo = SelectedCampaign;
-                AirGroup airGroup = SelectedAirGroup;
-                EMissionType? missionType = SelectedMissionType;
-                if (campaignInfo != null && currentMissionFile != null && airGroup != null && missionType != null)
-                {
-                    //AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
-                    //AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-                    //foreach (var item in aircraftInfo.MissionTypes)
-                    //{
-                    //    comboBox.Items.Add(item.ToDescription());
-                    //}
-
-                    switch (missionType.Value)
-                    {
-                        case EMissionType.RECON:
-                            break;
-
-                        case EMissionType.MARITIME_RECON:
-                            break;
-
-                        case EMissionType.ARMED_RECON:
-                            break;
-
-                        case EMissionType.ARMED_MARITIME_RECON:
-                            break;
-
-                        case EMissionType.ATTACK_ARMOR:
-                            break;
-
-                        case EMissionType.ATTACK_VEHICLE:
-                            break;
-
-                        case EMissionType.ATTACK_TRAIN:
-                            break;
-
-                        case EMissionType.ATTACK_SHIP:
-                            break;
-
-                        case EMissionType.ATTACK_ARTILLERY:
-                            break;
-
-                        case EMissionType.ATTACK_RADAR:
-                            break;
-
-                        case EMissionType.ATTACK_AIRCRAFT:
-                            break;
-
-                        case EMissionType.ATTACK_DEPOT:
-                            break;
-
-                        case EMissionType.INTERCEPT:
-                            break;
-
-                        case EMissionType.ESCORT:
-                            break;
-
-                        case EMissionType.COVER:
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-
-                EnableSelectItem(comboBox, selected);
-            }
-#endif
-
-            private void EnableSelectItem(ComboBox comboBox, string selected, bool forceDisable = false)
-            {
-                if (!forceDisable && comboBox.Items.Count > 0)
-                {
-                    comboBox.IsEnabled = true;
-                    comboBox.Text = selected;
-                    if (!comboBox.IsEditable && comboBox.SelectedIndex == -1)
-                    {
-                        comboBox.SelectedIndex = 0;
-                    }
-                }
-                else
-                {
-                    comboBox.IsEnabled = false;
-                    comboBox.SelectedIndex = -1;
-                }
-            }
-
             #endregion
 
             private void UpdateMapNameInfo()
             {
-                string mapName;
-                if (currentMissionFile != null && !string.IsNullOrEmpty(currentMissionFile.Map))
-                {
-                    int idx = currentMissionFile.Map.IndexOf("$");
-                    mapName = currentMissionFile.Map.Substring(idx != -1 ? idx + 1: 0);
-                }
-                else 
-                {
-                    mapName = string.Empty;
-                }
-                FrameworkElement.labelMapName.Content = string.Format(MapFormat, mapName);
+                UpdateMapNameInfo(FrameworkElement.labelMapName);
             }
 
             private void UpdateSelectDateInfo()
@@ -1511,8 +1294,7 @@ namespace IL2DCE
 
             private void UpdateAircraftImage()
             {
-                AirGroup airGroup = SelectedAirGroup;
-                FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
+                UpdateAircraftImage(FrameworkElement.borderImage);
             }
 
             private void Write(ISectionFile file)

@@ -23,7 +23,6 @@ using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
 using maddox.game;
-using maddox.GP;
 using static IL2DCE.MissionObjectModel.Spawn;
 
 namespace IL2DCE.Pages
@@ -31,6 +30,8 @@ namespace IL2DCE.Pages
     public class CareerIntroPage : MissionPage
     {
         #region Definition
+
+        public const string CampignNumsFormat = "Nums: {0} mission";
 
         public class PageArgs
         {
@@ -80,7 +81,7 @@ namespace IL2DCE.Pages
             }
         }
 
-        private int SelectedArmyIndex
+        protected override int SelectedArmyIndex
         {
             get
             {
@@ -94,7 +95,7 @@ namespace IL2DCE.Pages
             }
         }
 
-        private int SelectedAirForceIndex
+        protected override int SelectedAirForceIndex
         {
             get
             {
@@ -122,7 +123,7 @@ namespace IL2DCE.Pages
             }
         }
 
-        protected CampaignInfo SelectedCampaign
+        protected override CampaignInfo SelectedCampaign
         {
             get
             {
@@ -158,7 +159,7 @@ namespace IL2DCE.Pages
             }
         }
 
-        private AirGroup SelectedAirGroup
+        protected override AirGroup SelectedAirGroup
         {
             get
             {
@@ -250,6 +251,20 @@ namespace IL2DCE.Pages
             }
         }
 
+        public bool SelectedDybanucFrontMarker
+        {
+            get
+            {
+                bool? isCheckd = FrameworkElement.checkBoxDynamicFrontMarker.IsChecked;
+                if (isCheckd != null)
+                {
+                    return isCheckd.Value;
+                }
+
+                return false;
+            }
+        }
+
         #endregion
 
         #region Variable
@@ -271,8 +286,6 @@ namespace IL2DCE.Pages
         public CareerIntroPage()
             : base("Career Intro", new CareerIntro())
         {
-            FrameworkElement.Start.Click += new RoutedEventHandler(Start_Click);
-            FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
             FrameworkElement.comboBoxSelectArmy.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectArmy_SelectionChanged);
             FrameworkElement.comboBoxSelectAirForce.SelectionChanged += new SelectionChangedEventHandler(comboBoxSelectAirForce_SelectionChanged);
             FrameworkElement.textBoxPilotName.TextChanged += new TextChangedEventHandler(textBoxPilotName_TextChanged);
@@ -287,12 +300,16 @@ namespace IL2DCE.Pages
             FrameworkElement.checkBoxStrictMode.Checked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
             FrameworkElement.checkBoxStrictMode.Unchecked += new RoutedEventHandler(checkBoxStrictMode_CheckedChange);
 
+            FrameworkElement.Start.Click += new RoutedEventHandler(Start_Click);
+            FrameworkElement.Back.Click += new RoutedEventHandler(Back_Click);
             FrameworkElement.buttonImportMission.Click += new RoutedEventHandler(ImportMission);
             FrameworkElement.buttonImportMissionFile.Click += new RoutedEventHandler(ImportMissionFile);
             FrameworkElement.buttonImportMissionFolder.Click += new RoutedEventHandler(ImportMissionFolder);
             FrameworkElement.buttonImportCampaignFile.Click += new RoutedEventHandler(ImportCampaignFile);
             FrameworkElement.buttonImportCampaignFolder.Click += new RoutedEventHandler(ImportCampaignFolder);
             FrameworkElement.buttonMissionLoad.Click += new RoutedEventHandler(MissionLoad);
+
+            FrameworkElement.checkBoxDynamicFrontMarker.Visibility = Visibility.Hidden;
         }
 
         public override void _enter(maddox.game.IGame play, object arg)
@@ -306,7 +323,7 @@ namespace IL2DCE.Pages
             PageArgs pageArgs = arg as PageArgs;
 
             hookComboSelectionChanged = true;
-            UpdateArmyComboBoxInfo(pageArgs != null ? pageArgs.Army: -1);
+            UpdateArmyComboBoxInfo(pageArgs != null ? pageArgs.Army : -1);
             hookComboSelectionChanged = false;
             UpdateAirForceComboBoxInfo(pageArgs != null ? pageArgs.AirForce : -1);
             UpdateCampaignComboBoxInfo();
@@ -378,7 +395,9 @@ namespace IL2DCE.Pages
             missionLoaded = false;
 
             UpdateMapNameInfo();
+            UpdateCampaignNumsInfo();
             UpdateCampaignModeComboBoxInfo();
+            UpdateSelectDefaultAirGroupLabel();
             UpdateDataPicker();
             UpdateAirGroupComboBoxInfo();
             UpdateButtonStatus();
@@ -422,7 +441,7 @@ namespace IL2DCE.Pages
         {
             bool disable = IsProgressShortType;
             FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.IsEnabled = !disable;
-            FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.Visibility = disable || SelectedStrictMode ? Visibility.Hidden: Visibility.Visible;
+            FrameworkElement.GeneralSettingsGroupBox.checkBoxSpawnRandomLocationPlayer.Visibility = disable || SelectedStrictMode ? Visibility.Hidden : Visibility.Visible;
             UpdateButtonStatus();
         }
 
@@ -465,11 +484,25 @@ namespace IL2DCE.Pages
 
         private void datePickerStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (FrameworkElement.datePickerStart.SelectedDate != null && FrameworkElement.datePickerStart.SelectedDate.HasValue)
+            {
+                if (FrameworkElement.datePickerEnd.SelectedDate == null || FrameworkElement.datePickerEnd.SelectedDate.Value < FrameworkElement.datePickerStart.SelectedDate.Value)
+                {
+                    FrameworkElement.datePickerEnd.SelectedDate = FrameworkElement.datePickerStart.SelectedDate;
+                }
+            }
             UpdateButtonStatus();
         }
 
         private void datePickerEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (FrameworkElement.datePickerEnd.SelectedDate != null && FrameworkElement.datePickerEnd.SelectedDate.HasValue)
+            {
+                if (FrameworkElement.datePickerStart.SelectedDate == null || FrameworkElement.datePickerStart.SelectedDate.Value > FrameworkElement.datePickerEnd.SelectedDate.Value)
+                {
+                    FrameworkElement.datePickerStart.SelectedDate = FrameworkElement.datePickerEnd.SelectedDate;
+                }
+            }
             UpdateButtonStatus();
         }
 
@@ -483,6 +516,9 @@ namespace IL2DCE.Pages
             bool strictMode = SelectedStrictMode;
             if (strictMode)
             {
+                FrameworkElement.checkBoxDynamicFrontMarker.Visibility = Visibility.Visible;
+                FrameworkElement.checkBoxDynamicFrontMarker.IsEnabled = true;
+
                 general.labelSelectUnitNumsArmor.Visibility = Visibility.Hidden;
                 comboBoxSelectUnitNumsArmorText = general.comboBoxSelectUnitNumsArmor.Text;
                 general.comboBoxSelectUnitNumsArmor.Text = EArmorUnitNumsSet.Default.ToDescription();
@@ -513,6 +549,9 @@ namespace IL2DCE.Pages
             }
             else
             {
+                FrameworkElement.checkBoxDynamicFrontMarker.Visibility = Visibility.Hidden;
+                FrameworkElement.checkBoxDynamicFrontMarker.IsEnabled = false;
+
                 general.labelSelectUnitNumsArmor.Visibility = Visibility.Visible;
                 general.comboBoxSelectUnitNumsArmor.IsEnabled = true;
                 general.comboBoxSelectUnitNumsArmor.Visibility = Visibility.Visible;
@@ -534,8 +573,8 @@ namespace IL2DCE.Pages
 
                 bool disable = IsProgressShortType;
                 general.checkBoxSpawnRandomLocationPlayer.IsEnabled = disable;
-                general.checkBoxSpawnRandomLocationPlayer.Visibility = disable ? Visibility.Hidden: Visibility.Visible;
-                general.checkBoxSpawnRandomLocationPlayer.IsChecked = disable ? false: checkBoxSpawnRandomLocationPlayerChecked;
+                general.checkBoxSpawnRandomLocationPlayer.Visibility = disable ? Visibility.Hidden : Visibility.Visible;
+                general.checkBoxSpawnRandomLocationPlayer.IsChecked = disable ? false : checkBoxSpawnRandomLocationPlayerChecked;
             }
         }
 
@@ -576,10 +615,10 @@ namespace IL2DCE.Pages
                 career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
                 career.PlayerAirGroup = airGroup;
                 career.Aircraft = AircraftInfo.CreateDisplayName(airGroup.Class);
-                career.Spawn = (int)(FrameworkElement.checkBoxSpawnParked.IsEnabled ? SelectedSpawnParked ? ESpawn.Parked : ESpawn.Idle: ESpawn.Default);
-                career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? SelectedSkill != Skill.Default ? new Skill[] { SelectedSkill }: career.UpdatePlayerAirGroupSkill() : null;
-                campaign.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
-                campaign.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
+                career.Spawn = (int)(FrameworkElement.checkBoxSpawnParked.IsEnabled ? SelectedSpawnParked ? ESpawn.Parked : ESpawn.Idle : ESpawn.Default);
+                career.PlayerAirGroupSkill = SelectedSkill != null && SelectedSkill != Skill.Random ? SelectedSkill != Skill.Default ? new Skill[] { SelectedSkill } : career.UpdatePlayerAirGroupSkill() : null;
+                career.StartDate = FrameworkElement.datePickerStart.SelectedDate.Value;
+                career.EndDate = FrameworkElement.datePickerEnd.SelectedDate.Value;
                 career.CampaignProgress = SelectedProgress;
                 career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
                 career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
@@ -595,7 +634,7 @@ namespace IL2DCE.Pages
                 career.StationaryGenerateType = generalSettings.SelectedStationaryGeneric ? EStationaryGenerateType.Generic : EStationaryGenerateType.Default;
                 career.SpawnRandomLocationFriendly = generalSettings.SelectedSpawnRandomLocationFriendly;
                 career.SpawnRandomLocationEnemy = generalSettings.SelectedSpawnRandomLocationEnemy;
-                career.SpawnRandomLocationPlayer = generalSettings.checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible ? generalSettings.SelectedSpawnRandomLocationPlayer: false;
+                career.SpawnRandomLocationPlayer = generalSettings.checkBoxSpawnRandomLocationPlayer.Visibility == Visibility.Visible ? generalSettings.SelectedSpawnRandomLocationPlayer : false;
                 career.SpawnRandomAltitudeFriendly = generalSettings.SelectedSpawnRandomAltitudeFriendly;
                 career.SpawnRandomAltitudeEnemy = generalSettings.SelectedSpawnRandomAltitudeEnemy;
                 career.SpawnRandomTimeFriendly = generalSettings.SelectedSpawnRandomTimeFriendly;
@@ -616,6 +655,7 @@ namespace IL2DCE.Pages
                 career.RandomTimeEnd = generalSettings.SelectedBattleTimeEnd;
 
                 career.StrictMode = SelectedStrictMode;
+                career.DynamicFrontMarker = SelectedDybanucFrontMarker;
 
                 Career added = Game.Core.AvailableCareers.Where(x => string.Compare(x.PilotName, pilotName, true) == 0).FirstOrDefault();
                 if (added != null)
@@ -722,37 +762,7 @@ namespace IL2DCE.Pages
 
         private void UpdateRankComboBoxInfo()
         {
-            ComboBox comboBox = FrameworkElement.comboBoxSelectRank;
-            int selected = comboBox.SelectedIndex;
-            comboBox.Items.Clear();
-
-            int armyIndex = SelectedArmyIndex;
-            int airForceIndex = SelectedAirForceIndex;
-
-            if (armyIndex != -1 && airForceIndex != -1)
-            {
-                AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == armyIndex && x.AirForceIndex == airForceIndex).FirstOrDefault();
-                for (int i = 0; i <= Rank.RankMax; i++)
-                {
-                    comboBox.Items.Add(
-                        new ComboBoxItem()
-                        {
-                            Content = airForce.Ranks[i],
-                            Tag = i,
-                        });
-                }
-            }
-
-            if (comboBox.Items.Count > 0)
-            {
-                comboBox.IsEnabled = true;
-                comboBox.SelectedIndex = selected != -1 ? selected : 0;
-            }
-            else
-            {
-                comboBox.IsEnabled = false;
-                comboBox.SelectedIndex = -1;
-            }
+            UpdateRankComboBoxInfo(FrameworkElement.comboBoxSelectRank);
         }
 
         private void UpdateCampaignComboBoxInfo(CampaignInfo campaignInfoSelect = null)
@@ -780,7 +790,7 @@ namespace IL2DCE.Pages
             }
             else
             {
-                comboBox.SelectedItem =campaignInfoSelect;
+                comboBox.SelectedItem = campaignInfoSelect;
             }
         }
 
@@ -800,17 +810,22 @@ namespace IL2DCE.Pages
 
         private void UpdateMapNameInfo()
         {
-            string mapName;
-            if (currentMissionFile != null && !string.IsNullOrEmpty(currentMissionFile.Map))
+            UpdateMapNameInfo(FrameworkElement.labelMapName);
+        }
+
+        private void UpdateCampaignNumsInfo()
+        {
+            int nums;
+            CampaignInfo campaignInfo = SelectedCampaign;
+            if (campaignInfo != null)
             {
-                int idx = currentMissionFile.Map.IndexOf("$");
-                mapName = currentMissionFile.Map.Substring(idx != -1 ? idx + 1 : 0);
+                nums = campaignInfo.InitialMissionTemplateFileCount;
             }
             else
             {
-                mapName = string.Empty;
+                nums = 0;
             }
-            FrameworkElement.labelMapName.Content = string.Format(MapFormat, mapName);
+            FrameworkElement.labelCampaignNums.Content = string.Format(Config.NumberFormat, CampignNumsFormat, nums);
         }
 
         private void UpdateCampaignModeComboBoxInfo()
@@ -852,89 +867,18 @@ namespace IL2DCE.Pages
 
         private void UpdateAirGroupComboBoxInfo()
         {
-            ComboBox comboBox = FrameworkElement.comboBoxSelectAirGroup;
-            comboBox.Items.Clear();
-
-            CampaignInfo campaignInfo = SelectedCampaign;
-            if (campaignInfo != null && currentMissionFile != null)
-            {
-                int armyIndex = SelectedArmyIndex;
-                int airForceIndex = SelectedAirForceIndex;
-                if (armyIndex != -1 && airForceIndex != -1)
-                {
-                    foreach (AirGroup airGroup in currentMissionFile.AirGroups.OrderBy(x => x.Class))
-                    {
-                        AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
-                        AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-                        if (airGroupInfo.ArmyIndex == armyIndex && airGroupInfo.AirForceIndex == airForceIndex && aircraftInfo.IsFlyable)
-                        {
-                            comboBox.Items.Add(new ComboBoxItem()
-                            {
-                                Tag = airGroup,
-                                Content = missionLoaded ? CreateAirGroupContent(airGroup, campaignInfo) : CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo)
-                            });
-                        }
-                    }
-                }
-            }
-
-            comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
+            UpdateAirGroupComboBoxInfo(FrameworkElement.comboBoxSelectAirGroup);
         }
 
         protected override void UpdateAirGroupContent()
         {
-            CampaignInfo campaignInfo = SelectedCampaign;
-            foreach (ComboBoxItem item in FrameworkElement.comboBoxSelectAirGroup.Items)
-            {
-                AirGroup airGroup = item.Tag as AirGroup;
-                item.Content = CreateAirGroupContent(airGroup, campaignInfo);
-            }
+            UpdateAirGroupContent(FrameworkElement.comboBoxSelectAirGroup);
         }
 
-        private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo)
+        private void UpdateSelectDefaultAirGroupLabel()
         {
-            string content = string.Empty;
-            AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-            Point3d pos = airGroup.Position;
-            double distance = Game.gpFrontDistance(airGroup.ArmyIndex, pos.x, pos.y);
-            if (distance == 0)
-            {
-                distance = Game.gpFrontDistance(airGroup.ArmyIndex == (int)EArmy.Red ? (int)EArmy.Blue : (int)EArmy.Red, pos.x, pos.y);
-            }
-            if (airGroup.Airstart)
-            {
-                content = CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo, distance);
-            }
-            else
-            {
-                string airportName = string.Empty;
-                var airports = Game.gpAirports();
-                var airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR());
-                if (!airport.Any())
-                {
-                    airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR() * 1.5);
-                }
-                if (airport.Any())
-                {
-                    airportName = airport.First().Name();
-                }
-                content = CreateAirGroupContent(airGroup, campaignInfo, airportName, aircraftInfo, distance);
-            }
-
-            return content;
+            UpdateSelectDefaultAirGroupLabel(FrameworkElement.labelDefaultSelectAirGroup);
         }
-
-        private string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, string airportName, AircraftInfo aircraftInfo = null, double distance = -1)
-        {
-            if (aircraftInfo == null)
-            {
-                aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
-            }
-            return string.Format(Config.NumberFormat, "{0} ({1}){2}{3}",
-                    airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]" : string.IsNullOrEmpty(airportName) ? string.Empty : string.Format(" [{0}]", airportName),
-                    distance >= 0 ? string.Format(Config.NumberFormat, " {0:F2}km", distance / 1000) : string.Empty);
-        }
-
 
         private void UpdateSpawnParkedInfo()
         {
@@ -955,28 +899,7 @@ namespace IL2DCE.Pages
 
         private void UpdateSkillComboBoxInfo()
         {
-            ComboBox comboBox = FrameworkElement.comboBoxSelectSkill;
-            string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
-
-            if (comboBox.Items.Count == 0)
-            {
-                comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Default, Content = Skill.Default.Name });
-                comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Random, Content = Skill.Random.Name });
-                Config config = Game.Core.Config;
-                config.Skills.ForEach(x => comboBox.Items.Add(new ComboBoxItem() { Tag = x, Content = x.Name }));
-            }
-
-            string defaultString = string.Empty;
-            if (SelectedAirGroup != null)
-            {
-                AirGroup airGroup = SelectedAirGroup;
-                Skill skill = string.IsNullOrEmpty(airGroup.Skill) ? null : Skill.Parse(airGroup.Skill);
-                defaultString = string.Format(MissionDefaultFormat, airGroup.Skills != null && airGroup.Skills.Count > 0 ?
-                                Skill.SkillNameMulti : skill != null ? skill.IsTyped() ? skill.GetTypedName() : Skill.SkillNameCustom : string.Empty);
-            }
-            FrameworkElement.labelDefaultSkill.Content = defaultString;
-
-            EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
+            UpdateSkillComboBoxInfo(FrameworkElement.comboBoxSelectSkill, FrameworkElement.labelDefaultSkill);
         }
 
         private void UpdateDataPicker()
@@ -1007,26 +930,7 @@ namespace IL2DCE.Pages
 
         private void UpdateAircraftImage()
         {
-            AirGroup airGroup = SelectedAirGroup;
-            FrameworkElement.borderImage.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
-        }
-
-        private void EnableSelectItem(ComboBox comboBox, string selected, bool forceDisable = false)
-        {
-            if (!forceDisable && comboBox.Items.Count > 0)
-            {
-                comboBox.IsEnabled = true;
-                comboBox.Text = selected;
-                if (!comboBox.IsEditable && comboBox.SelectedIndex == -1)
-                {
-                    comboBox.SelectedIndex = 0;
-                }
-            }
-            else
-            {
-                comboBox.IsEnabled = false;
-                comboBox.SelectedIndex = -1;
-            }
+            UpdateAircraftImage(FrameworkElement.borderImage);
         }
 
         private void UpdateButtonStatus()
@@ -1041,7 +945,7 @@ namespace IL2DCE.Pages
             bool timeEnable = generalSettings.SelectedSpawnRandomTimeEnemy || generalSettings.SelectedSpawnRandomTimeFriendly;
             double timeBattleBegin = generalSettings.SelectedBattleTimeBegin;
             double timeBattleEnd = generalSettings.SelectedBattleTimeEnd;
-            FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 && 
+            FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedRank != -1 &&
                                                 !IsErrorPilotName/*!Game.Core.AvailableCareers.Any(x => string.Compare(x.PilotName, pilotName) == 0)*/ &&
                                                 SelectedCampaign != null && SelectedAirGroup != null &&
                                                 datePickerStart.SelectedDate.HasValue && datePickerEnd.SelectedDate.HasValue &&

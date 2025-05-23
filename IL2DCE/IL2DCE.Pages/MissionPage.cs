@@ -20,13 +20,17 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using IL2DCE.Generator;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Pages.Controls;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.game.play;
+using maddox.GP;
 using Microsoft.Win32;
 
 namespace IL2DCE.Pages
@@ -90,7 +94,43 @@ namespace IL2DCE.Pages
         }
         private IGame _game;
 
+        protected virtual CampaignInfo SelectedCampaign
+        {
+            get
+            {
+                Debug.Assert(false);
+                return null;
+            }
+        }
+
         protected virtual string SelectedCampaignMission
+        {
+            get
+            {
+                Debug.Assert(false);
+                return null;
+            }
+        }
+
+        protected virtual int SelectedArmyIndex
+        {
+            get
+            {
+                Debug.Assert(false);
+                return -1;
+            }
+        }
+
+        protected virtual int SelectedAirForceIndex
+        {
+            get
+            {
+                Debug.Assert(false);
+                return -1;
+            }
+        }
+
+        protected virtual AirGroup SelectedAirGroup
         {
             get
             {
@@ -248,7 +288,7 @@ namespace IL2DCE.Pages
             object[] results = model.Result as object[];
 
 
-            int complated = (int)results[1];
+            int completed = (int)results[1];
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} to Import {1}s", window.IsCanceled ? "Canceled" : "Completed", isCampaign ? MsgCampaign : MsgMission);
@@ -256,7 +296,7 @@ namespace IL2DCE.Pages
             sb.AppendLine();
             sb.AppendFormat("Total files: {0}", (int)results[0]);
             sb.AppendLine();
-            sb.AppendFormat("  Completed: {0}", complated);
+            sb.AppendFormat("  Completed: {0}", completed);
             sb.AppendLine();
             if ((int)results[2] > 0)
             {
@@ -273,7 +313,7 @@ namespace IL2DCE.Pages
                 Process.Start(results[3] as string);
             }
 
-            if (complated > 0)
+            if (completed > 0)
             {
                 Game.Core.ReadCampaignInfo();
                 Game.Core.ReadCareerInfo();
@@ -296,7 +336,6 @@ namespace IL2DCE.Pages
 #endif
             string logFileSystemPath = string.Empty;
             int files = 0;
-            int count = 0;
             int error = 0;
             try
             {
@@ -433,9 +472,220 @@ namespace IL2DCE.Pages
             }
         }
 
+        protected void UpdateAirGroupComboBoxInfo(ComboBox comboBox)
+        {
+            comboBox.IsEditable = Game.Core.Config.EnableFilterSelectAirGroup;
+            string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+            comboBox.Items.Clear();
+
+            CampaignInfo campaignInfo = SelectedCampaign;
+            if (campaignInfo != null && currentMissionFile != null)
+            {
+                int armyIndex = SelectedArmyIndex;
+                int airForceIndex = SelectedAirForceIndex;
+                if (armyIndex != -1 && airForceIndex != -1)
+                {
+                    foreach (AirGroup airGroup in currentMissionFile.AirGroups.OrderBy(x => x.Class))
+                    {
+                        AirGroupInfo airGroupInfo = airGroup.AirGroupInfo;
+                        AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+                        if (airGroupInfo.ArmyIndex == armyIndex && airGroupInfo.AirForceIndex == airForceIndex && aircraftInfo.IsFlyable)
+                        {
+                            comboBox.Items.Add(new ComboBoxItem()
+                            {
+                                Tag = airGroup,
+                                Content = missionLoaded ? CreateAirGroupContent(airGroup, campaignInfo) : CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo)
+                            });
+                        }
+                    }
+                }
+            }
+
+            EnableSelectItem(comboBox, selected, currentMissionFile == null);
+        }
+
         protected virtual void UpdateAirGroupContent()
         {
             ;
+        }
+
+        protected void UpdateAirGroupContent(ComboBox comboBox)
+        {
+            CampaignInfo campaignInfo = SelectedCampaign;
+            foreach (ComboBoxItem item in comboBox.Items)
+            {
+                AirGroup airGroup = item.Tag as AirGroup;
+                item.Content = CreateAirGroupContent(airGroup, campaignInfo);
+            }
+        }
+
+        protected string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo)
+        {
+            string content = string.Empty;
+            AircraftInfo aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+            Point3d pos = airGroup.Position;
+            double distance = Game.gpFrontDistance(airGroup.ArmyIndex, pos.x, pos.y);
+            if (distance == 0)
+            {
+                distance = Game.gpFrontDistance(airGroup.ArmyIndex == (int)EArmy.Red ? (int)EArmy.Blue : (int)EArmy.Red, pos.x, pos.y);
+            }
+            if (airGroup.Airstart)
+            {
+                content = CreateAirGroupContent(airGroup, campaignInfo, string.Empty, aircraftInfo, distance);
+            }
+            else
+            {
+                string airportName = string.Empty;
+                var airports = Game.gpAirports();
+                var airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR());
+                if (!airport.Any())
+                {
+                    airport = airports.Where(x => x.Pos().distance(ref pos) <= x.FieldR() * 1.5);
+                }
+                if (airport.Any())
+                {
+                    airportName = airport.First().Name();
+                }
+                content = CreateAirGroupContent(airGroup, campaignInfo, airportName, aircraftInfo, distance);
+            }
+            return content;
+        }
+
+        protected string CreateAirGroupContent(AirGroup airGroup, CampaignInfo campaignInfo, string airportName, AircraftInfo aircraftInfo = null, double distance = -1)
+        {
+            if (aircraftInfo == null)
+            {
+                aircraftInfo = campaignInfo.GetAircraftInfo(airGroup.Class);
+            }
+            return string.Format(Config.NumberFormat, "{0} ({1}){2}{3}",
+                    airGroup.DisplayName, aircraftInfo.DisplayName, airGroup.Airstart ? " [AIRSTART]" : string.IsNullOrEmpty(airportName) ? string.Empty : string.Format(" [{0}]", airportName),
+                    distance >= 0 ? string.Format(Config.NumberFormat, " {0:F2}km", distance / 1000) : string.Empty);
+        }
+
+        protected void UpdateRankComboBoxInfo(ComboBox comboBox)
+        {
+            int selected = comboBox.SelectedIndex;
+            comboBox.Items.Clear();
+
+            int armyIndex = SelectedArmyIndex;
+            int airForceIndex = SelectedAirForceIndex;
+
+            if (armyIndex != -1 && airForceIndex != -1)
+            {
+                AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == armyIndex && x.AirForceIndex == airForceIndex).FirstOrDefault();
+                for (int i = 0; i <= Rank.RankMax; i++)
+                {
+                    comboBox.Items.Add(
+                        new ComboBoxItem()
+                        {
+                            Content = airForce.Ranks[i],
+                            Tag = i,
+                        });
+                }
+            }
+
+            if (comboBox.Items.Count > 0)
+            {
+                comboBox.IsEnabled = true;
+                comboBox.SelectedIndex = selected != -1 ? selected : 0;
+            }
+            else
+            {
+                comboBox.IsEnabled = false;
+                comboBox.SelectedIndex = -1;
+            }
+        }
+
+        protected void UpdateSelectDefaultAirGroupLabel(Label label)
+        {
+            string content;
+            CampaignInfo campaignInfo = SelectedCampaign;
+            if (currentMissionFile != null && campaignInfo != null)
+            {
+                AirGroup airGroup = currentMissionFile.AirGroups.Where(x => string.Compare(x.SquadronName, AirGroup.CreateSquadronName(currentMissionFile.Player), true) == 0).FirstOrDefault();
+                if (airGroup != null)
+                {
+                    AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == airGroup.ArmyIndex && x.AirForceIndex == airGroup.AirGroupInfo.AirForceIndex).FirstOrDefault();
+                    content = string.Format("{0} - {1} [{2}]", missionLoaded ? 
+                                                                CreateAirGroupContent(airGroup, campaignInfo) : 
+                                                                CreateAirGroupContent(airGroup, campaignInfo, string.Empty, campaignInfo.GetAircraftInfo(airGroup.Class)),
+                                                                ((EArmy)airGroup.ArmyIndex).ToString(), 
+                                                                airForce.Name);
+                }
+                else 
+                {
+                    content = string.Empty;
+                }
+            }
+            else
+            {
+                content = string.Empty;
+            }
+            label.Content = string.Format(MissionDefaultFormat, content);
+        }
+
+        protected void UpdateSkillComboBoxInfo(ComboBox comboBox, Label label)
+        {
+            string selected = comboBox.SelectedItem != null ? (comboBox.SelectedItem as ComboBoxItem).Content as string : string.Empty;
+
+            if (comboBox.Items.Count == 0)
+            {
+                comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Default, Content = Skill.Default.Name });
+                comboBox.Items.Add(new ComboBoxItem() { Tag = Skill.Random, Content = Skill.Random.Name });
+                Config config = Game.Core.Config;
+                config.Skills.ForEach(x => comboBox.Items.Add(new ComboBoxItem() { Tag = x, Content = x.Name }));
+            }
+
+            string defaultString = string.Empty;
+            if (SelectedAirGroup != null)
+            {
+                AirGroup airGroup = SelectedAirGroup;
+                Skill skill = string.IsNullOrEmpty(airGroup.Skill) ? null : Skill.Parse(airGroup.Skill);
+                defaultString = string.Format(MissionDefaultFormat, airGroup.Skills != null && airGroup.Skills.Count > 0 ?
+                                Skill.SkillNameMulti : skill != null ? skill.IsTyped() ? skill.GetTypedName() : Skill.SkillNameCustom : string.Empty);
+            }
+            label.Content = defaultString;
+
+            EnableSelectItem(comboBox, selected, SelectedAirGroup == null);
+        }
+
+        protected void UpdateMapNameInfo(Label label)
+        {
+            string mapName;
+            if (currentMissionFile != null && !string.IsNullOrEmpty(currentMissionFile.Map))
+            {
+                int idx = currentMissionFile.Map.IndexOf("$");
+                mapName = currentMissionFile.Map.Substring(idx != -1 ? idx + 1 : 0);
+            }
+            else
+            {
+                mapName = string.Empty;
+            }
+            label.Content = string.Format(MapFormat, mapName);
+        }
+
+        protected void EnableSelectItem(ComboBox comboBox, string selected, bool forceDisable = false)
+        {
+            if (!forceDisable && comboBox.Items.Count > 0)
+            {
+                comboBox.IsEnabled = true;
+                comboBox.Text = selected;
+                if (!comboBox.IsEditable && comboBox.SelectedIndex == -1)
+                {
+                    comboBox.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                comboBox.IsEnabled = false;
+                comboBox.SelectedIndex = -1;
+            }
+        }
+
+        protected void UpdateAircraftImage(AircraftImageBorder border)
+        {
+            AirGroup airGroup = SelectedAirGroup;
+            border.DisplayImage(Game.gameInterface, airGroup != null ? airGroup.Class : string.Empty);
         }
     }
 }

@@ -87,8 +87,7 @@ namespace IL2DCE.Pages
                 EPlayerStatsType type = Enum.IsDefined(typeof(EPlayerStatsType), config.StatType) ? (EPlayerStatsType)config.StatType : EPlayerStatsType.Api;
                 PlayerStat.Create(type, mission != null ? mission.ActorDead : null);
 
-                string result = GetResultSummary() + GetPlayerStat();
-                textBoxDescription.Text = result;
+                textBoxDescription.Text = GetResultSummary() + GetPlayerStat();
                 textBoxSlide.Text = GetTotalPlayerStat();
             }
             catch (Exception ex)
@@ -284,7 +283,7 @@ namespace IL2DCE.Pages
             sb.AppendLine();
             sb.AppendFormat("Flying Time: {0}", ToStringTimeSpan(st.tTotalTypes));
             sb.AppendLine();
-            sb.AppendFormat("Status: {0}", player.PersonPrimary() != null && player.PersonPrimary().IsAlive() ? EPlayerStatus.Alive.ToDescription() : EPlayerStatus.Dead.ToDescription());
+            sb.AppendFormat("Status: {0}", PlayerStat.IsPlayerAlive() ? EPlayerStatus.Alive.ToDescription() : EPlayerStatus.Dead.ToDescription());
             sb.AppendLine();
             sb.AppendLine();
             sb.AppendLine(PlayerStats.ToStringSummary(st, true, PlayerStats.PlayerStatFormat, true));

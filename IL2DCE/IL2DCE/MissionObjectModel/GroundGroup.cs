@@ -293,7 +293,7 @@ namespace IL2DCE.MissionObjectModel
                 // Road
                 // Write all waypoints except for the last one.
                 string section = string.Format("{0}_{1}", Id, MissionFile.SectionRoad);
-                for (int i = 0; i < Waypoints.Count; i++)
+                for (int i = 0; i < Waypoints.Count - 1; i++)
                 {
                     if (Waypoints[i] is GroundGroupWaypointLine)
                     {

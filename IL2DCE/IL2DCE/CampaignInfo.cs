@@ -467,7 +467,8 @@ namespace IL2DCE
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <param name="mapPeriods"></param>
-        public CampaignInfo(string name, ECampaignMode campaignMode, IEnumerable<string> initialMissionTemplateFiles, string scriptFileName, DateTime? startDate = null, DateTime? endDate = null, IEnumerable<KeyValuePair<int, string>> mapPeriods = null)
+        /// <param name="dynamicFrontMarker"></param>
+        public CampaignInfo(string name, ECampaignMode campaignMode, IEnumerable<string> initialMissionTemplateFiles, string scriptFileName, DateTime? startDate = null, DateTime? endDate = null, IEnumerable<KeyValuePair<int, string>> mapPeriods = null, bool dynamicFrontMarker = false)
         {
             this.name = name;
             id = name;
@@ -484,7 +485,7 @@ namespace IL2DCE
                     MapPeriods.Add(item.Key, item.Value);
                 }
             }
-            DynamicFrontMarker = false;
+            DynamicFrontMarker = dynamicFrontMarker;
         }
 
         /// <summary>
@@ -1144,7 +1145,8 @@ namespace IL2DCE
 
         public string ToSummaryString()
         {
-            return string.Format(DateTimeFormatInfo.InvariantInfo, "Name: {0}\nStartDate: {1,-12:d}\n  EndDate: {2,-12:d}\n", Name, StartDate, EndDate);
+            return string.Format(DateTimeFormatInfo.InvariantInfo, "Name: {0}\nNums: {1:d} mission{2}", 
+                Name, initialMissionTemplateFiles.Count, initialMissionTemplateFiles.Count > 1 ? "s": string.Empty);
         }
 
         public void Write(ISectionFile file, string separator = Config.CommaStr)

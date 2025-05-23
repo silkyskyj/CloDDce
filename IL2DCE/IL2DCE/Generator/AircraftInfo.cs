@@ -137,6 +137,32 @@ namespace IL2DCE.Generator
             return idx != -1 ? aircraftInfo.Substring(idx + del.Length) : aircraftInfo;
         }
 
+        public AircraftParametersInfo GetDefaultAircraftParametersInfo()
+        {
+            int lines = aircraftInfoFile.lines(Aircraft);
+            for (int i = 0; i < lines; i++)
+            {
+                string key;
+                string value;
+                aircraftInfoFile.get(Aircraft, i, out key, out value);
+
+                EMissionType missionType;
+                if (Enum.TryParse<EMissionType>(key, true, out missionType))
+                {
+                    IList<AircraftParametersInfo> infos = GetAircraftParametersInfo(missionType);
+                    return infos.FirstOrDefault();
+                }
+            }
+
+            return null;
+        }
+
+        public AircraftLoadoutInfo GetDefaultAircraftLoadoutInfo()
+        {
+            AircraftParametersInfo paramInfo = GetDefaultAircraftParametersInfo();
+            return paramInfo != null ? new AircraftLoadoutInfo(aircraftInfoFile, Aircraft, paramInfo.LoadoutId): null;
+        }
+
         public IList<AircraftParametersInfo> GetAircraftParametersInfo(EMissionType missionType)
         {
             IList<AircraftParametersInfo> missionParameters = new List<AircraftParametersInfo>();
