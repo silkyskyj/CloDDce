@@ -2124,24 +2124,32 @@ namespace IL2DCE.MissionObjectModel
         private void Update(AiGroundActor aiGroundActor, GameEventId eventId, bool group = false)
         {
             Debug.WriteLine("  AiGroundActor.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-30}", aiGroundActor.Army(), aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(aiGroundActor.InternalTypeName()), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
-            GroundObj groundActorNew = GroundObj.Create(aiGroundActor);
-            if (groundActorNew != null)
+            try
             {
-                GroundObj groundActor = !string.IsNullOrEmpty(groundActorNew.Name) ? GroundActors.Where(x => string.Compare(x.Name, groundActorNew.Name) == 0).FirstOrDefault() : null;
-                if (groundActor == null)
+                GroundObj groundActorNew = GroundObj.Create(aiGroundActor);
+                if (groundActorNew != null)
                 {
-                    GroundActors.Add(groundActorNew);
-                }
-                else
-                {
-                    groundActor.IsValid = groundActorNew.IsValid;
-                    groundActor.IsAlive = groundActorNew.IsAlive;
-                    groundActor.IsTaskComplete = groundActorNew.IsTaskComplete;
-                    if (groundActorNew.IsValidPoint)
+                    GroundObj groundActor = !string.IsNullOrEmpty(groundActorNew.Name) ? GroundActors.Where(x => string.Compare(x.Name, groundActorNew.Name) == 0).FirstOrDefault() : null;
+                    if (groundActor == null)
                     {
-                        groundActor.CopyPoint(groundActorNew);
+                        GroundActors.Add(groundActorNew);
+                    }
+                    else
+                    {
+                        groundActor.IsValid = groundActorNew.IsValid;
+                        groundActor.IsAlive = groundActorNew.IsAlive;
+                        groundActor.IsTaskComplete = groundActorNew.IsTaskComplete;
+                        if (groundActorNew.IsValidPoint)
+                        {
+                            groundActor.CopyPoint(groundActorNew);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format("AiGroundActor.Update {0} {1} [{2} {3}]", ex.Message, ex.StackTrace, aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(aiGroundActor.InternalTypeName()));
+                Core.WriteLog(msg);
             }
 
             if (group)

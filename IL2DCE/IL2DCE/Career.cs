@@ -806,8 +806,8 @@ namespace IL2DCE
             StartDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.StartDate: CampaignInfo.DefaultStartDate;
             value = careerFile.get(SectionCampaign, KeyEndDate, string.Empty);
             EndDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.EndDate: CampaignInfo.DefaultEndDate;
-            Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
             Time = careerFile.get(SectionCampaign, KeyTime, 0);
+            Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
             AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
             AirGroupDisplay = careerFile.get(SectionCampaign, KeyAirGroupDislplay, string.Empty);
             Aircraft = careerFile.get(SectionCampaign, KeyAircraft) ?? string.Empty;
