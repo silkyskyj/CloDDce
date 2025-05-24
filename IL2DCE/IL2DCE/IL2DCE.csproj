@@ -36,6 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Generator\GeneratorBase.cs" />
+    <Compile Include="MissionObjectModel\AITask.cs" />
+    <Compile Include="MissionObjectModel\RandomUnitSet.cs" />
     <Compile Include="MissionObjectModel\AircraftState.cs" />
     <Compile Include="MissionObjectModel\AirForce.cs" />
     <Compile Include="MissionObjectModel\Armor.cs" />

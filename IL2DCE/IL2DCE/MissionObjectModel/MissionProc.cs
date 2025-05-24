@@ -116,7 +116,6 @@ namespace IL2DCE.MissionObjectModel
 
         #region Variable
 
-        //private MissionFile missionFile;
         private BackgroundWorker worker;
         private string spawnFilePath;
         private object spawnFilePathObject = new object();
@@ -133,9 +132,6 @@ namespace IL2DCE.MissionObjectModel
 
             worker = null;
             spawnFilePath = string.Empty;
-
-            //missionFile = new MissionFile(Game.gpLoadSectionFile(Career.MissionFileName), career.AirGroupInfos, 
-            //    career.SpawnDynamicStationaries ? MissionFile.LoadLevel.AirGroundGroupUnit : career.SpawnDynamicGroundGroups ? MissionFile.LoadLevel.AirGroundGroup : MissionFile.LoadLevel.AirGroup);
         }
 
         public void SpawnDynamic()
