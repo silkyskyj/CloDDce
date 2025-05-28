@@ -612,12 +612,14 @@ namespace IL2DCE.MissionObjectModel
         private AiAirport GetNearestAirPort(Point3d pos, int army)
         {
             AiAirport aiAirport = null;
-            double distance = Double.MaxValue;
+            double distanceNear = Double.MaxValue;
             foreach (var item in Game.gpAirports().Where(x => Game.gpFrontArmy(x.Pos().x, x.Pos().y) == army))
             {
-                if (item.Pos().distance(ref pos) < distance)
+                double d = item.Pos().distance(ref pos);
+                if (d < distanceNear)
                 {
                     aiAirport = item;
+                    distanceNear = d;
                 }
             }
             return aiAirport;
