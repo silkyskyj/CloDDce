@@ -154,4 +154,4 @@ History
 IL2DCE [Forked by silkyskyj]
 Copyright © Stefan Rothdach 2011- & silkyskyj 2025-
 silkyskyj https://github.com/silkyskyj/il2dce
-Stefan Rothdach https://github.com/il2dce/il2dc (https://code.google.com/archive/p/il2dce/)
+Stefan Rothdach https://github.com/il2dce/il2dce (https://code.google.com/archive/p/il2dce/)
