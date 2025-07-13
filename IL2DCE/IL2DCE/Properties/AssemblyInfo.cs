@@ -1,5 +1,5 @@
 ﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
-// Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
+// Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -26,8 +26,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A dynamic campaign engine & dynamicmission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC")]
 [assembly: Guid("df52f1e2-6b2a-4726-9f24-39b7c3adc6da")]
 [assembly: AssemblyCompany("https://github.com/il2dce/il2dce")]
-[assembly: AssemblyProduct("IL2DCE [Forked by silkyskyj]")]
-[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2011- & silkyskyj 2025-")]
+[assembly: AssemblyProduct("IL2DCE [Forked by silkysky]")]
+[assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2011- & silkysky 2025-")]
 [assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

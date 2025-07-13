@@ -2,7 +2,7 @@
 A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC Release (Version 0.7.4)
 =============================================================================================================================
                                                                                                                    07/19/2025
-This is the silkyskyj version of IL2DCE.
+This is the silkysky version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
 I have forked the source code and customized it under the AGPL3.0 license terms, and am releasing it this time.
@@ -104,7 +104,7 @@ Display Resolution: 1920x1080
 
 A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
 
-Official website: https://github.com/silkyskyj/il2dce
+Official website: https://github.com/silkysky/il2dce
 *The latest source code and change history are all publicly available.
 
 Original: https://code.google.com/archive/p/il2dce/
@@ -153,7 +153,7 @@ History
   0.5.0    03/22/2025 New release 
 
 ---
-IL2DCE [Forked by silkyskyj]
-Copyright © Stefan Rothdach 2011- & silkyskyj 2025-
-silkyskyj https://github.com/silkyskyj/il2dce
+IL2DCE [Forked by silkysky]
+Copyright © Stefan Rothdach 2011- & silkysky 2025-
+silkysky https://github.com/silkysky/il2dce
 Stefan Rothdach https://github.com/il2dce/il2dce (https://code.google.com/archive/p/il2dce/)
