@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ namespace IL2DCE.Pages.Controls
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            string message = string.Format("IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings\n{0}\nCopyright (C) 2011- Stefan Rothdach & 2025- silkyskyj\n\nDo you want to open the distribution and official website?\nUrl: https://github.com/silkyskyj/il2dce\n",
+            string message = string.Format("IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC\n{0}\nCopyright (C) 2011- Stefan Rothdach & 2025- silkyskyj\n\nDo you want to open the distribution and official website?\nUrl: https://github.com/silkyskyj/il2dce\n",
                 Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version));
             if (MessageBox.Show(message, Config.AppName, MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             {

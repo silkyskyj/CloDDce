@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkyskyj
 //
 // This program is free software: you can redistribute it and/or modify
@@ -625,7 +625,7 @@ namespace IL2DCE
                     Career career = new Career(pilotName, -1, -1, -1);
                     career.ReadResult(resultFile);
                     TotalStatsWindow window = new TotalStatsWindow(career);
-                    window.Title = "Dynamic Quick Mission Total Status [IL2DCE]";
+                    window.Title = "Quick Mission Total Status [IL2DCE]";
                     window.ShowDialog();
                 }
             }

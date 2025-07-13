@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2011 Stefan Rothdach
 //
 // This program is free software: you can redistribute it and/or modify

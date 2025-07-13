@@ -2,7 +2,7 @@ Latest document: https://github.com/silkyskyj/il2dce/wiki
   
 --- 
   
-A dynamic campaign engine & dynamic mission for IL-2 Sturmovik: Cliffs of Dover Blitz + Desert Wings  
+A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC  
 Official website: https://github.com/silkyskyj/il2dce    
 *The latest source code and change history are all publicly available.  
   
