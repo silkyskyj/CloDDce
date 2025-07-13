@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IL2DCE.Pages")]
 [assembly: AssemblyDescription("A dynamic campaign engine & dynamicmission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC")]
 [assembly: Guid("2c4653c3-9629-4d26-8596-412fc6780829")]
-[assembly: AssemblyCompany("https://github.com/il2dce/il2dce")]
+[assembly: AssemblyCompany("https://github.com/silkyskyj/il2dce")]
 [assembly: AssemblyProduct("IL2DCE [Forked by silkysky]")]
 [assembly: AssemblyCopyright("Copyright © Stefan Rothdach 2011- & silkysky 2025-")]
 [assembly: AssemblyTrademark("AGPLv3, or (at your option) any later version")]

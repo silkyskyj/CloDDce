@@ -33,11 +33,11 @@ namespace IL2DCE.Pages.Controls
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            string message = string.Format("IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC\n{0}\nCopyright (C) 2011- Stefan Rothdach & 2025- silkysky\n\nDo you want to open the distribution and official website?\nUrl: https://github.com/silkysky/il2dce\n",
+            string message = string.Format("IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC\n{0}\nCopyright (C) 2011- Stefan Rothdach & 2025- silkysky\n\nDo you want to open the distribution and official website?\nUrl: https://github.com/silkyskyj/il2dce\n",
                 Config.CreateVersionString(Assembly.GetExecutingAssembly().GetName().Version));
             if (MessageBox.Show(message, Config.AppName, MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             {
-                Process.Start("https://github.com/silkysky/il2dce");
+                Process.Start("https://github.com/silkyskyj/il2dce");
             }
         }
     }
