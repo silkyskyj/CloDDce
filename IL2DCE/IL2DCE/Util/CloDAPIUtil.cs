@@ -41,6 +41,22 @@ namespace IL2DCE.Util
             return string.Empty;
         }
 
+        public static int GetActorArmy(AiDamageInitiator initiator)
+        {
+            try
+            {
+                if (initiator.Actor != null)
+                {
+                    return initiator.Actor.Army();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return (int)EArmy.None;
+        }
+
         public static string GetPlersonName(AiDamageInitiator initiator)
         {
             try

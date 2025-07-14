@@ -416,45 +416,41 @@ namespace IL2DCE.MissionObjectModel
         {
             int reArmTime = Career.ReArmTime;
             int reFuelTime = Career.ReFuelTime;
-            foreach (var item in aiAircrafts)
+            foreach (AiAircraft aiAircraft in aiAircrafts)
             {
-                AiAircraft aiAircraft = item as AiAircraft;
-                if (aiAircraft != null)
+                string name = MissionObjBase.CreateShortName(aiAircraft.Name());
+                AircraftObj aircraft = MissionStatus.Aircrafts.Where(x => string.Compare(x.Name, name) == 0).FirstOrDefault();
+                if (aircraft != null)
                 {
-                    string name = MissionObjBase.CreateShortName(aiAircraft.Name());
-                    AircraftObj aircraft = MissionStatus.Aircrafts.Where(x => string.Compare(x.Name, name) == 0).FirstOrDefault();
-                    if (aircraft != null)
+                    if (aircraft.IsLanded)
                     {
-                        if (aircraft.IsLanded)
+                        if (aircraft.IsValid && aircraft.IsAlive)
                         {
-                            if (aircraft.IsValid && aircraft.IsAlive)
+                            if (reArmTime >= 0 || reFuelTime >= 0)
                             {
-                                if (reArmTime >= 0 || reFuelTime >= 0)
+                                UpdateReArmReFuel(aiAircraft, aircraft);
+                            }
+                            else
+                            {
+                                if (AircraftObj.IsStop(aiAircraft))
                                 {
-                                    UpdateReArmReFuel(aiAircraft, aircraft);
-                                }
-                                else
-                                {
-                                    if (AircraftObj.IsStop(aiAircraft))
+                                    ITime time = Game.gpTime();
+                                    if (aircraft.IsStoped && aircraft.StopedTime > 0)
                                     {
-                                        ITime time = Game.gpTime();
-                                        if (aircraft.IsStoped && aircraft.StopedTime > 0)
+                                        AiAirGroupTask? task = AircraftObj.GetCurrentTask(aiAircraft);
+                                        if (AircraftObj.IsLastWaypoint(aiAircraft) && task != null && task.HasValue && task.Value == AiAirGroupTask.UNKNOWN)
                                         {
-                                            AiAirGroupTask? task = AircraftObj.GetCurrentTask(aiAircraft);
-                                            if (AircraftObj.IsLastWaypoint(aiAircraft) && task != null && task.HasValue && task.Value == AiAirGroupTask.UNKNOWN)
+                                            if (time.current() - aircraft.StopedTime > Config.MissionCompletedTime)
                                             {
-                                                if (time.current() - aircraft.StopedTime > Config.MissionCompletedTime)
-                                                {
-                                                    aircraft.IsMissionCompleted = true; // -> Safe Destroyed
-                                                    Debug.WriteLine("aircraft.IsMissionCompleted = true({0})", aircraft.Name);
-                                                }
+                                                aircraft.IsMissionCompleted = true; // -> Safe Destroyed
+                                                Debug.WriteLine("aircraft.IsMissionCompleted = true({0})", aircraft.Name);
                                             }
                                         }
-                                        else
-                                        {
-                                            aircraft.IsStoped = true;
-                                            aircraft.StopedTime = time.current();
-                                        }
+                                    }
+                                    else
+                                    {
+                                        aircraft.IsStoped = true;
+                                        aircraft.StopedTime = time.current();
                                     }
                                 }
                             }
@@ -513,8 +509,8 @@ namespace IL2DCE.MissionObjectModel
                                 }
                             }
                         }
-
-                        if (string.Compare(aircraft.Name, MissionStatus.PlayerInfo.Type, true) == 0 && msg.Length > 0)
+                                
+                        if (PlayerObj.IsPlayer(aiAircraft)/* && string.Compare(aircraft.Name, MissionStatus.PlayerInfo.Type, true) == 0*/ && msg.Length > 0)
                         {
                             Game.gpHUDLogCenter(msg.ToString());
                         }
@@ -544,7 +540,14 @@ namespace IL2DCE.MissionObjectModel
 
         private bool IsLanded(AiAircraft aiAircraft)
         {
-            return aiAircraft != null && aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= LandedIASMax;
+            if (aiAircraft != null)
+            {
+                Debug.WriteLine("Aircraft.IsLanded {0}={1},{2},{3},{4},{5},{6},{7},{8}", aiAircraft.Name(),
+                    aiAircraft.getParameter(ParameterTypes.C_Magneto, 0), aiAircraft.getParameter(ParameterTypes.C_Magneto, -1), aiAircraft.getParameter(ParameterTypes.C_Throttle, 0), aiAircraft.getParameter(ParameterTypes.C_Throttle, -1),
+                    aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0), aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, -1), aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, 0), aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, -1));
+                return aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, -1) <= 0/* || aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, -1) <= 0*/;
+            }
+            return false;
         }
 
         private AiAirGroupTask ConvertWayActionToTask(AiAirWayPointType type)

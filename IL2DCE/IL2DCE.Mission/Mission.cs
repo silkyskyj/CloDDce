@@ -26,6 +26,7 @@ using maddox.game;
 using maddox.game.world;
 using maddox.GP;
 using part;
+using static IL2DCE.MissionObjectModel.MissionStatus;
 
 namespace IL2DCE
 {
@@ -385,13 +386,13 @@ namespace IL2DCE
                         actor.IsValid(), actor.IsAlive(), actor.IsTaskComplete(), actor.Army());
                 base.OnActorDead(missionNumber, shortName, actor, damages);
 
-                if (actor is AiAircraft || actor is AiGroundActor)
+                if ((actor is AiAircraft || actor is AiGroundActor) && (actor is AiCart) ? !PlayerObj.IsPlayer(actor as AiCart) : true && damages.Where(x => x.initiator != null && x.initiator.Player != null).Any())
                 {
                     string key = string.Format("{0}{1}{2}{3}{4}{5}{6}",
                                                 actor.Army(), PlayerStats.ActorDeadInfoSplitChar,                   // Army
                                                 actor is AiAircraft ? 0 : 1, PlayerStats.ActorDeadInfoSplitChar,    // ActorType
                                                 shortName, PlayerStats.ActorDeadInfoSplitChar,                      // Actor Name
-                                                (actor as AiCart).InternalTypeName());                              // Actor Type Name
+                                                MissionActorObj.GetInternalTypeName(actor as AiCart));                              // Actor Type Name
                     if (ActorDead.ContainsKey(key))
                     {
                         ActorDead[key].AddRange(damages);
@@ -443,7 +444,7 @@ namespace IL2DCE
 
             public override void OnAircraftTookOff(int missionNumber, string shortName, AiAircraft aircraft)
             {
-                Debug.WriteLine("Mission.OnAircraftTookOff({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
+                Debug.WriteLine("Mission.OnAircraftTookOff({0}, {1}, {2})", missionNumber, shortName, MissionActorObj.GetInternalTypeName(aircraft));
                 base.OnAircraftTookOff(missionNumber, shortName, aircraft);
 
                 if (MissionStatus != null)
@@ -454,7 +455,7 @@ namespace IL2DCE
 
             public override void OnAircraftLanded(int missionNumber, string shortName, AiAircraft aircraft)
             {
-                Debug.WriteLine("Mission.OnAircraftLanded({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
+                Debug.WriteLine("Mission.OnAircraftLanded({0}, {1}, {2})", missionNumber, shortName, MissionActorObj.GetInternalTypeName(aircraft));
                 base.OnAircraftLanded(missionNumber, shortName, aircraft);
 
                 if (MissionStatus != null)
@@ -465,7 +466,7 @@ namespace IL2DCE
 
             public override void OnAircraftCrashLanded(int missionNumber, string shortName, AiAircraft aircraft)
             {
-                Debug.WriteLine("Mission.OnAircraftCrashLanded({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
+                Debug.WriteLine("Mission.OnAircraftCrashLanded({0}, {1}, {2})", missionNumber, shortName, MissionActorObj.GetInternalTypeName(aircraft));
                 base.OnAircraftCrashLanded(missionNumber, shortName, aircraft);
 
                 if (MissionStatus != null)
@@ -476,7 +477,7 @@ namespace IL2DCE
 
             public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
             {
-                Debug.WriteLine("Mission.OnAircraftKilled({0}, {1}, {2})", missionNumber, shortName, aircraft.InternalTypeName());
+                Debug.WriteLine("Mission.OnAircraftKilled({0}, {1}, {2})", missionNumber, shortName, MissionActorObj.GetInternalTypeName(aircraft));
                 base.OnAircraftKilled(missionNumber, shortName, aircraft);
 
                 if (MissionStatus != null)

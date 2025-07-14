@@ -411,6 +411,22 @@ namespace IL2DCE.MissionObjectModel
                 get;
                 set;
             }
+
+            public static string GetInternalTypeName(AiCart cart)
+            {
+                try
+                {
+                    if (cart != null)
+                    {
+                        return cart.InternalTypeName();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+                return string.Empty;
+            }
         }
 
         public class MissionGroupObj : MissionActorObj
@@ -523,7 +539,7 @@ namespace IL2DCE.MissionObjectModel
                             Army = player.Army(),
                             AirGroup = airGroupName,
                             Type = aircraft != null ? aircraftName : playerActorName ?? string.Empty,
-                            Class = aircraft != null ? CreateActorName(aircraft.InternalTypeName()) : string.Empty,
+                            Class = aircraft != null ? CreateActorName(GetInternalTypeName(aircraft)) : string.Empty,
                             IsValid = aircraft != null ? aircraft.IsValid() : false,
                             IsAlive = aircraft != null ? aircraft.IsAlive() : false,
                             IsTaskComplete = aircraft != null ? aircraft.IsTaskComplete() : false,
@@ -605,6 +621,22 @@ namespace IL2DCE.MissionObjectModel
                 {
                     Debug.WriteLine(string.Format("Player.WriteTo {0} {1}", ex.Message, ex.StackTrace));
                 }
+            }
+
+            public static bool IsPlayer(AiCart aiCart)
+            {
+                if (aiCart != null)
+                {
+                    int places = aiCart.Places();
+                    for (int i = 0; i < places; i++)
+                    {
+                        if (aiCart.Player(i) != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
         }
 
@@ -719,7 +751,7 @@ namespace IL2DCE.MissionObjectModel
                             Name = name,
                             NameItem = nameItem,
                             Army = airGroup.Army(),
-                            Class = CreateActorName(aircraft != null ? aircraft.InternalTypeName() : string.Empty),
+                            Class = CreateActorName(aircraft != null ? GetInternalTypeName(aircraft) : string.Empty),
                             Type = aircraft != null ? aircraft.Type().ToString() : string.Empty,
                             Nums = airGroup.NOfAirc,
                             InitNums = airGroup.InitNOfAirc,
@@ -915,7 +947,7 @@ namespace IL2DCE.MissionObjectModel
                         {
                             Name = name,
                             Army = groundGroup.Army(),
-                            Class = CreateActorName(groundActor != null ? groundActor.InternalTypeName() : string.Empty),
+                            Class = CreateActorName(groundActor != null ? GetInternalTypeName(groundActor) : string.Empty),
                             Type = groundActor != null ? groundActor.Type().ToString() : string.Empty,
                             InitNums = aiActors != null ? aiActors.Length : 0,
                             Nums = aiActors != null ? aiActors.Where(x => x.IsAlive()).Count() : 0,
@@ -1335,7 +1367,7 @@ namespace IL2DCE.MissionObjectModel
                         {
                             Name = name,
                             Army = aiAircraft.Army(),
-                            Class = CreateActorName(aiAircraft.InternalTypeName()),
+                            Class = CreateActorName(GetInternalTypeName(aiAircraft)),
                             Type = aiAircraft.Type().ToString(),
                             IsValid = aiAircraft.IsValid(),
                             IsAlive = aiAircraft.IsAlive(),
@@ -1394,7 +1426,7 @@ namespace IL2DCE.MissionObjectModel
                     //return aiAircraft.getParameter(ParameterTypes.C_Magneto, 0) == 0 && aiAircraft.getParameter(ParameterTypes.C_Throttle, 0) <= 0
                     //     /* && aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= 0*/;
                     return aiAircraft.getParameter(ParameterTypes.C_Magneto, 0) <= 0 || aiAircraft.getParameter(ParameterTypes.C_Throttle, 0) <= 0
-                        || aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, 0) <= 0 || aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, 0) <= 0;
+                        || aiAircraft.getParameter(ParameterTypes.Z_VelocityIAS, -1) <= 0/* || aiAircraft.getParameter(ParameterTypes.Z_VelocityTAS, 0) <= 0*/;
                 }
                 return false;
             }
@@ -1643,7 +1675,7 @@ namespace IL2DCE.MissionObjectModel
                         {
                             Name = name,
                             Army = aiGroundActor.Army(),
-                            Class = CreateActorName(aiGroundActor.InternalTypeName()),
+                            Class = CreateActorName(GetInternalTypeName(aiGroundActor)),
                             Type = aiGroundActor.Type().ToString(),
                             IsValid = aiGroundActor.IsValid(),
                             IsAlive = aiGroundActor.IsAlive(),
@@ -2071,7 +2103,7 @@ namespace IL2DCE.MissionObjectModel
         private void Update(AiAircraft aiAircraft, GameEventId eventId, bool group = false)
         {
             Debug.WriteLine("  AiAircraft.Update Army={0,1}, Name={1,-45}, TypeName={2,-30}, Group={3,-45},  IsValid={4,-5}, IsAlive={5,-5}, IsTask={6,-5}", 
-                aiAircraft.Army(), aiAircraft.Name(), MissionObjBase.CreateClassShortShortName(aiAircraft.InternalTypeName()), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty, aiAircraft.IsValid(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
+                aiAircraft.Army(), aiAircraft.Name(), MissionObjBase.CreateClassShortShortName(MissionActorObj.GetInternalTypeName(aiAircraft)), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty, aiAircraft.IsValid(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
             AircraftObj aircraftNew = AircraftObj.Create(aiAircraft);
             if (aircraftNew != null)
             {
@@ -2123,7 +2155,7 @@ namespace IL2DCE.MissionObjectModel
 
         private void Update(AiGroundActor aiGroundActor, GameEventId eventId, bool group = false)
         {
-            Debug.WriteLine("  AiGroundActor.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-30}", aiGroundActor.Army(), aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(aiGroundActor.InternalTypeName()), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
+            Debug.WriteLine("  AiGroundActor.Update Army={0,1}, Name={1,-35}, TypeName={2,-30}, Group={3,-30}", aiGroundActor.Army(), aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(MissionActorObj.GetInternalTypeName(aiGroundActor)), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
             try
             {
                 GroundObj groundActorNew = GroundObj.Create(aiGroundActor);
@@ -2148,7 +2180,7 @@ namespace IL2DCE.MissionObjectModel
             }
             catch (Exception ex)
             {
-                string msg = string.Format("AiGroundActor.Update {0} {1} [{2} {3}]", ex.Message, ex.StackTrace, aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(aiGroundActor.InternalTypeName()));
+                string msg = string.Format("AiGroundActor.Update {0} {1} [{2} {3}]", ex.Message, ex.StackTrace, aiGroundActor.Name(), MissionObjBase.CreateClassShortShortName(MissionActorObj.GetInternalTypeName(aiGroundActor)));
                 Core.WriteLog(msg);
             }
 
@@ -2718,7 +2750,7 @@ namespace IL2DCE.MissionObjectModel
                         player.Army().ToString(Config.NumberFormat),                            // Amry
                         airGroupName,                                                           // AirGroup Name
                         aircraft != null ? aircraftName: actorName ?? string.Empty,             // ActorName
-                        aircraft != null ? MissionObjBase.CreateActorName(aircraft.InternalTypeName()): string.Empty,           // Class
+                        aircraft != null ? MissionObjBase.CreateActorName(MissionActorObj.GetInternalTypeName(aircraft)): string.Empty,           // Class
                         aircraft != null ? aircraft.IsValid() ? "1" : "0": string.Empty,        // Valid
                         aircraft != null ? aircraft.IsAlive() ? "1" : "0": string.Empty,        // Alive 
                         aircraft != null ? aircraft.IsTaskComplete() ? "1" : "0": string.Empty, // TaskComplete 
@@ -2800,7 +2832,7 @@ namespace IL2DCE.MissionObjectModel
                 string[] vals = new string[]
                     {
                       airGroup.Army().ToString(Config.NumberFormat),
-                      MissionObjBase.CreateActorName(aircraft.InternalTypeName()),
+                      MissionObjBase.CreateActorName(MissionActorObj.GetInternalTypeName(aircraft)),
                       airGroup.NOfAirc.ToString(Config.NumberFormat),
                       airGroup.InitNOfAirc.ToString(Config.NumberFormat),
                       airGroup.DiedAircrafts.ToString(Config.NumberFormat),
@@ -2845,7 +2877,7 @@ namespace IL2DCE.MissionObjectModel
                 string[] vals = new string[]
                     {
                       groundGroup.Army().ToString(Config.NumberFormat),
-                      MissionObjBase.CreateActorName(groundActor.InternalTypeName()),
+                      MissionObjBase.CreateActorName(MissionActorObj.GetInternalTypeName(groundActor)),
                       groundActor.Type().ToString(),
                       aiActors != null ? aiActors.Length.ToString(Config.NumberFormat) : "0",
                       aiActors != null ? aiActors.Where(x => x.IsAlive()).Count().ToString(Config.NumberFormat) : "0",

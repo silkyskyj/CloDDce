@@ -174,12 +174,6 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
-        public int Army
-        {
-            get;
-            set;
-        }
-
         public double KillsScoreOver
         {
             get;
@@ -235,10 +229,9 @@ namespace IL2DCE.MissionObjectModel
 
         #endregion
 
-        public PlayerStats(IGame game, int army, string playerActorName, double killsScoreOver)
+        public PlayerStats(IGame game, string playerActorName, double killsScoreOver)
         {
             Game = game;
-            Army = army;
             PlayerActorName = playerActorName;
             KillsScoreOver = killsScoreOver;
             killsAircraft = new Dictionary<string, int>();
@@ -340,24 +333,32 @@ namespace IL2DCE.MissionObjectModel
                         if (string.Compare(keys[(int)ActorDeadInfoKey.ActorName], PlayerActorName, true) != 0)
                         {
                             double totalScore = item.Value.Sum(x => x.score);
-                            double playerScore = item.Value.Where(x => x.initiator != null && x.initiator.Player != null).Sum(x => x.score);
-                            if (calcKillsScoreOver)
+                            var playerDameges = item.Value.Where(x => x.initiator != null && x.initiator.Player != null).OrderByDescending(x => x.score);
+                            if (playerDameges.Any())
                             {
-                                if (playerScore > totalScore * KillsScoreOver)
+                                int army = CloDAPIUtil.GetActorArmy(playerDameges.First().initiator);
+                                if (army != (int)EArmy.None)
                                 {
-                                    Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
-                                    string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
-                                    AddKillsCount(armyActor, actorType, typeName);
-                                }
-                            }
-                            else
-                            {
-                                AiDamageInitiator initiator = GetHighestDamagedInitiator(item.Value);
-                                if (initiator != null && initiator.Player != null)
-                                {
-                                    Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
-                                    string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
-                                    AddKillsCount(armyActor, actorType, typeName);
+                                    double playerScore = playerDameges.Sum(x => x.score);
+                                    if (calcKillsScoreOver)
+                                    {
+                                        if (playerScore > totalScore * KillsScoreOver)
+                                        {
+                                            Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
+                                            string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
+                                            AddKillsCount(armyActor, actorType, typeName, army);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        AiDamageInitiator initiator = GetHighestDamagedInitiator(item.Value);
+                                        if (initiator != null && initiator.Player != null)
+                                        {
+                                            Debug.WriteLine("Paler Kill: {0}={1}/{2}", item.Key, playerScore, totalScore);
+                                            string typeName = keys[(int)ActorDeadInfoKey.ActorTypeName];
+                                            AddKillsCount(armyActor, actorType, typeName, army);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -378,19 +379,31 @@ namespace IL2DCE.MissionObjectModel
                 if (calcKillsScoreOver)
                 {
                     double totalScore = damages.Sum(x => x.score);
-                    double playerScore = damages.Where(x => x.initiator != null && x.initiator.Player != null).Sum(x => x.score);
-                    Debug.WriteLine("   PaylerScore/TotalScore=[{0}/{1}]", playerScore, totalScore);
-                    if (playerScore > totalScore * KillsScoreOver)
+                    var playerDameges = damages.Where(x => x.initiator != null && x.initiator.Player != null).OrderByDescending(x => x.score);
+                    if (playerDameges.Any())
                     {
-                        AddKillsCount(actor);
+                        int army = CloDAPIUtil.GetActorArmy(playerDameges.First().initiator);
+                        if (army != (int)EArmy.None)
+                        {
+                            double playerScore = playerDameges.Sum(x => x.score);
+                            Debug.WriteLine("   PaylerScore/TotalScore=[{0}/{1}]", playerScore, totalScore);
+                            if (playerScore > totalScore * KillsScoreOver)
+                            {
+                                AddKillsCount(actor, army);
+                            }
+                        }
                     }
                 }
                 else
                 {
                     AiDamageInitiator initiator = GetHighestDamagedInitiator(damages);
-                    if (initiator != null && initiator.Player != null)
+                    int army = CloDAPIUtil.GetActorArmy(initiator);
+                    if (army != (int)EArmy.None)
                     {
-                        AddKillsCount(actor);
+                        if (initiator != null && initiator.Player != null)
+                        {
+                            AddKillsCount(actor, army);
+                        }
                     }
                 }
             }
@@ -416,40 +429,40 @@ namespace IL2DCE.MissionObjectModel
         }
 
 
-        private void AddKillsCount(AiActor actor)
+        private void AddKillsCount(AiActor actor, int army)
         {
             int armyActor = actor.Army();
             if (actor is AiAircraft)
             {
                 AiAircraft aiAircraft = actor as AiAircraft;
-                Debug.WriteLine("  AiAircraft: {0}={1}", aiAircraft.InternalTypeName(), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
-                if (armyActor == MissionObjectModel.Army.Enemy(Army))
+                Debug.WriteLine("  AiAircraft: {0}={1}", MissionActorObj.GetInternalTypeName(aiAircraft), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty);
+                if (armyActor == MissionObjectModel.Army.Enemy(army))
                 {
-                    AddKillsCount(killsAircraft, aiAircraft.InternalTypeName());
+                    AddKillsCount(killsAircraft, MissionActorObj.GetInternalTypeName(aiAircraft));
                 }
                 else
                 {
-                    AddKillsCount(killsFriendlyAircraft, aiAircraft.InternalTypeName());
+                    AddKillsCount(killsFriendlyAircraft, MissionActorObj.GetInternalTypeName(aiAircraft));
                 }
             }
             else if (actor is AiGroundActor)
             {
                 AiGroundActor aiGroundActor = actor as AiGroundActor;
-                Debug.WriteLine("  AiGroundActor: {0}={1}", aiGroundActor.InternalTypeName(), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
-                if (armyActor == MissionObjectModel.Army.Enemy(Army))
+                Debug.WriteLine("  AiGroundActor: {0}={1}", MissionActorObj.GetInternalTypeName(aiGroundActor), aiGroundActor.Group() != null ? aiGroundActor.Group().Name() : string.Empty);
+                if (armyActor == MissionObjectModel.Army.Enemy(army))
                 {
-                    AddKillsCount(killsGroundUnit, aiGroundActor.InternalTypeName());
+                    AddKillsCount(killsGroundUnit, MissionActorObj.GetInternalTypeName(aiGroundActor));
                 }
                 else
                 {
-                    AddKillsCount(killsFriendlyGroundUnit, aiGroundActor.InternalTypeName());
+                    AddKillsCount(killsFriendlyGroundUnit, MissionActorObj.GetInternalTypeName(aiGroundActor));
                 }
             }
         }
 
-        private void AddKillsCount(int armyActor, int actorType, string typeName)
+        private void AddKillsCount(int armyActor, int actorType, string typeName, int army)
         {
-            if (armyActor == MissionObjectModel.Army.Enemy(Army))
+            if (armyActor == MissionObjectModel.Army.Enemy(army))
             {   // Enemy kill
                 if (actorType == 0)
                 {
@@ -480,6 +493,10 @@ namespace IL2DCE.MissionObjectModel
             if (idx != -1)
             {
                 name = name.Substring(idx + delStart.Length);
+            }
+            if (string.IsNullOrEmpty(name))
+            {
+                name = MissionStatus.ValueNoName;
             }
             if (dic.ContainsKey(name))
             {

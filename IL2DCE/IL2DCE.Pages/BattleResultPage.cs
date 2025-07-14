@@ -83,7 +83,7 @@ namespace IL2DCE.Pages
                 textBoxSlide.MinHeight = 940;
                 textBoxSlide.UpdateLayout();
 
-                PlayerStat = new PlayerStats(Game, career.ArmyIndex, mission != null ? mission.PlayerActorName : string.Empty, config.StatKillsOver);
+                PlayerStat = new PlayerStats(Game, mission != null ? mission.PlayerActorName : string.Empty, config.StatKillsOver);
                 EPlayerStatsType type = Enum.IsDefined(typeof(EPlayerStatsType), config.StatType) ? (EPlayerStatsType)config.StatType : EPlayerStatsType.Api;
                 PlayerStat.Create(type, mission != null ? mission.ActorDead : null);
 
