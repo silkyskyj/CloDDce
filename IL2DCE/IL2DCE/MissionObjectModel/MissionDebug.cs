@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@ namespace IL2DCE.MissionObjectModel
                 AiAircraft aiAircraft = actor as AiAircraft;
                 // Regiment regiment = aiAircraft.Regiment();
                 Debug.WriteLine("Palyer Actor:{0}, TypedName={1}, Type={2}, InternalTypeName={3}, VariantName={4}, AircraftType={5}, IsAlive={6}, IsKilled={7}, IsValid={8}",
-                            actor.Name(), aiAircraft.TypedName(), aiAircraft.Type(), MissionActorObj.GetInternalTypeName(aiAircraft), aiAircraft.VariantName(), aiAircraft.Type(), aiAircraft.IsAlive(), aiAircraft.IsKilled(), aiAircraft.IsValid());
+                            actor.Name(), aiAircraft.TypedName(), aiAircraft.Type(), MissionActorObj.GetInternalTypeName(aiAircraft), string.Empty, aiAircraft.Type(), aiAircraft.IsAlive(), aiAircraft.IsKilled(), aiAircraft.IsValid());
                 //Debug.WriteLine("  Regiment: fileNameEmblem={0}, id={1}, name={2}, gruppeNumber={3}, fileNameEmblem={4}, speech={5}",
                 //    regiment.fileNameEmblem(), regiment.id(), regiment.name(), regiment.gruppeNumber(), regiment.fileNameEmblem(), regiment.speech());
             }
@@ -245,10 +245,10 @@ namespace IL2DCE.MissionObjectModel
                     AiWayPoint[] airGroupWay = CloDAPIUtil.GetWays(airGroup);
                     int way = CloDAPIUtil.GetCurrentWayPoint(airGroup);
                     AiAirGroupTask? task = CloDAPIUtil.GetTask(airGroup);
-                    AiActor actorTarget = airGroupWay != null && way != -1? (airGroupWay[way] as AiAirWayPoint).Target: null;
+                    AiActor actorTarget = airGroupWay != null && way != -1 ? (airGroupWay[way] as AiAirWayPoint).Target : null;
                     Debug.WriteLine("  AiAirGroup: Army={0,1}, ID={1,3}, Name={2,-45}, Type={3,-35}, NOf={4,2}, Init={5,2}, Died={6,2}, Valid={7,-5}, Alive={8,-5}, Way=[{9,2}/{10,2}], Task={11,-5}({12,-15}), Idle={13,-5}, Pos={14,-30}, Target={15}",
                         airGroup.Army(), airGroup.ID(), airGroup.Name(), MissionObjBase.CreateClassShortShortName(aiAircraft?.InternalTypeName()) ?? string.Empty, airGroup.NOfAirc, airGroup.InitNOfAirc, airGroup.DiedAircrafts,
-                        airGroup.IsValid(), airGroup.IsAlive(), way, airGroupWay != null ? airGroupWay.Length : 0, airGroup.IsTaskComplete(), task != null ? task.Value.ToString(): string.Empty, airGroup.Idle, MissionObjBase.ToString(airGroup.Pos()), actorTarget != null ? CloDAPIUtil.ActorInfo(actorTarget): string.Empty);
+                        airGroup.IsValid(), airGroup.IsAlive(), way, airGroupWay != null ? airGroupWay.Length : 0, airGroup.IsTaskComplete(), task != null ? task.Value.ToString() : string.Empty, airGroup.Idle, MissionObjBase.ToString(airGroup.Pos()), actorTarget != null ? CloDAPIUtil.ActorInfo(actorTarget) : string.Empty);
                     if (ways)
                     {
                         if (airGroupWay != null)
@@ -283,7 +283,7 @@ namespace IL2DCE.MissionObjectModel
                                 if (item.IsValid() && item.IsAlive() && item.NOfAirc > 0)
                                 {
                                     actors = CloDAPIUtil.GetItems(item);
-                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft: null;
+                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft : null;
                                     Debug.WriteLine("    Enemies: ID={0}, Name={1}, TypeName={2}, NOf={3}, Init={4}, Died={5}, IsValid={6}, IsAlive={7}, Way=[{8}/{9}], Task={10}, Idle={11}, Pos={12}",
                                         item.ID(), item.Name(), aiAircraft != null ? MissionActorObj.GetInternalTypeName(aiAircraft) : string.Empty, item.NOfAirc, item.InitNOfAirc, item.DiedAircrafts, item.IsValid(), item.IsAlive(), item.GetWay() != null ? item.GetCurrentWayPoint() : -1, item.GetWay() != null ? item.GetWay().Length : -1, item.getTask().ToString(), item.Idle, MissionObjBase.ToString(item.Pos()));
                                 }
@@ -319,7 +319,7 @@ namespace IL2DCE.MissionObjectModel
                                 if (item.IsValid() && item.IsAlive() && item.NOfAirc > 0)
                                 {
                                     actors = CloDAPIUtil.GetItems(item);
-                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft: null;
+                                    aiAircraft = actors != null ? actors.FirstOrDefault() as AiAircraft : null;
                                     Debug.WriteLine("    AttachedGroups: ID={0}, Name={1}, TypeName={2}, NOf={3}, Init={4}, Died={5}, IsValid={6}, IsAlive={7}, Way=[{8}/{9}], Task={10}, Idle={11}, Pos={12}",
                                         item.ID(), item.Name(), aiAircraft != null ? MissionActorObj.GetInternalTypeName(aiAircraft) : string.Empty, item.NOfAirc, item.InitNOfAirc, item.DiedAircrafts, item.IsValid(), item.IsAlive(), item.GetWay() != null ? item.GetCurrentWayPoint() : -1, item.GetWay() != null ? item.GetWay().Length : -1, item.getTask().ToString(), item.Idle, MissionObjBase.ToString(item.Pos()));
                                 }
@@ -345,7 +345,7 @@ namespace IL2DCE.MissionObjectModel
                     AiActor[] aiActors = CloDAPIUtil.GetItems(groundGroup);
                     AiGroundActor aiActor = aiActors != null ? aiActors.FirstOrDefault() as AiGroundActor : null;
                     sb.AppendFormat("  AiGroundGroup: Army={0,1}, Name={1,-30}, Type={2,-25}, Count={3,2}, IsAlive={4,-5}, Task={5,-5}",
-                        groundGroup.Army(),groundGroup.Name(), aiActor != null ? MissionObjBase.CreateClassShortShortName(aiActor.InternalTypeName()) : string.Empty, aiActors != null ? aiActors.Count() : 0, groundGroup.IsAlive(), groundGroup.IsTaskComplete());
+                        groundGroup.Army(), groundGroup.Name(), aiActor != null ? MissionObjBase.CreateClassShortShortName(aiActor.InternalTypeName()) : string.Empty, aiActors != null ? aiActors.Count() : 0, groundGroup.IsAlive(), groundGroup.IsTaskComplete());
                     if (groundGroup.IsValid())
                     {
                         sb.AppendFormat(", IsValid={0,-5}, Idle={1,-5}, Pos={2,-65}", groundGroup.IsValid(), groundGroup.Idle, MissionObjBase.ToString(groundGroup.Pos()));
@@ -401,7 +401,7 @@ namespace IL2DCE.MissionObjectModel
                 {
                     Debug.WriteLine("  AiAircraft: Army={0,1}, Name={1,-35}, Type={2,-35}, Valid={3,-5}, Alive={4,-5}, Task={5,-5}, Typed={6,-20}, Variant={7,-20}, Pos={8}, CallSignNumber={9}, CallSign={10}, HullNumber={11}, FuelQuantityInPercent={12}",
                         aiAircraft.Army(), aiAircraft.Name(), MissionObjBase.CreateClassShortShortName(MissionActorObj.GetInternalTypeName(aiAircraft)), aiAircraft.IsValid(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete(),
-                        aiAircraft.TypedName(), aiAircraft.VariantName(), MissionObjBase.ToString(aiAircraft.Pos()), aiAircraft.CallSignNumber(), aiAircraft.CallSign(), aiAircraft.HullNumber(), aiAircraft.GetCurrentFuelQuantityInPercent());
+                        aiAircraft.TypedName(), string.Empty, MissionObjBase.ToString(aiAircraft.Pos()), aiAircraft.CallSignNumber(), aiAircraft.CallSign(), aiAircraft.HullNumber(), string.Empty);
 
                     if (Regiment)
                     {

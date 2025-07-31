@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -192,7 +192,7 @@ namespace IL2DCE.MissionObjectModel
 
             public string PointString
             {
-                get 
+                get
                 {
                     return string.Format(Config.NumberFormat, "({0:F2},{1:F2},{2:F2})", X, Y, Z);
                 }
@@ -1915,7 +1915,7 @@ namespace IL2DCE.MissionObjectModel
             return null;
         }
 
-#endregion
+        #endregion
 
         #region Update
 
@@ -2102,7 +2102,7 @@ namespace IL2DCE.MissionObjectModel
 
         private void Update(AiAircraft aiAircraft, GameEventId eventId, bool group = false)
         {
-            Debug.WriteLine("  AiAircraft.Update Army={0,1}, Name={1,-45}, TypeName={2,-30}, Group={3,-45},  IsValid={4,-5}, IsAlive={5,-5}, IsTask={6,-5}", 
+            Debug.WriteLine("  AiAircraft.Update Army={0,1}, Name={1,-45}, TypeName={2,-30}, Group={3,-45},  IsValid={4,-5}, IsAlive={5,-5}, IsTask={6,-5}",
                 aiAircraft.Army(), aiAircraft.Name(), MissionObjBase.CreateClassShortShortName(MissionActorObj.GetInternalTypeName(aiAircraft)), aiAircraft.Group() != null ? aiAircraft.Group().Name() : string.Empty, aiAircraft.IsValid(), aiAircraft.IsAlive(), aiAircraft.IsTaskComplete());
             AircraftObj aircraftNew = AircraftObj.Create(aiAircraft);
             if (aircraftNew != null)
@@ -2351,7 +2351,7 @@ namespace IL2DCE.MissionObjectModel
                     int[] reinForce = GetRandomReinForceDayHour(item.ReinForceDayHour(reinForceDay));
                     AirGroupObj previousAirGroup = airGroups.Where(x => string.Compare(x.SquadronName, squadronName, true) == 0).LastOrDefault();
                     IEnumerable<AircraftObj> aircrafts = Aircrafts.Where(x => string.Compare(AirGroupObj.Name2SquadronName(x.Name), squadronName, true) == 0);
-                    int alives = aircrafts.Sum(x => x.IsAlive ? 1: 0);
+                    int alives = aircrafts.Sum(x => x.IsAlive ? 1 : 0);
                     item.InitNums = targets.Max(x => x.InitNums);
                     // item.Nums = targets.Sum(x => x.Nums);
                     // Debug.Assert(item.Nums == alives);

@@ -34,6 +34,40 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Debug\parts\IL2DCE\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\Release\parts\IL2DCE\</OutputPath>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Debug\parts\IL2DCE\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\Release\parts\IL2DCE\</OutputPath>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="BattleFailurePage.cs" />
     <Compile Include="BattleIntroPage.cs" />
@@ -94,21 +128,19 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="core">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\core.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover\parts\core\core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="gamePages">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePages.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover\parts\core\gamePages.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="gamePlay, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8b6839725e48404f, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gamePlay.dll</HintPath>
+    <Reference Include="gamePlay">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover\parts\core\gamePlay.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="gameWorld, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8b6839725e48404f, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\gameWorld.dll</HintPath>
+    <Reference Include="gameWorld">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover\parts\core\gameWorld.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="part">
@@ -122,7 +154,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="WSteam">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core\WSteam.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover\parts\core\WSteam.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

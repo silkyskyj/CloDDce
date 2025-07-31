@@ -4,7 +4,7 @@
 outFile "IL2DCE-${expv_1}.${expv_2}.${expv_3}.${expv_4}.exe"
 
 # Set the default install directory
-installDir "$PROGRAMFILES\Steam\steamapps\common\il-2 sturmovik cliffs of dover blitz"
+installDir "$PROGRAMFILES\Steam\steamapps\common\il-2 sturmovik cliffs of dover"
 
 Page license
 Page directory

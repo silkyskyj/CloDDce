@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -531,7 +531,7 @@ namespace IL2DCE.MissionObjectModel
                     {
                         if (indexValue >= 0)
                         {
-                            string [] vals = value.Split(MissionFile.SplitChars);
+                            string[] vals = value.Split(MissionFile.SplitChars);
                             value = indexValue < vals.Length ? vals[indexValue].Trim() : string.Empty;
                         }
                         if (!string.IsNullOrEmpty(value))
@@ -611,7 +611,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-        public static void DeleteSectionAndSubSection(ISectionFile fileSrc, string section, string [] SubSectionAddKey = null)
+        public static void DeleteSectionAndSubSection(ISectionFile fileSrc, string section, string[] SubSectionAddKey = null)
         {
             int lines = fileSrc.lines(section);
             for (int i = 0; i < lines; i++)

@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using IL2DCE.MissionObjectModel;
 using IL2DCE.Util;
@@ -32,7 +31,7 @@ namespace IL2DCE
 {
     namespace Mission
     {
-        abstract public class Mission : AMission
+        public abstract class Mission : AMission
         {
 
             #region Definition 
@@ -110,10 +109,14 @@ namespace IL2DCE
                 return true;
             }
 
+#if Blitz
+
             public override double GetBattleLengthTicks()
             {
                 return base.GetBattleLengthTicks();
             }
+
+#endif
 
             public override void OnTickGame()
             {
@@ -150,11 +153,15 @@ namespace IL2DCE
                 base.Timeout(sec, doTimeout);
             }
 
+#if Blitz
+
             public override object[] OnIntraMissionsMessage(string sMsg, object[] args = null)
             {
                 Debug.WriteLine("Mission.OnIntraMissionsMessage({0}, {1})", sMsg, args != null ? args.Length : 0);
                 return base.OnIntraMissionsMessage(sMsg, args);
             }
+
+#endif
 
             public override void OnTrigger(int missionNumber, string shortName, bool active)
             {

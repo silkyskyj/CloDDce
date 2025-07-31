@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -752,7 +752,7 @@ namespace IL2DCE.Generator
 
         public IEnumerable<GroundGroup> getAvailableEnemyGroundGroups(int armyIndex)
         {
-            return EnableMissionMultiAssign ? AllGroundGroups.Where(x => x.Army == Army.Enemy(armyIndex)): AvailableGroundGroups.Where(x => x.Army == Army.Enemy(armyIndex));
+            return EnableMissionMultiAssign ? AllGroundGroups.Where(x => x.Army == Army.Enemy(armyIndex)) : AvailableGroundGroups.Where(x => x.Army == Army.Enemy(armyIndex));
         }
 
         //public IEnumerable<GroundGroup> getAvailableFriendlyGroundGroups(int armyIndex)
@@ -1077,7 +1077,7 @@ namespace IL2DCE.Generator
                 ECountry country = Army.DefaultCountry((EArmy)army);
                 EGroundGroupType type = (EGroundGroupType)Random.Next((int)EGroundGroupType.Vehicle, (int)EGroundGroupType.Ship/*Train*/ + 1);
                 LandTypes[] landTypesValid = GroundGroup.GetLandTypes(type);
-                string groundClass = GroundGroupGenerateType == EGroundGroupGenerateType.Generic ? GroundGroup.DefaultClasses[(int)type][army - 1]: GetRandomActorClass(groundActors, army, (int)type, GroundGroup.DefaultClasses);
+                string groundClass = GroundGroupGenerateType == EGroundGroupGenerateType.Generic ? GroundGroup.DefaultClasses[(int)type][army - 1] : GetRandomActorClass(groundActors, army, (int)type, GroundGroup.DefaultClasses);
                 string option = GroundGroup.DefaultClasses[(int)type][GroundGroup.DefaultClassesOption];
 
                 // Id
@@ -1222,7 +1222,7 @@ namespace IL2DCE.Generator
 
         public IEnumerable<Stationary> getAvailableEnemyStationaries(int armyIndex)
         {
-            return EnableMissionMultiAssign ? AllStationaries.Where(x => x.Army == Army.Enemy(armyIndex)): AvailableStationaries.Where(x => x.Army == Army.Enemy(armyIndex));
+            return EnableMissionMultiAssign ? AllStationaries.Where(x => x.Army == Army.Enemy(armyIndex)) : AvailableStationaries.Where(x => x.Army == Army.Enemy(armyIndex));
         }
 
         //public IEnumerable<Stationary> getAvailableFriendlyStationaries(int armyIndex)

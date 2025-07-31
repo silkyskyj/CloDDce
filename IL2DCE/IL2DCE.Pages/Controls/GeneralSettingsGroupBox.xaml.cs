@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ namespace IL2DCE.Pages.Controls
 
         public const string MsgErrorFileLocked = "Unable to save configuration file. File is locked.[{0}]";
         public const string MsgErrorFileNotFound = "Configuration file not found, please save your configuration.[{0}]";
-                                                         
+
         public event SelectionChangedEventHandler ComboBoxSelectionChangedEvent;
 
         public event TextChangedEventHandler ComboBoxTextChangedEvent;
@@ -783,7 +783,7 @@ namespace IL2DCE.Pages.Controls
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.InitialDirectory = GameInterface.ToFileSystemPath(Config.UserMissionsFolder);
-            dlg.FileName = SectionGeneralSettings; 
+            dlg.FileName = SectionGeneralSettings;
             dlg.DefaultExt = Config.IniFileExt;
             dlg.Filter = GeneralSettingsFileFilter;
             bool? result = dlg.ShowDialog();
@@ -1086,7 +1086,7 @@ namespace IL2DCE.Pages.Controls
                     comboBox.Items.Add(new ComboBoxItem() { Tag = d, Content = MissionTime.ToString(d) });
                 }
             }
-            comboBox.Text = MissionTime.ToString(Config != null ? Config.RandomTimeBegin: MissionTime.Begin); 
+            comboBox.Text = MissionTime.ToString(Config != null ? Config.RandomTimeBegin : MissionTime.Begin);
         }
 
         private void UpdatSelectBattleTimeEndComboBox()
@@ -1100,7 +1100,7 @@ namespace IL2DCE.Pages.Controls
                     comboBox.Items.Add(new ComboBoxItem() { Tag = d, Content = MissionTime.ToString(d) });
                 }
             }
-            comboBox.Text = MissionTime.ToString(Config != null ? Config.RandomTimeEnd: MissionTime.End);
+            comboBox.Text = MissionTime.ToString(Config != null ? Config.RandomTimeEnd : MissionTime.End);
         }
 
         public void EnableBattleTimeComboBox(bool enable)

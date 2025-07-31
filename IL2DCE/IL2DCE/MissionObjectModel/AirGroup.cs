@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -434,7 +434,7 @@ namespace IL2DCE.MissionObjectModel
 
             // Class
             Class = aircraftInfo.Aircraft;
-           
+
             // Formation
             Formation = DefaultFormation;
 
@@ -477,7 +477,7 @@ namespace IL2DCE.MissionObjectModel
 
             // Postion 
             Position = point;
-            
+
             // Speed
             Speed = AirGroupWaypoint.DefaultNormalflyV;
 
@@ -517,7 +517,7 @@ namespace IL2DCE.MissionObjectModel
             // throw new FormatException(string.Format("Invalid AirGroup ID[{0}]", id));
             return id;
         }
-        
+
         public static int CreateSquadronIndex(string id)
         {
             int val;                            // "abc.12" => 1
@@ -690,7 +690,7 @@ namespace IL2DCE.MissionObjectModel
                     SilkySkyCloDFile.Add(sectionFile,
                                     string.Format("{0}_{1}", Id, MissionFile.SectionWay),
                                     waypoint.Type.ToString(),
-                                    string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2} {4}", 
+                                    string.Format(Config.NumberFormat, "{0:F2} {1:F2} {2:F2} {3:F2} {4}",
                                                     waypoint.X, waypoint.Y, waypoint.Z, waypoint.V, waypoint.Target ?? string.Empty));
                 }
 
@@ -1014,7 +1014,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 if (waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF && waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                 {
-                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.ESCORT, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV, 
+                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.ESCORT, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV,
                                                         targetAirGroup.Id + " " + targetWaypoints.IndexOf(waypoint)));
                 }
             }
@@ -1036,7 +1036,7 @@ namespace IL2DCE.MissionObjectModel
             {
                 if (waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.TAKEOFF && waypoint.Type != AirGroupWaypoint.AirGroupWaypointTypes.LANDING)
                 {
-                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.FOLLOW, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV, 
+                    Waypoints.Add(new AirGroupWaypoint(AirGroupWaypoint.AirGroupWaypointTypes.FOLLOW, waypoint.X, waypoint.Y, waypoint.Z, AirGroupWaypoint.DefaultFlyV,
                                                         targetAirGroup.Id + " " + targetWaypoints.IndexOf(waypoint)));
                 }
             }
@@ -1280,7 +1280,7 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
-#endregion
+        #endregion
 
         #region Private methods
 

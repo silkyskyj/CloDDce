@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -114,7 +114,7 @@ namespace IL2DCE.MissionObjectModel
             set;
         }
 
-        public string [] Ranks
+        public string[] Ranks
         {
             get;
             set;
@@ -139,16 +139,16 @@ namespace IL2DCE.MissionObjectModel
     public class AirForces : List<AirForce>
     {
         public static AirForces Default;
-        
+
         static AirForces()
         {
             Default = new AirForces();
             // Red Army
-            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Raf, EAirForceRed.Raf.ToString(), EAirForceRed.Raf.ToDescription(), 
+            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Raf, EAirForceRed.Raf.ToString(), EAirForceRed.Raf.ToDescription(),
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Raf], Rank.Raf));
-            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Aa, EAirForceRed.Aa.ToString(), EAirForceRed.Aa.ToDescription(), 
+            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Aa, EAirForceRed.Aa.ToString(), EAirForceRed.Aa.ToDescription(),
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Aa], Rank.Aa));
-            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Usaaf, EAirForceRed.Usaaf.ToString(), EAirForceRed.Usaaf.ToDescription(), 
+            Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Usaaf, EAirForceRed.Usaaf.ToString(), EAirForceRed.Usaaf.ToDescription(),
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Usaaf], Rank.Usaaf));
             Default.Add(new AirForce((int)EArmy.Red, (int)EAirForceRed.Ru, EAirForceRed.Ru.ToString(), EAirForceRed.Ru.ToDescription(),
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Ru], Rank.Ru));
@@ -162,9 +162,9 @@ namespace IL2DCE.MissionObjectModel
                             AirForce.PilotNameRedDefault[(int)EAirForceRed.Be], Rank.Be));
 
             // Blue Army
-            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Lw, EAirForceBlue.Lw.ToString(), EAirForceBlue.Lw.ToDescription(), 
+            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Lw, EAirForceBlue.Lw.ToString(), EAirForceBlue.Lw.ToDescription(),
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Lw], Rank.Lw));
-            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Ra, EAirForceBlue.Ra.ToString(), EAirForceBlue.Ra.ToDescription(), 
+            Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Ra, EAirForceBlue.Ra.ToString(), EAirForceBlue.Ra.ToDescription(),
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Ra], Rank.Ra));
             Default.Add(new AirForce((int)EArmy.Blue, (int)EAirForceBlue.Hu, EAirForceBlue.Hu.ToString(), EAirForceBlue.Hu.ToDescription(),
                             AirForce.PilotNameBlueDefault[(int)EAirForceBlue.Hu], Rank.Hu));

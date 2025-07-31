@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -26,16 +26,16 @@ namespace IL2DCE.MissionObjectModel
     {
         [Description("Random(1-8)")]
         Random = -2,
-        
+
         [Description("Default")]
         Default = -1,
-        
+
         [Description("1-3")]
         Range1_3,
-        
+
         [Description("3-5")]
         Range3_5,
-        
+
         [Description("5-8")]
         Range5_8,
 
@@ -62,7 +62,7 @@ namespace IL2DCE.MissionObjectModel
         }
 
         public ArmorOption(int numUnits, string others = null)
-            : base (others)
+            : base(others)
         {
             NumUnits = numUnits;
         }
@@ -141,7 +141,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Option != null ? Option.ToString(): string.Empty;
+                return Option != null ? Option.ToString() : string.Empty;
             }
             protected set
             {

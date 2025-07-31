@@ -1,4 +1,4 @@
-﻿# IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿# IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 # Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 #
 # This program is free software: you can redistribute it and/or modify
@@ -448,7 +448,7 @@
   TAKEOFF 89589.08 196311.91 0 0
 [BoB_RAF_B_82Sqn.01]
   Flight0  1
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 26
   Fuel 100
@@ -458,7 +458,7 @@
   TAKEOFF 200945.81 282619.51 0 0
 [BoB_RAF_B_21Sqn.02]
   Flight1  11
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 30
   Fuel 100
@@ -468,7 +468,7 @@
   TAKEOFF 201101.03 282648.69 0 0
 [BoB_RAF_B_105Sqn.01]
   Flight0  1
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 28
   Fuel 100
@@ -522,7 +522,7 @@
   TAKEOFF 31236.99 233331.11 0 0
 [BoB_RAF_B_15Sqn.02]
   Flight1  11
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 16
   Fuel 100
@@ -532,7 +532,7 @@
   TAKEOFF 121259.24 269302.76 0 0
 [BoB_RAF_B_40Sqn.01]
   Flight0  1
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 16
   Fuel 100
@@ -542,7 +542,7 @@
   TAKEOFF 121420.85 269425.73 0 0
 [BoB_RAF_B_88Sqn.02]
   Flight1  11
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 10
   Fuel 100
@@ -3579,50 +3579,50 @@
   Static253 Artillery.Bofors gb 91004.91 266856.91 -15.00 /timeout 0/radius_hide 0
   Static1661 Artillery.Bofors gb 180563.86 265625.59 -15.00 /timeout 0/radius_hide 0
   Static227 Artillery.Bofors gb 180563.86 265625.59 -15.00 /timeout 0/radius_hide 0
-  Static177 Stationary.BlenheimMkIV_Late gb 121896.28 268958.28 180.00 
-  Static1662 Stationary.BlenheimMkIV_Late gb 121896.28 268958.28 180.00 
-  Static176 Stationary.BlenheimMkIV_Late gb 121896.00 268996.38 165.00 
-  Static1663 Stationary.BlenheimMkIV_Late gb 121896.00 268996.38 165.00 
+  Static177 Stationary.BlenheimMkIV gb 121896.28 268958.28 180.00 
+  Static1662 Stationary.BlenheimMkIV gb 121896.28 268958.28 180.00 
+  Static176 Stationary.BlenheimMkIV gb 121896.00 268996.38 165.00 
+  Static1663 Stationary.BlenheimMkIV gb 121896.00 268996.38 165.00 
   Static1664 Artillery.Bofors gb 122012.90 269037.38 -15.00 /timeout 0/radius_hide 0
   Static247 Artillery.Bofors gb 122012.90 269037.38 -15.00 /timeout 0/radius_hide 0
-  Static1665 Stationary.BlenheimMkIV_Late gb 121921.59 269139.44 180.00 
-  Static175 Stationary.BlenheimMkIV_Late gb 121921.59 269139.44 180.00 
-  Static174 Stationary.BlenheimMkIV_Late gb 121922.62 269185.09 165.00 
-  Static1666 Stationary.BlenheimMkIV_Late gb 121922.62 269185.09 165.00 
-  Static1667 Stationary.BlenheimMkIV_Late gb 121973.07 269308.94 165.00 
-  Static178 Stationary.BlenheimMkIV_Late gb 121973.07 269308.94 165.00 
-  Static1668 Stationary.BlenheimMkIV_Late gb 121984.16 269357.84 165.00 
-  Static179 Stationary.BlenheimMkIV_Late gb 121984.16 269357.84 165.00 
+  Static1665 Stationary.BlenheimMkIV gb 121921.59 269139.44 180.00 
+  Static175 Stationary.BlenheimMkIV gb 121921.59 269139.44 180.00 
+  Static174 Stationary.BlenheimMkIV gb 121922.62 269185.09 165.00 
+  Static1666 Stationary.BlenheimMkIV gb 121922.62 269185.09 165.00 
+  Static1667 Stationary.BlenheimMkIV gb 121973.07 269308.94 165.00 
+  Static178 Stationary.BlenheimMkIV gb 121973.07 269308.94 165.00 
+  Static1668 Stationary.BlenheimMkIV gb 121984.16 269357.84 165.00 
+  Static179 Stationary.BlenheimMkIV gb 121984.16 269357.84 165.00 
   Static246 Artillery.Bofors gb 122027.14 269408.34 -15.00 /timeout 0/radius_hide 0
   Static1669 Artillery.Bofors gb 122027.14 269408.34 -15.00 /timeout 0/radius_hide 0
-  Static1670 Stationary.BlenheimMkIV_Late gb 122019.25 269499.25 165.00 
-  Static173 Stationary.BlenheimMkIV_Late gb 122019.25 269499.25 165.00 
-  Static172 Stationary.BlenheimMkIV_Late gb 122026.65 269533.66 165.00 
-  Static1671 Stationary.BlenheimMkIV_Late gb 122026.65 269533.66 165.00 
-  Static171 Stationary.BlenheimMkIV_Late gb 122032.90 269565.22 165.00 
-  Static1672 Stationary.BlenheimMkIV_Late gb 122032.90 269565.22 165.00 
+  Static1670 Stationary.BlenheimMkIV gb 122019.25 269499.25 165.00 
+  Static173 Stationary.BlenheimMkIV gb 122019.25 269499.25 165.00 
+  Static172 Stationary.BlenheimMkIV gb 122026.65 269533.66 165.00 
+  Static1671 Stationary.BlenheimMkIV gb 122026.65 269533.66 165.00 
+  Static171 Stationary.BlenheimMkIV gb 122032.90 269565.22 165.00 
+  Static1672 Stationary.BlenheimMkIV gb 122032.90 269565.22 165.00 
   Static248 Artillery.Bofors gb 120820.87 269603.59 -15.00 /timeout 0/radius_hide 0
   Static1673 Artillery.Bofors gb 120820.87 269603.59 -15.00 /timeout 0/radius_hide 0
-  Static170 Stationary.BlenheimMkIV_Late gb 122037.17 269636.63 180.00 
-  Static1674 Stationary.BlenheimMkIV_Late gb 122037.17 269636.63 180.00 
-  Static169 Stationary.BlenheimMkIV_Late gb 122026.08 269673.31 195.00 
-  Static1675 Stationary.BlenheimMkIV_Late gb 122026.08 269673.31 195.00 
-  Static1676 Stationary.BlenheimMkIV_Late gb 121395.41 269733.78 -30.00 
-  Static180 Stationary.BlenheimMkIV_Late gb 121395.41 269733.78 -30.00 
-  Static168 Stationary.BlenheimMkIV_Late gb 122007.98 269710.50 225.00 
-  Static1677 Stationary.BlenheimMkIV_Late gb 122007.98 269710.50 225.00 
-  Static1678 Stationary.BlenheimMkIV_Late gb 121419.29 269762.22 -45.00 
-  Static181 Stationary.BlenheimMkIV_Late gb 121419.29 269762.22 -45.00 
-  Static182 Stationary.BlenheimMkIV_Late gb 121443.47 269785.25 -45.00 
-  Static1679 Stationary.BlenheimMkIV_Late gb 121443.47 269785.25 -45.00 
+  Static170 Stationary.BlenheimMkIV gb 122037.17 269636.63 180.00 
+  Static1674 Stationary.BlenheimMkIV gb 122037.17 269636.63 180.00 
+  Static169 Stationary.BlenheimMkIV gb 122026.08 269673.31 195.00 
+  Static1675 Stationary.BlenheimMkIV gb 122026.08 269673.31 195.00 
+  Static1676 Stationary.BlenheimMkIV gb 121395.41 269733.78 -30.00 
+  Static180 Stationary.BlenheimMkIV gb 121395.41 269733.78 -30.00 
+  Static168 Stationary.BlenheimMkIV gb 122007.98 269710.50 225.00 
+  Static1677 Stationary.BlenheimMkIV gb 122007.98 269710.50 225.00 
+  Static1678 Stationary.BlenheimMkIV gb 121419.29 269762.22 -45.00 
+  Static181 Stationary.BlenheimMkIV gb 121419.29 269762.22 -45.00 
+  Static182 Stationary.BlenheimMkIV gb 121443.47 269785.25 -45.00 
+  Static1679 Stationary.BlenheimMkIV gb 121443.47 269785.25 -45.00 
   Static1680 Artillery.Bofors gb 121397.45 269840.34 -15.00 /timeout 0/radius_hide 0
   Static249 Artillery.Bofors gb 121397.45 269840.34 -15.00 /timeout 0/radius_hide 0
-  Static1681 Stationary.BlenheimMkIV_Late gb 121483.85 269825.06 -30.00 
-  Static183 Stationary.BlenheimMkIV_Late gb 121483.85 269825.06 -30.00 
-  Static1682 Stationary.BlenheimMkIV_Late gb 121506.03 269853.78 -30.00 
-  Static184 Stationary.BlenheimMkIV_Late gb 121506.03 269853.78 -30.00 
-  Static1683 Stationary.BlenheimMkIV_Late gb 121528.79 269877.97 -45.00 
-  Static185 Stationary.BlenheimMkIV_Late gb 121528.79 269877.97 -45.00 
+  Static1681 Stationary.BlenheimMkIV gb 121483.85 269825.06 -30.00 
+  Static183 Stationary.BlenheimMkIV gb 121483.85 269825.06 -30.00 
+  Static1682 Stationary.BlenheimMkIV gb 121506.03 269853.78 -30.00 
+  Static184 Stationary.BlenheimMkIV gb 121506.03 269853.78 -30.00 
+  Static1683 Stationary.BlenheimMkIV gb 121528.79 269877.97 -45.00 
+  Static185 Stationary.BlenheimMkIV gb 121528.79 269877.97 -45.00 
   Static1684 Artillery.Bofors gb 166927.81 277057.66 -15.00 /timeout 0/radius_hide 0
   Static222 Artillery.Bofors gb 166927.81 277057.66 -15.00 /timeout 0/radius_hide 0
   Static1685 Stationary.DefiantMkI gb 166393.97 277312.72 0.00 
@@ -3713,46 +3713,46 @@
   Static1727 Stationary.SpitfireMkIa_100oct gb 167246.56 278401.38 -120.00 
   Static1728 Artillery.Bofors gb 201288.50 282250.53 -15.00 /timeout 0/radius_hide 0
   Static215 Artillery.Bofors gb 201288.50 282250.53 -15.00 /timeout 0/radius_hide 0
-  Static1729 Stationary.BlenheimMkIV_Late gb 200679.31 282375.38 90.00 
-  Static158 Stationary.BlenheimMkIV_Late gb 200679.31 282375.38 90.00 
-  Static159 Stationary.BlenheimMkIV_Late gb 200719.52 282381.81 100.00 
-  Static1730 Stationary.BlenheimMkIV_Late gb 200719.52 282381.81 100.00 
-  Static156 Stationary.BlenheimMkIV_Late gb 200852.02 282402.53 90.00 
-  Static1731 Stationary.BlenheimMkIV_Late gb 200852.02 282402.53 90.00 
-  Static1732 Stationary.BlenheimMkIV_Late gb 200911.95 282399.53 80.00 
-  Static157 Stationary.BlenheimMkIV_Late gb 200911.95 282399.53 80.00 
-  Static1733 Stationary.BlenheimMkIV_Late gb 201053.69 282376.06 80.00 
-  Static160 Stationary.BlenheimMkIV_Late gb 201053.69 282376.06 80.00 
-  Static161 Stationary.BlenheimMkIV_Late gb 201092.55 282370.31 80.00 
-  Static1734 Stationary.BlenheimMkIV_Late gb 201092.55 282370.31 80.00 
-  Static1735 Stationary.BlenheimMkIV_Late gb 201515.88 282629.06 180.00 
-  Static167 Stationary.BlenheimMkIV_Late gb 201515.88 282629.06 180.00 
-  Static166 Stationary.BlenheimMkIV_Late gb 201502.73 282673.66 195.00 
-  Static1736 Stationary.BlenheimMkIV_Late gb 201502.73 282673.66 195.00 
+  Static1729 Stationary.BlenheimMkIV gb 200679.31 282375.38 90.00 
+  Static158 Stationary.BlenheimMkIV gb 200679.31 282375.38 90.00 
+  Static159 Stationary.BlenheimMkIV gb 200719.52 282381.81 100.00 
+  Static1730 Stationary.BlenheimMkIV gb 200719.52 282381.81 100.00 
+  Static156 Stationary.BlenheimMkIV gb 200852.02 282402.53 90.00 
+  Static1731 Stationary.BlenheimMkIV gb 200852.02 282402.53 90.00 
+  Static1732 Stationary.BlenheimMkIV gb 200911.95 282399.53 80.00 
+  Static157 Stationary.BlenheimMkIV gb 200911.95 282399.53 80.00 
+  Static1733 Stationary.BlenheimMkIV gb 201053.69 282376.06 80.00 
+  Static160 Stationary.BlenheimMkIV gb 201053.69 282376.06 80.00 
+  Static161 Stationary.BlenheimMkIV gb 201092.55 282370.31 80.00 
+  Static1734 Stationary.BlenheimMkIV gb 201092.55 282370.31 80.00 
+  Static1735 Stationary.BlenheimMkIV gb 201515.88 282629.06 180.00 
+  Static167 Stationary.BlenheimMkIV gb 201515.88 282629.06 180.00 
+  Static166 Stationary.BlenheimMkIV gb 201502.73 282673.66 195.00 
+  Static1736 Stationary.BlenheimMkIV gb 201502.73 282673.66 195.00 
   Static1737 Artillery.Bofors gb 200528.50 282735.34 -15.00 /timeout 0/radius_hide 0
   Static216 Artillery.Bofors gb 200528.50 282735.34 -15.00 /timeout 0/radius_hide 0
-  Static165 Stationary.BlenheimMkIV_Late gb 201479.19 282709.81 225.00 
-  Static1738 Stationary.BlenheimMkIV_Late gb 201479.19 282709.81 225.00 
-  Static163 Stationary.BlenheimMkIV_Late gb 201342.31 282794.56 225.00 
-  Static1739 Stationary.BlenheimMkIV_Late gb 201342.31 282794.56 225.00 
-  Static1740 Stationary.BlenheimMkIV_Late gb 201375.97 282778.69 240.00 
-  Static164 Stationary.BlenheimMkIV_Late gb 201375.97 282778.69 240.00 
-  Static1741 Stationary.BlenheimMkIV_Late gb 200673.11 282865.16 -30.00 
-  Static150 Stationary.BlenheimMkIV_Late gb 200673.11 282865.16 -30.00 
-  Static1742 Stationary.BlenheimMkIV_Late gb 201334.42 282827.69 180.00 
-  Static162 Stationary.BlenheimMkIV_Late gb 201334.42 282827.69 180.00 
-  Static1743 Stationary.BlenheimMkIV_Late gb 200692.55 282892.78 -30.00 
-  Static151 Stationary.BlenheimMkIV_Late gb 200692.55 282892.78 -30.00 
-  Static1744 Stationary.BlenheimMkIV_Late gb 200710.33 282916.88 -30.00 
-  Static152 Stationary.BlenheimMkIV_Late gb 200710.33 282916.88 -30.00 
+  Static165 Stationary.BlenheimMkIV gb 201479.19 282709.81 225.00 
+  Static1738 Stationary.BlenheimMkIV gb 201479.19 282709.81 225.00 
+  Static163 Stationary.BlenheimMkIV gb 201342.31 282794.56 225.00 
+  Static1739 Stationary.BlenheimMkIV gb 201342.31 282794.56 225.00 
+  Static1740 Stationary.BlenheimMkIV gb 201375.97 282778.69 240.00 
+  Static164 Stationary.BlenheimMkIV gb 201375.97 282778.69 240.00 
+  Static1741 Stationary.BlenheimMkIV gb 200673.11 282865.16 -30.00 
+  Static150 Stationary.BlenheimMkIV gb 200673.11 282865.16 -30.00 
+  Static1742 Stationary.BlenheimMkIV gb 201334.42 282827.69 180.00 
+  Static162 Stationary.BlenheimMkIV gb 201334.42 282827.69 180.00 
+  Static1743 Stationary.BlenheimMkIV gb 200692.55 282892.78 -30.00 
+  Static151 Stationary.BlenheimMkIV gb 200692.55 282892.78 -30.00 
+  Static1744 Stationary.BlenheimMkIV gb 200710.33 282916.88 -30.00 
+  Static152 Stationary.BlenheimMkIV gb 200710.33 282916.88 -30.00 
   Static1745 Artillery.Bofors gb 201429.13 282885.53 -15.00 /timeout 0/radius_hide 0
   Static214 Artillery.Bofors gb 201429.13 282885.53 -15.00 /timeout 0/radius_hide 0
-  Static1746 Stationary.BlenheimMkIV_Late gb 200738.80 282948.91 -30.00 
-  Static153 Stationary.BlenheimMkIV_Late gb 200738.80 282948.91 -30.00 
-  Static154 Stationary.BlenheimMkIV_Late gb 200754.13 282971.63 -30.00 
-  Static1747 Stationary.BlenheimMkIV_Late gb 200754.13 282971.63 -30.00 
-  Static155 Stationary.BlenheimMkIV_Late gb 200769.17 282994.06 -30.00 
-  Static1748 Stationary.BlenheimMkIV_Late gb 200769.17 282994.06 -30.00 
+  Static1746 Stationary.BlenheimMkIV gb 200738.80 282948.91 -30.00 
+  Static153 Stationary.BlenheimMkIV gb 200738.80 282948.91 -30.00 
+  Static154 Stationary.BlenheimMkIV gb 200754.13 282971.63 -30.00 
+  Static1747 Stationary.BlenheimMkIV gb 200754.13 282971.63 -30.00 
+  Static155 Stationary.BlenheimMkIV gb 200769.17 282994.06 -30.00 
+  Static1748 Stationary.BlenheimMkIV gb 200769.17 282994.06 -30.00 
   Static1749 Artillery.Bofors gb 200713.16 283020.19 -15.00 /timeout 0/radius_hide 0
   Static217 Artillery.Bofors gb 200713.16 283020.19 -15.00 /timeout 0/radius_hide 0
   Static218 Artillery.Bofors gb 162808.45 297214.84 -15.00 /timeout 0/radius_hide 0

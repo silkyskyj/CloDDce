@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -58,6 +58,7 @@ namespace IL2DCE
     /// <summary>
     /// The campaign info object holds the configuration of a campaign.
     /// </summary>
+    [Serializable]
     public class CampaignInfo
     {
         #region Definition
@@ -391,7 +392,7 @@ namespace IL2DCE
             int year;
             int month;
             int day;
-            
+
             if (dateValue > 9999)
             {
                 year = Math.Max(Math.Min(dateValue / 10000, DateTime.MaxValue.Year), DateTime.MinValue.Year);
@@ -400,7 +401,7 @@ namespace IL2DCE
             {
                 year = dtBase.Year;
             }
-            
+
             if (dateValue > 99)
             {
                 month = Math.Max(Math.Min((dateValue % 10000) / 100, 12), 1);
@@ -499,8 +500,8 @@ namespace IL2DCE
 
         public string ToSummaryString()
         {
-            return string.Format(DateTimeFormatInfo.InvariantInfo, "Name: {0}\nNums: {1:d} mission{2}", 
-                Name, initialMissionTemplateFiles.Count, initialMissionTemplateFiles.Count > 1 ? "s": string.Empty);
+            return string.Format(DateTimeFormatInfo.InvariantInfo, "Name: {0}\nNums: {1:d} mission{2}",
+                Name, initialMissionTemplateFiles.Count, initialMissionTemplateFiles.Count > 1 ? "s" : string.Empty);
         }
 
         public void Write(ISectionFile file, string separator = Config.CommaStr)
@@ -511,10 +512,10 @@ namespace IL2DCE
             SilkySkyCloDFile.Write(file, SectionMain, KeyScriptFile, ScriptFileName, true);
             SilkySkyCloDFile.Write(file, SectionMain, KeyStartDate, StartDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
             SilkySkyCloDFile.Write(file, SectionMain, KeyEndDate, EndDate.ToString(FormatDate, DateTimeFormatInfo.InvariantInfo), true);
-            SilkySkyCloDFile.Write(file, SectionMain, KeyDynamicFrontMarker, DynamicFrontMarker ? "1": "0", true);
+            SilkySkyCloDFile.Write(file, SectionMain, KeyDynamicFrontMarker, DynamicFrontMarker ? "1" : "0", true);
             foreach (var item in MapPeriods)
             {
-                string format = string.Format("D{0}", item.Key > 10000 ? 6: item.Key > 100 ? 4: 2);       
+                string format = string.Format("D{0}", item.Key > 10000 ? 6 : item.Key > 100 ? 4 : 2);
                 SilkySkyCloDFile.Write(file, SectionMapPeriod, (item.Key % 1000000).ToString(format, Config.NumberFormat), item.Value, true);
             }
         }

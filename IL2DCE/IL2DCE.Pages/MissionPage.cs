@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -343,7 +343,7 @@ namespace IL2DCE.Pages
                 IEnumerable<string> filesFileType = converter.GetFiles(importMissionInfo.SorceFolderFileName, IsCampaign ? MissionFileConverter.DefaultCampaignFileSearchPettern : MissionFileConverter.DefaultMissionFileSearchPettern).Distinct().OrderBy(x => x);
                 IEnumerable<string> filesFolderType = converter.GetFiles(importMissionInfo.SorceFolderFolderName, IsCampaign ? MissionFileConverter.DefaultCampaignFileSearchPettern : MissionFileConverter.DefaultMissionFileSearchPettern).Distinct().OrderBy(x => x);
                 filesFileType = filesFileType.Concat(filePaths);
-                files = IsCampaign ? filesFileType.Select(x => converter.CountCampaignMissionFiles(x)).Sum() + filesFolderType.Select(x => converter.CountCampaignMissionFiles(x)).Sum() : 
+                files = IsCampaign ? filesFileType.Select(x => converter.CountCampaignMissionFiles(x)).Sum() + filesFolderType.Select(x => converter.CountCampaignMissionFiles(x)).Sum() :
                                         filesFileType.Count() + filesFolderType.Count();
 
                 logFileSystemPath = Game.gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.ConvertLogFileName));
@@ -366,7 +366,7 @@ namespace IL2DCE.Pages
                             }
                             name = Path.GetFileNameWithoutExtension(item.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).LastOrDefault());
                             converter.ErrorWarnMsg.Clear();
-                            error += (result = IsCampaign ? converter.ConvertCampaign(item, string.Empty, destFolder): converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
+                            error += (result = IsCampaign ? converter.ConvertCampaign(item, string.Empty, destFolder) : converter.ConvertSystemPath(item, name, destFolder)) ? 0 : 1;
                             WriteConvertLog(writer, result, name, item, converter.ErrorWarnMsg, IsCampaign);
                         }
                         foreach (var item in filesFolderType)
@@ -605,13 +605,13 @@ namespace IL2DCE.Pages
                 if (airGroup != null)
                 {
                     AirForce airForce = AirForces.Default.Where(x => x.ArmyIndex == airGroup.ArmyIndex && x.AirForceIndex == airGroup.AirGroupInfo.AirForceIndex).FirstOrDefault();
-                    content = string.Format("{0} - {1} [{2}]", missionLoaded ? 
-                                                                CreateAirGroupContent(airGroup, campaignInfo) : 
+                    content = string.Format("{0} - {1} [{2}]", missionLoaded ?
+                                                                CreateAirGroupContent(airGroup, campaignInfo) :
                                                                 CreateAirGroupContent(airGroup, campaignInfo, string.Empty, campaignInfo.GetAircraftInfo(airGroup.Class)),
-                                                                ((EArmy)airGroup.ArmyIndex).ToString(), 
+                                                                ((EArmy)airGroup.ArmyIndex).ToString(),
                                                                 airForce.Name);
                 }
-                else 
+                else
                 {
                     content = string.Empty;
                 }

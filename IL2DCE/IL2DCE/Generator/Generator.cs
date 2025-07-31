@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -353,9 +353,9 @@ namespace IL2DCE.Generator
                 return false;
             }
 
-            IEnumerable<string> airGroups  = needAirGroups > 0 ? GetAddAirGroups(missionTemplateFile, missionStatus, missionStatusTotal): new string [0];
+            IEnumerable<string> airGroups = needAirGroups > 0 ? GetAddAirGroups(missionTemplateFile, missionStatus, missionStatusTotal) : new string[0];
             IEnumerable<string> groundGroups = needGoundGroups > 0 ? GetAddGroundGroups(missionTemplateFile, missionStatus, missionStatusTotal) : new string[0];
-            IEnumerable<string> groundUnits = needGroundUnits > 0 ? GetAddGroundUnits(missionTemplateFile, missionStatus, missionStatusTotal): new string[0];
+            IEnumerable<string> groundUnits = needGroundUnits > 0 ? GetAddGroundUnits(missionTemplateFile, missionStatus, missionStatusTotal) : new string[0];
             if (!((needAirGroups > 0 && (airGroups.Any() || Career.AdditionalAirGroups)) || (needGoundGroups > 0 && (groundGroups.Any() || Career.AdditionalGroundGroups)) || (needGroundUnits > 0 && (groundUnits.Any() || Career.AdditionalStationaries))))
             {
                 return false;
@@ -476,7 +476,7 @@ namespace IL2DCE.Generator
             subBriefingFile = new BriefingFile();
             subBriefingFile.MissionDescription = string.Empty;
 
-            Spawn spawn = new Spawn(Career.Spawn, Career.SpawnRandomAltitudeFriendly, Career.SpawnRandomAltitudeEnemy, 
+            Spawn spawn = new Spawn(Career.Spawn, Career.SpawnRandomAltitudeFriendly, Career.SpawnRandomAltitudeEnemy,
                 new SpawnLocation(Career.SpawnRandomLocationPlayer, Career.SpawnRandomLocationFriendly, Career.SpawnRandomLocationEnemy), false, false, null);
 
             int AddCounts = 0;
@@ -533,7 +533,7 @@ namespace IL2DCE.Generator
             GameIterface gameInterface = (GamePlay as IGame).gameInterface;
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, Career.PilotName, Config.MissionStatusResultFileName);
             string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
-            if (File.Exists(missionStatusFileNameSystemPath)) 
+            if (File.Exists(missionStatusFileNameSystemPath))
             {
                 ISectionFile missionStatusFile = gameInterface.SectionFileLoad(missionStatusFileName);
                 return MissionStatus.Create(missionStatusFile, Random);

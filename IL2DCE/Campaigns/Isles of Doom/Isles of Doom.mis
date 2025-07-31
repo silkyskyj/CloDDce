@@ -1,4 +1,4 @@
-﻿# IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿# IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 # Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 [PARTS]
   core.100
   bob.100
-  tobruk.100
 [MAIN]
   MAP Land$Online_Isles_of_Doom
   DespawnAfterLandingTimeout 600
@@ -35,125 +34,7 @@
   GustAngle 45
 [splines]
 [AirGroups]
-  tobruk:Tobruk_RAF_F_94Sqn.01
-  tobruk:Tobruk_SAAF_B_12Sqn.03
-  tobruk:Tobruk_SAAF_R_40Sqn.03
-  tobruk:Tobruk_USAAF_F_66Sqn.01
-  tobruk:Channel_AA_GCI3_SPA69.01
-  tobruk:Tobruk_LW_JG3_II.11
-  tobruk:Tobruk_LW_JG27_I.01
-  tobruk:Tobruk_LW_KG77_III.03
-  tobruk:Tobruk_RA_150Gruppo_363Sq.03
   BoB_LW_KuFlGr_706.03
-[tobruk:Tobruk_RAF_F_94Sqn.01]
-  Flight0  1 2 3 4
-  Class tobruk:Aircraft.SpitfireMkVb
-  Formation FINGERFOUR
-  CallSign 28
-  Fuel 100
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-[tobruk:Tobruk_RAF_F_94Sqn.01_Way]
-  TAKEOFF 17250.91 11509.80 0 0
-  NORMFLY 17468.74 10776.37 0.00 0.00
-[tobruk:Tobruk_SAAF_B_12Sqn.03]
-  Flight0  1 2 3 4
-  Flight1  11 12 13 14
-  Class tobruk:Aircraft.BlenheimMkIV_Late_Trop
-  Formation LINEABREAST
-  CallSign 20
-  Fuel 81
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-[tobruk:Tobruk_SAAF_B_12Sqn.03_Way]
-  TAKEOFF 10232.10 11031.57 0 0
-  NORMFLY 11103.18 10570.48 0.00 0.00
-[tobruk:Tobruk_SAAF_R_40Sqn.03]
-  Flight0  1
-  Flight1  11
-  Class Aircraft.AnsonMkI
-  Formation LINEABREAST
-  CallSign 6
-  Fuel 100
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-  Aging 0
-[tobruk:Tobruk_SAAF_R_40Sqn.03_Way]
-  NORMFLY 15445.37 14819.68 500.00 300.00
-  RECON 21290.66 15694.34 500.00 300.00
-[tobruk:Tobruk_USAAF_F_66Sqn.01]
-  Flight0  1 2 3 4
-  Class tobruk:Aircraft.TomahawkMkII-Late
-  Formation FINGERFOUR
-  CallSign 26
-  Fuel 100
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-[tobruk:Tobruk_USAAF_F_66Sqn.01_Way]
-  TAKEOFF 16894.72 11185.24 0 0
-  NORMFLY 17751.91 11098.17 0.00 0.00
-[tobruk:Channel_AA_GCI3_SPA69.01]
-  Flight0  1 2 3 4
-  Class tobruk:Aircraft.D520_Serie1
-  Formation VIC3
-  CallSign 30
-  Fuel 50
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-[tobruk:Channel_AA_GCI3_SPA69.01_Way]
-  TAKEOFF 12457.58 16462.13 0 0
-  NORMFLY 12551.53 16412.44 0.00 145.00
-[tobruk:Tobruk_LW_JG3_II.11]
-  Flight0  1 2 3 4
-  Class tobruk:Aircraft.Bf-109F-4
-  Formation FINGERFOUR
-  CallSign 30
-  BombSpacing 0
-  Fuel 50
-  Weapons 1 1 1 0
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-[tobruk:Tobruk_LW_JG3_II.11_Way]
-  TAKEOFF 29696.20 15893.83 0 0
-  NORMFLY 29437.28 15710.79 0.00 0.00
-[tobruk:Tobruk_LW_JG27_I.01]
-  Flight0  1 2 3 4
-  Class tobruk:Aircraft.Bf-109E-7
-  Formation FINGERFOUR
-  CallSign 20
-  Fuel 50
-  Weapons 1 1 0
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-[tobruk:Tobruk_LW_JG27_I.01_Way]
-  TAKEOFF 28777.07 22287.41 0 0
-  NORMFLY 28435.97 22353.42 0.00 0.00
-[tobruk:Tobruk_LW_KG77_III.03]
-  Flight0  1 2 3
-  Flight1  11 12 13
-  Class tobruk:Aircraft.He-111H-6
-  Formation VIC3
-  CallSign 26
-  Fuel 40
-  Weapons 1 1 1 1 1 1 3 1 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-[tobruk:Tobruk_LW_KG77_III.03_Way]
-  TAKEOFF 29393.14 22138.96 0 0
-  NORMFLY 28502.23 22264.95 0.00 0.00
-[tobruk:Tobruk_RA_150Gruppo_363Sq.03]
-  Flight0  1 2 3
-  Flight1  11 12 13
-  Class tobruk:Aircraft.Macchi-C202-SeriesVII
-  Formation VIC3
-  CallSign 28
-  Fuel 50
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-[tobruk:Tobruk_RA_150Gruppo_363Sq.03_Way]
-  TAKEOFF 23437.97 23344.40 0 0
-  NORMFLY 23290.42 22846.71 0.00 0.00
 [BoB_LW_KuFlGr_706.03]
   Flight0  1
   Flight1  11
@@ -170,29 +51,10 @@
   RECON 19456.01 16121.01 500.00 300.00
 [CustomChiefs]
 [Chiefs]
-  0_Chief Armor.tobruk:Pz_IVF de /num_units 8
-  1_Chief Armor.tobruk:Matilda_2A_Late gb /num_units 8
   2_Chief Ship.Tanker_Medium2 de /sleep 0/skill 1/slowfire 1
   3_Chief Ship.Tanker_Medium1 gb /sleep 0/skill 1/slowfire 1
   4_Chief Ship.Minensuchboote de /sleep 0/skill 1/slowfire 1
   5_Chief Ship.HMS_Flowers_Corvette gb /sleep 0/skill 1/slowfire 1
-[0_Chief_Road]
-  21828.05 21153.62 38.40  0 2 6.94
-  21781.66 21121.67 38.40  0 2 3.47
-  21734.13 21084.86 38.40  0 2 3.47
-  21698.68 21057.05 38.40  0 2 3.47
-  21649.10 21025.36 38.40  0 2 3.47
-  21644.03 20988.16 38.40
-[1_Chief_Road]
-  16655.89 11929.52 38.40  0 2 4.17
-  16613.57 12052.44 38.40  0 2 2.08
-  16691.95 12167.98 38.40  0 2 2.08
-  16756.18 12256.45 38.40  0 2 2.08
-  16765.53 12371.99 38.40  0 4 2.08
-  S 28 2 0.48 20.00 P 16769.66 12479.59
-  S 28 2 0.48 20.00 P 16769.66 12479.59
-  16807.49 12548.93 38.40  0 2 2.08
-  16874.05 12591.13 38.40
 [2_Chief_Road]
   25706.63 19648.10 38.40  0 2 5.83
   26005.29 17770.53 38.40  0 2 2.92
@@ -227,21 +89,13 @@
   Static12 Artillery.Bofors_StandAlone gb 10549.72 10506.38 0.00 /timeout 0/radius_hide 0
   Static11 Artillery.Bofors_StandAlone gb 10925.64 10444.48 0.00 /timeout 0/radius_hide 0
   Static65 Stationary.Radar.EnglishRadar3 gb 18361.38 10266.14 0.00 
-  Static104 tobruk:Stationary.TomahawkMkII-Late us 10920.57 10550.02 0.00 
-  Static105 tobruk:Stationary.TomahawkMkII-Late us 10971.09 10527.06 0.00 
   Static5 Artillery.Bofors_StandAlone gb 17331.15 10442.43 0.00 /timeout 0/radius_hide 0
-  Static102 tobruk:Stationary.TomahawkMkII-Late us 10849.85 10583.08 0.00 
-  Static103 tobruk:Stationary.TomahawkMkII-Late us 10881.08 10569.31 0.00 
   Static56 Stationary.Bofors_ENG_Transport gb 11147.49 10407.27 0.00 
   Static6 Artillery.Bofors_StandAlone gb 17583.08 10545.79 0.00 /timeout 0/radius_hide 0
   Static13 Artillery.Bofors_StandAlone gb 10267.29 10723.79 0.00 /timeout 0/radius_hide 0
   Static55 Stationary.Bofors_ENG_Transport gb 11253.26 10610.03 0.00 
-  Static107 tobruk:Stationary.D520_Serie1 fr 10427.95 10747.89 0.00 
-  Static108 tobruk:Stationary.D520_Serie1 fr 10444.06 10738.44 0.00 
-  Static109 tobruk:Stationary.D520_Serie1 fr 10465.18 10726.77 0.00 
   Static10 Artillery.Bofors_StandAlone gb 11081.59 10707.73 0.00 /timeout 0/radius_hide 0
   Static4 Artillery.Bofors_StandAlone gb 16866.04 10664.22 0.00 /timeout 0/radius_hide 0
-  Static106 tobruk:Stationary.D520_Serie1 fr 10409.06 10757.33 0.00 
   Static47 Stationary.HurricaneMkI_dH5-20 gb 10368.30 10872.20 0.00 
   Static48 Stationary.HurricaneMkI_dH5-20 gb 10398.19 10862.55 0.00 
   Static49 Stationary.HurricaneMkI_dH5-20 gb 10433.68 10847.99 0.00 
@@ -255,11 +109,7 @@
   Static53 Stationary.Bofors_ENG_Transport gb 10789.37 10865.71 0.00 
   Static1 Artillery.Bofors_StandAlone gb 17805.94 10852.63 0.00 /timeout 0/radius_hide 0
   Static52 Stationary.Bofors_ENG_Transport gb 10552.56 10951.20 0.00 
-  Static97 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10395.92 11041.25 -105.00 
   Static51 Stationary.Bofors_ENG_Transport gb 10465.93 10997.56 0.00 
-  Static94 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10303.36 11096.19 -120.00 
-  Static95 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10333.53 11075.70 -105.00 
-  Static96 tobruk:Stationary.BlenheimMkIV_Late_Trop gb 10363.33 11059.14 -105.00 
   Static50 Stationary.Bofors_ENG_Transport gb 10265.57 11115.58 0.00 
   Static8 Artillery.Bofors_StandAlone gb 10221.79 11137.29 0.00 /timeout 0/radius_hide 0
   Static7 Artillery.Bofors_StandAlone gb 10141.15 10968.34 0.00 /timeout 0/radius_hide 0
@@ -272,21 +122,9 @@
   Static18 Artillery.Bofors_StandAlone gb 12973.17 16023.62 0.00 /timeout 0/radius_hide 0
   Static20 Artillery.Bofors_StandAlone gb 12862.57 16112.99 0.00 /timeout 0/radius_hide 0
   Static17 Artillery.Bofors_StandAlone gb 12552.00 16221.36 0.00 /timeout 0/radius_hide 0
-  Static91 tobruk:Stationary.SpitfireMkVb gb 12312.12 16381.23 0.00 
-  Static92 tobruk:Stationary.SpitfireMkVb gb 12348.71 16362.93 0.00 
   Static16 Artillery.Bofors_StandAlone gb 12365.44 16329.72 0.00 /timeout 0/radius_hide 0
-  Static77 tobruk:Stationary.Bf-109F-4 de 29678.94 16124.26 0.00 
-  Static90 tobruk:Stationary.SpitfireMkVb gb 12257.23 16417.06 0.00 
-  Static74 tobruk:Stationary.Bf-109F-4 de 29541.66 16157.31 0.00 
-  Static75 tobruk:Stationary.Bf-109F-4 de 29589.29 16145.55 0.00 
-  Static76 tobruk:Stationary.Bf-109F-4 de 29636.35 16133.22 0.00 
   Static28 Artillery.Zwillingssockel36_GER1 de 29739.83 16147.30 0.00 /timeout 0/radius_hide 0
   Static15 Artillery.Bofors_StandAlone gb 12215.74 16485.01 0.00 /timeout 0/radius_hide 0
-  Static93 tobruk:Stationary.SpitfireMkVb gb 12273.10 16461.28 0.00 
-  Static70 tobruk:Stationary.Bf-109E-7 de 28784.69 16231.83 0.00 
-  Static71 tobruk:Stationary.Bf-109E-7 de 28825.59 16233.52 0.00 
-  Static72 tobruk:Stationary.Bf-109E-7 de 28855.84 16236.32 0.00 
-  Static73 tobruk:Stationary.Bf-109E-7 de 28886.10 16238.56 0.00 
   Static29 Artillery.Zwillingssockel36_GER1 de 29669.72 16216.81 0.00 /timeout 0/radius_hide 0
   Static31 Artillery.Zwillingssockel36_GER1 de 29398.02 16319.27 0.00 /timeout 0/radius_hide 0
   Static30 Artillery.Zwillingssockel36_GER1 de 29560.24 16264.46 0.00 /timeout 0/radius_hide 0
@@ -296,10 +134,6 @@
   Static32 Artillery.Zwillingssockel36_GER1 de 29251.60 16334.16 0.00 /timeout 0/radius_hide 0
   Static68 Stationary.Radar.Wotan_II de 27467.88 16769.45 0.00 
   Static67 Stationary.Radar.Wotan_II de 22333.01 19119.40 0.00 
-  Static82 tobruk:Stationary.He-111H-6 de 28967.55 22053.54 75.00 
-  Static83 tobruk:Stationary.He-111H-6 de 28998.39 22043.46 75.00 
-  Static84 tobruk:Stationary.He-111H-6 de 29034.45 22036.56 75.00 
-  Static85 tobruk:Stationary.He-111H-6 de 28934.45 22063.82 75.00 
   Static78 Stationary.Do-17Z-1 de 28757.95 22103.92 60.00 
   Static79 Stationary.Do-17Z-1 de 28781.49 22091.30 60.00 
   Static80 Stationary.Do-17Z-1 de 28732.21 22116.33 60.00 
@@ -315,19 +149,15 @@
   Static44 Stationary.Bf-109E-3 de 28690.56 22432.06 -105.00 
   Static45 Stationary.Bf-109E-3 de 28715.17 22424.23 -105.00 
   Static41 Artillery.Zwillingssockel36_GER1 de 23319.27 22556.92 0.00 /timeout 0/radius_hide 0
-  Static86 tobruk:Stationary.Macchi-C202-SeriesVII it 23516.37 22635.76 0.00 
   Static57 Stationary.Bofors_GER_Transport de 25378.80 22633.42 0.00 
   Static35 Artillery.Zwillingssockel36_GER1 de 23105.03 22679.34 0.00 /timeout 0/radius_hide 0
   Static27 Artillery.Zwillingssockel36_GER1 de 27306.80 22618.100 0.00 /timeout 0/radius_hide 0
-  Static87 tobruk:Stationary.Macchi-C202-SeriesVII it 23589.05 22690.94 0.00 
   Static63 Stationary.Bofors_GER_Transport de 26577.40 22710.65 0.00 
   Static26 Artillery.Zwillingssockel36_GER1 de 26973.47 22673.78 0.00 /timeout 0/radius_hide 0
   Static40 Artillery.Zwillingssockel36_GER1 de 23522.99 22748.20 0.00 /timeout 0/radius_hide 0
-  Static88 tobruk:Stationary.Macchi-C202-SeriesVII it 23633.46 22747.47 0.00 
   Static61 Stationary.Bofors_GER_Transport de 26100.44 22738.52 0.00 
   Static62 Stationary.Bofors_GER_Transport de 26294.32 22722.76 0.00 
   Static36 Artillery.Zwillingssockel36_GER1 de 23169.11 22837.15 0.00 /timeout 0/radius_hide 0
-  Static89 tobruk:Stationary.Macchi-C202-SeriesVII it 23679.22 22840.33 0.00 
   Static58 Stationary.Bofors_GER_Transport de 25528.37 22841.76 0.00 
   Static59 Stationary.Bofors_GER_Transport de 25703.19 22799.01 0.00 
   Static60 Stationary.Bofors_GER_Transport de 25912.88 22762.13 0.00 

@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -803,9 +803,9 @@ namespace IL2DCE
             MissionIndex = careerFile.get(SectionCampaign, KeyMissionIndex, 0);
             MissionTemplateFileName = careerFile.get(SectionCampaign, KeyMissionTemplateFileName, string.Empty);
             value = careerFile.get(SectionCampaign, KeyStartDate, string.Empty);
-            StartDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.StartDate: CampaignInfo.DefaultStartDate;
+            StartDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.StartDate : CampaignInfo.DefaultStartDate;
             value = careerFile.get(SectionCampaign, KeyEndDate, string.Empty);
-            EndDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.EndDate: CampaignInfo.DefaultEndDate;
+            EndDate = DateTime.TryParseExact(value, DateFormat, Config.DateTimeFormat, DateTimeStyles.AssumeLocal, out dt) ? dt : CampaignInfo != null ? CampaignInfo.EndDate : CampaignInfo.DefaultEndDate;
             Time = careerFile.get(SectionCampaign, KeyTime, 0);
             Date = DateTime.Parse(careerFile.get(SectionCampaign, KeyDate)).AddHours(Time);
             AirGroup = careerFile.get(SectionCampaign, KeyAirGroup);
@@ -865,7 +865,7 @@ namespace IL2DCE
             value = careerFile.get(SectionCampaign, Config.KeyRandomTimeEnd, string.Empty);
             RandomTimeEnd = float.TryParse(value, NumberStyles.Float, Config.NumberFormat, out fValue) ? fValue : config.RandomTimeEnd;
 
-            DynamicFrontMarker = careerFile.get(SectionCampaign, CampaignInfo.KeyDynamicFrontMarker, CampaignInfo != null ? CampaignInfo.DynamicFrontMarker: false);
+            DynamicFrontMarker = careerFile.get(SectionCampaign, CampaignInfo.KeyDynamicFrontMarker, CampaignInfo != null ? CampaignInfo.DynamicFrontMarker : false);
 
             #endregion
 
@@ -1004,7 +1004,7 @@ namespace IL2DCE
             careerFile.add(SectionCampaign, KeyMissionFile, MissionFileName);
             careerFile.add(SectionCampaign, KeyMissionIndex, MissionIndex.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyMissionTemplateFileName, MissionTemplateFileName);
-            careerFile.add(SectionCampaign, KeyStartDate,StartDate.ToString(DateFormat, Config.DateTimeFormat));
+            careerFile.add(SectionCampaign, KeyStartDate, StartDate.ToString(DateFormat, Config.DateTimeFormat));
             careerFile.add(SectionCampaign, KeyEndDate, EndDate.ToString(DateFormat, Config.DateTimeFormat));
             careerFile.add(SectionCampaign, KeyDate, Date.Value.Year.ToString(Config.NumberFormat) + "-" + StartDate.Month.ToString(Config.NumberFormat) + "-" + Date.Value.Day.ToString(Config.NumberFormat));
             careerFile.add(SectionCampaign, KeyTime, ((int)Time).ToString(Config.NumberFormat));
@@ -1228,7 +1228,7 @@ namespace IL2DCE
                 case ECampaignMode.Random:
                     return random;
                 case ECampaignMode.Progress2Random:
-                    return MissionIndex < CampaignInfo.InitialMissionTemplateFileCount ? FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null)): random;
+                    return MissionIndex < CampaignInfo.InitialMissionTemplateFileCount ? FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, null)) : random;
                 case ECampaignMode.Default:
                 default:
                     return FileUtil.GetGameFileNameWithoutExtension(CampaignInfo.InitialMissionTemplateFile);
@@ -1366,7 +1366,7 @@ namespace IL2DCE
         public string MissionTemplateFile(IRandom random)
         {
             CampaignInfo campaignInfo = CampaignInfo;
-            MissionTemplateFileName = campaignInfo != null ? campaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, random): string.Empty;
+            MissionTemplateFileName = campaignInfo != null ? campaignInfo.MissionTemplateFile(CampaignMode, MissionIndex, random) : string.Empty;
             return MissionTemplateFileName;
         }
 
@@ -1375,7 +1375,7 @@ namespace IL2DCE
             CampaignInfo campaignInfo = CampaignInfo;
             if (campaignInfo != null)
             {
-                return CampaignMode == ECampaignMode.Progress ? MissionIndex < campaignInfo.InitialMissionTemplateFileCount: true;
+                return CampaignMode == ECampaignMode.Progress ? MissionIndex < campaignInfo.InitialMissionTemplateFileCount : true;
             }
             return false;
         }

@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -92,8 +92,8 @@ namespace IL2DCE.Pages
             }
             catch (Exception ex)
             {
-                string message = string.Format("{0} - {1} {2} {3} {4} {5}", "BattleResultPage._enter", 
-                    ex.Message, career.PilotName, career.CampaignInfo.Id, mission != null && mission.ActorDead != null ? mission.ActorDead.Count: -1, ex.StackTrace);
+                string message = string.Format("{0} - {1} {2} {3} {4} {5}", "BattleResultPage._enter",
+                    ex.Message, career.PilotName, career.CampaignInfo.Id, mission != null && mission.ActorDead != null ? mission.ActorDead.Count : -1, ex.StackTrace);
                 Core.WriteLog(message);
                 MessageBox.Show(string.Format("{0}", ex.Message), Config.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -136,8 +136,11 @@ namespace IL2DCE.Pages
                 if (career.BattleType == EBattleType.QuickMission)
                 {
 #if DEBUG
-                    Mission.Mission mission = Game.Core.Mission as Mission.Mission;
-                    Game.Core.SaveMissionResult(mission.MissionStatus);
+                    Mission.Mission mission = (Mission.Mission)Game.Core.Mission;
+                    if (mission != null)
+                    {
+                        Game.Core.SaveMissionResult(mission.MissionStatus);
+                    }
 #endif
                     string valueSummary = string.Format("{0}|{1}|{2}",
                         career.CampaignInfo.Id, string.IsNullOrEmpty(career.AirGroupDisplay) ? AirGroup.CreateDisplayName(career.AirGroup) : career.AirGroupDisplay, career.Aircraft);
@@ -177,7 +180,7 @@ namespace IL2DCE.Pages
 
         protected string ToStringTimeSpan(Dictionary<string, float> dic, string separator = Config.CommaStr)
         {
-            return string.Join(separator, dic.Select(x => string.Format("{0} {1}", 
+            return string.Join(separator, dic.Select(x => string.Format("{0} {1}",
                                                     AircraftInfo.CreateDisplayName(x.Key), PlayerStats.ToStringFlyingTime((long)x.Value))));
         }
 
@@ -186,7 +189,7 @@ namespace IL2DCE.Pages
             IGameSingle game = Game as IGameSingle;
             Career career = game.Core.CurrentCareer;
             int exp = career.Experience;
-            int exp2 = game.BattleResult == EBattleResult.DRAW ? Config.ExpDraw : game.BattleResult == EBattleResult.SUCCESS ? Config.ExpSuccess: Config.ExpFail;
+            int exp2 = game.BattleResult == EBattleResult.DRAW ? Config.ExpDraw : game.BattleResult == EBattleResult.SUCCESS ? Config.ExpSuccess : Config.ExpFail;
             int rank = career.RankIndex;
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Campaign: {0}", career.CampaignInfo.Name);
@@ -196,7 +199,7 @@ namespace IL2DCE.Pages
             sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, career.Date.Value.Hour == 0 ? "Date: {0:M/d/yyyy} - {1}" : "Date: {0:M/d/yyyy h tt} - {1}", career.Date.Value, game.BattleResult.ToString());
             sb.AppendLine();
             // Before + Add Now [Next Rank]
-            sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, "Exp: {0} + {1} [Next Rank {2}]", 
+            sb.AppendFormat(DateTimeFormatInfo.InvariantInfo, "Exp: {0} + {1} [Next Rank {2}]",
                             exp, exp2, rank < Rank.RankMax ? ((rank + 1) * Config.RankupExp).ToString(Config.NumberFormat) : " - ");
             // Rank Up
             sb.AppendLine(rank < Rank.RankMax && (exp + exp2 >= (rank + 1) * Config.RankupExp) ? " Promition!" : string.Empty);

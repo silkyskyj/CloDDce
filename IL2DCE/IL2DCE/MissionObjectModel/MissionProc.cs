@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using IL2DCE.Util;
 using maddox.game;
 using maddox.game.world;
@@ -127,7 +126,7 @@ namespace IL2DCE.MissionObjectModel
             Game = game;
             Config = config;
             Random = random;
-            Career  = career;
+            Career = career;
             MissionStatus = missionStatus;
 
             worker = null;
@@ -202,7 +201,7 @@ namespace IL2DCE.MissionObjectModel
                     e.Result = null;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 string message = string.Format("DoWorkSpawnDynamic Error[{0} {1}]", ex.Message, ex.StackTrace);
                 Core.WriteLog(message);
@@ -428,7 +427,9 @@ namespace IL2DCE.MissionObjectModel
                         {
                             if (reArmTime >= 0 || reFuelTime >= 0)
                             {
+#if Blitz
                                 UpdateReArmReFuel(aiAircraft, aircraft);
+#endif
                             }
                             else
                             {
@@ -459,6 +460,8 @@ namespace IL2DCE.MissionObjectModel
                 }
             }
         }
+
+#if Blitz
 
         private void UpdateReArmReFuel(AiAircraft aiAircraft, AircraftObj aircraft)
         {
@@ -528,9 +531,11 @@ namespace IL2DCE.MissionObjectModel
             }
         }
 
+#endif
+
         private bool IsLanded(AiAirGroup aiAirGroup)
         {
-            AiActor [] actors = CloDAPIUtil.GetItems(aiAirGroup);
+            AiActor[] actors = CloDAPIUtil.GetItems(aiAirGroup);
             if (actors != null)
             {
                 return actors.Where(x => IsLanded(x as AiAircraft)).Count() == actors.Length;
@@ -610,7 +615,7 @@ namespace IL2DCE.MissionObjectModel
             return task;
         }
 
-#endregion
+        #endregion
 
         private AiAirport GetNearestAirPort(Point3d pos, int army)
         {
@@ -633,7 +638,7 @@ namespace IL2DCE.MissionObjectModel
 
         private void UpdateTask(AiGroundGroup aiGroundGroup)
         {
-            AiActor [] actors = CloDAPIUtil.GetItems(aiGroundGroup);
+            AiActor[] actors = CloDAPIUtil.GetItems(aiGroundGroup);
             if (aiGroundGroup.IsValid() && aiGroundGroup.IsAlive() && actors != null && actors.Where(x => x.IsAlive()).Any())
             {
                 int army = aiGroundGroup.Army();
@@ -665,7 +670,7 @@ namespace IL2DCE.MissionObjectModel
             if (aiGroundActor.IsValid() && aiGroundActor.IsAlive())
             {
                 int army = aiGroundActor.Army();
-                
+
                 ;
             }
         }

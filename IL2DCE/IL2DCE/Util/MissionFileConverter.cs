@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -164,7 +164,7 @@ namespace IL2DCE.Util
                     string filePathAirGroup = string.Format("{0}/{1}/{2}", outputBasetFolder, fileName, Config.AirGroupInfoFileName);
                     fileAirGroup.save(filePathAirGroup);
                     fileMissionInitial.save(filePathMissionInitial);
-                    
+
                     // 10. Create Mission Script File
                     string filePathScriptSystemPathSrc = string.Format("{0}\\{1}", gameInterface.ToFileSystemPath(Config.CampaignsFolderDefault), Config.MissionScriptFileName);
                     string filePathScriptSystemPathDst = string.Format("{0}\\{1}\\{2}", outputBasetFolderrSystemPath, fileName, Config.MissionScriptFileName);
@@ -198,8 +198,8 @@ namespace IL2DCE.Util
             IEnumerable<Point3d> positionsBlue = missionFile.GroundGroups.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)
                                 .Concat(missionFile.Stationaries.Where(x => x.Army == (int)EArmy.Blue).Select(x => x.Position)).Select(x => new Point3d(x.x, x.y, (int)EArmy.Blue));
 
-            
-            
+
+
             // TODO: Create FrontMarker
 
 
@@ -245,7 +245,7 @@ namespace IL2DCE.Util
                 if (fileSorce.Get(Config.SectionBattles, i, out key, out value))
                 {
                     string missionName = string.IsNullOrEmpty(value) ? key : string.Format("{0} {1}", key, value);
-                    string[] missionNames = missionName.Split(missionName.IndexOfAny(Config.SplitDQ) != -1 ? Config.SplitDQ: Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
+                    string[] missionNames = missionName.Split(missionName.IndexOfAny(Config.SplitDQ) != -1 ? Config.SplitDQ : Config.SplitSpace, StringSplitOptions.RemoveEmptyEntries);
                     if (missionNames.Length > 0)
                     {
                         missionNameLists.Add(missionNames.First());
@@ -561,7 +561,7 @@ namespace IL2DCE.Util
                 string ext = searchPattern.Substring(idx);
                 return files.Where(x => x.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase));
             }
-             return files;
+            return files;
         }
 
         public int CountCampaignMissionFiles(string fileSystemPath)

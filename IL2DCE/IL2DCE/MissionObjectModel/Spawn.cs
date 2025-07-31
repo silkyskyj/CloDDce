@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -185,32 +185,32 @@ namespace IL2DCE.MissionObjectModel
             protected set;
         }
 
-		public bool IsRandomizeTimeFriendly
-		{
-			get;
-			set;
-		}
+        public bool IsRandomizeTimeFriendly
+        {
+            get;
+            set;
+        }
 
-		public bool IsRandomizeTimeEnemy
-		{
-			get;
-			set;
-		}
+        public bool IsRandomizeTimeEnemy
+        {
+            get;
+            set;
+        }
 
-		public bool IsRandomizeAltitudeFriendly
-		{
-			get;
-			set;
-		}
+        public bool IsRandomizeAltitudeFriendly
+        {
+            get;
+            set;
+        }
 
-		public bool IsRandomizeAltitudeEnemy
-		{
-			get;
-			set;
-		}
+        public bool IsRandomizeAltitudeEnemy
+        {
+            get;
+            set;
+        }
 
 
-		public string DisplayName
+        public string DisplayName
         {
             get
             {
@@ -258,40 +258,40 @@ namespace IL2DCE.MissionObjectModel
                 Type = ESpawn.Default;
                 Altitude = altitude;
             }
-			IsRandomizeAltitudeFriendly = isRandomizeAltitudeFriendly;
-			IsRandomizeAltitudeEnemy = isRandomizeAltitudeEnemy;
+            IsRandomizeAltitudeFriendly = isRandomizeAltitudeFriendly;
+            IsRandomizeAltitudeEnemy = isRandomizeAltitudeEnemy;
 
-			Location = location != null ? location: new SpawnLocation();
+            Location = location != null ? location : new SpawnLocation();
 
             IsRandomizeTimeFriendly = isRandomizeTimeFriendly;
-			IsRandomizeTimeEnemy = isRandomizeTimeEnemy;
-			Time = spawnTime != null ? spawnTime : new SpawnTime();
+            IsRandomizeTimeEnemy = isRandomizeTimeEnemy;
+            Time = spawnTime != null ? spawnTime : new SpawnTime();
         }
 
         public static ESpawn CreateRandomSpawnType()
         {
             ESpawn type;
-			Random rnd = new Random();
-			switch (rnd.Next(1, 5))
-			{
-				case 1:
-					type = ESpawn.Parked;
-					break;
-				case 2:
-					type = ESpawn.Idle;
-					break;
-				case 3:
-					type = ESpawn.Scramble;
-					break;
+            Random rnd = new Random();
+            switch (rnd.Next(1, 5))
+            {
+                case 1:
+                    type = ESpawn.Parked;
+                    break;
+                case 2:
+                    type = ESpawn.Idle;
+                    break;
+                case 3:
+                    type = ESpawn.Scramble;
+                    break;
                 default:
-				case 4:
-					type = ESpawn.AirStart;
-					break;
-			}
+                case 4:
+                    type = ESpawn.AirStart;
+                    break;
+            }
             return type;
-		}
+        }
 
-		public static Spawn Create(int altitude, Spawn spawn)
+        public static Spawn Create(int altitude, Spawn spawn)
         {
             return new Spawn(altitude, spawn.IsRandomizeAltitudeFriendly, spawn.IsRandomizeAltitudeEnemy, spawn.Location, spawn.IsRandomizeTimeFriendly, spawn.IsRandomizeTimeEnemy, spawn.Time.Clone());
         }

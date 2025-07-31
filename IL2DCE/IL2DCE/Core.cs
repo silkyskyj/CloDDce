@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -131,9 +131,10 @@ namespace IL2DCE
 
             GameIterface gameInterface = game.gameInterface;
 
+            CheckRequirement(gameInterface);
+
             // Config
-            ISectionFile confFile = gameInterface.SectionFileLoad(Config.ConfigFilePath);
-            config = new Config(confFile);
+            config = new Config(gameInterface.SectionFileLoad(Config.ConfigFilePath));
 
             // CampaignInfo
             ReadCampaignInfo();
@@ -144,7 +145,7 @@ namespace IL2DCE
             debugFolderSystemPath = gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DebugFolderName));
         }
 
-        #endregion
+#endregion
 
         private void Initialize()
         {
@@ -158,6 +159,16 @@ namespace IL2DCE
             if (!Directory.Exists(userMissionsFolderSystemPath))
             {
                 Directory.CreateDirectory(userMissionsFolderSystemPath);
+            }
+        }
+
+        private void CheckRequirement(GameIterface gameInterface)
+        {
+            ISectionFile file = gameInterface.ConfigFile();
+            string value = file.get("rts", "scriptAppDomain", string.Empty);
+            if (string.IsNullOrEmpty(value) || string.Compare(value, "0", StringComparison.InvariantCulture) != 0)
+            {
+                throw new ApplicationException("Error: [rts] scriptAppDomain need 0 value in CloD's conf.ini");
             }
         }
 
@@ -230,7 +241,7 @@ namespace IL2DCE
                             string message = string.Format("Error: read & parse Career file [{0}] {1} {2}", path, ex.Message, ex.StackTrace);
                             WriteLog(message);
                         }
-                    }                                                               
+                    }
                 }
             }
         }
@@ -469,7 +480,7 @@ namespace IL2DCE
             GameIterface gameInterface = (GamePlay as IGame).gameInterface;
             string missionStatusFileName = string.Format("{0}/{1}/{2}", Config.UserMissionFolder, CurrentCareer.PilotName, Config.MissionStatusResultFileName);
             string missionStatusFileNameSystemPath = gameInterface.ToFileSystemPath(missionStatusFileName);
-            ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName): gameInterface.SectionFileCreate();
+            ISectionFile missionStatusFile = File.Exists(missionStatusFileNameSystemPath) ? gameInterface.SectionFileLoad(missionStatusFileName) : gameInterface.SectionFileCreate();
             missionStatus.UpdateWriteTo(missionStatusFile, Config.ReinForceDay, true);
             missionStatusFile.save(missionStatusFileName);
         }

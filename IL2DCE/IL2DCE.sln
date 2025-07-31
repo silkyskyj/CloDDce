@@ -41,13 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars", "Supply Wars"
 		Campaigns\Supply Wars\SupplyWars_Initial.mis = Campaigns\Supply Wars\SupplyWars_Initial.mis
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supply Wars.Tobruk", "Supply Wars.Tobruk", "{197175B4-BD2C-4289-9C47-CB4660DBF7B2}"
-	ProjectSection(SolutionItems) = preProject
-		Campaigns\Supply Wars.tobruk\CampaignInfo.ini = Campaigns\Supply Wars.tobruk\CampaignInfo.ini
-		Campaigns\Supply Wars.tobruk\MissionSingle.cs = Campaigns\Supply Wars.tobruk\MissionSingle.cs
-		Campaigns\Supply Wars.tobruk\SupplyWars_Initial.mis = Campaigns\Supply Wars.tobruk\SupplyWars_Initial.mis
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
 	ProjectSection(SolutionItems) = preProject
 		..\LICENSE = ..\LICENSE
@@ -55,31 +48,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 		..\readme_il2dce_silkyskyj.txt = ..\readme_il2dce_silkyskyj.txt
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cross v Roundel.Tobruk", "Cross v Roundel.Tobruk", "{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cross v Roundel", "Cross v Roundel", "{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC}"
 	ProjectSection(SolutionItems) = preProject
-		Campaigns\Cross v Roundel.Tobruk\AircraftInfo.ini = Campaigns\Cross v Roundel.Tobruk\AircraftInfo.ini
-		Campaigns\Cross v Roundel.Tobruk\AirGroupInfo.ini = Campaigns\Cross v Roundel.Tobruk\AirGroupInfo.ini
-		Campaigns\Cross v Roundel.Tobruk\CampaignInfo.ini = Campaigns\Cross v Roundel.Tobruk\CampaignInfo.ini
-		Campaigns\Cross v Roundel.Tobruk\Cross v Roundel.mis = Campaigns\Cross v Roundel.Tobruk\Cross v Roundel.mis
-		Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs = Campaigns\Cross v Roundel.Tobruk\MissionSingle.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Isles of Doom.Tobruk", "Isles of Doom.Tobruk", "{AE78E049-6049-43C3-A593-36D58E50EE47}"
-	ProjectSection(SolutionItems) = preProject
-		Campaigns\Isles of Doom.Tobruk\AircraftInfo.ini = Campaigns\Isles of Doom.Tobruk\AircraftInfo.ini
-		Campaigns\Isles of Doom.Tobruk\AirGroupInfo.ini = Campaigns\Isles of Doom.Tobruk\AirGroupInfo.ini
-		Campaigns\Isles of Doom.Tobruk\CampaignInfo.ini = Campaigns\Isles of Doom.Tobruk\CampaignInfo.ini
-		Campaigns\Isles of Doom.Tobruk\Isles of Doom.mis = Campaigns\Isles of Doom.Tobruk\Isles of Doom.mis
-		Campaigns\Isles of Doom.Tobruk\MissionSingle.cs = Campaigns\Isles of Doom.Tobruk\MissionSingle.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Steppe.Tobruk", "Steppe.Tobruk", "{F004BA31-3ED5-4669-90DE-CCBF5A31A90A}"
-	ProjectSection(SolutionItems) = preProject
-		Campaigns\Steppe.Tobruk\AircraftInfo.ini = Campaigns\Steppe.Tobruk\AircraftInfo.ini
-		Campaigns\Steppe.Tobruk\AirGroupInfo.ini = Campaigns\Steppe.Tobruk\AirGroupInfo.ini
-		Campaigns\Steppe.Tobruk\CampaignInfo.ini = Campaigns\Steppe.Tobruk\CampaignInfo.ini
-		Campaigns\Steppe.Tobruk\MissionSingle.cs = Campaigns\Steppe.Tobruk\MissionSingle.cs
-		Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis = Campaigns\Steppe.Tobruk\Steppe.Tobruk_Initial.mis
+		Campaigns\Cross v Roundel\AircraftInfo.ini = Campaigns\Cross v Roundel\AircraftInfo.ini
+		Campaigns\Cross v Roundel\AirGroupInfo.ini = Campaigns\Cross v Roundel\AirGroupInfo.ini
+		Campaigns\Cross v Roundel\CampaignInfo.ini = Campaigns\Cross v Roundel\CampaignInfo.ini
+		Campaigns\Cross v Roundel\Cross v Roundel.mis = Campaigns\Cross v Roundel\Cross v Roundel.mis
+		Campaigns\Cross v Roundel\MissionSingle.cs = Campaigns\Cross v Roundel\MissionSingle.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transfer", "Transfer", "{77DF0E55-8035-4C74-BFC9-C2DC13736CE6}"
@@ -96,28 +71,68 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transfer", "Transfer", "{77
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Debug|x64.ActiveCfg = Debug|x64
 		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Debug|x64.Build.0 = Debug|x64
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Debug|x86.ActiveCfg = Debug|x86
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Debug|x86.Build.0 = Debug|x86
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Release|x64.ActiveCfg = Release|x64
 		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Release|x64.Build.0 = Release|x64
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Release|x86.ActiveCfg = Release|x86
+		{22442D49-0A77-4CBE-A1F3-9806958C10AE}.Release|x86.Build.0 = Release|x86
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Debug|x64.ActiveCfg = Debug|x64
 		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Debug|x64.Build.0 = Debug|x64
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Debug|x86.ActiveCfg = Debug|x86
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Debug|x86.Build.0 = Debug|x86
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Release|x64.ActiveCfg = Release|x64
 		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Release|x64.Build.0 = Release|x64
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Release|x86.ActiveCfg = Release|x86
+		{8E3CAD9B-322D-4ACF-9DEE-1609814111DB}.Release|x86.Build.0 = Release|x86
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Debug|x64.ActiveCfg = Debug|x64
 		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Debug|x64.Build.0 = Debug|x64
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Debug|x86.ActiveCfg = Debug|x86
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Debug|x86.Build.0 = Debug|x86
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Release|x64.ActiveCfg = Release|x64
 		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Release|x64.Build.0 = Release|x64
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Release|x86.ActiveCfg = Release|x86
+		{75E92407-3D44-4802-A09A-5ED7E6FEBC12}.Release|x86.Build.0 = Release|x86
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Debug|x64.ActiveCfg = Debug|x64
 		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Debug|x64.Build.0 = Debug|x64
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Debug|x86.ActiveCfg = Debug|x86
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Debug|x86.Build.0 = Debug|x86
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|x64.ActiveCfg = Release|x64
 		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|x64.Build.0 = Release|x64
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|x86.ActiveCfg = Release|x86
+		{ECBA2DA0-44D1-4449-9240-E57F07460A14}.Release|x86.Build.0 = Release|x86
+		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Debug|Any CPU.ActiveCfg = Debug
 		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Debug|x64.ActiveCfg = Debug
+		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Debug|x86.ActiveCfg = Debug
+		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Release|Any CPU.ActiveCfg = Release
 		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Release|x64.ActiveCfg = Release
+		{3D87D950-DFCE-C98F-A1B8-70E25A411D3C}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,10 +141,7 @@ Global
 		{E4CFEBBA-6807-4642-A5E8-4111BBA5B859} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{85AF6006-C929-4478-AD67-FA895A2B51A7} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{359B04C2-59DD-4167-9CEC-DB40A4B9772E} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
-		{197175B4-BD2C-4289-9C47-CB4660DBF7B2} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{1FDB8B49-2B70-4D7D-BA56-E5326F83D0CC} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
-		{AE78E049-6049-43C3-A593-36D58E50EE47} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
-		{F004BA31-3ED5-4669-90DE-CCBF5A31A90A} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 		{77DF0E55-8035-4C74-BFC9-C2DC13736CE6} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -66,7 +66,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Waypoints != null && Waypoints.Any() ? Waypoints[0].X: -1;
+                return Waypoints != null && Waypoints.Any() ? Waypoints[0].X : -1;
             }
             protected set
             {
@@ -81,7 +81,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Waypoints != null && Waypoints.Any() ? Waypoints[0].Y: -1;
+                return Waypoints != null && Waypoints.Any() ? Waypoints[0].Y : -1;
             }
             protected set
             {
@@ -299,12 +299,12 @@ namespace IL2DCE.MissionObjectModel
                     {
                         //if (Waypoints[i].V.HasValue)
                         //{
-                            sectionFile.add(section, Waypoints[i].X.ToString(Config.PointValueFormat, Config.NumberFormat),
-                                            string.Format(Config.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}",
-                                                            Waypoints[i].Y,
-                                                            (Waypoints[i] as GroundGroupWaypointLine).Z,
-                                                            (Waypoints[i].SubWaypoints.Count + 2),
-                                                            Waypoints[i].V.HasValue ? Waypoints[i].V.Value: 0));
+                        sectionFile.add(section, Waypoints[i].X.ToString(Config.PointValueFormat, Config.NumberFormat),
+                                        string.Format(Config.NumberFormat, "{0:F2} {1:F2}  0 {2} {3:F2}",
+                                                        Waypoints[i].Y,
+                                                        (Waypoints[i] as GroundGroupWaypointLine).Z,
+                                                        (Waypoints[i].SubWaypoints.Count + 2),
+                                                        Waypoints[i].V.HasValue ? Waypoints[i].V.Value : 0));
                         //}
                         //else
                         //{
@@ -315,13 +315,13 @@ namespace IL2DCE.MissionObjectModel
                     {
                         //if (Waypoints[i].V.HasValue)
                         //{
-                            sectionFile.add(section, "S",
-                                            string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}  0 {3} {4:F2}",
-                                                            (Waypoints[i] as GroundGroupWaypointSpline).S,
-                                                            Waypoints[i].X,
-                                                            Waypoints[i].Y,
-                                                            (Waypoints[i].SubWaypoints.Count + 2),
-                                                            Waypoints[i].V.HasValue ? Waypoints[i].V.Value: 0));
+                        sectionFile.add(section, "S",
+                                        string.Format(Config.NumberFormat, "{0} P {1:F2} {2:F2}  0 {3} {4:F2}",
+                                                        (Waypoints[i] as GroundGroupWaypointSpline).S,
+                                                        Waypoints[i].X,
+                                                        Waypoints[i].Y,
+                                                        (Waypoints[i].SubWaypoints.Count + 2),
+                                                        Waypoints[i].V.HasValue ? Waypoints[i].V.Value : 0));
                         //}
                         //else
                         //{

@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -78,7 +78,6 @@ namespace IL2DCE.MissionObjectModel
         public const string KeyStatic = "Static";
         public const string KeyPartsCore = "core.100";
         public const string KeyPartsBob = "bob.100";
-        public const string KeyPartsTobruk = "tobruk.100";
 
         public const float DefaultTime = 12.0f;
         public const int DefaulWeatherIndex = 0;
@@ -117,7 +116,7 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Parts != null ? Parts.Except(new string[] { KeyPartsCore, KeyPartsBob }) :new string[0];
+                return Parts != null ? Parts.Except(new string[] { KeyPartsCore, KeyPartsBob }) : new string[0];
             }
         }
 
@@ -125,12 +124,12 @@ namespace IL2DCE.MissionObjectModel
         {
             get
             {
-                return Parts != null ? Parts.Except(new string[] { KeyPartsCore, KeyPartsBob }).Select(x => 
-                                                    { 
-                                                        int i = x.IndexOf("."); 
+                return Parts != null ? Parts.Except(new string[] { KeyPartsCore, KeyPartsBob }).Select(x =>
+                                                    {
+                                                        int i = x.IndexOf(".");
                                                         return i != -1 ? x.Substring(0, i) : x;
-                                                    }): 
-                                       new string [0];
+                                                    }) :
+                                       new string[0];
             }
         }
 
@@ -250,7 +249,7 @@ namespace IL2DCE.MissionObjectModel
             private set;
         }
 
-#endregion
+        #endregion
 
         private AirGroupInfos airGroupInfos;
 
@@ -281,7 +280,7 @@ namespace IL2DCE.MissionObjectModel
         {
             // Parts
             Parts = SilkySkyCloDFile.ReadSectionKeies(file, SectionParts);
-            
+
             // Main
             Map = file.get(SectionMain, KeyMap, string.Empty);
             string value = file.get(SectionMain, KeyBattleArea, string.Empty);
@@ -524,7 +523,7 @@ namespace IL2DCE.MissionObjectModel
                 return airGroupInfo;
             }
 
-            return new AirGroupInfo [0];
+            return new AirGroupInfo[0];
         }
     }
 }

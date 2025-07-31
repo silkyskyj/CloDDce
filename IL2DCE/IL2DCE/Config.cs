@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ namespace IL2DCE
         public const string MissionFileExt = ".mis";
         public const string ScriptFileExt = ".cs";
         public const string BriefingFileExt = ".briefing";
-        
+
         public const string IniFileExt = ".ini";
 
         public const string SectionMain = "Main";
@@ -128,7 +128,7 @@ namespace IL2DCE
 
         public const string GeneralSettingsFileName = "GeneralSettings.ini";
         public const string DQMSettingFileName = "DQMSetting.ini";
-        
+
         public const string DefaultFixedFontName = "Consolas";
         public const string KillsFormat = "F0";
         public const string PointValueFormat = "F2";
@@ -385,7 +385,7 @@ namespace IL2DCE
 
         public static NumberFormatInfo NumberFormat = CultureInfo.InvariantCulture.NumberFormat;
         public static DateTimeFormatInfo DateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
-        
+
         public static Version Version
         {
             get;

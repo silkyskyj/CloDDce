@@ -1,4 +1,4 @@
-# IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+# IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 # Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 [PARTS]
   core.100
   bob.100
-  tobruk.100
 [MAIN]
   MAP Land$Online_Cobra_(8x8)
   DespawnAfterLandingTimeout 600
@@ -35,35 +34,17 @@
   GustAngle 45
 [AirGroups]
   BoB_RAF_B_218Sqn.01
-  BoB_RAF_B_35Sqn.02
   gb02.08
   BoB_RAF_B_40Sqn.11
   BoB_RAF_B_44Sqn.12
   BoB_RAF_F_29Sqn_Late.04
-  gb01_Late.14
   BoB_RAF_F_303_PL_Late.11
-  BoB_RAF_F_310_CZ_Late.12
-  BoB_RAF_F_87Sqn_Late.02
-  BoB_RAF_F_92Sqn_Late.01
-  gb01_Late.21
-  tobruk:Channel_AA_GCI3_SPA69.01
-  tobruk:Tobruk_USAAF_F_64Sqn.04
-  tobruk:Tobruk_USAAF_F_65Sqn.02
-  gb01_Late.01
-  g01.02
   BoB_LW_JG26_I.12
   g01.14
-  BoB_LW_JG3_I.21
   g01.21
-  g01.34
-  BoB_LW_KG26_Stab.02
   g03.04
   BoB_LW_KG3_Stab.01
   g03.11
-  g02.02
-  BoB_LW_KuFlGr_706.01
-  BoB_LW_LG2_I.01
-  BoB_RA_56St_20Gruppo_353Sq.01
   g04.01
   g04.11
 [BoB_RAF_B_218Sqn.01]
@@ -80,20 +61,6 @@
 [BoB_RAF_B_218Sqn.01_Way]
   NORMFLY 70507.44 67864.11 3000.00 300.00
   NORMFLY 65459.42 64959.58 500.00 300.00
-[BoB_RAF_B_35Sqn.02]
-  Flight1 11
-  Class tobruk:Aircraft.WellingtonMkIc_Torpedo_Trop
-  Formation LINEABREAST
-  CallSign 10
-  Fuel 62
-  Weapons 1 1 1 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_RAF_B_35Sqn.02
-[BoB_RAF_B_35Sqn.02_Way]
-  TAKEOFF 67515.16 69828.07 0 0
-  NORMFLY 67549.68 67338.66 500 300
 [gb02.08]
   Flight3 31
   Class Aircraft.WellingtonMkIc
@@ -140,7 +107,7 @@
   NORMFLY 62279.66 14636.63 500.00 300.00
 [BoB_RAF_F_29Sqn_Late.04]
   Flight2 21
-  Class Aircraft.BlenheimMkIV_Late
+  Class Aircraft.BlenheimMkIV
   Formation LINEABREAST
   CallSign 10
   Fuel 100
@@ -152,20 +119,6 @@
 [BoB_RAF_F_29Sqn_Late.04_Way]
   NORMFLY 67119.70 71707.01 2000.00 300.00
   NORMFLY 61647.71 68382.94 500.00 300.00
-[gb01_Late.14]
-  Flight2 21
-  Class tobruk:Aircraft.SpitfireMkVb
-  Formation LINEABREAST
-  CallSign 10
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-  Aging 0
-  SetOnPark 0
-  Briefing gb01_Late.14
-[gb01_Late.14_Way]
-  NORMFLY 62854.04 73114.68 2000.00 300.00
-  NORMFLY 58149.87 69705.30 500.00 300.00
 [BoB_RAF_F_303_PL_Late.11]
   Flight0 1
   Class Aircraft.HurricaneMkI
@@ -180,137 +133,6 @@
 [BoB_RAF_F_303_PL_Late.11_Way]
   NORMFLY 70094.47 63624.10 2000.00 300.00
   NORMFLY 63695.98 55093.67 500.00 300.00
-[BoB_RAF_F_310_CZ_Late.12]
-  Flight1 11
-  Class tobruk:Aircraft.HurricaneMkIIb
-  Formation FINGERFOUR
-  CallSign 18
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_RAF_F_310_CZ_Late.12
-[BoB_RAF_F_310_CZ_Late.12_Way]
-  NORMFLY 68094.25 41552.57 2500.00 300.00
-  NORMFLY 61524.01 37798.14 500.00 300.00
-[BoB_RAF_F_87Sqn_Late.02]
-  Flight1 11
-  Class tobruk:Aircraft.SpitfireMkVb
-  Formation FINGERFOUR
-  CallSign 12
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_RAF_F_87Sqn_Late.02
-[BoB_RAF_F_87Sqn_Late.02_Way]
-  TAKEOFF 53051.36 53226.32 0 0
-  NORMFLY 51514.85 51632.15 500 300
-[BoB_RAF_F_92Sqn_Late.01]
-  Flight0 1
-  Class tobruk:Aircraft.SpitfireMkIIb
-  Formation FINGERFOUR
-  CallSign 14
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_RAF_F_92Sqn_Late.01
-[BoB_RAF_F_92Sqn_Late.01_Way]
-  NORMFLY 53907.75 37673.29 500.00 300.00
-  NORMFLY 53099.54 36763.17 500.00 300.00
-[gb01_Late.21]
-  Flight0 1
-  Class tobruk:Aircraft.SpitfireMkIIb
-  Formation FINGERFOUR
-  CallSign 14
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing gb01_Late.21
-[gb01_Late.21_Way]
-  TAKEOFF 53481.48 33875.90 0 0
-  NORMFLY 52333.18 32538.93 500.00 300.00
-[tobruk:Channel_AA_GCI3_SPA69.01]
-  Flight0 1
-  Class tobruk:Aircraft.D520_Serie1
-  Formation VIC3
-  CallSign 10
-  Fuel 50
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing tobruk:Channel_AA_GCI3_SPA69.01
-[tobruk:Channel_AA_GCI3_SPA69.01_Way]
-  NORMFLY 61865.32 48080.07 3000.00 300.00
-  NORMFLY 46719.63 43685.69 500.00 300.00
-[tobruk:Tobruk_USAAF_F_64Sqn.04]
-  Flight2 21
-  Class tobruk:Aircraft.MartletMkIII
-  Formation FINGERFOUR
-  CallSign 29
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing tobruk:Tobruk_USAAF_F_64Sqn.04
-[tobruk:Tobruk_USAAF_F_64Sqn.04_Way]
-  NORMFLY 67328.71 24872.47 2000.00 300.00
-  NORMFLY 60544.00 33789.68 500.00 300.00
-[tobruk:Tobruk_USAAF_F_65Sqn.02]
-  Flight1 11
-  Class tobruk:Aircraft.TomahawkMkII
-  Formation FINGERFOUR
-  CallSign 4
-  Fuel 100
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing tobruk:Tobruk_USAAF_F_65Sqn.02
-[tobruk:Tobruk_USAAF_F_65Sqn.02_Way]
-  NORMFLY 54100.21 44167.97 2500.00 300.00
-  NORMFLY 44202.46 39333.97 500.00 300.00
-[gb01_Late.01]
-   Flight0 1
-  Class tobruk:Aircraft.KittyhawkMkIA
-  Formation FINGERFOUR
-  CallSign 26
-  Fuel 64
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Skin0 TFS Kittyhawk default a075TomahawkCoRivetsl.jpg
-  BandColor0 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
-  Aging 0
-  MarkingsOn0 0
-  SetOnPark 0
-  Briefing gb01_Late.01
-[gb01_Late.01_Way]
-  NORMFLY 71010.06 13805.65 2500.00 300.00
-  NORMFLY 63713.53 17249.75 500.00 300.00
-[g01.02]
-  Flight1 11
-  Class tobruk:Aircraft.Bf-109F-2
-  Formation FINGERFOUR
-  CallSign 19
-  Fuel 25
-  Weapons 1 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
-  MarkingsOn10 0
-  SetOnPark 0
-  Briefing g01.02
-[g01.02_Way]
-  TAKEOFF 39709.01 20273.63 0 0
-  NORMFLY 40997.09 21656.53 500 300
 [BoB_LW_JG26_I.12]
   Flight1 11
   Class Aircraft.Bf-110C-4
@@ -341,20 +163,6 @@
 [g01.14_Way]
   NORMFLY 10116.24 19837.64 2000.00 300.00
   NORMFLY 16685.99 27132.70 500.00 300.00
-[BoB_LW_JG3_I.21]
-  Flight0 1
-  Class tobruk:Aircraft.Bf-109F-1
-  Formation FINGERFOUR
-  CallSign 33
-  Fuel 100
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_LW_JG3_I.21
-[BoB_LW_JG3_I.21_Way]
-  NORMFLY 10453.04 41298.64 3000.00 300.00
-  NORMFLY 17152.00 50216.35 500.00 300.00
 [g01.21]
   Flight0 1
   Class Aircraft.Bf-109E-4
@@ -371,36 +179,6 @@
 [g01.21_Way]
   NORMFLY 11782.32 56868.78 3000.00 300.00
   NORMFLY 20740.33 62414.26 500.00 300.00
-[g01.34]
-  Flight2 21
-  Class tobruk:Aircraft.Bf-109E-7
-  Formation FINGERFOUR
-  CallSign 34
-  Fuel 22
-  Weapons 1 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  BandColor20 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
-  MarkingsOn20 0
-  SetOnPark 0
-  Briefing g01.34
-[g01.34_Way]
-  NORMFLY 20522.67 19111.90 2000.00 300.00
-  NORMFLY 24704.00 30247.90 500.00 300.00
-[BoB_LW_KG26_Stab.02]
-  Flight1 11
-  Class tobruk:Aircraft.Ju-88A-5
-  Formation VIC3
-  CallSign 36
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_LW_KG26_Stab.02
-[BoB_LW_KG26_Stab.02_Way]
-  NORMFLY 19165.49 10785.75 2500.00 300.00
-  NORMFLY 22163.18 15119.38 500.00 300.00
 [g03.04]
   Flight2 21
   Class Aircraft.Ju-87B-2
@@ -453,64 +231,6 @@
   NORMFLY 41289.26 68369.96 2500.00 300.00
   NORMFLY 41289.26 68369.96 2500.00 300.00
   NORMFLY 17471.70 63454.09 500.00 300.00
-[g02.02]
-  Flight1 11
-  Class tobruk:Aircraft.Ju-88A-5
-  Formation VIC3
-  CallSign 11
-  Fuel 100
-  Weapons 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-  Aging 0
-  BandColor10 0.92 0.72 0.15 0.80 0.80 0.80 0.15 0.15 0.15
-  MarkingsOn10 0
-  SetOnPark 0
-  Briefing g02.02
-[g02.02_Way]
-  NORMFLY 12185.23 65128.80 3000.00 300.00
-  NORMFLY 16296.29 66660.74 500.00 300.00
-[BoB_LW_KuFlGr_706.01]
-  Flight0 1
-  Class tobruk:Aircraft.He-111H-6
-  Formation VIC3
-  CallSign 25
-  Fuel 38
-  Weapons 1 1 1 1 1 1 1 1 1
-  Skill 0.32 0.12 0.87 0.25 0.74 0.90 0.95 0.91
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_LW_KuFlGr_706.01
-[BoB_LW_KuFlGr_706.01_Way]
-  TAKEOFF 13425.36 67285.29 0 0
-  NORMFLY 15669.65 66164.63 500 300
-[BoB_LW_LG2_I.01]
-  Flight0 1
-  Class tobruk:Aircraft.Bf-109F-4
-  Formation FINGERFOUR
-  CallSign 25
-  Fuel 27
-  Weapons 1 1 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_LW_LG2_I.01
-[BoB_LW_LG2_I.01_Way]
-  TAKEOFF 28714.09 55563.57 0 0
-  NORMFLY 30450.62 54069.41 500 300
-[BoB_RA_56St_20Gruppo_353Sq.01]
-  Flight0 1
-  Class tobruk:Aircraft.Macchi-C202-SeriesVII-AltoQuota
-  Formation VIC3
-  CallSign 3
-  Fuel 75
-  Weapons 1 1
-  Skill 0.32 0.12 0.87 0.60 0.74 0.90 0.90 0.31
-  Aging 0
-  SetOnPark 0
-  Briefing BoB_RA_56St_20Gruppo_353Sq.01
-[BoB_RA_56St_20Gruppo_353Sq.01_Way]
-  NORMFLY 10881.22 34726.66 2500.00 300.00
-  NORMFLY 16555.71 42022.70 500.00 300.00
 [g04.01]
   Flight0  1
   Class Aircraft.Bf-109E-4
@@ -539,15 +259,10 @@
   NORMFLY 30242.76 56839.97 500.00 300.00
 [CustomChiefs]
 [Chiefs]
-  0_Chief Ship.tobruk:Type_VIIC_SS de /sleep 0/skill 1/slowfire 1
-  1_Chief Ship.tobruk:U-class_SS gb /sleep 0/skill 1/slowfire 1
-  2_Chief Ship.tobruk:Tribal_DD1941 gb /sleep 0/skill 1/slowfire 1
-  3_Chief Ship.tobruk:1936_DD de /sleep 0/skill 1/slowfire 1
   4_Chief Armor.Pz_IVD de 
   5_Chief Armor.Pz_IVD de 
   6_Chief Armor.Matilda_2A gb 
   7_Chief Armor.Matilda_2A gb 
-  8_Chief Armor.tobruk:Bedford_MW_AA gb 
   9_Chief Armor.SdKfz_10_4 de 
   10_Chief Armor.Pz_IB de /num_units 4
   11_Chief Armor.Pz_IB de /num_units 4
@@ -557,14 +272,10 @@
   17_Chief Vehicle.SdKfz_10_1 de /num_units 4
   18_Chief Vehicle.Morris_CS8_tank gb /num_units 4
   19_Chief Vehicle.Morris_CS8_tank gb /num_units 4
-  20_Chief Armor.tobruk:M3_Stuart gb /num_units 4
-  21_Chief Armor.tobruk:M3_Stuart gb /num_units 4
   22_Chief Armor.Pz_IIC de /num_units 4
   23_Chief Armor.Pz_IIC de /num_units 4
   14_Chief Train.M7_0-4-4_4Passenger gb 
   15_Chief Train.BR56-00_p1 de 
-  24_Chief Ship.tobruk:Revenge_BB gb /sleep 0/skill 1/slowfire 1
-  25_Chief Ship.tobruk:Leipzig_CL de /sleep 0/skill 1/slowfire 1
 [0_Chief_Road]
   29528.03 64729.38 38.40  0 2 9.17
   35244.02 61530.14 38.40  0 2 4.58
@@ -840,18 +551,6 @@
   Static93 Stationary.Radar.Wotan_II de 28760.21 70262.11 0.00 
   Static46 Artillery.Bofors gb 67221.70 69689.27 0.00 /timeout 0/radius_hide 0
   Static48 Artillery.Bofors gb 67735.73 69649.25 0.00 /timeout 0/radius_hide 0
-  Static109 tobruk:Stationary.WellingtonMkIc_t gb 67007.86 13887.98 0.00 
-  Static110 tobruk:Stationary.WellingtonMkIc_t gb 67043.51 13889.12 0.00 
-  Static111 tobruk:Stationary.WellingtonMkIc_t gb 67077.16 13888.27 0.00 
-  Static112 tobruk:Stationary.WellingtonMkIc_t gb 67105.96 13887.13 0.00 
-  Static113 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67534.58 14028.03 0.00 
-  Static114 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67535.47 14082.17 0.00 
-  Static115 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67530.14 14154.94 0.00 
-  Static116 tobruk:Stationary.WellingtonMkIc_Torpedo_Trop gb 67529.26 14231.27 0.00 
-  Static117 tobruk:Stationary.WellingtonMkIc_t gb 67062.75 68067.38 0.00 
-  Static118 tobruk:Stationary.WellingtonMkIc_t gb 67164.32 68050.45 0.00 
-  Static119 tobruk:Stationary.WellingtonMkIc_t gb 66980.70 68101.23 0.00 
-  Static120 tobruk:Stationary.WellingtonMkIc_t gb 66885.64 68148.12 0.00 
   Static121 Stationary.BlenheimMkIV gb 66580.01 69168.55 0.00 
   Static122 Stationary.BlenheimMkIV gb 66566.99 69098.27 0.00 
   Static123 Stationary.BlenheimMkIV gb 66560.48 69026.70 0.00 
@@ -860,75 +559,20 @@
   Static150 Stationary.BlenheimMkIV gb 66559.30 68813.37 0.00 
   Static151 Stationary.BlenheimMkIV gb 66555.41 68735.34 0.00 
   Static152 Stationary.BlenheimMkIV gb 66551.51 68661.22 0.00 
-  Static153 Stationary.BlenheimMkIV_Late gb 67895.49 68673.08 0.00 
-  Static154 Stationary.BlenheimMkIV_Late gb 67896.80 68757.66 0.00 
-  Static155 Stationary.BlenheimMkIV_Late gb 67900.70 68833.14 0.00 
-  Static156 Stationary.BlenheimMkIV_Late gb 67892.89 68902.11 0.00 
-  Static157 tobruk:Stationary.SpitfireMkVb gb 52925.76 52322.23 0.00 
-  Static158 tobruk:Stationary.SpitfireMkVb gb 52908.12 52311.98 0.00 
-  Static159 tobruk:Stationary.SpitfireMkVb gb 53129.32 52575.37 0.00 
+  Static153 Stationary.BlenheimMkIV gb 67895.49 68673.08 0.00 
+  Static154 Stationary.BlenheimMkIV gb 67896.80 68757.66 0.00 
+  Static155 Stationary.BlenheimMkIV gb 67900.70 68833.14 0.00 
+  Static156 Stationary.BlenheimMkIV gb 67892.89 68902.11 0.00 
   Static160 Stationary.HurricaneMkI gb 52082.43 52495.06 0.00 
   Static161 Stationary.HurricaneMkI gb 52075.69 52515.11 0.00 
-  Static162 tobruk:Stationary.HurricaneMkIIb gb 52053.100 52630.09 0.00 
-  Static163 tobruk:Stationary.HurricaneMkIIb gb 52052.59 52653.24 0.00 
-  Static164 tobruk:Stationary.HurricaneMkIIb gb 52086.97 52856.01 0.00 
-  Static165 tobruk:Stationary.HurricaneMkIIb gb 52091.88 52874.96 0.00 
-  Static166 tobruk:Stationary.SpitfireMkVb gb 52121.35 52968.27 0.00 
-  Static167 tobruk:Stationary.SpitfireMkVb gb 52126.96 52991.43 0.00 
-  Static168 tobruk:Stationary.SpitfireMkVb gb 52160.64 53090.36 0.00 
-  Static169 tobruk:Stationary.SpitfireMkVb gb 52169.06 53103.69 0.00 
-  Static170 tobruk:Stationary.SpitfireMkIIb gb 52266.59 53200.52 0.00 
-  Static171 tobruk:Stationary.SpitfireMkIIb gb 52276.41 53213.84 0.00 
-  Static172 tobruk:Stationary.SpitfireMkIIb gb 52383.06 53279.80 0.00 
-  Static173 tobruk:Stationary.SpitfireMkIIb gb 52387.97 53296.64 0.00 
-  Static174 tobruk:Stationary.SpitfireMkIIb gb 52811.78 33956.26 0.00 
-  Static175 tobruk:Stationary.SpitfireMkIIb gb 52824.98 33966.82 0.00 
-  Static176 tobruk:Stationary.SpitfireMkIIb gb 52701.59 33869.18 0.00 
-  Static177 tobruk:Stationary.SpitfireMkIIb gb 52712.19 33887.66 0.00 
-  Static178 tobruk:Stationary.D520_Serie1 fr 52609.05 33766.94 0.00 
-  Static179 tobruk:Stationary.D520_Serie1 fr 52599.35 33756.37 0.00 
-  Static180 tobruk:Stationary.D520_Serie1 fr 52560.57 33643.56 0.00 
-  Static181 tobruk:Stationary.D520_Serie1 fr 52564.10 33661.18 0.00 
-  Static182 tobruk:Stationary.MartletMkIII us 52533.88 33548.50 0.00 
-  Static183 tobruk:Stationary.MartletMkIII us 52522.54 33527.45 0.00 
-  Static184 tobruk:Stationary.MartletMkIII us 52488.04 33322.43 0.00 
-  Static185 tobruk:Stationary.MartletMkIII us 52489.66 33301.91 0.00 
-  Static186 tobruk:Stationary.TomahawkMkII us 52506.78 33183.27 0.00 
-  Static187 tobruk:Stationary.TomahawkMkII us 52512.05 33166.57 0.00 
-  Static188 tobruk:Stationary.TomahawkMkII us 53346.77 32978.23 0.00 
-  Static189 tobruk:Stationary.TomahawkMkII us 53356.45 32994.95 0.00 
-  Static190 tobruk:Stationary.KittyhawkMkIA us 53564.86 33246.62 0.00 
-  Static191 tobruk:Stationary.KittyhawkMkIA us 53572.79 33266.86 0.00 
-  Static192 tobruk:Stationary.KittyhawkMkIA us 53616.76 33382.02 0.00 
-  Static193 tobruk:Stationary.KittyhawkMkIA us 53629.06 33432.98 0.00 
   Static194 Stationary.Bf-110C-4 de 40401.52 20287.43 0.00 
   Static195 Stationary.Bf-110C-4 de 40415.57 20300.41 0.00 
   Static196 Stationary.Bf-110C-4 de 40619.87 20556.46 0.00 
   Static197 Stationary.Bf-110C-4 de 40627.96 20573.71 0.00 
-  Static198 tobruk:Stationary.Bf-109F-2 de 39870.35 21260.88 0.00 
-  Static199 tobruk:Stationary.Bf-109F-2 de 39883.62 21271.36 0.00 
-  Static200 tobruk:Stationary.Bf-109F-2 de 39753.68 21178.45 0.00 
-  Static201 tobruk:Stationary.Bf-109F-2 de 39766.26 21191.72 0.00 
-  Static202 tobruk:Stationary.Bf-109F-1 de 39648.90 21063.18 0.00 
-  Static203 tobruk:Stationary.Bf-109F-1 de 39657.98 21079.25 0.00 
-  Static204 tobruk:Stationary.Bf-109F-1 de 39617.46 20969.57 0.00 
-  Static205 tobruk:Stationary.Bf-109F-1 de 39611.17 20954.20 0.00 
   Static206 Stationary.Bf-109E-4 de 39583.23 20852.91 0.00 
   Static207 Stationary.Bf-109E-4 de 39578.34 20833.35 0.00 
   Static208 Stationary.Bf-109E-4 de 39540.62 20636.35 0.00 
   Static209 Stationary.Bf-109E-4 de 39542.71 20613.29 0.00 
-  Static210 tobruk:Stationary.Bf-109E-7 de 39564.37 20488.25 0.00 
-  Static211 tobruk:Stationary.Bf-109E-7 de 39572.05 20476.38 0.00 
-  Static212 tobruk:Stationary.Bf-109E-7 de 39590.91 20435.86 0.00 
-  Static213 tobruk:Stationary.Bf-109E-7 de 39604.19 20413.50 0.00 
-  Static214 tobruk:Stationary.Bf-109F-4 de 29305.30 55652.21 0.00 
-  Static215 tobruk:Stationary.Bf-109F-4 de 29329.83 55649.55 0.00 
-  Static216 tobruk:Stationary.Bf-109F-4 de 29580.46 55441.04 0.00 
-  Static217 tobruk:Stationary.Bf-109F-4 de 29590.06 55431.44 0.00 
-  Static218 tobruk:Stationary.Ju-88A-5 de 14711.94 14047.36 0.00 
-  Static219 tobruk:Stationary.Ju-88A-5 de 14709.17 14028.69 0.00 
-  Static220 tobruk:Stationary.Ju-88A-5 de 14702.25 13949.17 0.00 
-  Static221 tobruk:Stationary.Ju-88A-5 de 14706.40 13930.50 0.00 
   Static222 Stationary.Ju-87B-2 de 14698.87 13820.35 0.00 
   Static223 Stationary.Ju-87B-2 de 14698.47 13793.24 0.00 
   Static224 Stationary.Ju-87B-2 de 14707.91 13693.42 0.00 
@@ -937,26 +581,14 @@
   Static227 Stationary.Ju-87B-2 de 14942.01 14474.00 0.00 
   Static228 Stationary.Ju-87B-2 de 14991.34 14528.70 0.00 
   Static229 Stationary.Ju-87B-2 de 15040.67 14564.09 0.00 
-  Static230 tobruk:Stationary.Ju-88A-5 de 13775.17 68019.96 0.00 
-  Static231 tobruk:Stationary.Ju-88A-5 de 13816.56 68013.49 0.00 
-  Static232 tobruk:Stationary.Ju-88A-5 de 13850.18 67983.74 0.00 
-  Static233 tobruk:Stationary.Ju-88A-5 de 13758.16 68068.00 0.00 
   Static234 Stationary.He-111P-2 de 13895.79 66666.80 0.00 
   Static235 Stationary.He-111P-2 de 13942.35 66637.05 0.00 
   Static236 Stationary.He-111P-2 de 13981.15 66608.59 0.00 
   Static237 Stationary.He-111P-2 de 14022.54 66581.43 0.00 
-  Static238 tobruk:Stationary.He-111H-6 de 13506.47 66982.39 0.00 
-  Static239 tobruk:Stationary.He-111H-6 de 13529.75 66951.35 0.00 
-  Static240 tobruk:Stationary.He-111H-6 de 13559.50 66931.95 0.00 
-  Static241 tobruk:Stationary.He-111H-6 de 13590.54 66904.79 0.00 
   Static242 Stationary.G50 it 40654.45 20981.22 0.00 
   Static243 Stationary.G50 it 40639.12 20938.32 0.00 
   Static244 Stationary.G50 it 40619.21 20896.95 0.00 
   Static245 Stationary.G50 it 40600.82 20841.80 0.00 
-  Static246 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40026.20 20215.17 0.00 
-  Static247 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40069.10 20258.06 0.00 
-  Static248 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40096.68 20304.03 0.00 
-  Static249 tobruk:Stationary.Macchi-C202-SeriesVII-AltoQuota it 40139.56 20357.65 0.00 
 [Buildings]
 [BuildingsLinks]
 [FrontMarker]

@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -99,10 +99,10 @@ namespace IL2DCE
 
                 [Description("EndDate Desc")]
                 EndDateDescending,
-                
+
                 [Description("Rank Asc")]
                 RankAscending,
-                
+
                 [Description("Rank Desc")]
                 RankDescending,
 
@@ -121,7 +121,7 @@ namespace IL2DCE
                 Count,
             }
 
-            static readonly string [] CareerSortProperty = new string[]
+            static readonly string[] CareerSortProperty = new string[]
                 {
                     "DisplayString",
                     "CampaignString",
@@ -333,7 +333,7 @@ namespace IL2DCE
 
             private void bNew_Click(object sender, RoutedEventArgs e)
             {
-                Game.gameInterface.PageChange(new CareerIntroPage(), 
+                Game.gameInterface.PageChange(new CareerIntroPage(),
                     new CareerIntroPage.PageArgs() { Army = SelectedArmyIndex, AirForce = SelectedAirForceIndex });
             }
 
@@ -508,7 +508,7 @@ namespace IL2DCE
                         listBox.Items.SortDescriptions.Clear();
                         listBox.Items.SortDescriptions.Add(new SortDescription(property, direction));
                         listBox.Items.Refresh();
-                        listBox.SelectedIndex = listBox.Items.Count > 0 ? 0 : -1; 
+                        listBox.SelectedIndex = listBox.Items.Count > 0 ? 0 : -1;
                     }
                 }
             }
@@ -521,7 +521,7 @@ namespace IL2DCE
                 comboBox.Items.Add(new ComboBoxItem() { Tag = -1, Content = AllString });
                 for (EArmy army = EArmy.Red; army <= EArmy.Blue; army++)
                 {
-                    comboBox.Items.Add(new ComboBoxItem() {Tag = (int)army, Content = army.ToString() });
+                    comboBox.Items.Add(new ComboBoxItem() { Tag = (int)army, Content = army.ToString() });
                 }
                 comboBox.SelectedIndex = comboBox.Items.Count > 0 ? 0 : -1;
             }
@@ -627,9 +627,9 @@ namespace IL2DCE
                         (airForceIndex == -1 || career.AirForceIndex == airForceIndex) &&
                         (mode == null || career.CampaignMode == mode.Value) &&
                         (campaignInfo == null || career.CampaignInfo == campaignInfo) &&
-                        (string.IsNullOrEmpty(aircraft) || string.Compare(career.Aircraft, aircraft, true) == 0) && 
-                        (!strictMode || (strictMode && career.StrictMode)) && 
-                        (!playable || (playable && career.CampaignInfo != null && career.Date <= career.EndDate && career.IsProgressEnableMission()) && 
+                        (string.IsNullOrEmpty(aircraft) || string.Compare(career.Aircraft, aircraft, true) == 0) &&
+                        (!strictMode || (strictMode && career.StrictMode)) &&
+                        (!playable || (playable && career.CampaignInfo != null && career.Date <= career.EndDate && career.IsProgressEnableMission()) &&
                         (!career.StrictMode || career.StrictMode && career.Status == (int)EPlayerStatus.Alive)));
             }
 
@@ -666,7 +666,7 @@ namespace IL2DCE
                     FrameworkElement.textBoxStatusCurrentSkill.ToolTip = toolTip = new ToolTip();
                     toolTip.FontFamily = new FontFamily(Config.DefaultFixedFontName);
                 }
-                string strToolTips = skills != null ? Skill.ToDetailDisplayString(skills): null;
+                string strToolTips = skills != null ? Skill.ToDetailDisplayString(skills) : null;
                 //if (str == null)
                 //{
                 //    str = NoFileString;

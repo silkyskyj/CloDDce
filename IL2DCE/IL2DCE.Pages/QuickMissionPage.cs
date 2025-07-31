@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -339,6 +339,12 @@ namespace IL2DCE
                 // FrameworkElement.buttonMissionLoad.Visibility = Visibility.Hidden;
                 FrameworkElement.checkBoxSelectCampaignFilter.Visibility = Visibility.Hidden;
                 FrameworkElement.checkBoxSelectAirgroupFilter.Visibility = Visibility.Hidden;
+
+#if !Blitz
+                FrameworkElement.GeneralSettingsGroupBox.helpButtonAutoReArmRefuel.Visibility = Visibility.Hidden;
+                FrameworkElement.GeneralSettingsGroupBox.checkBoxAutoReArm.Visibility = Visibility.Hidden;
+                FrameworkElement.GeneralSettingsGroupBox.checkBoxAutoReFuel.Visibility = Visibility.Hidden;
+#endif
             }
 
             public override void _enter(maddox.game.IGame play, object arg)
@@ -664,7 +670,7 @@ namespace IL2DCE
                     Career career = new Career(pilotName, armyIndex, airForceIndex, rankIndex);
                     career.BattleType = EBattleType.QuickMission;
                     career.CampaignInfo = campaignInfo;
-                    career.CampaignMode = SelectedCampaignMissionIndex == 0 ? ECampaignMode.Default: ECampaignMode.Progress;
+                    career.CampaignMode = SelectedCampaignMissionIndex == 0 ? ECampaignMode.Default : ECampaignMode.Progress;
                     career.MissionIndex = SelectedCampaignMissionIndex;
                     career.AirGroup = airGroup.ToString();
                     career.AirGroupDisplay = airGroup.VirtualAirGroupKey;
@@ -684,7 +690,7 @@ namespace IL2DCE
                     career.AdditionalAirOperations = generalSettings.SelectedAdditionalAirOperations;
                     career.AdditionalGroundOperations = generalSettings.SelectedAdditionalGroundOperations;
                     career.AdditionalAirGroups = generalSettings.SelectedAdditionalAirGroups;
-                    career.AdditionalGroundGroups= generalSettings.SelectedAdditionalGroundGroups;
+                    career.AdditionalGroundGroups = generalSettings.SelectedAdditionalGroundGroups;
                     career.AdditionalStationaries = generalSettings.SelectedAdditionalStasionaries;
                     career.SpawnDynamicAirGroups = generalSettings.SelectedKeepTotalAirGroups;
                     career.SpawnDynamicGroundGroups = generalSettings.SelectedKeepTotalGroundGroups;
@@ -819,7 +825,7 @@ namespace IL2DCE
                     for (int i = 0; i < campaignInfo.InitialMissionTemplateFileCount; i++)
                     {
                         string missionFile = campaignInfo.MissionTemplateFile(ECampaignMode.Progress, i, null);
-                        comboBox.Items.Add(new ComboBoxItem() { Tag = missionFile, Content = FileUtil.GetGameFileNameWithoutExtension(missionFile), } );
+                        comboBox.Items.Add(new ComboBoxItem() { Tag = missionFile, Content = FileUtil.GetGameFileNameWithoutExtension(missionFile), });
                     }
                 }
 
@@ -1216,7 +1222,7 @@ namespace IL2DCE
             {
                 DatePicker picker = FrameworkElement.datePickerStart;
                 CampaignInfo campaignInfo = SelectedCampaign;
-                picker.SelectedDate = campaignInfo != null ? (Nullable< DateTime>)campaignInfo.StartDate: null;
+                picker.SelectedDate = campaignInfo != null ? (Nullable<DateTime>)campaignInfo.StartDate : null;
                 FrameworkElement.labelDefaultSelectDate.Content = string.Format(Config.DateTimeFormat, MissionDefaultDateFormat, campaignInfo.StartDate, campaignInfo.EndDate);
             }
 
@@ -1229,7 +1235,7 @@ namespace IL2DCE
                 bool timeEnable = generalSettings.SelectedSpawnRandomTimeEnemy || generalSettings.SelectedSpawnRandomTimeFriendly;
                 double timeBattleBegin = generalSettings.SelectedBattleTimeBegin;
                 double timeBattleEnd = generalSettings.SelectedBattleTimeEnd;
-                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null && 
+                FrameworkElement.Start.IsEnabled = SelectedArmyIndex != -1 && SelectedAirForceIndex != -1 && SelectedCampaign != null &&
                     !string.IsNullOrEmpty(SelectedCampaignMission) && SelectedCampaignMissionIndex != -1 && SelectedAirGroup != null && SelectedRank != -1 &&
                     addGroundOpe >= Config.MinAdditionalGroundOperations && addGroundOpe <= Config.MaxAdditionalGroundOperations &&
                     (!timeEnable || timeEnable && timeBegin >= SpawnTime.MinimumBeginSec && timeEnd <= SpawnTime.MaximumEndSec && timeBegin <= timeEnd) &&
@@ -1241,7 +1247,7 @@ namespace IL2DCE
             {
                 GeneralSettingsGroupBox generalSettings = FrameworkElement.GeneralSettingsGroupBox;
                 FrameworkElement.comboBoxSelectCampaign.Text = career.CampaignInfo.ToString();
-                FrameworkElement.comboBoxSelectCampaignMission.SelectedIndex = career.MissionIndex < FrameworkElement.comboBoxSelectCampaignMission.Items.Count ? career.MissionIndex: FrameworkElement.comboBoxSelectCampaignMission.Items.Count > 0 ? 0 : -1;
+                FrameworkElement.comboBoxSelectCampaignMission.SelectedIndex = career.MissionIndex < FrameworkElement.comboBoxSelectCampaignMission.Items.Count ? career.MissionIndex : FrameworkElement.comboBoxSelectCampaignMission.Items.Count > 0 ? 0 : -1;
                 EnableSelectItem(FrameworkElement.comboBoxSelectArmy, ((EArmy)career.ArmyIndex).ToString());
                 EnableSelectItem(FrameworkElement.comboBoxSelectAirForce, ((EArmy)career.ArmyIndex) == EArmy.Red ? ((EAirForceRed)career.AirForceIndex).ToDescription() : ((EAirForceBlue)career.AirForceIndex).ToDescription());
                 FrameworkElement.comboBoxSelectRank.SelectedIndex = career.RankIndex;
@@ -1288,8 +1294,8 @@ namespace IL2DCE
                 generalSettings.checkBoxAutoReArm.IsChecked = career.ReArmTime >= 0;
                 generalSettings.checkBoxAutoReFuel.IsChecked = career.ReFuelTime >= 0;
                 generalSettings.checkBoxTrackRecording.IsChecked = career.TrackRecording;
-                EnableSelectItem(generalSettings.comboBoxSelectBattleTimeBegin, MissionTime.ToString(career.RandomTimeBegin >= 0 ? career.RandomTimeBegin: MissionTime.Begin));
-                EnableSelectItem(generalSettings.comboBoxSelectBattleTimeEnd, MissionTime.ToString(career.RandomTimeEnd >= 0 ? career.RandomTimeEnd: MissionTime.End));
+                EnableSelectItem(generalSettings.comboBoxSelectBattleTimeBegin, MissionTime.ToString(career.RandomTimeBegin >= 0 ? career.RandomTimeBegin : MissionTime.Begin));
+                EnableSelectItem(generalSettings.comboBoxSelectBattleTimeEnd, MissionTime.ToString(career.RandomTimeEnd >= 0 ? career.RandomTimeEnd : MissionTime.End));
             }
 
             private void UpdateAircraftImage()
@@ -1304,14 +1310,14 @@ namespace IL2DCE
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectArmy.Name, FrameworkElement.comboBoxSelectArmy.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectAirForce.Name, FrameworkElement.comboBoxSelectAirForce.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectRank.Name, FrameworkElement.comboBoxSelectRank.Text);
-                
+
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectAirGroup.Name, FrameworkElement.comboBoxSelectAirGroup.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectSkill.Name, FrameworkElement.comboBoxSelectSkill.Text);
-                
+
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectMissionType.Name, FrameworkElement.comboBoxSelectMissionType.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectFlight.Name, FrameworkElement.comboBoxSelectFlight.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSelectFormation.Name, FrameworkElement.comboBoxSelectFormation.Text);
-                
+
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSpawn.Name, FrameworkElement.comboBoxSpawn.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxSpeed.Name, FrameworkElement.comboBoxSpeed.Text);
                 file.add(SectionDQMSetting, FrameworkElement.comboBoxFuel.Name, FrameworkElement.comboBoxFuel.Text);

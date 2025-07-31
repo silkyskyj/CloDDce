@@ -1,4 +1,4 @@
-﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
+﻿// IL2DCE: A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
 // Copyright (C) 2016 Stefan Rothdach & 2025 silkysky
 //
 // This program is free software: you can redistribute it and/or modify
@@ -376,33 +376,36 @@ namespace IL2DCE.MissionObjectModel
                 Debug.WriteLine("battleGetDamageVictims Army={0} Actor={1} IsValid={2} IsAlive={3}", actor.Army(), actor.Name(), actor.IsValid(), actor.IsAlive());
                 IEnumerable<DamagerScore> damages = Game.battleGetDamageInitiators(actor).ToArray().Where(x => x is DamagerScore).Select(x => x as DamagerScore);
 
-                if (calcKillsScoreOver)
+                if (damages.Any())
                 {
-                    double totalScore = damages.Sum(x => x.score);
-                    var playerDameges = damages.Where(x => x.initiator != null && x.initiator.Player != null).OrderByDescending(x => x.score);
-                    if (playerDameges.Any())
+                    if (calcKillsScoreOver)
                     {
-                        int army = CloDAPIUtil.GetActorArmy(playerDameges.First().initiator);
-                        if (army != (int)EArmy.None)
+                        double totalScore = damages.Sum(x => x.score);
+                        var playerDameges = damages.Where(x => x.initiator != null && x.initiator.Player != null).OrderByDescending(x => x.score);
+                        if (playerDameges.Any())
                         {
-                            double playerScore = playerDameges.Sum(x => x.score);
-                            Debug.WriteLine("   PaylerScore/TotalScore=[{0}/{1}]", playerScore, totalScore);
-                            if (playerScore > totalScore * KillsScoreOver)
+                            int army = CloDAPIUtil.GetActorArmy(playerDameges.First().initiator);
+                            if (army != (int)EArmy.None)
                             {
-                                AddKillsCount(actor, army);
+                                double playerScore = playerDameges.Sum(x => x.score);
+                                Debug.WriteLine("   PaylerScore/TotalScore=[{0}/{1}]", playerScore, totalScore);
+                                if (playerScore > totalScore * KillsScoreOver)
+                                {
+                                    AddKillsCount(actor, army);
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    AiDamageInitiator initiator = GetHighestDamagedInitiator(damages);
-                    int army = CloDAPIUtil.GetActorArmy(initiator);
-                    if (army != (int)EArmy.None)
+                    else
                     {
-                        if (initiator != null && initiator.Player != null)
+                        AiDamageInitiator initiator = GetHighestDamagedInitiator(damages);
+                        int army = CloDAPIUtil.GetActorArmy(initiator);
+                        if (army != (int)EArmy.None)
                         {
-                            AddKillsCount(actor, army);
+                            if (initiator != null && initiator.Player != null)
+                            {
+                                AddKillsCount(actor, army);
+                            }
                         }
                     }
                 }
