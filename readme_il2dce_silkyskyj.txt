@@ -1,7 +1,7 @@
 ﻿=============================================================================================================================
-A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC Release (Version 0.7.4)
+A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC Release (Version 0.7.5)
 =============================================================================================================================
-                                                                                                                   07/14/2025
+                                                                                                                   08/09/2025
 This is the silkysky version of IL2DCE.
 
 IL2DCE was created and released by the original author, Stefan Rothdach, in 2011 and has been customized since.
@@ -18,7 +18,7 @@ This is a program that is available for free under the terms of AGPL3.0.
 I do not guarantee operation, damages caused by use, the presence or absence of defects, bug fixes, feature additions, replies to inquiries, or explanations of features.
 I'm very sorry, but please use this product only if you understand these points.
 
-#I can't speak English, so I translate or paraphrase everything I read and write. Please understand that there may be some minor mistakes in the expressions.
+I can't speak English, so I translate or paraphrase everything I read and write. Please understand that there may be some minor mistakes in the expressions.
 
 Main functions
 1. Dynamic Campaign
@@ -118,6 +118,7 @@ History
 
   Ver      Date       Comment
 
+  0.7.5    08/05/2025 Added: Original Cliffs of Dover Version.
   0.7.4    07/14/2025 Cumulative Update(CU202507)
                       Fixed: The score calculation is wrong when changing sides. A friendly kill may be counted if the player crashes into the ground or dies on their own. HUD messages related to automatic resupply and ammo refilling are displayed on units that include AI other than the player. etc
   0.7.3    05/24/2025 Added: Ability to continue campaigns even if the player's AirGroup is not present in the ongoing mission file of the campaign.

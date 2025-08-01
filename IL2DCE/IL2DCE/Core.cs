@@ -131,9 +131,10 @@ namespace IL2DCE
 
             GameIterface gameInterface = game.gameInterface;
 
+            CheckRequirement(gameInterface);
+
             // Config
-            ISectionFile confFile = gameInterface.SectionFileLoad(Config.ConfigFilePath);
-            config = new Config(confFile);
+            config = new Config(gameInterface.SectionFileLoad(Config.ConfigFilePath));
 
             // CampaignInfo
             ReadCampaignInfo();
@@ -158,6 +159,16 @@ namespace IL2DCE
             if (!Directory.Exists(userMissionsFolderSystemPath))
             {
                 Directory.CreateDirectory(userMissionsFolderSystemPath);
+            }
+        }
+
+        private void CheckRequirement(GameIterface gameInterface)
+        {
+            ISectionFile file = gameInterface.ConfigFile();
+            string value = file.get("rts", "scriptAppDomain", string.Empty);
+            if (string.IsNullOrEmpty(value) || string.Compare(value, "0", StringComparison.InvariantCulture) != 0)
+            {
+                throw new ApplicationException("Error: [rts] scriptAppDomain need 0 value in CloD's conf.ini");
             }
         }
 
