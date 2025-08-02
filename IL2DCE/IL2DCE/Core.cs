@@ -29,6 +29,13 @@ namespace IL2DCE
 {
     public class Core
     {
+
+        #region Definition
+
+        private const string MsgErrorScriptAppDomain = "Error: [rts] scriptAppDomain need 0 value in CloD's conf.ini";
+
+        #endregion
+
         #region Property
 
         public Config Config
@@ -168,7 +175,8 @@ namespace IL2DCE
             string value = file.get("rts", "scriptAppDomain", string.Empty);
             if (string.IsNullOrEmpty(value) || string.Compare(value, "0", StringComparison.InvariantCulture) != 0)
             {
-                throw new ApplicationException("Error: [rts] scriptAppDomain need 0 value in CloD's conf.ini");
+                WriteLog(MsgErrorScriptAppDomain);
+                throw new ApplicationException(MsgErrorScriptAppDomain);
             }
         }
 
