@@ -74,8 +74,6 @@ Items that can be selected and set commonly in 1. 2.
  - Random Air Group Spawn Location [Player/Friendly/Enemy]
  - Random Air Group Spawn Altitude [Friendly/Enemy]
  - Time(Spawn delay) 15-1800[sec] [Friendly/Enemy]
- - Auto re-Arm (bullets only)
- - Auto re-Fuel
  - Track Recording
  - AI Air Group Skill
  - AI Ship Skill
@@ -85,7 +83,7 @@ Items that can be selected and set commonly in 1. 2.
  - Convert Generic type
  - Save/Load general settings
 
-Sample mission (8 mission files)
+Sample mission (5 mission files)
  - Adlerangriff - Royal Air Force/Lufutwaffe
  - Cross v Round - All Air Forces
  - Kanalkampf - Royal Air Force/Lufutwaffe
