@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1280" Title="Total Status [IL2DCE]" Loaded="Window_Loaded" FontSize="16" WindowStartupLocation="CenterScreen">
     <Grid>
-        <TextBox x:Name="textBoxStats" Margin="0,0,0,50" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="16" IsReadOnly="True" FontFamily="Consolas"/>
+        <TextBox x:Name="textBoxStats" Margin="0,0,0,50" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontSize="16" IsReadOnly="True" FontFamily="Consolas,Courier New"/>
         <Button x:Name="buttonClose" Content="Close" HorizontalAlignment="Center" Margin="0,0,0,8" VerticalAlignment="Bottom" FontSize="24" Width="112" Click="buttonClose_Click" Height="36"/>
     </Grid>
 </Window>

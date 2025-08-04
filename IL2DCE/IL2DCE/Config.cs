@@ -129,7 +129,7 @@ namespace IL2DCE
         public const string GeneralSettingsFileName = "GeneralSettings.ini";
         public const string DQMSettingFileName = "DQMSetting.ini";
         
-        public const string DefaultFixedFontName = "Consolas";
+        public const string DefaultFixedFontName = "Consolas,Courier New";
         public const string KillsFormat = "F0";
         public const string PointValueFormat = "F2";
         public const string DateTimeDefaultLongFormat = "yyyyMMdd_HHmmss";
