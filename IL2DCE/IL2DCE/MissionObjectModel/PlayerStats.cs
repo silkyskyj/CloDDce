@@ -397,12 +397,15 @@ namespace IL2DCE.MissionObjectModel
                 else
                 {
                     AiDamageInitiator initiator = GetHighestDamagedInitiator(damages);
-                    int army = CloDAPIUtil.GetActorArmy(initiator);
-                    if (army != (int)EArmy.None)
+                    if (initiator != null)
                     {
-                        if (initiator != null && initiator.Player != null)
+                        int army = CloDAPIUtil.GetActorArmy(initiator);
+                        if (army != (int)EArmy.None)
                         {
-                            AddKillsCount(actor, army);
+                            if (initiator != null && initiator.Player != null)
+                            {
+                                AddKillsCount(actor, army);
+                            }
                         }
                     }
                 }
