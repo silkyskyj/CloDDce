@@ -87,10 +87,6 @@ namespace IL2DCE
 
             #region Variable
 
-#if DEBUG
-            private List<AiAirGroup> AirGroups = new List<AiAirGroup>();
-#endif
-
             private double TimeGameLatest = 0;
 
             #endregion

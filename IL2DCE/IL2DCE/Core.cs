@@ -151,7 +151,7 @@ namespace IL2DCE
             debugFolderSystemPath = gameInterface.ToFileSystemPath(string.Format("{0}/{1}", Config.UserMissionsFolder, Config.DebugFolderName));
         }
 
-#endregion
+        #endregion
 
         private void Initialize()
         {
