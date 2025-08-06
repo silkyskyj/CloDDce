@@ -97,9 +97,9 @@ Sample mission (8 mission files)
 [*]Requires Tobruk DLC
 
 I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
-OS: Windows 10 x64 Home (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
+OS: Windows 10 Home x64 (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
     Windows 11 Home (Test & Play) latest official MS patch
-Software: IL-2 Sturmovik: Cliffs of Dover Blitz + DLC(DLC) - English Langauage
+Software: IL-2 Sturmovik: Cliffs of Dover Blitz + DLC - English Langauage
 Display Resolution: 1920x1080
 
 A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC
