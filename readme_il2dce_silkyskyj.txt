@@ -91,9 +91,11 @@ Sample mission (5 mission files)
  - Transfer - Royal Air Force/Lufutwaffe (Sample of Multiple mission file & Map Change)
 
 I have not been able to confirm whether this will work in any environment, but I will describe the environment in which it actually worked.
-OS: Windows 10 x64 Home (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
+OS: Windows 10 Home x64 (Development) latest official MS patch / Core i7-3770 & GTX 1050 Ti
     Windows 11 Home (Test & Play) latest official MS patch
-Software: IL-2 Sturmovik: Cliffs of Dover - English Langauage
+    Windows 7 Home Premium x64 latest official MS patch
+    Windows 7 Home Premium x86 latest official MS patch
+Software: IL-2 Sturmovik: Cliffs of Dover + TFS latest patch - English Langauage 
 Display Resolution: 1920x1080
 
 A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover
