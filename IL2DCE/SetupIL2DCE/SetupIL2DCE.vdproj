@@ -1419,7 +1419,7 @@
         {
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_928F7270ACB34616868B4885B6D815C9"
             {
-            "DefaultLocation" = "8:C:\\Program Files\\Steam\\steamapps\\common\\IL-2 Sturmovik Cliffs of Dover Blitz"
+            "DefaultLocation" = "8:C:\\Program Files\\Steam\\steamapps\\common\\IL-2 Sturmovik Cliffs of Dover"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -1545,7 +1545,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:IL2DCE [silkyskyj]"
         "ProductCode" = "8:{8DFB8CAC-547E-4102-A6D7-1F7855EC3C37}"
-        "PackageCode" = "8:{F9B84B28-EA3E-4472-9FDB-7A51D1748009}"
+        "PackageCode" = "8:{304DBAA9-222A-4E53-9FCB-F37D3DB3DC09}"
         "UpgradeCode" = "8:{CC7C88D9-649D-49CC-9CCE-475DE0EC7480}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
