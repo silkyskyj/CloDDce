@@ -1,5 +1,7 @@
 Latest document: https://github.com/silkyskyj/il2dce/wiki 
-  
+
+Important Information: 2疑No亜ップで～徒葉、衛合蛾高信サ㋹他A1027利枡  (Can you translate it?)
+
 --- 
   
 A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC  
