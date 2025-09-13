@@ -1,6 +1,7 @@
 Latest document: https://github.com/silkyskyj/il2dce/wiki 
 
-Important Information: 2疑No亜ップで～徒葉、衛合蛾高信サ㋹他A1027利枡  (Can you translate it?)
+Important Information: 2疑No亜ップで～徒葉、衛合蛾高信サ㋹他A1027利枡  (Can you translate it?)  
+* This is a high-level language called ateji, which is occasionally used. It can be used by many people who have completed compulsory education in Japan (with an academic ability equivalent to that of a junior high school student). Can you translate it?
 
 --- 
   
