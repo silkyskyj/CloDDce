@@ -1,5 +1,8 @@
 Latest document: https://github.com/silkyskyj/il2dce/wiki 
 
+* Due to being busy with other volunteer work, there are no plans to release an updated version for a while.  
+* It may resume once new aircraft or AI updates are released.  
+
 --- 
   
 A dynamic campaign engine & quick mission for IL-2 Sturmovik: Cliffs of Dover Blitz + DLC  
